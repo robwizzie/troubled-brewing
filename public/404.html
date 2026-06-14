@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Trouble Brewing Coffee House</title>
+    <!--
+      SPA fallback for GitHub Pages (spa-github-pages technique).
+      Pages has no server rewrites, so a hard refresh on /menu would 404. This
+      page encodes the path into a query string and redirects to index.html,
+      where a snippet decodes it back before React Router boots.
+      See docs/DEPLOYMENT.md.
+    -->
+    <script type="text/javascript">
+      (function () {
+        var segmentCount = 0; // apex domain → keep the whole path
+        var l = window.location;
+        l.replace(
+          l.protocol +
+            '//' +
+            l.hostname +
+            (l.port ? ':' + l.port : '') +
+            l.pathname
+              .split('/')
+              .slice(0, 1 + segmentCount)
+              .join('/') +
+            '/?/' +
+            l.pathname
+              .slice(1)
+              .split('/')
+              .slice(segmentCount)
+              .join('/')
+              .replace(/&/g, '~and~') +
+            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+        );
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
