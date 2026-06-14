@@ -1,0 +1,41 @@
+name: Weekly content backup
+
+# Exports all Supabase content tables to backups/YYYY-MM-DD.json and commits it.
+# Doubles as a refreshed seed-fallback source and an offsite safety net (§5.11).
+# Requires the SUPABASE_SERVICE_ROLE_KEY repository secret (server-only).
+
+on:
+  schedule:
+    - cron: '0 8 * * 1' # Mondays 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Export content
+        run: node scripts/backup.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Commit backup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain backups/)" ]; then
+            git add backups/
+            git commit -m "chore: weekly content backup $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "No changes to back up."
+          fi
