@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Trouble Brewing">
+  <rect width="64" height="64" rx="14" fill="#7c8a5b"/>
+  <path d="M18 24h22a4 4 0 0 1 4 4v2h4a6 6 0 0 1 0 12h-4.4A14 14 0 0 1 30 52a14 14 0 0 1-12-22zM44 34v6h3a3 3 0 0 0 0-6z" fill="#f6efe1"/>
+  <path d="M24 12c-2 3 1 5 0 8M31 12c-2 3 1 5 0 8M38 12c-2 3 1 5 0 8" stroke="#caa24e" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+</svg>
