@@ -1,0 +1,107 @@
+/* =============================================================================
+   Design tokens — the entire theme lives here.
+   The client's final look & feel applies by editing THIS file, not components.
+   See docs/DESIGN.md. Palette/fonts are a whimsical placeholder pulled from the
+   real space (sage walls, warm wood, brass frames, cream) until client notes land.
+   ============================================================================= */
+:root {
+  /* ---- Raw palette -------------------------------------------------------- */
+  --color-sage: #7c8a5b;
+  --color-sage-deep: #5c6a42;
+  --color-sage-soft: #e7ebda;
+  --color-wood: #7a5230;
+  --color-wood-deep: #5b3c22;
+  --color-cream: #f6efe1;
+  --color-paper: #fffdf8;
+  --color-ink: #2b2520;
+  --color-ink-soft: #5f574c;
+  --color-brass: #b08436;
+  --color-brass-bright: #caa24e;
+  --color-frame: #1c1814;
+  --color-error: #b3402f;
+  --color-success: #4d7c3a;
+
+  /* ---- Semantic aliases (components reference THESE) ----------------------- */
+  --color-bg: var(--color-cream);
+  --color-surface: var(--color-paper);
+  --color-surface-alt: var(--color-sage-soft);
+  --color-text: var(--color-ink);
+  --color-text-soft: var(--color-ink-soft);
+  --color-primary: var(--color-sage);
+  --color-primary-hover: var(--color-sage-deep);
+  --color-accent: var(--color-brass);
+  --color-accent-hover: var(--color-brass-bright);
+  --color-on-primary: #fffdf8;
+  --color-on-accent: #2b2520;
+  --color-border: #e3d9c4;
+
+  /* ---- Typography --------------------------------------------------------- */
+  --font-display: 'Fraunces', 'Georgia', serif;
+  --font-body: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-xs: 0.78rem;
+  --text-sm: 0.9rem;
+  --text-base: 1rem;
+  --text-lg: 1.2rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+  --text-4xl: clamp(2.6rem, 6vw, 4.5rem);
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.6;
+
+  /* ---- Spacing scale ------------------------------------------------------ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* ---- Radius / shadow ---------------------------------------------------- */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(43, 37, 32, 0.12);
+  --shadow-md: 0 6px 20px rgba(43, 37, 32, 0.14);
+  --shadow-lg: 0 18px 50px rgba(43, 37, 32, 0.22);
+  --shadow-frame: 0 10px 24px rgba(28, 24, 20, 0.35);
+
+  /* ---- Layout ------------------------------------------------------------- */
+  --container: 1120px;
+  --container-narrow: 760px;
+  --header-h: 72px;
+
+  /* ---- Motion (respect prefers-reduced-motion below) ---------------------- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 280ms;
+  --dur-slow: 600ms;
+
+  /* ---- Picture-frame styles (Gallery Wall) -------------------------------- */
+  --frame-gold: linear-gradient(145deg, #d9b15e, #9c6f25);
+  --frame-wood: linear-gradient(145deg, #8a5e36, #5b3c22);
+  --frame-black: linear-gradient(145deg, #2c2620, #14110d);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
