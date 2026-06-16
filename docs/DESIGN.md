@@ -43,10 +43,15 @@ Two black-on-white vintage logos were provided: (1) the **"TROUBLE BREWING"** or
 - **Body / UI:** `Work Sans` — clean, friendly, highly legible sans.
 - Loaded via Google Fonts in `index.html`. Swap by changing the `<link>` + the `--font-display` / `--font-body` tokens.
 
-## Motion
+## Motion & custom touches (implemented)
 
-- Gentle frame tilt on hover, soft fade/slide on scroll-in, a slight "settling" animation when the Gallery Wall loads.
-- **Always** respect `prefers-reduced-motion: reduce` — disable transforms/transitions for those users. Helpers live in `tokens.css` / `motion.css`.
+- **Brand motifs** (`src/components/Motifs.jsx`): a brass geometric **fox medallion** (top-hat nod to the logo), a **hare**, **scroll flourishes** (from the letterpress logo), **steam wisps**, and an ornate **TB monogram**. Used in the nav lockup, the gallery wall, the featured drink, and the admin dashboard.
+- **Gallery Wall hero** is a true **salon hang** — a dense, `grid-auto-flow: dense` collage of **mismatched frame sizes** (portrait/wide/oval/tall), slight rotations and overlaps, color-tinted mats, brass nameplates, the fox + hare tucked among the art, a pressed-tin moulding strip and a wood baseboard. Deliberately not a uniform grid.
+- **Vintage ticker** marquee under the hero ("Good Coffee · Good Trouble · …").
+- **Nav**: monogram + wordmark lockup, brass top rule, hand-drawn underline that draws in on hover, a wiggling "Order Now" button.
+- **Admin dashboard**: playful fox-led header, tilting color-coded tiles, a progress bar and friendly checklist.
+- Frame tilt on hover, soft fade/slide on scroll-in (`Reveal`), and a "settling" load animation on the wall.
+- **Always** respect `prefers-reduced-motion: reduce` — `tokens.css` collapses all transition/animation durations to ~0 for those users.
 
 ## The Gallery Wall concept (signature)
 

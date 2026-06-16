@@ -17,9 +17,11 @@
   position: sticky;
   top: 0;
   z-index: 500;
-  background: color-mix(in srgb, var(--color-cream) 88%, transparent);
-  backdrop-filter: saturate(140%) blur(8px);
-  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-cream) 90%, transparent);
+  backdrop-filter: saturate(150%) blur(8px);
+  border-top: 3px solid var(--color-yellow);
+  border-bottom: 2px solid var(--color-black);
+  box-shadow: 0 2px 0 var(--color-yellow), var(--shadow-sm);
 }
 .nav__inner {
   display: flex;
@@ -28,27 +30,42 @@
   min-height: var(--header-h);
 }
 .nav__brand {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: var(--text-lg);
-  color: var(--color-text);
-  text-decoration: none;
-  line-height: 1.05;
-  display: flex;
-  flex-direction: column;
+  display: flex; align-items: center; gap: var(--space-3);
+  color: var(--color-text); text-decoration: none;
 }
-.nav__brand small { font-family: var(--font-body); font-weight: 600; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent); }
-.nav__links { display: flex; align-items: center; gap: var(--space-1); margin-left: auto; }
+.nav__mark { flex-shrink: 0; transition: transform var(--dur) var(--ease); }
+.nav__brand:hover .nav__mark { transform: rotate(-8deg) scale(1.05); }
+.nav__brandtext {
+  font-family: var(--font-display); font-weight: 900; font-size: var(--text-lg);
+  line-height: 0.98; display: flex; flex-direction: column;
+  text-transform: uppercase; letter-spacing: 0.01em;
+}
+.nav__brandtext small { font-family: var(--font-body); font-weight: 700; font-size: 0.54rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent-text); margin-top: 2px; }
+.nav__links { display: flex; align-items: center; gap: 2px; margin-left: auto; }
 .nav__link {
+  position: relative;
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-pill);
   text-decoration: none;
   color: var(--color-text);
   font-weight: 600;
   font-size: var(--text-sm);
+  background: none; border: none; cursor: pointer; font-family: inherit;
 }
-.nav__link:hover { background: var(--color-sage-soft); color: var(--color-text); }
+/* hand-drawn underline that draws in on hover/active */
+.nav__link::after {
+  content: ''; position: absolute; left: var(--space-3); right: var(--space-3); bottom: 4px;
+  height: 2px; background: var(--color-yellow); border-radius: 2px;
+  transform: scaleX(0); transform-origin: left; transition: transform var(--dur) var(--ease);
+}
+.nav__link:hover::after, .nav__link.active::after { transform: scaleX(1); }
 .nav__link.active { color: var(--color-primary); }
+
+/* ---- Ticker marquee ------------------------------------------------------- */
+.ticker { background: var(--color-black); color: var(--color-yellow); border-top: 3px solid var(--color-yellow); border-bottom: 3px solid var(--color-yellow); overflow: hidden; padding: 9px 0; }
+.ticker__track { display: inline-flex; white-space: nowrap; animation: ticker-scroll 30s linear infinite; }
+.ticker__item { font-family: var(--font-display); font-weight: 900; font-size: var(--text-lg); text-transform: uppercase; letter-spacing: 0.06em; padding: 0 var(--space-5); }
+.ticker__star { color: var(--color-pink); }
+@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .nav__cta { margin-left: var(--space-2); }
 .nav__toggle {
   display: none; margin-left: auto; background: none; border: 2px solid var(--color-border);
