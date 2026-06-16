@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import OrderButton from './OrderButton.jsx';
 import BrandImg from './BrandImg.jsx';
-import { Monogram } from './Motifs.jsx';
 import { BRAND } from '../lib/config.js';
 
 const PRIMARY = [
@@ -45,25 +44,23 @@ export default function Nav() {
   return (
     <header className="nav">
       <div className="container nav__inner">
-        <NavLink to="/" className="nav__brand" aria-label="Trouble Brewing Coffee House — home">
-          <BrandImg
-            src={BRAND.logoPrimary}
-            alt="Trouble Brewing Coffee House"
-            className="nav__logo"
-            fallback={
-              <>
-                <Monogram size={44} className="nav__mark" />
+        {/* fox + wordmark lockup */}
+        <div className="nav__lockup">
+          <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__fox" fallback={null} />
+          <NavLink to="/" className="nav__brand" aria-label="Trouble Brewing Coffee House — home">
+            <BrandImg
+              src={BRAND.logoPrimary}
+              alt="Trouble Brewing Coffee House"
+              className="nav__logo"
+              fallback={
                 <span className="nav__brandtext">
                   Trouble Brewing
                   <small>Coffee House · Haddon Heights</small>
                 </span>
-              </>
-            }
-          />
-        </NavLink>
-
-        {/* fox easter egg — appears once fox-mascot.png is added */}
-        <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__fox" fallback={null} />
+              }
+            />
+          </NavLink>
+        </div>
 
         <button
           className="nav__toggle"

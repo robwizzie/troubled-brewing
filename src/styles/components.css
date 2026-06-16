@@ -29,14 +29,10 @@
   gap: var(--space-4);
   min-height: var(--header-h);
 }
-.nav__brand {
-  display: flex; align-items: center; gap: var(--space-3);
-  color: var(--color-text); text-decoration: none;
-}
-.nav__mark { flex-shrink: 0; transition: transform var(--dur) var(--ease); }
-.nav__brand:hover .nav__mark { transform: rotate(-8deg) scale(1.05); }
+.nav__lockup { display: flex; align-items: flex-end; gap: var(--space-2); }
+.nav__brand { display: flex; align-items: flex-end; color: var(--color-text); text-decoration: none; }
 .nav__brandtext {
-  font-family: var(--font-display); font-weight: 900; font-size: var(--text-lg);
+  font-family: var(--font-display); font-weight: 900; font-size: var(--text-xl);
   line-height: 0.98; display: flex; flex-direction: column;
   text-transform: uppercase; letter-spacing: 0.01em;
 }
@@ -92,7 +88,7 @@
     position: fixed; inset: var(--header-h) 0 auto 0;
     flex-direction: column; align-items: stretch; gap: 0;
     background: var(--color-cream); border-bottom: 3px solid var(--color-black);
-    padding: var(--space-3) var(--space-5) 130px; box-shadow: var(--shadow-lg);
+    padding: var(--space-3) var(--space-5) 165px; box-shadow: var(--shadow-lg);
     max-height: calc(100vh - var(--header-h)); overflow: auto;
   }
   .nav__links[data-open='false'] { display: none; }
@@ -103,11 +99,17 @@
   .nav__menu a { font-size: var(--text-base); }
   .nav__cta { margin: var(--space-5) 0 0; align-self: flex-start; }
   .nav__drawer-fox {
-    display: block; position: absolute; right: 12px; bottom: 6px; height: 150px; width: auto;
-    pointer-events: none; z-index: 1; animation: fox-creep 0.45s var(--ease) both;
+    display: block; position: absolute; right: 8px; bottom: 0; height: 185px; width: auto;
+    pointer-events: none; z-index: 1; transform-origin: bottom center;
+    animation: fox-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 }
-@keyframes fox-creep { from { transform: translateY(64px) rotate(5deg); opacity: 0; } to { transform: translateY(0) rotate(0); opacity: 1; } }
+/* a playful overshoot "pop" so the fox bounces into the menu */
+@keyframes fox-pop {
+  0% { transform: translateY(95px) scale(0.82) rotate(-6deg); opacity: 0; }
+  55% { opacity: 1; }
+  100% { transform: translateY(0) scale(1) rotate(0); opacity: 1; }
+}
 
 /* ---- Footer (fox-in-coffee banner + clean cream body) --------------------- */
 /* bg matches the banner image's cream (#f5e5d3) so it blends seamlessly */
@@ -133,10 +135,10 @@
 /* social icons must stay cream on the dark circle (beat the .footer a rule) */
 .footer .social-link { color: var(--color-cream); }
 .footer .social-link:hover { color: #fff; }
-/* big wordmark — pure HTML text (crisp at any size) */
-.footer__wordmark { text-align: center; padding: var(--space-6) var(--space-4) var(--space-7); }
-.footer__wm-title { display: block; font-family: var(--font-display); font-weight: 900; font-style: italic; text-transform: uppercase; line-height: 0.86; letter-spacing: 0.005em; font-size: clamp(2.8rem, 11vw, 7rem); color: var(--color-ink); }
-.footer__wm-sub { display: inline-flex; align-items: center; gap: var(--space-3); margin-top: var(--space-4); font-family: var(--font-body); font-weight: 700; text-transform: uppercase; letter-spacing: 0.42em; font-size: clamp(0.62rem, 1.6vw, 0.9rem); color: var(--color-wood-deep); padding-left: 0.42em; }
+/* big wordmark — vintage letterpress font (matches the logo), full-bleed width */
+.footer__wordmark { text-align: center; padding: var(--space-6) 0 var(--space-6); overflow: hidden; }
+.footer__wm-title { display: block; font-family: var(--font-vintage); font-weight: 400; text-transform: uppercase; line-height: 0.95; white-space: nowrap; font-size: min(9.6vw, 15rem); color: var(--color-ink); text-shadow: 0.035em 0.045em 0 rgba(95, 70, 35, 0.16); }
+.footer__wm-sub { display: inline-flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); font-family: var(--font-body); font-weight: 700; text-transform: uppercase; letter-spacing: 0.42em; font-size: clamp(0.62rem, 1.6vw, 0.9rem); color: var(--color-wood-deep); padding-left: 0.42em; }
 .footer__wm-star { color: var(--color-accent); font-style: normal; font-size: 0.8em; }
 @media (max-width: 820px) {
   .footer__cols { grid-template-columns: 1fr; gap: var(--space-6); text-align: center; }
@@ -145,9 +147,9 @@
 }
 
 /* nav logo + fox — white-bg logos drop cleanly via multiply on the solid cream nav */
-.nav__logo { height: 60px; width: auto; display: block; mix-blend-mode: multiply; }
-.nav__fox { height: 70px; width: auto; align-self: flex-end; margin: 0 var(--space-2) -2px; transition: transform var(--dur) var(--ease); }
-.nav__fox:hover { transform: translateY(-4px) rotate(-4deg); }
+.nav__logo { height: 76px; width: auto; display: block; mix-blend-mode: multiply; }
+.nav__fox { height: 84px; width: auto; display: block; transition: transform var(--dur) var(--ease); }
+.nav__lockup:hover .nav__fox { transform: translateY(-3px) rotate(-5deg); }
 @media (max-width: 900px) { .nav__fox { display: none; } }
 
 /* ---- Hours widget --------------------------------------------------------- */
