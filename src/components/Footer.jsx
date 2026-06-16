@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
-import { FaMugHot, FaLocationDot, FaPhone } from 'react-icons/fa6';
+import { FaLocationDot, FaPhone } from 'react-icons/fa6';
 import { SITE } from '../lib/seed.js';
 import SocialLinks from './SocialLinks.jsx';
 import BrandImg from './BrandImg.jsx';
 import { Flourish } from './Motifs.jsx';
 import { BRAND } from '../lib/config.js';
 
-/* Footer modeled on the client's reference: a fox-emerging-from-coffee banner
-   image up top, a clean cream body (nav / say-hi / connect) in HTML+CSS, real
-   social icons, and a big TROUBLE BREWING wordmark. */
+/* Footer: a fox-in-coffee banner up top, a clean cream body (Navigation /
+   Visit / Connect), real social icons, and a big HTML-text wordmark. The cream
+   (#f5e5d3) matches the banner art so they blend. */
 const NAV = [
   { to: '/menu', label: 'Menu' },
   { to: '/about', label: 'Our Story' },
@@ -22,7 +22,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="footer">
-      {/* Top band — the fox-in-coffee banner (appears once footer-banner.png is added) */}
+      {/* Top band — the fox-in-coffee banner (appears once the image is added) */}
       <BrandImg
         src={BRAND.footerBanner}
         alt=""
@@ -43,21 +43,16 @@ export default function Footer() {
             </ul>
           </nav>
 
-          <div className="footer__hi">
-            <h3>Say Hi!</h3>
-            <p>Come have a coffee with us.</p>
-            <Link className="btn btn--primary footer__chat" to="/contact">
-              <FaMugHot aria-hidden="true" /> Let's Chat!
-            </Link>
+          <div className="footer__visit">
+            <h4 className="footer__head">Visit Us</h4>
             <p className="footer__addr">
-              <FaLocationDot aria-hidden="true" /> {SITE.address}
-              <br />
-              <a href={SITE.phoneHref}><FaPhone aria-hidden="true" /> {SITE.phone}</a>
+              <span><FaLocationDot aria-hidden="true" />{SITE.address}</span>
+              <a href={SITE.phoneHref}><FaPhone aria-hidden="true" />{SITE.phone}</a>
             </p>
           </div>
 
           <div className="footer__connect">
-            <h4 className="footer__head">Stay in touch</h4>
+            <h4 className="footer__head">Stay in Touch</h4>
             <SocialLinks />
             <p className="footer__copy">© {year} Trouble Brewing Coffee House</p>
             <p className="footer__legal">
@@ -68,18 +63,9 @@ export default function Footer() {
         </div>
 
         <div className="footer__wordmark">
-          <BrandImg
-            src={BRAND.logoPrimary}
-            alt="Trouble Brewing Coffee House"
-            className="footer__wordmark-img"
-            fallback={
-              <span className="footer__wordmark-text">
-                Trouble Brewing
-                <Flourish width={260} color="var(--color-ink)" />
-                <small>Haddon Heights · NJ</small>
-              </span>
-            }
-          />
+          <Flourish className="footer__wm-flourish" width={300} color="var(--color-ink)" />
+          <span className="footer__wm-title">Trouble Brewing</span>
+          <span className="footer__wm-sub">Haddon Heights · NJ</span>
         </div>
       </div>
     </footer>
