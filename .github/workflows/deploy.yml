@@ -6,7 +6,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # `main` is the long-term target; the second entry auto-deploys the current
+    # working branch so previews go live on push. Remove it once you merge to main.
+    branches: [main, claude/dreamy-hamilton-zzzvbh]
   workflow_dispatch:
 
 permissions:
