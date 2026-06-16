@@ -103,6 +103,22 @@ p { margin: 0 0 var(--space-4); }
 .btn--lg { font-size: var(--text-lg); padding: var(--space-4) var(--space-6); }
 .btn--block { width: 100%; justify-content: center; }
 
+/* Playful "order" button: a quick wiggle on hover (reduced-motion safe). */
+.btn--wiggle:hover { animation: btn-wiggle 0.5s var(--ease); }
+@keyframes btn-wiggle {
+  0%, 100% { transform: rotate(0) translateY(-1px); }
+  25% { transform: rotate(-3deg) scale(1.04); }
+  75% { transform: rotate(3deg) scale(1.04); }
+}
+
+/* Rising steam wisps (Motifs.Steam). */
+.steam-wisp { transform-origin: bottom center; animation: steam-rise 3s ease-in-out infinite; }
+@keyframes steam-rise {
+  0% { opacity: 0; transform: translateY(4px) scaleY(0.85); }
+  30% { opacity: 0.55; }
+  100% { opacity: 0; transform: translateY(-6px) scaleY(1.12); }
+}
+
 /* ---- Cards / surfaces ----------------------------------------------------- */
 .card {
   background: var(--color-surface);

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import OrderButton from './OrderButton.jsx';
+import { Monogram } from './Motifs.jsx';
 
 const PRIMARY = [
   { to: '/menu', label: 'Menu' },
@@ -43,8 +44,11 @@ export default function Nav() {
     <header className="nav">
       <div className="container nav__inner">
         <NavLink to="/" className="nav__brand" aria-label="Trouble Brewing Coffee House — home">
-          Trouble Brewing
-          <small>Coffee House</small>
+          <Monogram size={44} className="nav__mark" />
+          <span className="nav__brandtext">
+            Trouble Brewing
+            <small>Coffee House · Haddon Heights</small>
+          </span>
         </NavLink>
 
         <button
@@ -83,7 +87,7 @@ export default function Nav() {
             )}
           </div>
 
-          <OrderButton className="btn btn--accent nav__cta" location="nav" />
+          <OrderButton className="btn btn--accent btn--wiggle nav__cta" location="nav" />
         </nav>
       </div>
     </header>

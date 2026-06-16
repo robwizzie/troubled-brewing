@@ -4,6 +4,7 @@ import SectionRenderer from '../components/SectionRenderer.jsx';
 import SEO from '../components/SEO.jsx';
 import { PageSkeleton } from '../components/Skeleton.jsx';
 import { SECTION_RENDERERS } from '../components/sections/registry.js';
+import Ticker from '../components/Ticker.jsx';
 import { localBusinessJsonLd } from '../lib/jsonld.js';
 
 /* Home is concept-swappable: the hero renders as Gallery Wall (lead), Warm
@@ -53,6 +54,7 @@ export default function Home() {
     <>
       <SEO title={page?.title} description={page?.meta_description} path="/" jsonLd={localBusinessJsonLd()} />
       {ConceptHero && <ConceptHero data={heroSection?.data || {}} />}
+      <Ticker />
       {rest.map((s) => (
         <SectionRenderer key={s.id} section={s} />
       ))}
