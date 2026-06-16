@@ -44,23 +44,19 @@ export default function Nav() {
   return (
     <header className="nav">
       <div className="container nav__inner">
-        {/* fox + wordmark lockup */}
-        <div className="nav__lockup">
-          <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__fox" fallback={null} />
-          <NavLink to="/" className="nav__brand" aria-label="Trouble Brewing Coffee House — home">
-            <BrandImg
-              src={BRAND.logoPrimary}
-              alt="Trouble Brewing Coffee House"
-              className="nav__logo"
-              fallback={
-                <span className="nav__brandtext">
-                  Trouble Brewing
-                  <small>Coffee House · Haddon Heights</small>
-                </span>
-              }
-            />
-          </NavLink>
-        </div>
+        <NavLink to="/" className="nav__brand" aria-label="Trouble Brewing Coffee House — home">
+          <BrandImg
+            src={BRAND.logoFox}
+            alt="Trouble Brewing Coffee House"
+            className="nav__logo"
+            fallback={
+              <span className="nav__brandtext">
+                Trouble Brewing
+                <small>Coffee House · Haddon Heights</small>
+              </span>
+            }
+          />
+        </NavLink>
 
         <button
           className="nav__toggle"
