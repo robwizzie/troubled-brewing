@@ -55,7 +55,8 @@ export default function App() {
         <Route path="/events" element={<PublicShell><SitePage slug="events" /></PublicShell>} />
         <Route path="/location" element={<PublicShell><SitePage slug="location" /></PublicShell>} />
         <Route path="/contact" element={<PublicShell><ContactPage /></PublicShell>} />
-        <Route path="/community" element={<PublicShell><SitePage slug="community" /></PublicShell>} />
+        <Route path="/community" element={<PublicShell><SitePage slug="community" showSocial /></PublicShell>} />
+        <Route path="/timeline" element={<PublicShell><SitePage slug="timeline" /></PublicShell>} />
         <Route path="/reviews" element={<PublicShell><SitePage slug="reviews" /></PublicShell>} />
         <Route path="/gallery-wall" element={<PublicShell><SitePage slug="gallery-wall" /></PublicShell>} />
         <Route path="/troublemakers" element={<PublicShell><SitePage slug="troublemakers" /></PublicShell>} />

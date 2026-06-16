@@ -24,6 +24,7 @@ import CozyEditorialHero from './CozyEditorialHero.jsx';
 import GalleryPiecesGrid from './GalleryPiecesGrid.jsx';
 import TroublemakersGrid from './TroublemakersGrid.jsx';
 import LocalBusinessesGrid from './LocalBusinessesGrid.jsx';
+import TimelineGrid from './TimelineGrid.jsx';
 import { FlavorVoting, DrinkSuggestions } from './Stubs.jsx';
 
 export const SECTION_RENDERERS = {
@@ -50,6 +51,7 @@ export const SECTION_RENDERERS = {
   gallery_pieces_grid: GalleryPiecesGrid,
   troublemakers_grid: TroublemakersGrid,
   local_businesses_grid: LocalBusinessesGrid,
+  timeline_grid: TimelineGrid,
   // Future stubs (not added to pages in v1)
   flavor_voting: FlavorVoting,
   drink_suggestions: DrinkSuggestions,
@@ -78,6 +80,7 @@ export const ADDABLE_SECTION_TYPES = [
   'gallery_pieces_grid',
   'troublemakers_grid',
   'local_businesses_grid',
+  'timeline_grid',
 ];
 
 export const SECTION_LABELS = {
@@ -104,6 +107,7 @@ export const SECTION_LABELS = {
   gallery_pieces_grid: 'Gallery pieces',
   troublemakers_grid: 'Troublemakers',
   local_businesses_grid: 'Local businesses',
+  timeline_grid: 'TB Timeline',
   flavor_voting: 'Flavor voting (coming soon)',
   drink_suggestions: 'Drink suggestions (coming soon)',
 };

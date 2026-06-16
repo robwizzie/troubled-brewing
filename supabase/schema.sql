@@ -212,6 +212,24 @@ create table if not exists local_businesses (
 );
 
 -- =============================================================================
+-- TB Timeline — owner-managed milestones (opening day, anniversaries, launches)
+-- (status/draft_data added beyond the client's base DDL for governance parity.)
+-- =============================================================================
+create table if not exists timeline_events (
+  id uuid primary key default gen_random_uuid(),
+  date_label text not null,        -- "Spring 2021", "March 2023" — flexible, not strict
+  sort_date date,                  -- for ordering
+  title text not null,
+  description text,
+  image_url text,
+  display_order int default 0,
+  status text not null default 'published',
+  draft_data jsonb,
+  created_at timestamptz default now()
+);
+create index if not exists timeline_sort_idx on timeline_events(sort_date, display_order);
+
+-- =============================================================================
 -- Revisions — prior-state snapshots for one-click restore (governance)
 -- =============================================================================
 create table if not exists revisions (
@@ -240,6 +258,7 @@ alter table testimonials     enable row level security;
 alter table gallery_pieces   enable row level security;
 alter table team_members     enable row level security;
 alter table local_businesses enable row level security;
+alter table timeline_events  enable row level security;
 alter table revisions        enable row level security;
 
 -- ---- Public READ policies (anon + authenticated) ----------------------------
@@ -266,6 +285,8 @@ create policy "public read active published team_members"
   on team_members for select using (status = 'published' and active = true);
 create policy "public read published local_businesses"
   on local_businesses for select using (status = 'published');
+create policy "public read published timeline_events"
+  on timeline_events for select using (status = 'published');
 
 -- ---- Public INSERT: form submissions only -----------------------------------
 create policy "anon insert submissions"
@@ -286,6 +307,7 @@ create policy "admin all testimonials"     on testimonials     for all to authen
 create policy "admin all gallery_pieces"   on gallery_pieces   for all to authenticated using (true) with check (true);
 create policy "admin all team_members"     on team_members     for all to authenticated using (true) with check (true);
 create policy "admin all local_businesses" on local_businesses for all to authenticated using (true) with check (true);
+create policy "admin all timeline_events"  on timeline_events  for all to authenticated using (true) with check (true);
 create policy "admin all revisions"        on revisions        for all to authenticated using (true) with check (true);
 
 -- =============================================================================

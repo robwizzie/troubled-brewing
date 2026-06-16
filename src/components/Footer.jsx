@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { SITE } from '../lib/seed.js';
 import { track } from '../lib/analytics.js';
+import SocialLinks from './SocialLinks.jsx';
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -26,6 +27,9 @@ export default function Footer() {
             >
               @{SITE.instagram}
             </a>
+            <div style={{ marginTop: 'var(--space-4)' }}>
+              <SocialLinks />
+            </div>
           </div>
 
           <div>

@@ -4,8 +4,8 @@
 
 /* ---- Announcement banner -------------------------------------------------- */
 .announce {
-  background: var(--color-wood);
-  color: #fff7ea;
+  background: var(--color-pink-deep);
+  color: #fff7fb;
   text-align: center;
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);

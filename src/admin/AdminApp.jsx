@@ -13,6 +13,7 @@ import TestimonialsManager from './managers/TestimonialsManager.jsx';
 import GalleryManager from './managers/GalleryManager.jsx';
 import TroublemakersManager from './managers/TroublemakersManager.jsx';
 import LocalBusinessManager from './managers/LocalBusinessManager.jsx';
+import TimelineManager from './managers/TimelineManager.jsx';
 import HoursEditor from './managers/HoursEditor.jsx';
 import QuickBlocks from './managers/QuickBlocks.jsx';
 import GoogleProfileSettings from './managers/GoogleProfileSettings.jsx';
@@ -43,6 +44,7 @@ export default function AdminApp() {
             <Route path="gallery" element={<GalleryManager />} />
             <Route path="troublemakers" element={<TroublemakersManager />} />
             <Route path="neighborhood" element={<LocalBusinessManager />} />
+            <Route path="timeline" element={<TimelineManager />} />
             <Route path="hours" element={<HoursEditor />} />
             <Route path="quick-blocks" element={<QuickBlocks />} />
             <Route path="google" element={<GoogleProfileSettings />} />
