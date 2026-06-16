@@ -12,7 +12,9 @@
     -->
     <script type="text/javascript">
       (function () {
-        var segmentCount = 0; // apex domain → keep the whole path
+        // Number of leading path segments to preserve before the SPA route.
+        // 1 = project page under /troubled-brewing/. Set to 0 for an apex domain.
+        var segmentCount = 1;
         var l = window.location;
         l.replace(
           l.protocol +
