@@ -28,6 +28,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `gallery_pieces_grid` | `{ heading }` | `gallery_pieces` | `GalleryPiecesGrid.jsx` | `GalleryPiecesGridEditor.jsx` |
 | `troublemakers_grid` | `{ heading }` | `team_members` | `TroublemakersGrid.jsx` | `TroublemakersGridEditor.jsx` |
 | `local_businesses_grid`| `{ heading }` | `local_businesses` | `LocalBusinessesGrid.jsx` | `LocalBusinessesGridEditor.jsx` |
+| `timeline_grid` | `{ heading }` | `timeline_events` | `TimelineGrid.jsx` | schema-driven |
 | `featured_drink` | `{ heading }` | `content_blocks.featured_drink` | `FeaturedDrink.jsx` | `FeaturedDrinkEditor.jsx` |
 | `announcement` | `{}` | `content_blocks.announcement_banner` | `AnnouncementBanner.jsx` | (Quick Blocks) |
 
@@ -38,7 +39,11 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 
 ## Structured tables (collection-backed types read these)
 
-`menu_items`, `events`, `hours`, `hours_overrides`, `testimonials`, `google_profile`, `gallery_pieces`, `team_members`, `local_businesses`, `content_blocks`, `submissions`, `revisions`. Full DDL in `supabase/schema.sql`; shapes summarized in the build plan §4.1, §5.5, §5.6.
+`menu_items`, `events`, `hours`, `hours_overrides`, `testimonials`, `google_profile`, `gallery_pieces`, `team_members`, `local_businesses`, `timeline_events`, `content_blocks`, `submissions`, `revisions`. Full DDL in `supabase/schema.sql`; shapes summarized in the build plan §4.1, §5.5, §5.6.
+
+> **Section editors are schema-driven.** Rather than one editor file per type, the admin `SectionEditor` renders forms from declarative schemas in `src/admin/editors/schemas.js` (field types: text, textarea, markdown, image, select, number, `frames`, `images`). Adding a type = add a renderer + a schema entry. Collection-backed types (`menu_block`, `timeline_grid`, …) edit just their heading and point the owner to the relevant manager.
+
+> **`content_blocks` keys:** `homepage_concept`, `featured_drink`, `staff_picks`, `loyalty_copy`, `announcement_banner`, `social_links` (Instagram/Facebook/TikTok/X/YouTube URLs — surfaced in footer + contact/community).
 
 ## Admin panel surfaces (`/admin`)
 
@@ -53,6 +58,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | **Gallery Manager** | `gallery_pieces` — pieces + stories |
 | **Troublemakers Manager** | `team_members` — staff, bios, fun facts, photos, active toggle |
 | **Local Business Manager** | `local_businesses` |
+| **TB Timeline Manager** | `timeline_events` — milestones with flexible date labels |
 | **Google Profile Settings** | Place ID + GBP review URL + "refresh now" |
 | **Inbox** | `submissions` — read/unread, filter by type |
 | **Media Library** | browse/delete Storage images |

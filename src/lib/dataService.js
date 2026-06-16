@@ -181,6 +181,21 @@ export async function getLocalBusinesses() {
   }
 }
 
+export async function getTimelineEvents() {
+  if (!isSupabaseConfigured) return seed.TIMELINE_EVENTS;
+  try {
+    const { data, error } = await supabase
+      .from('timeline_events')
+      .select('*')
+      .order('sort_date', { ascending: true, nullsFirst: false })
+      .order('display_order', { ascending: true });
+    if (error) throw error;
+    return data && data.length ? data : seed.TIMELINE_EVENTS;
+  } catch {
+    return seed.TIMELINE_EVENTS;
+  }
+}
+
 /** Public form insert (RLS allows anon INSERT on submissions only). */
 export async function submitForm(payload) {
   if (!isSupabaseConfigured) {
