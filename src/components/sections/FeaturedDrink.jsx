@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getContentBlock } from '../../lib/dataService.js';
 import { SkeletonBlock } from '../Skeleton.jsx';
+import { Steam } from '../Motifs.jsx';
 
 /* "This Week's Trouble" featured drink, edited in admin Quick Blocks. */
 export default function FeaturedDrink({ data = {} }) {
@@ -28,6 +29,7 @@ export default function FeaturedDrink({ data = {} }) {
             )}
           </div>
           <div className="featured__body">
+            <span style={{ color: 'var(--color-yellow-deep)', display: 'inline-block' }}><Steam /></span>
             <p className="eyebrow">{heading}</p>
             <h2>{drink?.name || 'Banana Split Coffee'}</h2>
             <p style={{ color: 'var(--color-text-soft)' }}>{drink?.description}</p>
