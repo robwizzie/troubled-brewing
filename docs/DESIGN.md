@@ -34,8 +34,25 @@ Semantic aliases (`--color-bg`, `--color-text`, `--color-primary`, `--color-acce
 
 Two black-on-white vintage logos were provided: (1) the **"TROUBLE BREWING"** ornate letterpress wordmark with scroll flourishes, and (2) the **dapper top-hat fox** drinking coffee over the wordmark with "HADDON HEIGHTS · NJ". The fox is a recurring in-shop motif (gold fox heads, fox figurines).
 
-- **When the logo files land:** place the proper logo on the **nav** and **footer** (and any framed branding), and derive the favicon/OG image from it. Until then the nav uses a styled Fraunces wordmark as a stand-in. Drop files in `public/` and swap `Nav.jsx`/`Footer.jsx`.
-- Lean on the fox + scrollwork motifs for whimsy where tasteful.
+### Brand image slots (implemented)
+
+Real images drop into **`public/images/brand/`** with fixed names and appear
+automatically via `<BrandImg>` (graceful fallback until the file exists, so a
+missing asset never shows a broken image). Paths resolve through `asset()` so
+they work on the `/troubled-brewing/` subpath. Names + placement are listed in
+`public/images/brand/README.md`:
+
+| File | Shows |
+|---|---|
+| `logo-primary.png` | Navbar brand (falls back to the TB monogram lockup) |
+| `logo-secondary.png` | Reserved |
+| `logo-fox.png` | Footer brand mark (falls back to the monogram) |
+| `fox-mascot.png` | Easter eggs — beside the nav logo + a peeking footer watermark |
+| `fox-head.png` | The gold fox-head **photo** tucked into the Gallery Wall (falls back to the brass SVG fox) |
+
+Per-frame Gallery Wall **photos** are added in the admin (Pages → Home → Gallery
+Wall hero → each frame → Image), not this folder. Lean on the fox + scrollwork
+motifs for whimsy where tasteful; derive the favicon/OG image from the logo once it lands.
 
 ## Type pairing
 
@@ -46,7 +63,7 @@ Two black-on-white vintage logos were provided: (1) the **"TROUBLE BREWING"** or
 ## Motion & custom touches (implemented)
 
 - **Brand motifs** (`src/components/Motifs.jsx`): a brass geometric **fox medallion** (top-hat nod to the logo), a **hare**, **scroll flourishes** (from the letterpress logo), **steam wisps**, and an ornate **TB monogram**. Used in the nav lockup, the gallery wall, the featured drink, and the admin dashboard.
-- **Gallery Wall hero** is a true **salon hang** — a dense, `grid-auto-flow: dense` collage of **mismatched frame sizes** (portrait/wide/oval/tall), slight rotations and overlaps, color-tinted mats, brass nameplates, the fox + hare tucked among the art, a pressed-tin moulding strip and a wood baseboard. Deliberately not a uniform grid.
+- **Gallery Wall hero** is a true **salon hang** — an eclectic **masonry** of varied-aspect frames (portrait/wide/oval/tall), slight rotations, color-tinted mats, a pressed-tin moulding strip and a wood baseboard, with the **real gold fox-head photo** + a hare tucked among the art. Each frame is a legible **"poster"** (its label in display serif) until a photo is added, then it shows the photo with a label ribbon. Readable on desktop and mobile (4 → 3 → 2 columns); deliberately not a uniform grid.
 - **Vintage ticker** marquee under the hero ("Good Coffee · Good Trouble · …").
 - **Nav**: monogram + wordmark lockup, brass top rule, hand-drawn underline that draws in on hover, a wiggling "Order Now" button.
 - **Admin dashboard**: playful fox-led header, tilting color-coded tiles, a progress bar and friendly checklist.
