@@ -57,7 +57,7 @@ export default function GalleryWallHero({ data = {} }) {
             t.object ? (
               <div key={t.key} className={`gw-tile gw-tile--object gw-tile--${t.object}`} style={{ '--tilt': `${t.tilt}deg` }} aria-hidden="true">
                 {t.object === 'fox' ? (
-                  <BrandImg src={BRAND.foxHead} alt="" className="gw-object-img" fallback={<FoxEmblem size={104} />} />
+                  <BrandImg src={BRAND.foxHead} alt="" loading="lazy" className="gw-object-img" fallback={<FoxEmblem size={104} />} />
                 ) : (
                   <Hare size={76} />
                 )}

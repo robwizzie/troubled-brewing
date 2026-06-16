@@ -11,7 +11,7 @@ exists you see a tasteful fallback, so nothing ever looks broken.
 | `logo-fox.png` | Primary logo **with the fox** (the round badge) | Reserved / optional |
 | `fox-mascot.png` | The standing **dapper top-hat fox** (line art) | Easter egg beside the navbar logo |
 | `fox-head.png` | The **gold fox-head sculpture** photo | Tucked into the Gallery Wall on the homepage |
-| `footer-banner.png` | The **fox emerging from coffee** banner (wide) | Top band of the footer |
+| `fox-footer-top.png` | The **fox emerging from coffee** banner (wide) | Top band of the footer |
 
 ## Backgrounds — you do NOT have to pre-remove the white box
 - **Logos** (`logo-*`): a plain **white background is fine**. The nav and footer
