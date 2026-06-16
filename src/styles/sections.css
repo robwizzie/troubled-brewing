@@ -170,9 +170,9 @@
 .gw-frame__art--pink { border-color: var(--color-pink-deep); }
 .gw-frame__art--ornate { border-width: 13px; }
 /* brass objects tucked among the frames (real fox-head photo / SVG, hare) */
-.gw-tile--object { text-align: center; animation: gw-float 6s ease-in-out infinite; }
-.gw-tile--hare { animation-delay: -2.5s; }
-.gw-object-img { width: 80%; max-width: 150px; margin: 0 auto; display: block; filter: drop-shadow(0 10px 14px rgba(20, 18, 16, 0.45)); }
+/* objects sit clean — no float, no shadow (the fox-head photo doesn't need it) */
+.gw-tile--object { text-align: center; transform: none; animation: none; }
+.gw-object-img { width: 88%; max-width: 165px; margin: 0 auto; display: block; }
 @keyframes gw-settle { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
 @keyframes gw-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
 @media (max-width: 1000px) { .gw-wall { column-count: 3; } }
@@ -250,17 +250,16 @@
   .timeline__item .timeline__marker { left: 0; right: auto; }
 }
 
-/* ---- Social links --------------------------------------------------------- */
+/* ---- Social links (real brand icons) -------------------------------------- */
 .socials { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
 .social-link {
   display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 50%;
-  background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text);
+  background: var(--color-ink); color: var(--color-cream); font-size: 1.05rem;
   text-decoration: none; transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.social-link:hover { transform: translateY(-2px); background: var(--color-pink-soft); color: var(--color-pink-deep); }
-.socials--band { justify-content: center; padding: var(--space-6) 0; }
-.footer .social-link { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18); color: #efe7d7; }
-.footer .social-link:hover { background: var(--color-pink-deep); color: #fff; }
+.social-link:hover { transform: translateY(-3px); background: var(--color-primary); color: #fff; }
+.social-link svg { width: 1em; height: 1em; }
+.socials--band { justify-content: center; padding: var(--space-5) 0; }
 
 /* ---- Forms / legal -------------------------------------------------------- */
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
