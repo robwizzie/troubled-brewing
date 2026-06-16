@@ -3,7 +3,6 @@ import { FaLocationDot, FaPhone } from 'react-icons/fa6';
 import { SITE } from '../lib/seed.js';
 import SocialLinks from './SocialLinks.jsx';
 import BrandImg from './BrandImg.jsx';
-import { Flourish } from './Motifs.jsx';
 import { BRAND } from '../lib/config.js';
 
 /* Footer: a fox-in-coffee banner up top, a clean cream body (Navigation /
@@ -63,9 +62,12 @@ export default function Footer() {
         </div>
 
         <div className="footer__wordmark">
-          <Flourish className="footer__wm-flourish" width={300} color="var(--color-ink)" />
           <span className="footer__wm-title">Trouble Brewing</span>
-          <span className="footer__wm-sub">Haddon Heights · NJ</span>
+          <span className="footer__wm-sub">
+            <i className="footer__wm-star" aria-hidden="true">✦</i>
+            Haddon Heights · NJ
+            <i className="footer__wm-star" aria-hidden="true">✦</i>
+          </span>
         </div>
       </div>
     </footer>
