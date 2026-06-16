@@ -62,7 +62,12 @@ export default function Footer() {
         </div>
 
         <div className="footer__wordmark">
-          <span className="footer__wm-title">Trouble Brewing</span>
+          <BrandImg
+            src={BRAND.logoPrimary}
+            alt="Trouble Brewing"
+            className="footer__wm-img"
+            fallback={<span className="footer__wm-title">Trouble Brewing</span>}
+          />
           <span className="footer__wm-sub">
             <i className="footer__wm-star" aria-hidden="true">✦</i>
             Haddon Heights · NJ

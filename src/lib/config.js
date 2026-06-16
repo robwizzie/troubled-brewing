@@ -17,7 +17,7 @@ export const asset = (p) => `${import.meta.env.BASE_URL}${String(p).replace(/^\/
    names and they appear automatically (graceful fallbacks until then).
    See public/images/brand/README.md. */
 export const BRAND = {
-  logoPrimary: asset('images/brand/logo-primary.png'),     // TROUBLE BREWING wordmark
+  logoPrimary: asset('images/brand/logo-primary.svg'),     // TROUBLE BREWING wordmark (SVG = exact logo, crisp; falls back to vintage text)
   logoSecondary: asset('images/brand/logo-secondary.png'), // secondary logo
   logoFox: asset('images/brand/logo-fox.png'),             // primary logo WITH the fox (badge)
   foxMascot: asset('images/brand/fox-mascot.png'),         // standing dapper top-hat fox (easter egg)
