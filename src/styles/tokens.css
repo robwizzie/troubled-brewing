@@ -71,7 +71,7 @@
   /* ---- Typography --------------------------------------------------------- */
   --font-display: 'Fraunces', 'Georgia', serif;
   --font-body: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-vintage: 'Rye', 'Fraunces', 'Georgia', serif; /* Victorian letterpress, matches the TB logo */
+  --font-vintage: 'Bree Serif', 'Georgia', serif; /* footer wordmark face (client choice) */
 
   --text-xs: 0.78rem;
   --text-sm: 0.9rem;
