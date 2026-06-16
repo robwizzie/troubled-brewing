@@ -1,79 +1,86 @@
 import { Link } from 'react-router-dom';
+import { FaMugHot, FaLocationDot, FaPhone } from 'react-icons/fa6';
 import { SITE } from '../lib/seed.js';
-import { track } from '../lib/analytics.js';
 import SocialLinks from './SocialLinks.jsx';
 import BrandImg from './BrandImg.jsx';
-import { Monogram } from './Motifs.jsx';
+import { Flourish } from './Motifs.jsx';
 import { BRAND } from '../lib/config.js';
+
+/* Footer modeled on the client's reference: a fox-emerging-from-coffee banner
+   image up top, a clean cream body (nav / say-hi / connect) in HTML+CSS, real
+   social icons, and a big TROUBLE BREWING wordmark. */
+const NAV = [
+  { to: '/menu', label: 'Menu' },
+  { to: '/about', label: 'Our Story' },
+  { to: '/events', label: 'Events' },
+  { to: '/location', label: 'Hours & Location' },
+  { to: '/reviews', label: 'Reviews' },
+  { to: '/contact', label: 'Contact & Catering' },
+];
 
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="footer">
-      <div className="container">
-        <div className="footer__grid">
-          <div>
-            <BrandImg
-              src={BRAND.logoFox}
-              alt="Trouble Brewing Coffee House"
-              className="footer__logo"
-              fallback={<Monogram size={58} />}
-            />
-            <h4 className="sr-only">Trouble Brewing Coffee House</h4>
-            <p style={{ maxWidth: '34ch' }}>
-              A warm, independent coffee shop in Haddon Heights, NJ. We proudly pour La Colombe.
-            </p>
-            <p>
-              {SITE.address}
+      {/* Top band — the fox-in-coffee banner (appears once footer-banner.png is added) */}
+      <BrandImg
+        src={BRAND.footerBanner}
+        alt=""
+        aria-hidden="true"
+        className="footer__banner"
+        fallback={<div className="footer__banner-fallback" aria-hidden="true" />}
+      />
+
+      <div className="footer__body">
+        <div className="container footer__cols">
+          <nav className="footer__nav" aria-label="Footer navigation">
+            <h4 className="footer__head">Navigation</h4>
+            <ul>
+              {NAV.map((l) => (
+                <li key={l.to}><Link to={l.to}>{l.label}</Link></li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="footer__hi">
+            <h3>Say Hi!</h3>
+            <p>Come have a coffee with us.</p>
+            <Link className="btn btn--primary footer__chat" to="/contact">
+              <FaMugHot aria-hidden="true" /> Let's Chat!
+            </Link>
+            <p className="footer__addr">
+              <FaLocationDot aria-hidden="true" /> {SITE.address}
               <br />
-              <a href={SITE.phoneHref}>{SITE.phone}</a>
+              <a href={SITE.phoneHref}><FaPhone aria-hidden="true" /> {SITE.phone}</a>
             </p>
-            <a
-              href={`https://instagram.com/${SITE.instagram}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => track('outbound_click', { dest: 'instagram' })}
-            >
-              @{SITE.instagram}
-            </a>
-            <div style={{ marginTop: 'var(--space-4)' }}>
-              <SocialLinks />
-            </div>
           </div>
 
-          <div>
-            <h4>Visit</h4>
-            <ul className="footer__links">
-              <li><Link to="/menu">Menu</Link></li>
-              <li><Link to="/location">Hours & Location</Link></li>
-              <li><Link to="/events">Events</Link></li>
-              <li><Link to="/reviews">Reviews</Link></li>
-              <li><Link to="/contact">Contact & Catering</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4>More</h4>
-            <ul className="footer__links">
-              <li><Link to="/about">Our Story</Link></li>
-              <li><Link to="/gallery-wall">Gallery Wall</Link></li>
-              <li><Link to="/troublemakers">Troublemakers</Link></li>
-              <li><Link to="/neighborhood">Local Love</Link></li>
-              <li><Link to="/community">Community</Link></li>
-            </ul>
+          <div className="footer__connect">
+            <h4 className="footer__head">Stay in touch</h4>
+            <SocialLinks />
+            <p className="footer__copy">© {year} Trouble Brewing Coffee House</p>
+            <p className="footer__legal">
+              <Link to="/privacy">Privacy</Link> · <Link to="/accessibility">Accessibility</Link> ·{' '}
+              <Link to="/admin">Owner Login</Link>
+            </p>
           </div>
         </div>
 
-        <div className="footer__bottom">
-          <span>© {year} Trouble Brewing Coffee House. All rights reserved.</span>
-          <span>
-            <Link to="/privacy">Privacy</Link> · <Link to="/accessibility">Accessibility</Link> ·{' '}
-            <Link to="/admin">Owner Login</Link>
-          </span>
+        <div className="footer__wordmark">
+          <BrandImg
+            src={BRAND.logoPrimary}
+            alt="Trouble Brewing Coffee House"
+            className="footer__wordmark-img"
+            fallback={
+              <span className="footer__wordmark-text">
+                Trouble Brewing
+                <Flourish width={260} color="var(--color-ink)" />
+                <small>Haddon Heights · NJ</small>
+              </span>
+            }
+          />
         </div>
       </div>
-      {/* peeking fox easter egg — appears once fox-mascot.png is added */}
-      <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="footer__fox" fallback={null} />
     </footer>
   );
 }
