@@ -127,65 +127,58 @@
 .gw-hero__flourish { display: block; margin: var(--space-1) auto var(--space-2); }
 .gw-hero__cta { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--space-4); }
 
-/* the salon wall: dense, mismatched, overlapping frames */
-.gw-wall {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-auto-rows: 30px;
-  grid-auto-flow: dense;
-  gap: 12px;
-  align-items: stretch;
-}
-.gw-frame {
-  position: relative;
-  display: flex; flex-direction: column; align-items: stretch;
-  text-decoration: none; color: var(--color-ink);
+/* the salon wall: an eclectic masonry hang — legible on every screen */
+.gw-wall { column-count: 4; column-gap: 18px; margin-top: var(--space-2); }
+.gw-tile {
+  break-inside: avoid;
+  margin: 0 0 18px;
   transform: rotate(var(--tilt, 0deg));
   transition: transform var(--dur) var(--ease), filter var(--dur) var(--ease);
   animation: gw-settle var(--dur-slow) var(--ease) both;
-  animation-delay: calc(var(--i, 0) * 45ms);
   will-change: transform;
 }
-.gw-frame:hover, .gw-frame:focus-visible {
-  transform: rotate(0deg) scale(1.07) translateY(-4px);
-  z-index: 6;
-  filter: drop-shadow(0 14px 22px rgba(20, 18, 16, 0.45));
+.gw-tile:hover, .gw-tile:focus-within {
+  transform: rotate(0deg) scale(1.04);
+  position: relative; z-index: 6;
+  filter: drop-shadow(0 14px 24px rgba(20, 18, 16, 0.45));
 }
+.gw-frame { display: block; text-decoration: none; color: var(--color-ink); }
 .gw-frame__art {
-  flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden;
+  position: relative;
+  aspect-ratio: var(--ar, 3 / 4);
+  display: grid; place-items: center; overflow: hidden;
   background: var(--tint, var(--color-paper));
-  border: 8px solid; border-radius: 3px;
+  border: 9px solid; border-radius: 3px;
   box-shadow: var(--shadow-frame), inset 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
-.gw-frame__art img { width: 100%; height: 100%; object-fit: cover; }
-.gw-frame__glyph { font-size: clamp(1.3rem, 4vw, 2.6rem); opacity: 0.85; }
+.gw-frame__img { width: 100%; height: 100%; object-fit: cover; }
+/* readable "poster" treatment until a photo is added */
+.gw-frame__poster { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: var(--space-3); text-align: center; }
+.gw-frame__glyph { font-size: clamp(1.5rem, 5vw, 2.4rem); opacity: 0.9; }
+.gw-frame__poster-label { font-family: var(--font-display); font-weight: 900; font-size: clamp(1rem, 2.3vw, 1.4rem); line-height: 1.06; color: var(--color-ink); }
+/* label ribbon shown over a photo */
+.gw-frame__ribbon {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(transparent, rgba(20, 16, 12, 0.86) 42%);
+  color: #f6ecd2; font-family: var(--font-body); font-weight: 700; font-size: 12px; letter-spacing: 0.02em;
+  padding: 22px 8px 7px; text-align: center;
+}
 .gw-frame__art--gold, .gw-frame__art--ornate { border-image: var(--frame-gold) 1; border-color: var(--color-yellow); }
 .gw-frame__art--oval-gold { border-radius: 50%; border-color: var(--color-yellow); }
 .gw-frame__art--black { border-color: var(--color-black); }
 .gw-frame__art--wood, .gw-frame__art--green { border-color: var(--color-green-deep); }
 .gw-frame__art--pink { border-color: var(--color-pink-deep); }
-.gw-frame__art--ornate { border-width: 12px; }
-/* little brass museum nameplate under each frame */
-.gw-frame__plate {
-  align-self: center; margin-top: -11px; position: relative; z-index: 2;
-  background: var(--color-black); color: #f4e7c6;
-  font-family: var(--font-body); font-weight: 700; font-size: 10.5px; letter-spacing: 0.03em;
-  padding: 2px 9px; border-radius: 3px; border: 1px solid var(--color-yellow);
-  box-shadow: var(--shadow-sm); max-width: 96%;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-/* brass objects tucked among the frames (fox medallion, hare) */
-.gw-object {
-  display: grid; place-items: center;
-  transform: rotate(-3deg);
-  animation: gw-float 6s ease-in-out infinite;
-  filter: drop-shadow(0 8px 12px rgba(20, 18, 16, 0.4));
-}
-.gw-object--hare { transform: rotate(4deg); animation-delay: -2.5s; }
-@keyframes gw-settle { from { opacity: 0; transform: rotate(0) translateY(16px) scale(0.96); } to { opacity: 1; transform: rotate(var(--tilt, 0deg)); } }
-@keyframes gw-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
-@media (max-width: 720px) {
-  .gw-wall { grid-template-columns: repeat(8, 1fr); grid-auto-rows: 26px; gap: 9px; }
+.gw-frame__art--ornate { border-width: 13px; }
+/* brass objects tucked among the frames (real fox-head photo / SVG, hare) */
+.gw-tile--object { text-align: center; animation: gw-float 6s ease-in-out infinite; }
+.gw-tile--hare { animation-delay: -2.5s; }
+.gw-object-img { width: 80%; max-width: 150px; margin: 0 auto; display: block; filter: drop-shadow(0 10px 14px rgba(20, 18, 16, 0.45)); }
+@keyframes gw-settle { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
+@keyframes gw-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+@media (max-width: 1000px) { .gw-wall { column-count: 3; } }
+@media (max-width: 680px) {
+  .gw-wall { column-count: 2; column-gap: 12px; }
+  .gw-tile { margin-bottom: 12px; }
   .gw-hero__placard { transform: none; }
 }
 
