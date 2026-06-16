@@ -101,11 +101,29 @@
 
 /* ---- Footer --------------------------------------------------------------- */
 .footer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   background: var(--color-ink);
   color: #efe7d7;
   padding-block: var(--space-8) var(--space-6);
   margin-top: var(--space-9);
 }
+.footer .container { position: relative; z-index: 1; }
+/* fox-badge logo (dark line art inverted to read on the dark footer) */
+.footer__logo { height: 72px; width: auto; margin-bottom: var(--space-3); filter: brightness(0) invert(1); }
+/* peeking fox easter egg, as a soft embossed watermark */
+.footer__fox {
+  position: absolute; right: 4%; bottom: -6px; height: 168px; width: auto; z-index: 0;
+  opacity: 0.16; filter: brightness(0) invert(1); pointer-events: none;
+}
+@media (max-width: 760px) { .footer__fox { height: 120px; opacity: 0.12; right: 2%; } }
+
+/* nav logo + fox easter egg */
+.nav__logo { height: 46px; width: auto; display: block; }
+.nav__fox { height: 46px; width: auto; align-self: flex-end; margin: 0 var(--space-2) -2px; transition: transform var(--dur) var(--ease); }
+.nav__fox:hover { transform: translateY(-4px) rotate(-5deg); }
+@media (max-width: 640px) { .nav__fox { display: none; } }
 .footer a { color: #efe7d7; }
 .footer a:hover { color: var(--color-accent-hover); }
 .footer__grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: var(--space-6); }

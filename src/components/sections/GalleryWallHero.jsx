@@ -1,28 +1,18 @@
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
+import BrandImg from '../BrandImg.jsx';
 import { FoxEmblem, Hare, Flourish } from '../Motifs.jsx';
+import { BRAND } from '../../lib/config.js';
 
-/* THE signature landing concept. Recreates the in-shop Gallery Wall as a dense,
-   eclectic "salon hang": mismatched frame sizes, oval and portrait and wide
-   frames, slight rotations and overlaps, mounted on the sage-green wall under a
-   pressed-tin moulding — with the brass fox + hare tucked in among the art, just
-   like the real wall. Each frame is a product/feature that links somewhere.
-   Deliberately NOT a uniform grid. See docs/DESIGN.md. */
+/* THE signature landing concept: the in-shop Gallery Wall recreated as an
+   eclectic salon hang on the sage-green wall. Each frame is a legible "poster"
+   (its label in display serif) until the owner adds a photo, then it shows the
+   photo with a label ribbon. The real brass fox-head sculpture and a hare are
+   tucked among the frames. Masonry columns keep it readable on every screen.
+   See docs/DESIGN.md. */
 
-// Mismatched footprints (col x row spans) cycled across frames for the salon look.
-const FOOTPRINTS = [
-  { c: 3, r: 4 }, // big portrait
-  { c: 2, r: 2 }, // small square
-  { c: 4, r: 3 }, // wide landscape
-  { c: 2, r: 3 }, // tall
-  { c: 3, r: 3 }, // medium (good for ovals)
-  { c: 2, r: 2 }, // small
-  { c: 3, r: 4 }, // big
-  { c: 4, r: 2 }, // wide short
-  { c: 2, r: 3 }, // tall
-  { c: 3, r: 3 },
-];
-const TILTS = [-4, 3, -2, 4, -3, 2, -5, 3, -2, 5, -3, 2];
+const ASPECTS = ['3 / 4', '4 / 3', '1 / 1', '3 / 4', '4 / 5', '4 / 3', '1 / 1', '5 / 4', '3 / 4', '4 / 3'];
+const TILTS = [-3, 2.5, -1.5, 3, -2.5, 2, -3.5, 1.5, -2, 3];
 const TINTS = ['var(--color-paper)', 'var(--color-pink-soft)', 'var(--color-yellow-soft)', 'var(--color-green-soft)', '#efe7d3'];
 const GLYPHS = { ornate: '☕', 'oval-gold': '🥐', black: '✦', wood: '❀', green: '🌿', pink: '✿', gold: '✶' };
 
@@ -33,17 +23,18 @@ export default function GalleryWallHero({ data = {} }) {
     frames = [],
   } = data;
 
-  // Weave the brass objects into the wall at stable spots (like the shop).
-  const objects = {
-    2: { kind: 'fox', c: 2, r: 3 },
-    5: { kind: 'hare', c: 2, r: 2 },
-  };
+  // Tuck the brass objects in among the frames, like the real wall.
+  const objects = { 2: 'fox', 5: 'hare' };
 
   const tiles = [];
   frames.forEach((f, i) => {
-    if (objects[i]) tiles.push({ object: objects[i], key: `obj-${i}` });
-    const fp = FOOTPRINTS[i % FOOTPRINTS.length];
-    tiles.push({ frame: f, fp, tilt: TILTS[i % TILTS.length], tint: TINTS[i % TINTS.length], i, key: `f-${i}` });
+    if (objects[i]) tiles.push({ object: objects[i], tilt: TILTS[(i + 1) % TILTS.length], key: `obj-${i}` });
+    tiles.push({
+      frame: f, i, key: `f-${i}`,
+      ar: ASPECTS[i % ASPECTS.length],
+      tilt: TILTS[i % TILTS.length],
+      tint: TINTS[i % TINTS.length],
+    });
   });
 
   return (
@@ -61,16 +52,15 @@ export default function GalleryWallHero({ data = {} }) {
           </p>
         </div>
 
-        <div className="gw-wall" role="list" aria-label="Explore Trouble Brewing">
+        <div className="gw-wall">
           {tiles.map((t) =>
             t.object ? (
-              <div
-                key={t.key}
-                className={`gw-object gw-object--${t.object.kind}`}
-                style={{ gridColumn: `span ${t.object.c}`, gridRow: `span ${t.object.r}` }}
-                aria-hidden="true"
-              >
-                {t.object.kind === 'fox' ? <FoxEmblem size={92} /> : <Hare size={72} />}
+              <div key={t.key} className={`gw-tile gw-tile--object gw-tile--${t.object}`} style={{ '--tilt': `${t.tilt}deg` }} aria-hidden="true">
+                {t.object === 'fox' ? (
+                  <BrandImg src={BRAND.foxHead} alt="" className="gw-object-img" fallback={<FoxEmblem size={104} />} />
+                ) : (
+                  <Hare size={76} />
+                )}
               </div>
             ) : (
               <FrameTile key={t.key} {...t} />
@@ -83,32 +73,32 @@ export default function GalleryWallHero({ data = {} }) {
   );
 }
 
-function FrameTile({ frame, fp, tilt, tint, i }) {
+function FrameTile({ frame, ar, tilt, tint, i }) {
   const style = frame.frame_style || 'gold';
   const isInternal = frame.link && frame.link.startsWith('/');
-  const css = {
-    gridColumn: `span ${fp.c}`,
-    gridRow: `span ${fp.r}`,
-    '--tilt': `${tilt}deg`,
-    '--tint': tint,
-    '--i': i,
-  };
-  const inner = (
-    <>
-      <span className={`gw-frame__art gw-frame__art--${style}`}>
-        {frame.image_url ? (
-          <img src={frame.image_url} alt="" loading={i < 3 ? 'eager' : 'lazy'} />
-        ) : (
+  const tileStyle = { '--tilt': `${tilt}deg`, '--ar': ar, '--tint': tint };
+  const art = (
+    <span className={`gw-frame__art gw-frame__art--${style}`}>
+      {frame.image_url ? (
+        <>
+          <img className="gw-frame__img" src={frame.image_url} alt="" loading={i < 3 ? 'eager' : 'lazy'} />
+          <span className="gw-frame__ribbon">{frame.label}</span>
+        </>
+      ) : (
+        <span className="gw-frame__poster">
           <span className="gw-frame__glyph" aria-hidden="true">{GLYPHS[style] || '✶'}</span>
-        )}
-      </span>
-      <span className="gw-frame__plate">{frame.label}</span>
-    </>
+          <span className="gw-frame__poster-label">{frame.label}</span>
+        </span>
+      )}
+    </span>
   );
-  const className = `gw-frame gw-frame--${style}`;
-  return isInternal ? (
-    <Link to={frame.link} className={className} role="listitem" style={css}>{inner}</Link>
-  ) : (
-    <a href={frame.link || '#'} className={className} role="listitem" style={css} target={frame.link ? '_blank' : undefined} rel="noopener noreferrer">{inner}</a>
+  return (
+    <div className="gw-tile" style={tileStyle}>
+      {isInternal ? (
+        <Link to={frame.link} className="gw-frame" aria-label={frame.label}>{art}</Link>
+      ) : (
+        <a href={frame.link || '#'} className="gw-frame" aria-label={frame.label} target={frame.link ? '_blank' : undefined} rel="noopener noreferrer">{art}</a>
+      )}
+    </div>
   );
 }

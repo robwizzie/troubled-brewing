@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { SITE } from '../lib/seed.js';
 import { track } from '../lib/analytics.js';
 import SocialLinks from './SocialLinks.jsx';
+import BrandImg from './BrandImg.jsx';
+import { Monogram } from './Motifs.jsx';
+import { BRAND } from '../lib/config.js';
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -10,7 +13,13 @@ export default function Footer() {
       <div className="container">
         <div className="footer__grid">
           <div>
-            <h4>Trouble Brewing Coffee House</h4>
+            <BrandImg
+              src={BRAND.logoFox}
+              alt="Trouble Brewing Coffee House"
+              className="footer__logo"
+              fallback={<Monogram size={58} />}
+            />
+            <h4 className="sr-only">Trouble Brewing Coffee House</h4>
             <p style={{ maxWidth: '34ch' }}>
               A warm, independent coffee shop in Haddon Heights, NJ. We proudly pour La Colombe.
             </p>
@@ -63,6 +72,8 @@ export default function Footer() {
           </span>
         </div>
       </div>
+      {/* peeking fox easter egg — appears once fox-mascot.png is added */}
+      <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="footer__fox" fallback={null} />
     </footer>
   );
 }
