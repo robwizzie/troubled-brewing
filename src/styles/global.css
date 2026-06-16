@@ -136,9 +136,12 @@ p { margin: 0 0 var(--space-4); }
 .hero {
   position: relative;
   padding-block: var(--space-9);
-  background: linear-gradient(180deg, var(--color-sage-soft), var(--color-cream));
+  background:
+    repeating-linear-gradient(115deg, rgba(0, 0, 0, 0.018) 0 2px, transparent 2px 11px),
+    linear-gradient(180deg, var(--color-sage-soft), var(--color-cream));
   text-align: center;
 }
+.hero .eyebrow { color: var(--color-accent-text); }
 .hero--image { color: #fff; }
 .hero--image::after {
   content: ''; position: absolute; inset: 0; background: rgba(28,24,20,0.45); z-index: 0;
