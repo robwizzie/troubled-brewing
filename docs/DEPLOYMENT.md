@@ -24,19 +24,43 @@ We use clean URLs (BrowserRouter), so a hard refresh on e.g. `/menu` would 404 o
 
 `404.html` is copied into `dist/` automatically because it lives in `public/`. Chosen over `HashRouter` for clean, SEO-friendly URLs.
 
+## Base path (IMPORTANT — read before changing the domain)
+
+The site is built as a GitHub **project page**, served under the repo subpath
+**`/troubled-brewing/`** (e.g. `https://robwiscount.org/troubled-brewing/`). Three
+things must agree on that subpath or you get a blank page with `/assets/... 404`:
+
+1. **Vite base** — `vite.config.js` defaults `base` to `/troubled-brewing/`
+   (override with the `VITE_BASE_PATH` build env var).
+2. **Router basename** — `src/main.jsx` sets React Router's `basename` from
+   `import.meta.env.BASE_URL` automatically (no action needed).
+3. **SPA fallback** — `public/404.html` keeps **1** leading path segment
+   (`segmentCount = 1`).
+
+> Symptom we hit: deployed at `/troubled-brewing/` but `base` was `/`, so the HTML
+> requested `/assets/...` (404) → blank page. Fixed by the three items above.
+
 ## Custom domain
 
-1. `public/CNAME` contains `troublebrewingcoffeehouse.com` (copied into `dist/` on build).
-2. At **Squarespace Domains** (the registrar), set DNS:
-   - Four `A` records on the apex `@` → GitHub Pages IPs:
+`public/CNAME` was **removed** so the site serves cleanly under the existing
+GitHub Pages domain at `/troubled-brewing/` while previewing. A CNAME file forces
+the repo's custom domain on every deploy, which would break the subpath preview
+until DNS is pointed.
+
+### Switching to the apex domain (troublebrewingcoffeehouse.com) — checklist
+
+1. Set the build env `VITE_BASE_PATH=/` (or change the default in `vite.config.js`).
+2. In `public/404.html`, set `segmentCount = 0`.
+3. Re-add `public/CNAME` containing `troublebrewingcoffeehouse.com`.
+4. At **Squarespace Domains** (registrar), set DNS:
+   - Four `A` records on apex `@` → GitHub Pages IPs:
      `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   - One `CNAME` record `www` → `robwizzie.github.io` (the Pages host).
-   - (Optional) `AAAA` records to the GitHub Pages IPv6 addresses.
-3. In the repo: Settings → Pages → set the custom domain to `troublebrewingcoffeehouse.com`, then **Enable "Enforce HTTPS"** once the cert provisions (can take up to ~24h).
-
-## Base path
-
-Deployed at the apex domain ⇒ Vite `base: '/'` (already set). If it ever moves to a project page, change `base` and the asset paths accordingly.
+   - One `CNAME` record `www` → `robwizzie.github.io`.
+   - (Optional) `AAAA` records → GitHub Pages IPv6.
+5. Repo → Settings → Pages → set custom domain to `troublebrewingcoffeehouse.com`,
+   then **Enforce HTTPS** once the cert provisions (up to ~24h).
+6. Update `VITE_SITE_URL`, `public/sitemap.xml`, and `public/robots.txt` to the
+   apex domain.
 
 ## Weekly backups (§5.11)
 
