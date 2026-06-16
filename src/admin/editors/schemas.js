@@ -136,6 +136,10 @@ export const SECTION_EDITOR_SCHEMAS = {
     note: 'Businesses live in the Local Love manager.',
     fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
   },
+  timeline_grid: {
+    note: 'Timeline milestones live in the TB Timeline manager.',
+    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+  },
 };
 
 export function schemaFor(type) {

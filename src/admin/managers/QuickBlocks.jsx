@@ -27,6 +27,7 @@ export default function QuickBlocks() {
   const [picks, setPicks] = useState({ items: [] });
   const [announce, setAnnounce] = useState({ enabled: false, message: '' });
   const [concept, setConcept] = useState({ concept: 'gallery_wall' });
+  const [social, setSocial] = useState({ instagram: '', facebook: '', tiktok: '', x: '', youtube: '' });
 
   useEffect(() => {
     Promise.all([
@@ -34,8 +35,9 @@ export default function QuickBlocks() {
       loadBlock('staff_picks', { items: [] }),
       loadBlock('announcement_banner', { enabled: false, message: '' }),
       loadBlock('homepage_concept', { concept: 'gallery_wall' }),
-    ]).then(([f, p, a, c]) => {
-      setFeatured(f); setPicks(p); setAnnounce(a); setConcept(c); setLoading(false);
+      loadBlock('social_links', { instagram: '', facebook: '', tiktok: '', x: '', youtube: '' }),
+    ]).then(([f, p, a, c, s]) => {
+      setFeatured(f); setPicks(p); setAnnounce(a); setConcept(c); setSocial(s); setLoading(false);
     }).catch(() => { toast('Could not load blocks', 'error'); setLoading(false); });
     // eslint-disable-next-line
   }, []);
@@ -63,6 +65,17 @@ export default function QuickBlocks() {
           ))}
         </div>
         <button className="btn btn--primary" onClick={() => save('homepage_concept', concept, 'Homepage look updated')}>Save look</button>
+      </section>
+
+      <section className="admin__panel">
+        <h2>Social links <Hint>Paste the full URL to each profile. Blank ones are hidden. Shown in the footer and on the contact & community pages.</Hint></h2>
+        {['instagram', 'facebook', 'tiktok', 'x', 'youtube'].map((key) => (
+          <div className="field" key={key}>
+            <label style={{ textTransform: 'capitalize' }}>{key === 'x' ? 'X (Twitter)' : key}</label>
+            <input value={social[key] || ''} placeholder="https://…" onChange={(e) => setSocial((s) => ({ ...s, [key]: e.target.value }))} />
+          </div>
+        ))}
+        <button className="btn btn--primary" onClick={() => save('social_links', social, 'Social links updated')}>Save social links</button>
       </section>
 
       <section className="admin__panel">

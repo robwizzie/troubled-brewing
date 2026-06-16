@@ -3,6 +3,7 @@ import { getPage, getSections } from '../lib/dataService.js';
 import { submitForm } from '../lib/dataService.js';
 import SectionRenderer from '../components/SectionRenderer.jsx';
 import SEO from '../components/SEO.jsx';
+import SocialLinks from '../components/SocialLinks.jsx';
 import { PageSkeleton } from '../components/Skeleton.jsx';
 import { track } from '../lib/analytics.js';
 
@@ -189,6 +190,10 @@ export default function ContactPage() {
               <div className="grid grid--2" style={{ alignItems: 'start' }}>
                 <ContactForm />
                 <CateringForm />
+              </div>
+              <div style={{ textAlign: 'center', marginTop: 'var(--space-6)' }}>
+                <p className="eyebrow">Come say hi online</p>
+                <SocialLinks band />
               </div>
             </div>
           </section>

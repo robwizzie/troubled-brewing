@@ -15,13 +15,14 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 | 9 | Gallery Wall | `/gallery-wall` | The real framed art, with stories | `hero` → `gallery_pieces_grid` |
 | 10 | Troublemakers | `/troublemakers` | The team, bios + fun facts | `hero` → `troublemakers_grid` |
 | 11 | Neighborhood / Local Love | `/neighborhood` | Local businesses they support (community + SEO) | `hero` → `local_businesses_grid` → `cta` |
+| 12 | TB Timeline | `/timeline` | Scrollable timeline of TB milestones (opening day, anniversaries, launches) | `hero` → `timeline_grid` |
 | — | Privacy | `/privacy` | Privacy policy (forms/newsletter/analytics) | static legal content |
 | — | Accessibility | `/accessibility` | Accessibility statement + contact | static legal content |
 | — | Admin | `/admin/*` | Auth-gated CMS (not in sitemap, noindex) | see CMS.md |
 
 ## Navigation
 
-Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" grouping for Gallery Wall, Troublemakers, Neighborhood, Community, Contact. A persistent **Order Now** button (SpotOn deep link) sits in the header on every page. Footer links: all pages + Privacy, Accessibility, Instagram, newsletter.
+Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" grouping for Gallery Wall, Troublemakers, **Our Story So Far (Timeline)**, Neighborhood, Community, Contact. A persistent **Order Now** button (SpotOn deep link) sits in the header on every page. Footer links: all pages + Privacy, Accessibility, **social links** (Instagram, Facebook, TikTok, X, YouTube — owner-managed), newsletter. Social links also appear on the contact and community pages.
 
 ## Concept-swappable home
 
