@@ -83,21 +83,31 @@
 .nav__menu a { padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); text-decoration: none; color: var(--color-text); }
 .nav__menu a:hover { background: var(--color-sage-soft); }
 
+/* fox creeping into the mobile drawer (hidden on desktop) */
+.nav__drawer-fox { display: none; }
+
 @media (max-width: 900px) {
   .nav__toggle { display: inline-block; }
   .nav__links {
     position: fixed; inset: var(--header-h) 0 auto 0;
     flex-direction: column; align-items: stretch; gap: 0;
-    background: var(--color-surface); border-bottom: 1px solid var(--color-border);
-    padding: var(--space-3); box-shadow: var(--shadow-md);
+    background: var(--color-cream); border-bottom: 3px solid var(--color-black);
+    padding: var(--space-3) var(--space-5) 130px; box-shadow: var(--shadow-lg);
     max-height: calc(100vh - var(--header-h)); overflow: auto;
   }
   .nav__links[data-open='false'] { display: none; }
-  .nav__link { padding: var(--space-3); border-radius: var(--radius-md); }
-  .nav__more { position: static; }
-  .nav__menu { position: static; box-shadow: none; border: none; padding-left: var(--space-4); }
-  .nav__cta { margin: var(--space-3) 0 0; }
+  .nav__link { padding: var(--space-3) var(--space-1); border-radius: 0; font-size: var(--text-lg); border-bottom: 1px solid var(--color-border); }
+  .nav__link::after { display: none; }
+  .nav__more { position: static; border-bottom: 1px solid var(--color-border); }
+  .nav__menu { position: static; box-shadow: none; border: none; background: transparent; padding: var(--space-1) 0 var(--space-2) var(--space-4); }
+  .nav__menu a { font-size: var(--text-base); }
+  .nav__cta { margin: var(--space-5) 0 0; align-self: flex-start; }
+  .nav__drawer-fox {
+    display: block; position: absolute; right: 12px; bottom: 6px; height: 150px; width: auto;
+    pointer-events: none; z-index: 1; animation: fox-creep 0.45s var(--ease) both;
+  }
 }
+@keyframes fox-creep { from { transform: translateY(64px) rotate(5deg); opacity: 0; } to { transform: translateY(0) rotate(0); opacity: 1; } }
 
 /* ---- Footer (fox-in-coffee banner + clean cream body) --------------------- */
 /* bg matches the banner image's cream (#f5e5d3) so it blends seamlessly */
@@ -124,10 +134,10 @@
 .footer .social-link { color: var(--color-cream); }
 .footer .social-link:hover { color: #fff; }
 /* big wordmark — pure HTML text (crisp at any size) */
-.footer__wordmark { text-align: center; padding: var(--space-5) var(--space-4) var(--space-7); }
-.footer__wm-flourish { display: block; margin: 0 auto var(--space-3); opacity: 0.85; }
-.footer__wm-title { display: block; font-family: var(--font-display); font-weight: 900; text-transform: uppercase; line-height: 0.88; letter-spacing: 0.005em; font-size: clamp(2.8rem, 11vw, 7rem); color: var(--color-ink); }
-.footer__wm-sub { display: block; font-family: var(--font-body); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4em; font-size: clamp(0.6rem, 1.6vw, 0.92rem); color: var(--color-wood-deep); margin-top: var(--space-3); padding-left: 0.4em; }
+.footer__wordmark { text-align: center; padding: var(--space-6) var(--space-4) var(--space-7); }
+.footer__wm-title { display: block; font-family: var(--font-display); font-weight: 900; font-style: italic; text-transform: uppercase; line-height: 0.86; letter-spacing: 0.005em; font-size: clamp(2.8rem, 11vw, 7rem); color: var(--color-ink); }
+.footer__wm-sub { display: inline-flex; align-items: center; gap: var(--space-3); margin-top: var(--space-4); font-family: var(--font-body); font-weight: 700; text-transform: uppercase; letter-spacing: 0.42em; font-size: clamp(0.62rem, 1.6vw, 0.9rem); color: var(--color-wood-deep); padding-left: 0.42em; }
+.footer__wm-star { color: var(--color-accent); font-style: normal; font-size: 0.8em; }
 @media (max-width: 820px) {
   .footer__cols { grid-template-columns: 1fr; gap: var(--space-6); text-align: center; }
   .footer__connect { align-items: center; text-align: center; }
@@ -135,10 +145,10 @@
 }
 
 /* nav logo + fox — white-bg logos drop cleanly via multiply on the solid cream nav */
-.nav__logo { height: 46px; width: auto; display: block; mix-blend-mode: multiply; }
-.nav__fox { height: 50px; width: auto; align-self: center; margin: 0 var(--space-1) 0 var(--space-2); transition: transform var(--dur) var(--ease); }
-.nav__fox:hover { transform: translateY(-3px) rotate(-4deg); }
-@media (max-width: 760px) { .nav__fox { display: none; } }
+.nav__logo { height: 60px; width: auto; display: block; mix-blend-mode: multiply; }
+.nav__fox { height: 70px; width: auto; align-self: flex-end; margin: 0 var(--space-2) -2px; transition: transform var(--dur) var(--ease); }
+.nav__fox:hover { transform: translateY(-4px) rotate(-4deg); }
+@media (max-width: 900px) { .nav__fox { display: none; } }
 
 /* ---- Hours widget --------------------------------------------------------- */
 .hours-today {

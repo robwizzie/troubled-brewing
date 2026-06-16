@@ -102,6 +102,11 @@ export default function Nav() {
           </div>
 
           <OrderButton className="btn btn--accent btn--wiggle nav__cta" location="nav" />
+
+          {/* fox creeping into the mobile drawer (only visible when the drawer is open) */}
+          {open && (
+            <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__drawer-fox" fallback={null} />
+          )}
         </nav>
       </div>
     </header>

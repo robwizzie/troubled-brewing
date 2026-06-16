@@ -85,30 +85,14 @@
    the real gallery wall. Dark text keeps contrast accessible on the green. */
 .gw-hero {
   position: relative;
-  padding: 0 0 var(--space-7);
+  padding: var(--space-6) 0 var(--space-8);
   background: var(--color-green);
   background-image:
     radial-gradient(140% 90% at 50% -8%, rgba(255, 253, 247, 0.26), transparent 55%),
     repeating-linear-gradient(115deg, rgba(0, 0, 0, 0.035) 0 2px, transparent 2px 10px);
-  border-bottom: 8px solid var(--color-black);
   overflow: hidden;
 }
-/* pressed-tin / crown moulding strip across the top of the wall */
-.gw-hero__moulding {
-  height: 26px;
-  background:
-    repeating-linear-gradient(90deg, rgba(24, 20, 18, 0.16) 0 1px, transparent 1px 14px),
-    linear-gradient(#fbf6ec, #ece2cd);
-  border-bottom: 3px solid var(--color-black);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.16);
-}
-/* warm wood picture-rail / baseboard at the bottom */
-.gw-hero__rail {
-  height: 12px; margin-top: var(--space-5);
-  background: linear-gradient(var(--color-wood-deep), #38291a);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-.gw-hero__inner { padding-top: var(--space-7); }
+.gw-hero__inner { padding-top: var(--space-2); }
 
 /* a vintage museum-label placard, pinned to the wall */
 .gw-hero__placard {

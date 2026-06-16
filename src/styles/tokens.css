@@ -109,7 +109,7 @@
   /* ---- Layout ------------------------------------------------------------- */
   --container: 1120px;
   --container-narrow: 760px;
-  --header-h: 72px;
+  --header-h: 90px;
 
   /* ---- Motion (respect prefers-reduced-motion below) ---------------------- */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import BrandImg from '../BrandImg.jsx';
-import { FoxEmblem, Hare, Flourish } from '../Motifs.jsx';
+import { FoxEmblem, Flourish } from '../Motifs.jsx';
 import { BRAND } from '../../lib/config.js';
 
 /* THE signature landing concept: the in-shop Gallery Wall recreated as an
@@ -23,8 +23,8 @@ export default function GalleryWallHero({ data = {} }) {
     frames = [],
   } = data;
 
-  // Tuck the brass objects in among the frames, like the real wall.
-  const objects = { 2: 'fox', 5: 'hare' };
+  // Tuck the gold fox-head sculpture in among the frames, like the real wall.
+  const objects = { 2: 'fox' };
 
   const tiles = [];
   frames.forEach((f, i) => {
@@ -39,7 +39,6 @@ export default function GalleryWallHero({ data = {} }) {
 
   return (
     <section className="gw-hero">
-      <div className="gw-hero__moulding" aria-hidden="true" />
       <div className="container gw-hero__inner">
         <div className="gw-hero__placard">
           <p className="eyebrow">Haddon Heights, NJ · La Colombe coffee</p>
@@ -55,12 +54,8 @@ export default function GalleryWallHero({ data = {} }) {
         <div className="gw-wall">
           {tiles.map((t) =>
             t.object ? (
-              <div key={t.key} className={`gw-tile gw-tile--object gw-tile--${t.object}`} style={{ '--tilt': `${t.tilt}deg` }} aria-hidden="true">
-                {t.object === 'fox' ? (
-                  <BrandImg src={BRAND.foxHead} alt="" loading="lazy" className="gw-object-img" fallback={<FoxEmblem size={104} />} />
-                ) : (
-                  <Hare size={76} />
-                )}
+              <div key={t.key} className="gw-tile gw-tile--object gw-tile--fox" aria-hidden="true">
+                <BrandImg src={BRAND.foxHead} alt="" loading="lazy" className="gw-object-img" fallback={<FoxEmblem size={104} />} />
               </div>
             ) : (
               <FrameTile key={t.key} {...t} />
@@ -68,7 +63,6 @@ export default function GalleryWallHero({ data = {} }) {
           )}
         </div>
       </div>
-      <div className="gw-hero__rail" aria-hidden="true" />
     </section>
   );
 }
