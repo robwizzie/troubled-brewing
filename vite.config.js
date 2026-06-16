@@ -1,12 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Deployed at the apex domain (troublebrewingcoffeehouse.com) via GitHub Pages,
-// so the base path is '/'. If this ever moves to a project page
-// (user.github.io/repo) change `base` to '/repo/'. See docs/DEPLOYMENT.md.
+// Base path. The site currently deploys as a GitHub *project page* under
+// `/troubled-brewing/` (e.g. robwiscount.org/troubled-brewing/), so assets must
+// be served from that subpath. When it moves to the apex custom domain
+// (troublebrewingcoffeehouse.com), set VITE_BASE_PATH=/ (and re-add the CNAME +
+// set 404.html pathSegmentsToKeep=0). See docs/DEPLOYMENT.md.
+const base = process.env.VITE_BASE_PATH || '/troubled-brewing/';
+
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base,
   build: {
     outDir: 'dist',
     sourcemap: false,
