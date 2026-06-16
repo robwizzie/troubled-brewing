@@ -27,6 +27,7 @@ export default function Footer() {
         src={BRAND.footerBanner}
         alt=""
         aria-hidden="true"
+        loading="lazy"
         className="footer__banner"
         fallback={<div className="footer__banner-fallback" aria-hidden="true" />}
       />
