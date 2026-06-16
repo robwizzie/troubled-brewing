@@ -56,8 +56,8 @@ export const SECTIONS = {
   ],
   about: [
     { type: 'hero', data: { heading: 'Our Story', subheading: 'From spreadsheets to steamed milk.', background_image_url: '', cta_label: 'See the Menu', cta_url: '/menu' } },
-    { type: 'rich_text', data: { heading: 'Two bankers walk into a coffee shop', body_markdown: 'Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Trouble Brewing is the result — a warm, art-filled room in the heart of Haddon Heights where the coffee is serious and the vibe is not.' } },
-    { type: 'rich_text', data: { heading: 'Why La Colombe', body_markdown: "We partnered with **La Colombe** because great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. That partnership is the foundation we build every drink on." } },
+    { type: 'rich_text', data: { variant: 'lead', heading: 'Two bankers walk into a coffee shop', body_markdown: 'Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Trouble Brewing is the result: a warm, art-filled room in the heart of Haddon Heights where the coffee is serious and the vibe is not.' } },
+    { type: 'rich_text', data: { variant: 'alt', heading: 'Why La Colombe', body_markdown: "We partnered with **La Colombe** because great coffee shouldn't be complicated. It should be consistent, ethical, and delicious. That partnership is the foundation we build every drink on." } },
     { type: 'rich_text', data: { heading: 'Why local matters', body_markdown: 'Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for.' } },
   ],
   events: [
@@ -66,15 +66,17 @@ export const SECTIONS = {
     { type: 'cta', data: { heading: 'Want to host something?', body: "Showers, meetings, small parties — our space is yours. Tell us what you're planning.", button_label: 'Start a catering inquiry', button_url: '/contact' } },
   ],
   location: [
-    { type: 'hours', data: { heading: 'Hours' } },
+    { type: 'hero', data: { heading: 'Hours & Location', subheading: 'Find us on Station Ave. Pull up a chair and stay a while.', background_image_url: '', cta_label: '', cta_url: '' } },
+    { type: 'hours', data: { heading: "When we're open" } },
     { type: 'map', data: { address: '514 Station Ave, Haddon Heights, NJ 08035', embed_url: '' } },
     { type: 'rich_text', data: { heading: 'Parking', body_markdown: 'Street parking is available out front, plus a **lot behind the coffee house**. Enter from White Horse Pike or Atlantic Ave.' } },
     { type: 'cta', data: { heading: 'Come say hi', body: 'Questions? Give us a call.', button_label: 'Call (856) 617-6638', button_url: 'tel:+18566176638' } },
   ],
   contact: [
-    { type: 'rich_text', data: { heading: 'Get in touch', body_markdown: 'Questions, ideas, or planning something? Use the form below for general questions, or the catering form for events. We read every message.' } },
+    { type: 'hero', data: { heading: 'Get in touch', subheading: 'Questions, ideas, or planning something? Use the forms below. We read every message.', background_image_url: '', cta_label: '', cta_url: '' } },
   ],
   community: [
+    { type: 'hero', data: { heading: 'Community', subheading: "Events, the board, and a little neighborhood love. There's always something brewing.", background_image_url: '', cta_label: '', cta_url: '' } },
     { type: 'events_list', data: { heading: "What's coming up" } },
     { type: 'community_board', data: { heading: 'On the Community Board' } },
     { type: 'rich_text', data: { heading: 'Loyalty', body_markdown: "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you're in. *(Full program details coming soon.)*" } },

@@ -96,6 +96,46 @@ export function Steam({ className = '' }) {
   );
 }
 
+/* A clean line-art coffee cup + saucer with rising steam — the plainest possible
+   "this is a coffee shop" cue, drawn in the same vintage line style as the fox. */
+export function CoffeeCup({ size = 72, className = '', color = 'currentColor', steam = true }) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true" role="presentation">
+      {steam && (
+        <g stroke={color} strokeWidth="2.6" strokeLinecap="round" opacity="0.7">
+          <path className="steam-wisp" d="M40 30 C34 24 46 18 40 10" />
+          <path className="steam-wisp" style={{ animationDelay: '0.5s' }} d="M55 30 C49 24 61 18 55 10" />
+        </g>
+      )}
+      {/* saucer */}
+      <ellipse cx="50" cy="84" rx="33" ry="6" stroke={color} strokeWidth="3" />
+      {/* cup body */}
+      <path d="M27 41 H73 L68 71 C67 77 60 81 50 81 C40 81 33 77 32 71 Z" stroke={color} strokeWidth="3" strokeLinejoin="round" />
+      {/* handle */}
+      <path d="M73 47 C86 47 86 66 69 66" stroke={color} strokeWidth="3" />
+      {/* coffee line */}
+      <path d="M33 48 H67" stroke={color} strokeWidth="2" opacity="0.5" />
+    </svg>
+  );
+}
+
+/* A little cluster of coffee beans — a divider / accent flourish. */
+export function Beans({ size = 64, className = '', color = 'currentColor' }) {
+  const bean = (cx, cy, rot, s = 1) => (
+    <g transform={`translate(${cx} ${cy}) rotate(${rot}) scale(${s})`}>
+      <ellipse cx="0" cy="0" rx="12" ry="8" fill="none" stroke={color} strokeWidth="2.4" />
+      <path d="M-9 -3 C-3 0 3 0 9 3" fill="none" stroke={color} strokeWidth="2.4" />
+    </g>
+  );
+  return (
+    <svg className={className} width={size} height={(size * 40) / 64} viewBox="0 0 64 40" fill="none" aria-hidden="true" role="presentation">
+      {bean(16, 20, -28)}
+      {bean(40, 16, 22, 0.92)}
+      {bean(48, 30, -12, 0.74)}
+    </svg>
+  );
+}
+
 /* Ornate TB monogram badge for the nav/footer brand lockup. */
 export function Monogram({ size = 40, className = '' }) {
   const g = useId();
