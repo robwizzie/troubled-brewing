@@ -67,6 +67,10 @@ motifs for whimsy where tasteful; derive the favicon/OG image from the logo once
 - **Vintage ticker** marquee under the hero ("Good Coffee · Good Trouble · …").
 - **Nav**: monogram + wordmark lockup, brass top rule, hand-drawn underline that draws in on hover, a wiggling "Order Now" button.
 - **Admin dashboard**: playful fox-led header, tilting color-coded tiles, a progress bar and friendly checklist.
+- **Footer** modeled on the client's reference: a fox-in-coffee **banner image** (`footer-banner.png`) up top, then a clean cream body (Navigation / "Say Hi!" / Connect) and a big **TROUBLE BREWING** wordmark. Built in HTML+CSS.
+- **Icons:** `react-icons` (tree-shaken) for real brand/social icons and small UI cues. Social links are proper Instagram/Facebook/TikTok/X/YouTube/email icons.
+- **White-bg logos:** the nav and footer sit on solid cream and use CSS `mix-blend-mode: multiply`, so a logo exported on a white background shows cleanly (no white box) — transparent still preferred but not required there.
+- The gallery-wall **fox-head sits clean** — no float, no drop-shadow (per client).
 - Frame tilt on hover, soft fade/slide on scroll-in (`Reveal`), and a "settling" load animation on the wall.
 - **Always** respect `prefers-reduced-motion: reduce` — `tokens.css` collapses all transition/animation durations to ~0 for those users.
 
