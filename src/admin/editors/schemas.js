@@ -78,6 +78,17 @@ export const SECTION_EDITOR_SCHEMAS = {
     note: 'The featured drink lives in Quick Blocks.',
     fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
   },
+  signature_drinks: {
+    note: 'Drinks come live from your Menu. Leave items blank to auto-feature your specialty drinks.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'button_label', label: 'Button label', type: 'text' },
+    ],
+  },
+  social_proof: {
+    note: 'Rating comes from your Google Profile; quotes from the Testimonials manager (featured first).',
+    fields: [{ name: 'label', label: 'Label', type: 'text' }],
+  },
   reviews_hero: {
     note: 'The rating + count come live from your Google Profile.',
     fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
