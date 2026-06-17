@@ -41,6 +41,21 @@ export default function Nav() {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  // Lock body scroll while the full-screen mobile drawer is open, and let Esc close it.
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    function onKey(e) {
+      if (e.key === 'Escape') setOpen(false);
+    }
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
   return (
     <header className="nav">
       <div className="container nav__inner">
@@ -62,9 +77,15 @@ export default function Nav() {
           className="nav__toggle"
           aria-expanded={open}
           aria-controls="primary-nav"
+          data-open={open ? 'true' : 'false'}
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? '✕' : '☰'} <span className="sr-only">Menu</span>
+          <span className="nav__burger" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
         </button>
 
         <nav id="primary-nav" className="nav__links" aria-label="Primary" data-open={open ? 'true' : 'false'}>

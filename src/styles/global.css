@@ -148,6 +148,18 @@ p { margin: 0 0 var(--space-4); }
 }
 .hero--image > * { position: relative; z-index: 1; }
 .hero--image h1 { color: #fff; }
+.hero__flourish { display: block; margin: var(--space-2) auto var(--space-3); }
+/* faint coffee cues tucked in the hero corners — a quiet "this is a coffee shop" */
+.hero { overflow: hidden; }
+.hero .container { position: relative; z-index: 1; }
+.hero__deco { position: absolute; z-index: 0; opacity: 0.16; pointer-events: none; }
+.hero__deco--cup { left: 3%; bottom: -18px; transform: rotate(-8deg); }
+.hero__deco--beans { right: 4%; top: 14%; transform: rotate(6deg); }
+@media (max-width: 720px) {
+  .hero__deco { opacity: 0.13; }
+  .hero__deco--cup { left: -5%; bottom: -22px; }
+  .hero__deco--beans { right: -3%; top: 8%; }
+}
 .hero p.hero__sub { font-size: var(--text-lg); color: var(--color-text-soft); max-width: 50ch; margin-inline: auto; }
 .hero--image p.hero__sub { color: #f3ede1; }
 
@@ -253,3 +265,44 @@ p { margin: 0 0 var(--space-4); }
 /* nicer image dragging / no blue tap highlight on touch */
 img { -webkit-user-drag: none; user-select: none; }
 a, button { -webkit-tap-highlight-color: transparent; }
+
+/* =============================================================================
+   Polish pass — give CTAs real physical weight, warm the depth, and add a few
+   whimsical-but-restrained touches that compound across every page.
+   ============================================================================= */
+
+/* buttons gain a tinted, springy lift instead of a flat color swap */
+.btn--accent {
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--color-yellow-deep) 55%, transparent),
+    0 8px 18px rgba(168, 124, 28, 0.22);
+}
+.btn--accent:hover {
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--color-yellow-deep) 55%, transparent),
+    0 12px 26px rgba(168, 124, 28, 0.26);
+}
+.btn--accent:active {
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--color-yellow-deep) 55%, transparent),
+    0 4px 10px rgba(168, 124, 28, 0.2);
+}
+.btn--primary {
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--color-black) 22%, transparent),
+    0 8px 18px rgba(24, 20, 18, 0.16);
+}
+.btn--primary:hover {
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--color-black) 22%, transparent),
+    0 12px 26px rgba(24, 20, 18, 0.2);
+}
+.btn--primary:active {
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--color-black) 22%, transparent),
+    0 4px 10px rgba(24, 20, 18, 0.14);
+}
+/* the lift distance now matches the shadow so the press reads as a real push */
+.btn--accent:hover, .btn--primary:hover { transform: translateY(-2px); }
+.btn--accent:active, .btn--primary:active { transform: translateY(1px); }
+
+/* warm the card hover shadow toward the brand instead of neutral grey */
+.card:hover { box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
+
+/* hand-drawn underline shifts to pink on hovered body links — playful, on-brand */
+.prose a { transition: text-decoration-color var(--dur) var(--ease); }
+.prose a:hover { text-decoration-color: var(--color-pink-deep); }

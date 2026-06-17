@@ -15,7 +15,7 @@ export default function MapSection({ data = {} }) {
             src={src}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            style={{ width: '100%', height: 380, border: 0, borderRadius: 'var(--radius-lg)' }}
+            style={{ width: '100%', height: 380, border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', background: 'var(--color-sage-soft)', boxShadow: 'var(--shadow-sm)' }}
           />
         )}
         {address && (
