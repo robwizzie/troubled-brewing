@@ -14,6 +14,8 @@ import InstagramFeed from './InstagramFeed.jsx';
 import MapSection from './MapSection.jsx';
 import Newsletter from './Newsletter.jsx';
 import FeaturedDrink from './FeaturedDrink.jsx';
+import SignatureDrinks from './SignatureDrinks.jsx';
+import SocialProof from './SocialProof.jsx';
 import ReviewsHero from './ReviewsHero.jsx';
 import TestimonialsWall from './TestimonialsWall.jsx';
 import GoogleReviewsFeed from './GoogleReviewsFeed.jsx';
@@ -41,6 +43,8 @@ export const SECTION_RENDERERS = {
   map: MapSection,
   newsletter: Newsletter,
   featured_drink: FeaturedDrink,
+  signature_drinks: SignatureDrinks,
+  social_proof: SocialProof,
   reviews_hero: ReviewsHero,
   testimonials_wall: TestimonialsWall,
   google_reviews_feed: GoogleReviewsFeed,
@@ -74,6 +78,8 @@ export const ADDABLE_SECTION_TYPES = [
   'map',
   'newsletter',
   'featured_drink',
+  'signature_drinks',
+  'social_proof',
   'testimonials_wall',
   'google_reviews_feed',
   'review_cta',
@@ -97,6 +103,8 @@ export const SECTION_LABELS = {
   map: 'Map',
   newsletter: 'Newsletter signup',
   featured_drink: 'Featured drink',
+  signature_drinks: 'Signature drinks teaser',
+  social_proof: 'Social proof (rating + reviews)',
   reviews_hero: 'Reviews hero (rating)',
   testimonials_wall: 'Testimonials wall',
   google_reviews_feed: 'Google reviews feed',
