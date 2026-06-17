@@ -176,8 +176,16 @@
 @keyframes gw-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
 @media (max-width: 1000px) { .gw-wall { column-count: 3; } }
 @media (max-width: 680px) {
-  .gw-wall { column-count: 2; column-gap: 12px; }
-  .gw-tile { margin-bottom: 12px; }
+  /* Tighter, balanced wall on mobile: even frame heights so the two columns
+     line up (no green-wall dead space), softer tilts, snug gaps. */
+  .gw-wall { column-count: 2; column-gap: 8px; }
+  .gw-tile { margin-bottom: 8px; transform: rotate(calc(var(--tilt, 0deg) * 0.4)); }
+  .gw-frame__art { aspect-ratio: 1 / 1.12; border-width: 7px; }
+  .gw-frame__art--oval-gold { aspect-ratio: 1 / 1; }
+  .gw-frame__art--ornate { border-width: 9px; }
+  /* drop the decorative fox-head sculpture on mobile so the 8 frames split into
+     an even, gap-free 4x2 grid (the fox lives on in the nav, footer + logo) */
+  .gw-tile--object { display: none; }
   .gw-hero__placard { transform: none; padding: var(--space-6) var(--space-5); }
   .gw-hero__cta { flex-direction: column; align-items: stretch; gap: var(--space-3); }
   .gw-hero__cta .btn { width: 100%; min-width: 0; }

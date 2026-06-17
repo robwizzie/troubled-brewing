@@ -22,8 +22,9 @@ const MORE = [
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false); // desktop "More" dropdown only
   const moreRef = useRef(null);
+  const headerRef = useRef(null);
   const location = useLocation();
 
   // Close menus on navigation.
@@ -32,7 +33,7 @@ export default function Nav() {
     setMoreOpen(false);
   }, [location.pathname]);
 
-  // Close the "More" dropdown on outside click.
+  // Close the desktop "More" dropdown on outside click.
   useEffect(() => {
     function onClick(e) {
       if (moreRef.current && !moreRef.current.contains(e.target)) setMoreOpen(false);
@@ -41,23 +42,37 @@ export default function Nav() {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  // Lock body scroll while the full-screen mobile drawer is open, and let Esc close it.
+  // While the mobile drawer is open: lock body scroll, anchor the drawer to the
+  // real bottom of the header (so it opens BENEATH the bar even with the
+  // announcement banner showing), and let Esc close it.
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    function onKey(e) {
+
+    const positionDrawer = () => {
+      const bottom = headerRef.current?.getBoundingClientRect().bottom ?? 0;
+      document.documentElement.style.setProperty('--drawer-top', `${Math.max(0, Math.round(bottom))}px`);
+    };
+    positionDrawer();
+    window.addEventListener('resize', positionDrawer);
+    window.addEventListener('orientationchange', positionDrawer);
+
+    const onKey = (e) => {
       if (e.key === 'Escape') setOpen(false);
-    }
+    };
     document.addEventListener('keydown', onKey);
+
     return () => {
       document.body.style.overflow = prevOverflow;
+      window.removeEventListener('resize', positionDrawer);
+      window.removeEventListener('orientationchange', positionDrawer);
       document.removeEventListener('keydown', onKey);
     };
   }, [open]);
 
   return (
-    <header className="nav">
+    <header className="nav" ref={headerRef}>
       <div className="container nav__inner">
         <NavLink to="/" className="nav__brand" aria-label="Trouble Brewing Coffee House — home">
           <BrandImg
@@ -89,35 +104,37 @@ export default function Nav() {
         </button>
 
         <nav id="primary-nav" className="nav__links" aria-label="Primary" data-open={open ? 'true' : 'false'}>
-          {/* On mobile the list is a drawer toggled via data-open (see components.css) */}
+          {/* Mobile: this becomes a full-height drawer (see components.css) showing
+              every link in one clean list. Desktop: an inline bar where the
+              secondary links collapse under the "More" dropdown. */}
           {PRIMARY.map((l) => (
             <NavLink key={l.to} to={l.to} className={({ isActive }) => `nav__link ${isActive ? 'active' : ''}`}>
               {l.label}
             </NavLink>
           ))}
 
-          <div className="nav__more" ref={moreRef}>
+          {/* On mobile (display:contents) these flow inline with the list above.
+              On desktop they live inside the "More" dropdown. */}
+          <div className="nav__more" ref={moreRef} data-open={moreOpen ? 'true' : 'false'}>
             <button
-              className="nav__link"
+              className="nav__link nav__more-btn"
               aria-expanded={moreOpen}
               onClick={() => setMoreOpen((v) => !v)}
             >
               More ▾
             </button>
-            {moreOpen && (
-              <div className="nav__menu" role="menu">
-                {MORE.map((l) => (
-                  <NavLink key={l.to} to={l.to} role="menuitem">
-                    {l.label}
-                  </NavLink>
-                ))}
-              </div>
-            )}
+            <div className="nav__menu" role="menu">
+              {MORE.map((l) => (
+                <NavLink key={l.to} to={l.to} className={({ isActive }) => `nav__link ${isActive ? 'active' : ''}`} role="menuitem">
+                  {l.label}
+                </NavLink>
+              ))}
+            </div>
           </div>
 
           <OrderButton className="btn btn--accent btn--wiggle nav__cta" location="nav" />
 
-          {/* fox creeping into the mobile drawer (only visible when the drawer is open) */}
+          {/* the dapper fox peeks into the corner of the open drawer (mobile only) */}
           {open && (
             <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__drawer-fox" fallback={null} />
           )}
