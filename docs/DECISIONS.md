@@ -31,6 +31,15 @@ Placeholder direction matching the whimsical, vintage-meets-playful in-store fee
 **2026-06 — Reorder via up/down controls (accessible) as the baseline; drag-and-drop is an enhancement.**
 Up/down move buttons are robust, keyboard-accessible, and dependency-light. Drag-and-drop can layer on later without changing the data model (`display_order`).
 
+**2026-06 — Official palette: black / green / pink / yellow, tuned to the shop photos.**
+Client confirmed the brand palette. Mapped to the real space: green = the sage/olive walls, yellow = the brass/gold metallics (frames, fox heads, cups), pink = the dusty-pink accents, black = frames/counter/logo. Kept token-driven with the *old* sage/wood/brass names as backward-compatible aliases so nothing broke. **Accessibility discipline (flagged to client):** near-black body text on cream/white; bold colors only for accents/buttons/section bands — eyebrows use readable deep pink, never low-contrast yellow. Exact hexes still to be sampled from the logo files.
+
+**2026-06 — Gallery Wall landing CONFIRMED; hero rendered on the sage-green wall.**
+Client confirmed the frames-as-navigation concept ("other ideas welcome"), so it stays the lead — but all three concepts remain selectable for comparison. The hero now sits on the sage wall with framed "art" mounted on it, echoing the shop. Frames link to the key pages: Menu/Order, Troublemakers, Gallery Wall, Events, Timeline, Neighborhood (+ Reviews, About).
+
+**2026-06 — Added TB Timeline page + owner-managed social links.**
+New `/timeline` ("Our Story So Far") backed by `timeline_events` with a `timeline_grid` section + manager — a whimsical, SEO-friendly milestone story. Social links live in `content_blocks.social_links` (owner-editable in Quick Blocks) and surface in the footer everywhere + the contact/community pages. `timeline_events` got `status`/`draft_data` beyond the client's base DDL so it shares the same governance + CollectionManager as every other collection.
+
 ---
 
 ## Out of scope for v1 (build stubs, document, don't wire) — from build plan §12.5 / §13

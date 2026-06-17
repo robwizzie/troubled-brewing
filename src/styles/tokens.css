@@ -1,39 +1,72 @@
 /* =============================================================================
    Design tokens — the entire theme lives here.
-   The client's final look & feel applies by editing THIS file, not components.
-   See docs/DESIGN.md. Palette/fonts are a whimsical placeholder pulled from the
-   real space (sage walls, warm wood, brass frames, cream) until client notes land.
+   The client's official look & feel applies by editing THIS file, not components.
+   See docs/DESIGN.md.
+
+   OFFICIAL BRAND PALETTE (from the client): black, green, pink, yellow —
+   inspired by the shop interior. Black + green are primary/structural; pink +
+   yellow are playful accents (whimsical, vintage). Body copy stays near-black on
+   cream/white for readability; the bold colors are used as accents, buttons, and
+   section bands — never as small body text — to keep contrast accessible.
+
+   NOTE: exact hex values come from the TB logo files (incoming). The values below
+   are tasteful placeholders in the right family; swap them here when the logos
+   land and the whole site reskins cleanly.
    ============================================================================= */
 :root {
-  /* ---- Raw palette -------------------------------------------------------- */
-  --color-sage: #7c8a5b;
-  --color-sage-deep: #5c6a42;
-  --color-sage-soft: #e7ebda;
-  --color-wood: #7a5230;
-  --color-wood-deep: #5b3c22;
-  --color-cream: #f6efe1;
-  --color-paper: #fffdf8;
-  --color-ink: #2b2520;
-  --color-ink-soft: #5f574c;
-  --color-brass: #b08436;
-  --color-brass-bright: #caa24e;
-  --color-frame: #1c1814;
+  /* ---- Brand palette (tuned to the shop's reference photos) ---------------
+     green  = the sage/olive WALL color
+     yellow = the warm BRASS/GOLD accents (frames, fox heads, brass cups)
+     pink   = the soft dusty-pink accents (tray, florals)
+     black  = the frames, counter, and the TROUBLE BREWING logo
+     Final exact hexes still to be confirmed from the logo files. ----------- */
+  --color-black: #191512;
+  --color-black-soft: #2c2722;
+  --color-green: #7e8c54;        /* sage-olive — the shop walls */
+  --color-green-deep: #545f33;   /* deep olive — buttons/structure (AA on white) */
+  --color-green-soft: #e7ebd6;   /* soft sage band */
+  --color-pink: #e98fb0;         /* playful dusty pink */
+  --color-pink-deep: #b0436e;    /* readable pink for accent text */
+  --color-pink-soft: #fbe4ec;
+  --color-yellow: #e3b53f;       /* warm brass/gold */
+  --color-yellow-deep: #a87c1c;
+  --color-yellow-soft: #f7e8bf;
+
+  /* ---- Neutrals ----------------------------------------------------------- */
+  --color-cream: #f7f1e4;
+  --color-paper: #fffdf7;
+  --color-ink: #221f1a;          /* body text — near-black, AA on cream/paper */
+  --color-ink-soft: #5d564b;
   --color-error: #b3402f;
-  --color-success: #4d7c3a;
+  --color-success: #2f7d4f;
 
   /* ---- Semantic aliases (components reference THESE) ----------------------- */
   --color-bg: var(--color-cream);
   --color-surface: var(--color-paper);
-  --color-surface-alt: var(--color-sage-soft);
+  --color-surface-alt: var(--color-green-soft);
   --color-text: var(--color-ink);
   --color-text-soft: var(--color-ink-soft);
-  --color-primary: var(--color-sage);
-  --color-primary-hover: var(--color-sage-deep);
-  --color-accent: var(--color-brass);
-  --color-accent-hover: var(--color-brass-bright);
+  --color-primary: var(--color-green-deep);   /* deep olive — AA contrast with white text */
+  --color-primary-hover: #404829;
+  --color-accent: var(--color-yellow);          /* filled accents — pair with black text */
+  --color-accent-hover: var(--color-yellow-deep);
+  --color-accent-text: var(--color-pink-deep);  /* accent TEXT (eyebrows, etc.) — readable */
   --color-on-primary: #fffdf8;
-  --color-on-accent: #2b2520;
-  --color-border: #e3d9c4;
+  --color-on-accent: var(--color-black);
+  --color-border: #e8dcc6;
+  --focus-ring: var(--color-pink-deep);
+
+  /* ---- Backward-compatible aliases (older component CSS) ------------------ */
+  /* Map the previous placeholder names into the new palette so every existing
+     reference stays on-brand. New work should prefer the semantic aliases. */
+  --color-sage: var(--color-green);
+  --color-sage-deep: var(--color-green-deep);
+  --color-sage-soft: var(--color-green-soft);
+  --color-wood: var(--color-green-deep);
+  --color-wood-deep: var(--color-black-soft);
+  --color-brass: var(--color-yellow);
+  --color-brass-bright: var(--color-yellow-deep);
+  --color-frame: var(--color-black);
 
   /* ---- Typography --------------------------------------------------------- */
   --font-display: 'Fraunces', 'Georgia', serif;
@@ -68,10 +101,10 @@
   --radius-lg: 20px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 3px rgba(43, 37, 32, 0.12);
-  --shadow-md: 0 6px 20px rgba(43, 37, 32, 0.14);
-  --shadow-lg: 0 18px 50px rgba(43, 37, 32, 0.22);
-  --shadow-frame: 0 10px 24px rgba(28, 24, 20, 0.35);
+  --shadow-sm: 0 1px 3px rgba(24, 20, 18, 0.12);
+  --shadow-md: 0 6px 20px rgba(24, 20, 18, 0.14);
+  --shadow-lg: 0 18px 50px rgba(24, 20, 18, 0.22);
+  --shadow-frame: 0 10px 24px rgba(20, 18, 16, 0.38);
 
   /* ---- Layout ------------------------------------------------------------- */
   --container: 1120px;
@@ -85,9 +118,10 @@
   --dur-slow: 600ms;
 
   /* ---- Picture-frame styles (Gallery Wall) -------------------------------- */
-  --frame-gold: linear-gradient(145deg, #d9b15e, #9c6f25);
-  --frame-wood: linear-gradient(145deg, #8a5e36, #5b3c22);
-  --frame-black: linear-gradient(145deg, #2c2620, #14110d);
+  --frame-gold: linear-gradient(145deg, var(--color-yellow), var(--color-yellow-deep));
+  --frame-wood: linear-gradient(145deg, var(--color-green), var(--color-green-deep));
+  --frame-black: linear-gradient(145deg, #2c2620, #141210);
+  --frame-pink: linear-gradient(145deg, var(--color-pink), var(--color-pink-deep));
 }
 
 @media (prefers-reduced-motion: reduce) {

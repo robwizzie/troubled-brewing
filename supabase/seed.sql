@@ -20,7 +20,8 @@ insert into pages (slug, title, meta_description) values
   ('reviews',       'Reviews — Trouble Brewing Coffee House',            'See what the neighborhood says about Trouble Brewing Coffee House. Read our Google reviews and leave your own.'),
   ('gallery-wall',  'The Gallery Wall — Trouble Brewing Coffee House',    'The stories behind the framed art on our wall. A little bit of Trouble Brewing history, one frame at a time.'),
   ('troublemakers', 'The Troublemakers — Trouble Brewing Coffee House',   'Meet the Troublemakers — the team behind your coffee at Trouble Brewing Coffee House in Haddon Heights, NJ.'),
-  ('neighborhood',  'Local Love — Trouble Brewing Coffee House',          'The Haddon Heights businesses we know and love. Support local with Trouble Brewing Coffee House.')
+  ('neighborhood',  'Local Love — Trouble Brewing Coffee House',          'The Haddon Heights businesses we know and love. Support local with Trouble Brewing Coffee House.'),
+  ('timeline',      'Our Story So Far — Trouble Brewing Coffee House',     'The Trouble Brewing timeline — opening day, anniversaries, menu launches, and the milestones that made us who we are in Haddon Heights, NJ.')
 on conflict (slug) do nothing;
 
 -- -----------------------------------------------------------------------------
@@ -31,14 +32,14 @@ on conflict (slug) do nothing;
 insert into sections (page_slug, type, display_order, data) values
 ('home', 'gallery_wall_hero', 0, '{
   "frames": [
-    {"label": "Our Signature Drink", "link": "/menu", "frame_style": "ornate", "image_url": ""},
-    {"label": "Fresh Pastries", "link": "/menu", "frame_style": "oval-gold", "image_url": ""},
-    {"label": "What''s On", "link": "/events", "frame_style": "black", "image_url": ""},
-    {"label": "Meet the Troublemakers", "link": "/troublemakers", "frame_style": "wood", "image_url": ""},
+    {"label": "Order / Menu", "link": "/menu", "frame_style": "ornate", "image_url": ""},
+    {"label": "The Troublemakers", "link": "/troublemakers", "frame_style": "pink", "image_url": ""},
     {"label": "The Gallery Wall", "link": "/gallery-wall", "frame_style": "gold", "image_url": ""},
-    {"label": "Reviews", "link": "/reviews", "frame_style": "black", "image_url": ""},
-    {"label": "Local Love", "link": "/neighborhood", "frame_style": "wood", "image_url": ""},
-    {"label": "Our Story", "link": "/about", "frame_style": "oval-gold", "image_url": ""}
+    {"label": "What''s On", "link": "/events", "frame_style": "black", "image_url": ""},
+    {"label": "Our Story So Far", "link": "/timeline", "frame_style": "green", "image_url": ""},
+    {"label": "Local Love", "link": "/neighborhood", "frame_style": "pink", "image_url": ""},
+    {"label": "Reviews", "link": "/reviews", "frame_style": "oval-gold", "image_url": ""},
+    {"label": "Our Story", "link": "/about", "frame_style": "black", "image_url": ""}
   ],
   "heading": "Welcome to Trouble Brewing",
   "subheading": "A whole wall of reasons to stop in."
@@ -110,6 +111,11 @@ insert into sections (page_slug, type, display_order, data) values
 ('neighborhood', 'local_businesses_grid', 1, '{"heading": "Our neighbors"}'),
 ('neighborhood', 'cta', 2, '{"heading": "Know a great local spot?", "body": "Tell us who we''re missing.", "button_label": "Send a suggestion", "button_url": "/contact"}');
 
+-- TIMELINE ----------------------------------------------------------
+insert into sections (page_slug, type, display_order, data) values
+('timeline', 'hero', 0, '{"heading": "Our Story So Far", "subheading": "A few of the moments that made Trouble.", "background_image_url": "", "cta_label": "", "cta_url": ""}'),
+('timeline', 'timeline_grid', 1, '{"heading": "The Trouble Brewing timeline"}');
+
 -- -----------------------------------------------------------------------------
 -- Menu items (placeholder prices — confirm with client)
 -- -----------------------------------------------------------------------------
@@ -148,7 +154,8 @@ insert into content_blocks (key, data) values
 ('featured_drink', '{"name": "Banana Split Coffee", "description": "Our signature dessert-in-a-cup. If you only try one thing, make it this.", "price": "6.50", "image_url": ""}'),
 ('staff_picks', '{"items": [{"label": "Flying off the menu", "value": "Cranberry Walnut Chicken Salad Panini"}, {"label": "Barista''s pick", "value": "Banana Split Coffee"}]}'),
 ('loyalty_copy', '{"body_markdown": "Ask a Troublemaker about loyalty perks. Full program details coming soon."}'),
-('announcement_banner', '{"enabled": false, "message": ""}')
+('announcement_banner', '{"enabled": false, "message": ""}'),
+('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "", "tiktok": "", "x": "", "youtube": ""}')
 on conflict (key) do nothing;
 
 -- -----------------------------------------------------------------------------
@@ -183,6 +190,17 @@ insert into team_members (name, role, bio, fun_facts, display_order, active) val
 -- -----------------------------------------------------------------------------
 -- Local businesses (placeholder Haddon Heights neighbors — confirm with client)
 -- -----------------------------------------------------------------------------
+-- Client-named starting entries (confirm exact names, categories, and URLs).
+-- Fully owner-editable in the Local Love manager.
 insert into local_businesses (name, category, blurb, url, display_order) values
-('A Neighborhood Favorite', 'restaurant', 'One of the great local spots we send people to. (Owner: replace with a real neighbor + link.)', '', 0),
-('A Local Shop', 'retail', 'Independent and worth a visit. (Owner: replace with a real neighbor + link.)', '', 1);
+('Anthony''s', 'restaurant', 'A neighborhood favorite we love to send people to. (Owner: confirm details + add a link.)', '', 0),
+('Ralph''s', 'restaurant', 'Good food, good people, right around the corner. (Owner: confirm details + add a link.)', '', 1),
+('Lula''s', 'cafe', 'One of the local spots that makes Haddon Heights special. (Owner: confirm details + add a link.)', '', 2);
+
+-- -----------------------------------------------------------------------------
+-- TB Timeline milestones (placeholder — owner adds the real history)
+-- -----------------------------------------------------------------------------
+insert into timeline_events (date_label, sort_date, title, description, display_order) values
+('Day One', '2021-01-01', 'Trouble Brewing opens its doors', 'Tom & Cat trade spreadsheets for steamed milk and open Trouble Brewing Coffee House in Haddon Heights. (Owner: update with the real date + story.)', 0),
+('Year One', '2022-01-01', 'Our first anniversary', 'One year of regulars, La Colombe, and good Trouble. Thank you, Haddon Heights.', 1),
+('A new signature', '2023-01-01', 'The Banana Split Coffee is born', 'Our now-signature, dessert-inspired drink joins the menu and quickly becomes a favorite.', 2);

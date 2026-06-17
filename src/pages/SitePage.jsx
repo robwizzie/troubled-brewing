@@ -3,13 +3,14 @@ import { useSearchParams } from 'react-router-dom';
 import { getPage, getSections } from '../lib/dataService.js';
 import SectionRenderer from '../components/SectionRenderer.jsx';
 import SEO from '../components/SEO.jsx';
+import SocialLinks from '../components/SocialLinks.jsx';
 import { PageSkeleton } from '../components/Skeleton.jsx';
 import { localBusinessJsonLd } from '../lib/jsonld.js';
 
 /* Generic section-composed page. Fetches the page meta + ordered sections and
    renders them via the registry. Used by most public routes. Supports admin
    preview of unpublished drafts via ?preview=1. */
-export default function SitePage({ slug, children }) {
+export default function SitePage({ slug, children, showSocial = false }) {
   const [params] = useSearchParams();
   const preview = params.get('preview') === '1';
   const [page, setPage] = useState(null);
@@ -45,6 +46,12 @@ export default function SitePage({ slug, children }) {
         <PageSkeleton />
       ) : (
         sections.map((s) => <SectionRenderer key={s.id} section={s} />)
+      )}
+      {showSocial && (
+        <div className="container" style={{ textAlign: 'center', paddingBottom: 'var(--space-6)' }}>
+          <p className="eyebrow">Follow along</p>
+          <SocialLinks band />
+        </div>
       )}
       {children}
     </>

@@ -27,19 +27,20 @@ export const PAGES = {
   'gallery-wall': { slug: 'gallery-wall', title: 'The Gallery Wall — Trouble Brewing Coffee House', meta_description: 'The stories behind the framed art on our wall. A little bit of Trouble Brewing history, one frame at a time.' },
   troublemakers: { slug: 'troublemakers', title: 'The Troublemakers — Trouble Brewing Coffee House', meta_description: 'Meet the Troublemakers — the team behind your coffee at Trouble Brewing Coffee House in Haddon Heights, NJ.' },
   neighborhood: { slug: 'neighborhood', title: 'Local Love — Trouble Brewing Coffee House', meta_description: "The Haddon Heights businesses we know and love. Support local with Trouble Brewing Coffee House." },
+  timeline: { slug: 'timeline', title: 'Our Story So Far — Trouble Brewing Coffee House', meta_description: 'The Trouble Brewing timeline — opening day, anniversaries, menu launches, and the milestones that made us who we are in Haddon Heights, NJ.' },
 };
 
 export const SECTIONS = {
   home: [
     { type: 'gallery_wall_hero', data: { heading: 'Welcome to Trouble Brewing', subheading: 'A whole wall of reasons to stop in.', frames: [
-      { label: 'Our Signature Drink', link: '/menu', frame_style: 'ornate', image_url: '' },
-      { label: 'Fresh Pastries', link: '/menu', frame_style: 'oval-gold', image_url: '' },
-      { label: "What's On", link: '/events', frame_style: 'black', image_url: '' },
-      { label: 'Meet the Troublemakers', link: '/troublemakers', frame_style: 'wood', image_url: '' },
+      { label: 'Order / Menu', link: '/menu', frame_style: 'ornate', image_url: '' },
+      { label: 'The Troublemakers', link: '/troublemakers', frame_style: 'pink', image_url: '' },
       { label: 'The Gallery Wall', link: '/gallery-wall', frame_style: 'gold', image_url: '' },
-      { label: 'Reviews', link: '/reviews', frame_style: 'black', image_url: '' },
-      { label: 'Local Love', link: '/neighborhood', frame_style: 'wood', image_url: '' },
-      { label: 'Our Story', link: '/about', frame_style: 'oval-gold', image_url: '' },
+      { label: "What's On", link: '/events', frame_style: 'black', image_url: '' },
+      { label: 'Our Story So Far', link: '/timeline', frame_style: 'green', image_url: '' },
+      { label: 'Local Love', link: '/neighborhood', frame_style: 'pink', image_url: '' },
+      { label: 'Reviews', link: '/reviews', frame_style: 'oval-gold', image_url: '' },
+      { label: 'Our Story', link: '/about', frame_style: 'black', image_url: '' },
     ] } },
     { type: 'featured_drink', data: { heading: "This Week's Trouble" } },
     { type: 'hours', data: { heading: 'Today at Trouble Brewing' } },
@@ -98,6 +99,10 @@ export const SECTIONS = {
     { type: 'local_businesses_grid', data: { heading: 'Our neighbors' } },
     { type: 'cta', data: { heading: 'Know a great local spot?', body: "Tell us who we're missing.", button_label: 'Send a suggestion', button_url: '/contact' } },
   ],
+  timeline: [
+    { type: 'hero', data: { heading: 'Our Story So Far', subheading: 'A few of the moments that made Trouble.', background_image_url: '', cta_label: '', cta_url: '' } },
+    { type: 'timeline_grid', data: { heading: 'The Trouble Brewing timeline' } },
+  ],
 };
 
 export const MENU_ITEMS = [
@@ -134,6 +139,7 @@ export const CONTENT_BLOCKS = {
   staff_picks: { items: [ { label: 'Flying off the menu', value: 'Cranberry Walnut Chicken Salad Panini' }, { label: "Barista's pick", value: 'Banana Split Coffee' } ] },
   loyalty_copy: { body_markdown: 'Ask a Troublemaker about loyalty perks. Full program details coming soon.' },
   announcement_banner: { enabled: false, message: '' },
+  social_links: { instagram: 'https://instagram.com/troublebrewingcoffee', facebook: '', tiktok: '', x: '', youtube: '' },
 };
 
 export const GOOGLE_PROFILE = {
@@ -164,8 +170,15 @@ export const TEAM_MEMBERS = [
 ];
 
 export const LOCAL_BUSINESSES = [
-  { id: 'lb-1', name: 'A Neighborhood Favorite', category: 'restaurant', blurb: 'One of the great local spots we send people to. (Owner: replace with a real neighbor + link.)', url: '', photo_url: '', display_order: 0 },
-  { id: 'lb-2', name: 'A Local Shop', category: 'retail', blurb: 'Independent and worth a visit. (Owner: replace with a real neighbor + link.)', url: '', photo_url: '', display_order: 1 },
+  { id: 'lb-1', name: "Anthony's", category: 'restaurant', blurb: 'A neighborhood favorite we love to send people to. (Owner: confirm details + add a link.)', url: '', photo_url: '', display_order: 0 },
+  { id: 'lb-2', name: "Ralph's", category: 'restaurant', blurb: 'Good food, good people, right around the corner. (Owner: confirm details + add a link.)', url: '', photo_url: '', display_order: 1 },
+  { id: 'lb-3', name: "Lula's", category: 'cafe', blurb: 'One of the local spots that makes Haddon Heights special. (Owner: confirm details + add a link.)', url: '', photo_url: '', display_order: 2 },
+];
+
+export const TIMELINE_EVENTS = [
+  { id: 'tl-1', date_label: 'Day One', sort_date: '2021-01-01', title: 'Trouble Brewing opens its doors', description: 'Tom & Cat trade spreadsheets for steamed milk and open Trouble Brewing Coffee House in Haddon Heights. (Owner: update with the real date + story.)', image_url: '', display_order: 0 },
+  { id: 'tl-2', date_label: 'Year One', sort_date: '2022-01-01', title: 'Our first anniversary', description: 'One year of regulars, La Colombe, and good Trouble. Thank you, Haddon Heights.', image_url: '', display_order: 1 },
+  { id: 'tl-3', date_label: 'A new signature', sort_date: '2023-01-01', title: 'The Banana Split Coffee is born', description: 'Our now-signature, dessert-inspired drink joins the menu and quickly becomes a favorite.', image_url: '', display_order: 2 },
 ];
 
 export const EVENTS = [];

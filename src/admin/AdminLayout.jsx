@@ -14,6 +14,7 @@ const NAV = [
   { to: '/admin/gallery', label: 'Gallery Wall' },
   { to: '/admin/troublemakers', label: 'Troublemakers' },
   { to: '/admin/neighborhood', label: 'Local Love' },
+  { to: '/admin/timeline', label: 'TB Timeline' },
   { section: 'Reviews & Profile' },
   { to: '/admin/testimonials', label: 'Testimonials' },
   { to: '/admin/google', label: 'Google Profile' },
