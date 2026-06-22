@@ -4,9 +4,10 @@
 const DEFAULT = [
   'Good Coffee',
   'Good Trouble',
-  'We Pour La Colombe',
-  'Haddon Heights, NJ',
+  'Espresso & Lattes',
   'Fresh Paninis',
+  'Brioche Breakfast Sandwiches',
+  'Haddon Heights, NJ',
   'Come Cause Trouble',
 ];
 

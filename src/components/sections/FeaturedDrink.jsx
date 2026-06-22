@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getContentBlock } from '../../lib/dataService.js';
 import { SkeletonBlock } from '../Skeleton.jsx';
-import { Steam } from '../Motifs.jsx';
+import { CoffeeCup } from '../Motifs.jsx';
 
 /* "This Week's Trouble" featured drink, edited in admin Quick Blocks. */
 export default function FeaturedDrink({ data = {} }) {
@@ -25,14 +25,13 @@ export default function FeaturedDrink({ data = {} }) {
             ) : drink?.image_url ? (
               <img src={drink.image_url} alt={drink.name || 'Featured drink'} loading="lazy" />
             ) : (
-              <div className="featured__placeholder" aria-hidden="true">☕</div>
+              <CoffeeCup className="featured__cup" size={132} color="var(--color-yellow-deep)" />
             )}
           </div>
           <div className="featured__body">
-            <span style={{ color: 'var(--color-yellow-deep)', display: 'inline-block' }}><Steam /></span>
             <p className="eyebrow">{heading}</p>
-            <h2>{drink?.name || 'Banana Split Coffee'}</h2>
-            <p style={{ color: 'var(--color-text-soft)' }}>{drink?.description}</p>
+            <h2>{drink?.name || 'This week’s feature'}</h2>
+            {drink?.description && <p className="featured__desc">{drink.description}</p>}
             {drink?.price && <p className="featured__price">${Number(drink.price).toFixed(2)}</p>}
           </div>
         </div>

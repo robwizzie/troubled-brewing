@@ -49,7 +49,7 @@
   --color-primary: var(--color-green-deep);   /* deep olive — AA contrast with white text */
   --color-primary-hover: #404829;
   --color-accent: var(--color-yellow);          /* filled accents — pair with black text */
-  --color-accent-hover: var(--color-yellow-deep);
+  --color-accent-hover: #f2c84e;   /* hover BRIGHTENS the gold (keeps black text crisp), not muddy-darkens */
   --color-accent-text: var(--color-pink-deep);  /* accent TEXT (eyebrows, etc.) — readable */
   --color-on-primary: #fffdf8;
   --color-on-accent: var(--color-black);

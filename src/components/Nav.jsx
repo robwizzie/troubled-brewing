@@ -132,7 +132,7 @@ export default function Nav() {
             </div>
           </div>
 
-          <OrderButton className="btn btn--accent btn--wiggle nav__cta" location="nav" />
+          <OrderButton className="btn btn--accent nav__cta" location="nav" />
 
           {/* the dapper fox peeks into the corner of the open drawer (mobile only) */}
           {open && (

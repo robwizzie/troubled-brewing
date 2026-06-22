@@ -11,7 +11,13 @@ exists you see a tasteful fallback, so nothing ever looks broken.
 | `logo-fox.png` | Primary logo **with the fox** (the round badge) | Reserved / optional |
 | `fox-mascot.png` | The standing **dapper top-hat fox** (line art) | Easter egg beside the navbar logo |
 | `fox-head.png` | The **gold fox-head sculpture** photo | Tucked into the Gallery Wall on the homepage |
+| `rabbit-head.png` | The **gold rabbit-head sculpture** photo | Tucked into the Gallery Wall (2nd keepsake) |
 | `fox-footer-top.png` | The **fox emerging from coffee** banner (wide) | Top band of the footer |
+
+> The Gallery Wall sculptures (`fox-head.png`, `rabbit-head.png`) show a tasteful
+> drawn fallback until you drop the real files in — so the wall always looks
+> intentional. Export them **transparent** (they sit on the green wall),
+> ~600–900px tall. They're decorative and hidden on small phones.
 
 ## Backgrounds — you do NOT have to pre-remove the white box
 - **Logos** (`logo-*`): a plain **white background is fine**. The nav and footer

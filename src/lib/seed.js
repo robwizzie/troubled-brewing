@@ -6,6 +6,8 @@
    this from live data — see docs/DEPLOYMENT.md §backups.)
    ============================================================================= */
 
+import { asset } from './config.js';
+
 export const SITE = {
   name: 'Trouble Brewing Coffee House',
   address: '514 Station Ave, Haddon Heights, NJ 08035',
@@ -16,9 +18,9 @@ export const SITE = {
 };
 
 export const PAGES = {
-  home: { slug: 'home', title: 'Trouble Brewing Coffee House — Haddon Heights, NJ', meta_description: 'A warm, independent coffee shop in Haddon Heights, NJ pouring La Colombe coffee. Espresso, signature drinks, fresh paninis, and pastries.' },
+  home: { slug: 'home', title: 'Trouble Brewing Coffee House — Haddon Heights, NJ', meta_description: 'A warm, independent coffee shop and kitchen in Haddon Heights, NJ. Serious espresso, specialty drinks, fresh paninis, brioche breakfast sandwiches, and scratch-baked pastries.' },
   menu: { slug: 'menu', title: 'Menu — Trouble Brewing Coffee House', meta_description: 'Espresso, specialty drinks, paninis, and fresh pastries at Trouble Brewing Coffee House in Haddon Heights, NJ. Order online via SpotOn.' },
-  about: { slug: 'about', title: 'Our Story — Trouble Brewing Coffee House', meta_description: 'From mortgage bankers to a neighborhood coffee shop. The story of Trouble Brewing and our La Colombe coffee in Haddon Heights, NJ.' },
+  about: { slug: 'about', title: 'Our Story — Trouble Brewing Coffee House', meta_description: 'From mortgage bankers to a neighborhood coffee shop. The story of Trouble Brewing in Haddon Heights, NJ — serious coffee, scratch food, and good Trouble.' },
   events: { slug: 'events', title: 'Events & Community — Trouble Brewing Coffee House', meta_description: 'Upcoming events at Trouble Brewing Coffee House. Host your own gathering in our Haddon Heights space.' },
   location: { slug: 'location', title: 'Hours & Location — Trouble Brewing Coffee House', meta_description: 'Visit Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ. Hours, parking, and directions.' },
   contact: { slug: 'contact', title: 'Contact & Catering — Trouble Brewing Coffee House', meta_description: 'Get in touch with Trouble Brewing Coffee House or send a catering inquiry.' },
@@ -33,22 +35,26 @@ export const PAGES = {
 export const SECTIONS = {
   home: [
     { type: 'gallery_wall_hero', data: { heading: 'Welcome to Trouble Brewing', subheading: 'A whole wall of reasons to stop in.', frames: [
-      { label: 'Order / Menu', link: '/menu', frame_style: 'ornate', image_url: '' },
-      { label: 'The Troublemakers', link: '/troublemakers', frame_style: 'pink', image_url: '' },
-      { label: 'The Gallery Wall', link: '/gallery-wall', frame_style: 'gold', image_url: '' },
-      { label: "What's On", link: '/events', frame_style: 'black', image_url: '' },
-      { label: 'Our Story So Far', link: '/timeline', frame_style: 'green', image_url: '' },
-      { label: 'Local Love', link: '/neighborhood', frame_style: 'pink', image_url: '' },
-      { label: 'Reviews', link: '/reviews', frame_style: 'oval-gold', image_url: '' },
-      { label: 'Our Story', link: '/about', frame_style: 'black', image_url: '' },
+      { label: 'Order / Menu', link: '/menu', frame_style: 'ornate', image_url: asset('images/wall/order-menu.jpg') },
+      { label: 'The Troublemakers', link: '/troublemakers', frame_style: 'pink', image_url: asset('images/wall/troublemakers.jpg') },
+      { label: 'The Gallery Wall', link: '/gallery-wall', frame_style: 'ornate', image_url: asset('images/wall/gallery-wall.jpg') },
+      { label: 'Events', link: '/events', frame_style: 'oval-black', image_url: asset('images/wall/whats-on.jpg') },
+      { label: 'Local Love', link: '/neighborhood', frame_style: 'oval-pink', image_url: asset('images/wall/local-love.jpg') },
+      { label: 'Reviews', link: '/reviews', frame_style: 'oval-gold', image_url: asset('images/wall/reviews.jpg') },
+      { label: 'The Journey', link: '/timeline', frame_style: 'ornate', image_url: asset('images/wall/our-story-so-far.jpg') },
+      { label: 'Our Story', link: '/about', frame_style: 'black', image_url: asset('images/wall/our-story.jpg') },
     ] } },
     { type: 'social_proof', data: { label: 'Loved by the neighborhood' } },
     { type: 'featured_drink', data: { heading: "This Week's Trouble" } },
     { type: 'signature_drinks', data: { heading: 'Signature sips', button_label: 'See the full menu' } },
     { type: 'hours', data: { heading: 'Today at Trouble Brewing' } },
     { type: 'cta', data: { heading: 'Skip the line', body: "Order ahead on SpotOn and we'll have it ready.", button_label: 'Order Now', button_url: '' } },
-    { type: 'rich_text', data: { variant: 'lead', heading: 'We proudly pour La Colombe', body_markdown: "Every cup starts with **La Colombe** coffee: thoughtfully roasted, ethically sourced, and pulled with care. It's the backbone of everything we make, from a classic cappuccino to our signature Banana Split Coffee." } },
-    { type: 'rich_text', data: { variant: 'alt', heading: 'A neighborhood spot', body_markdown: 'We\'re more than coffee. Come for an event, meet the team, or just settle into the green-walled, art-covered room that regulars call a second home.' } },
+    { type: 'intro_duo', data: {
+      heading_a: 'Good coffee, real food',
+      body_a: 'We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options.',
+      heading_b: 'More than a coffee shop',
+      body_b: 'Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That\'s the good kind of Trouble.',
+    } },
     { type: 'instagram', data: { embed_handle: 'troublebrewingcoffee' } },
     { type: 'newsletter', data: { heading: 'Stay in the loop', body: 'New drinks, events, and the occasional bit of Trouble — straight to your inbox.', mailchimp_action_url: '' } },
   ],
@@ -59,7 +65,7 @@ export const SECTIONS = {
   about: [
     { type: 'hero', data: { heading: 'Our Story', subheading: 'From spreadsheets to steamed milk.', background_image_url: '', cta_label: 'See the Menu', cta_url: '/menu' } },
     { type: 'rich_text', data: { variant: 'lead', heading: 'Two bankers walk into a coffee shop', body_markdown: 'Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Trouble Brewing is the result: a warm, art-filled room in the heart of Haddon Heights where the coffee is serious and the vibe is not.' } },
-    { type: 'rich_text', data: { variant: 'alt', heading: 'Why La Colombe', body_markdown: "We partnered with **La Colombe** because great coffee shouldn't be complicated. It should be consistent, ethical, and delicious. That partnership is the foundation we build every drink on." } },
+    { type: 'rich_text', data: { variant: 'alt', heading: "What's in the cup", body_markdown: "Great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. We pour **La Colombe** beans and pull every shot with care, then build everything from a classic cappuccino to our specialty drinks on top of it." } },
     { type: 'rich_text', data: { heading: 'Why local matters', body_markdown: 'Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for.' } },
   ],
   events: [
@@ -110,10 +116,10 @@ export const SECTIONS = {
 };
 
 export const MENU_ITEMS = [
-  { id: 's-1', name: 'Cappuccino', description: 'La Colombe espresso and steamed milk, balanced and classic.', price: 4.5, category: 'espresso', dietary_flags: [], available: true, display_order: 0 },
+  { id: 's-1', name: 'Cappuccino', description: 'Espresso and steamed milk, balanced and classic.', price: 4.5, category: 'espresso', dietary_flags: [], available: true, display_order: 0 },
   { id: 's-2', name: 'Iced Chai Latte', description: 'Spiced chai over ice with milk — cozy, even cold.', price: 5.5, category: 'specialty', dietary_flags: [], available: true, display_order: 1 },
   { id: 's-3', name: 'Banana Split Coffee', description: "Our signature: a playful, dessert-inspired coffee you can't get anywhere else.", price: 6.5, category: 'specialty', dietary_flags: [], available: true, display_order: 2 },
-  { id: 's-4', name: 'Coffee Flight', description: 'A tasting flight to explore what La Colombe can do.', price: 9.0, category: 'specialty', dietary_flags: [], available: true, display_order: 3 },
+  { id: 's-4', name: 'Coffee Flight', description: 'A tasting flight through our espresso lineup.', price: 9.0, category: 'specialty', dietary_flags: [], available: true, display_order: 3 },
   { id: 's-5', name: 'Croissant', description: 'Buttery, flaky, baked-fresh.', price: 3.75, category: 'pastry', dietary_flags: [], available: true, display_order: 4 },
   { id: 's-6', name: 'Brioche Breakfast Sandwich', description: 'Egg and cheese on soft brioche. Add pork roll or bacon.', price: 7.5, category: 'food', dietary_flags: [], available: true, display_order: 5 },
   { id: 's-7', name: 'Scone', description: "Rotating flavors — ask what's in today.", price: 3.5, category: 'pastry', dietary_flags: [], available: true, display_order: 6 },
