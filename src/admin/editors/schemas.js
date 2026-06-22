@@ -128,6 +128,14 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'background_image_url', label: 'Background photo', type: 'image', preset: 'hero' },
     ],
   },
+  intro_duo: {
+    fields: [
+      { name: 'heading_a', label: 'Left heading', type: 'text' },
+      { name: 'body_a', label: 'Left text', type: 'markdown', rows: 4 },
+      { name: 'heading_b', label: 'Right heading', type: 'text' },
+      { name: 'body_b', label: 'Right text', type: 'markdown', rows: 4 },
+    ],
+  },
   cozy_editorial_hero: {
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },

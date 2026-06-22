@@ -14,6 +14,7 @@ import InstagramFeed from './InstagramFeed.jsx';
 import MapSection from './MapSection.jsx';
 import Newsletter from './Newsletter.jsx';
 import FeaturedDrink from './FeaturedDrink.jsx';
+import IntroDuo from './IntroDuo.jsx';
 import SignatureDrinks from './SignatureDrinks.jsx';
 import SocialProof from './SocialProof.jsx';
 import ReviewsHero from './ReviewsHero.jsx';
@@ -23,6 +24,7 @@ import ReviewCTA from './ReviewCTA.jsx';
 import GalleryWallHero from './GalleryWallHero.jsx';
 import WarmStorefrontHero from './WarmStorefrontHero.jsx';
 import CozyEditorialHero from './CozyEditorialHero.jsx';
+import ModernCoffeeHero from './ModernCoffeeHero.jsx';
 import GalleryPiecesGrid from './GalleryPiecesGrid.jsx';
 import TroublemakersGrid from './TroublemakersGrid.jsx';
 import LocalBusinessesGrid from './LocalBusinessesGrid.jsx';
@@ -43,6 +45,7 @@ export const SECTION_RENDERERS = {
   map: MapSection,
   newsletter: Newsletter,
   featured_drink: FeaturedDrink,
+  intro_duo: IntroDuo,
   signature_drinks: SignatureDrinks,
   social_proof: SocialProof,
   reviews_hero: ReviewsHero,
@@ -52,6 +55,7 @@ export const SECTION_RENDERERS = {
   gallery_wall_hero: GalleryWallHero,
   warm_storefront_hero: WarmStorefrontHero,
   cozy_editorial_hero: CozyEditorialHero,
+  modern_coffee_hero: ModernCoffeeHero,
   gallery_pieces_grid: GalleryPiecesGrid,
   troublemakers_grid: TroublemakersGrid,
   local_businesses_grid: LocalBusinessesGrid,
@@ -78,6 +82,7 @@ export const ADDABLE_SECTION_TYPES = [
   'map',
   'newsletter',
   'featured_drink',
+  'intro_duo',
   'signature_drinks',
   'social_proof',
   'testimonials_wall',
@@ -103,6 +108,7 @@ export const SECTION_LABELS = {
   map: 'Map',
   newsletter: 'Newsletter signup',
   featured_drink: 'Featured drink',
+  intro_duo: 'Two-column intro',
   signature_drinks: 'Signature drinks teaser',
   social_proof: 'Social proof (rating + reviews)',
   reviews_hero: 'Reviews hero (rating)',

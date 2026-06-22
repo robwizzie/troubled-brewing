@@ -63,15 +63,24 @@ export function Hare({ size = 56, className = '' }) {
 }
 
 /* Symmetric scroll flourish — straight from the logo's letterpress swashes. */
-export function Flourish({ width = 220, className = '', color = 'currentColor' }) {
+export function Flourish({ width = 240, className = '', color = 'currentColor' }) {
   return (
-    <svg className={className} width={width} height="22" viewBox="0 0 220 22" fill="none" aria-hidden="true" role="presentation">
-      <path
-        d="M110 11 C150 11 150 3 178 3 C198 3 206 17 196 17 C188 17 190 7 178 7 C156 7 150 11 110 11 C70 11 64 7 42 7 C30 7 32 17 24 17 C14 17 22 3 42 3 C70 3 70 11 110 11 Z"
-        fill={color}
-        opacity="0.85"
-      />
-      <circle cx="110" cy="11" r="3" fill={color} />
+    <svg className={className} width={width} height="24" viewBox="0 0 240 24" fill="none" aria-hidden="true" role="presentation">
+      <g stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none">
+        {/* left swash: a graceful hump that resolves into a small upturned curl */}
+        <path d="M120 12 C104 12 96 4.5 78 4.5 C62 4.5 56 12 44 12 C36.5 12 36.5 6.8 43 7.4" opacity="0.92" />
+        {/* right swash — mirror of the left about x=120 */}
+        <path d="M120 12 C136 12 144 4.5 162 4.5 C178 4.5 184 12 196 12 C203.5 12 203.5 6.8 197 7.4" opacity="0.92" />
+        {/* fine hairline trailing each swash inward for a layered, etched feel */}
+        <path d="M120 12 C108 12.4 100 15 86 15" opacity="0.4" />
+        <path d="M120 12 C132 12.4 140 15 154 15" opacity="0.4" />
+      </g>
+      {/* faceted center diamond */}
+      <path d="M120 5.6 L124.6 12 L120 18.4 L115.4 12 Z" fill={color} />
+      <path d="M120 8.4 L122.4 12 L120 15.6 L117.6 12 Z" fill="var(--color-paper, #fffdf7)" opacity="0.55" />
+      {/* tiny terminal dots */}
+      <circle cx="40.5" cy="9" r="1.5" fill={color} />
+      <circle cx="199.5" cy="9" r="1.5" fill={color} />
     </svg>
   );
 }

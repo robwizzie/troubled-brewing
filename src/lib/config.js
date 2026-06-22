@@ -22,6 +22,7 @@ export const BRAND = {
   logoFox: asset('images/brand/logo-fox.png'),             // primary logo WITH the fox (badge)
   foxMascot: asset('images/brand/fox-mascot.png'),         // standing dapper top-hat fox (easter egg)
   foxHead: asset('images/brand/fox-head.png'),             // gold fox-head sculpture (gallery wall)
+  rabbitHead: asset('images/brand/rabbit-head.png'),       // gold rabbit-head sculpture — tucked into the gallery wall (falls back to a hare motif)
   footerBanner: asset('images/brand/fox-footer-top.svg'),  // fox emerging from coffee (footer top band) — SVG, crisp at any size
 };
 

@@ -93,7 +93,8 @@ p { margin: 0 0 var(--space-4); }
     color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 .btn:hover { transform: translateY(-1px); }
-.btn:active { transform: translateY(0); }
+/* fun, springy press — every button physically sinks when pushed */
+.btn:active { transform: translateY(2px) scale(0.97); }
 .btn--primary { background: var(--color-primary); color: var(--color-on-primary); }
 .btn--primary:hover { background: var(--color-primary-hover); color: var(--color-on-primary); }
 .btn--accent { background: var(--color-accent); color: var(--color-on-accent); box-shadow: var(--shadow-sm); }
@@ -281,8 +282,8 @@ a, button { -webkit-tap-highlight-color: transparent; }
     0 12px 26px rgba(168, 124, 28, 0.26);
 }
 .btn--accent:active {
-  box-shadow: 0 2px 0 color-mix(in srgb, var(--color-yellow-deep) 55%, transparent),
-    0 4px 10px rgba(168, 124, 28, 0.2);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-yellow-deep) 55%, transparent),
+    0 2px 7px rgba(168, 124, 28, 0.18);
 }
 .btn--primary {
   box-shadow: 0 4px 0 color-mix(in srgb, var(--color-black) 22%, transparent),
@@ -293,12 +294,12 @@ a, button { -webkit-tap-highlight-color: transparent; }
     0 12px 26px rgba(24, 20, 18, 0.2);
 }
 .btn--primary:active {
-  box-shadow: 0 2px 0 color-mix(in srgb, var(--color-black) 22%, transparent),
-    0 4px 10px rgba(24, 20, 18, 0.14);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-black) 22%, transparent),
+    0 2px 7px rgba(24, 20, 18, 0.12);
 }
-/* the lift distance now matches the shadow so the press reads as a real push */
+/* the lift distance matches the shadow so the press reads as a real, deep push */
 .btn--accent:hover, .btn--primary:hover { transform: translateY(-2px); }
-.btn--accent:active, .btn--primary:active { transform: translateY(1px); }
+.btn--accent:active, .btn--primary:active { transform: translateY(3px) scale(0.97); }
 
 /* warm the card hover shadow toward the brand instead of neutral grey */
 .card:hover { box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }

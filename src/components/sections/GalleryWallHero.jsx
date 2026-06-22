@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import BrandImg from '../BrandImg.jsx';
-import { FoxEmblem, Flourish } from '../Motifs.jsx';
-import { BRAND } from '../../lib/config.js';
+import { FoxEmblem, Hare, Flourish, CoffeeCup, Beans } from '../Motifs.jsx';
+import { BRAND, asset } from '../../lib/config.js';
 
 /* THE signature landing concept: the in-shop Gallery Wall recreated as an
    eclectic salon hang on the sage-green wall. Each frame is a legible "poster"
@@ -11,10 +12,23 @@ import { BRAND } from '../../lib/config.js';
    tucked among the frames. Masonry columns keep it readable on every screen.
    See docs/DESIGN.md. */
 
-const ASPECTS = ['3 / 4', '4 / 3', '1 / 1', '3 / 4', '4 / 5', '4 / 3', '1 / 1', '5 / 4', '3 / 4', '4 / 3'];
-const TILTS = [-3, 2.5, -1.5, 3, -2.5, 2, -3.5, 1.5, -2, 3];
+/* Wildly mixed shapes + sizes so the hang feels collected-over-time, like the
+   real shop wall: tall portraits, wide landscapes, squares, and a few small
+   pieces (SIZES < 100% leave breathing room around them). */
+const ASPECTS = ['4 / 5', '1 / 1', '5 / 6', '3 / 4', '3 / 2', '1 / 1', '7 / 5', '5 / 4', '4 / 5', '5 / 4'];
+const TILTS = [-4, 3, -2, 4.5, -3, 2.5, -4.5, 2, -2.5, 3.5];
+const SIZES = ['100%', '92%', '100%', '80%', '86%', '100%', '100%', '90%', '90%', '78%'];
 const TINTS = ['var(--color-paper)', 'var(--color-pink-soft)', 'var(--color-yellow-soft)', 'var(--color-green-soft)', '#efe7d3'];
-const GLYPHS = { ornate: '☕', 'oval-gold': '🥐', black: '✦', wood: '❀', green: '🌿', pink: '✿', gold: '✶' };
+const GLYPHS = { ornate: '☕', 'oval-gold': '🥐', 'oval-black': '✦', 'oval-pink': '✿', 'oval-green': '🌿', black: '✦', wood: '❀', green: '🌿', pink: '✿', gold: '✶' };
+
+/* Gold sculptures tucked among the frames like the real wall — the fox-head and
+   the rabbit-head. Each shows the owner's asset once it's dropped into BRAND,
+   with a graceful motif fallback until then. `before` = the frame index the
+   object is slotted in front of, so they distribute across the masonry. */
+const WALL_OBJECTS = [
+  { before: 2, mod: 'fox', src: BRAND.foxHead, fallback: <FoxEmblem size={104} /> },
+  { before: 4, mod: 'rabbit', src: BRAND.rabbitHead, fallback: <Hare size={104} /> },
+];
 
 export default function GalleryWallHero({ data = {} }) {
   const {
@@ -23,39 +37,69 @@ export default function GalleryWallHero({ data = {} }) {
     frames = [],
   } = data;
 
-  // Tuck the gold fox-head sculpture in among the frames, like the real wall.
-  const objects = { 2: 'fox' };
+  // Tuck the gold sculptures (fox, rabbit) in among the frames, like the real
+  // wall. A `before` beyond the last frame appends the object at the very end.
+  const objectsBefore = {};
+  WALL_OBJECTS.forEach((o) => { (objectsBefore[Math.min(o.before, frames.length)] ||= []).push(o); });
+
+  const pushObjects = (i) =>
+    (objectsBefore[i] || []).forEach((o, k) => {
+      tiles.push({ object: o, tilt: TILTS[(i + 1 + k) % TILTS.length], key: `obj-${i}-${k}` });
+    });
 
   const tiles = [];
   frames.forEach((f, i) => {
-    if (objects[i]) tiles.push({ object: objects[i], tilt: TILTS[(i + 1) % TILTS.length], key: `obj-${i}` });
+    pushObjects(i);
     tiles.push({
       frame: f, i, key: `f-${i}`,
       ar: ASPECTS[i % ASPECTS.length],
       tilt: TILTS[i % TILTS.length],
+      size: SIZES[i % SIZES.length],
       tint: TINTS[i % TINTS.length],
     });
   });
+  pushObjects(frames.length); // trailing sculptures (e.g. the rabbit) close out the wall
 
   return (
     <section className="gw-hero">
       <div className="container gw-hero__inner">
+        <div className="gw-hero__masthead">
+          {/* small framed photos hung either side of the sign — they fill the
+              desktop margins so the centerpiece reads as a curated cluster, like
+              the real wall. Purely decorative (no label, not clickable). */}
+          <span className="gw-hero__flank gw-hero__flank--l" aria-hidden="true">
+            <span className="gw-frame__art gw-frame__art--oval-gold gw-hero__flank-art">
+              <BrandImg src={asset('images/wall/flank-coffee.jpg')} alt="" loading="lazy" className="gw-frame__img" fallback={<CoffeeCup size={56} color="var(--color-green-deep)" steam={false} />} />
+            </span>
+          </span>
+
         <div className="gw-hero__placard">
-          <p className="eyebrow">Haddon Heights, NJ · La Colombe coffee</p>
+          <p className="gw-hero__eyebrow">
+            <span className="gw-hero__star" aria-hidden="true">✦</span>
+            Haddon Heights, NJ · Coffee &amp; Kitchen
+            <span className="gw-hero__star" aria-hidden="true">✦</span>
+          </p>
           <h1>{heading}</h1>
           <Flourish className="gw-hero__flourish" width={240} color="var(--color-yellow)" />
           <p className="hero__sub">{subheading}</p>
           <p className="gw-hero__cta">
-            <OrderButton label="Order Now" className="btn btn--accent btn--lg btn--wiggle" location="hero" />
+            <OrderButton label="Order Now" className="btn btn--accent btn--lg" location="hero" />
             <Link className="btn btn--ghost btn--lg" to="/menu">See the menu</Link>
           </p>
+        </div>
+
+          <span className="gw-hero__flank gw-hero__flank--r" aria-hidden="true">
+            <span className="gw-frame__art gw-frame__art--black gw-hero__flank-art">
+              <BrandImg src={asset('images/wall/flank-food.jpg')} alt="" loading="lazy" className="gw-frame__img" fallback={<Beans size={52} color="var(--color-green-deep)" />} />
+            </span>
+          </span>
         </div>
 
         <div className="gw-wall">
           {tiles.map((t) =>
             t.object ? (
-              <div key={t.key} className="gw-tile gw-tile--object gw-tile--fox" aria-hidden="true">
-                <BrandImg src={BRAND.foxHead} alt="" loading="lazy" className="gw-object-img" fallback={<FoxEmblem size={104} />} />
+              <div key={t.key} className={`gw-tile gw-tile--object gw-tile--${t.object.mod}`} aria-hidden="true">
+                <BrandImg src={t.object.src} alt="" loading="lazy" className="gw-object-img" fallback={t.object.fallback} />
               </div>
             ) : (
               <FrameTile key={t.key} {...t} />
@@ -67,15 +111,19 @@ export default function GalleryWallHero({ data = {} }) {
   );
 }
 
-function FrameTile({ frame, ar, tilt, tint, i }) {
+function FrameTile({ frame, ar, tilt, size, tint, i }) {
+  // Show the photo once it exists; until the file is added (or if it fails to
+  // load) fall back to the legible "poster" so the wall never shows a broken img.
+  const [imgFailed, setImgFailed] = useState(false);
   const style = frame.frame_style || 'gold';
+  const showImg = frame.image_url && !imgFailed;
   const isInternal = frame.link && frame.link.startsWith('/');
-  const tileStyle = { '--tilt': `${tilt}deg`, '--ar': ar, '--tint': tint };
+  const tileStyle = { '--tilt': `${tilt}deg`, '--ar': ar, '--w': size, '--tint': tint };
   const art = (
     <span className={`gw-frame__art gw-frame__art--${style}`}>
-      {frame.image_url ? (
+      {showImg ? (
         <>
-          <img className="gw-frame__img" src={frame.image_url} alt="" loading={i < 3 ? 'eager' : 'lazy'} />
+          <img className="gw-frame__img" src={frame.image_url} alt="" loading={i < 3 ? 'eager' : 'lazy'} onError={() => setImgFailed(true)} />
           <span className="gw-frame__ribbon">{frame.label}</span>
         </>
       ) : (
@@ -94,5 +142,67 @@ function FrameTile({ frame, ar, tilt, tint, i }) {
         <a href={frame.link || '#'} className="gw-frame" aria-label={frame.label} target={frame.link ? '_blank' : undefined} rel="noopener noreferrer">{art}</a>
       )}
     </div>
+  );
+}
+
+/* Loading state that mirrors the real hero (same green wall, gilt sign, masonry
+   of framed tiles + sculptures) so there's no jarring swap when content lands.
+   Reuses the same layout constants as the live wall. */
+const SKELETON_STYLES = ['ornate', 'pink', 'ornate', 'oval-black', 'oval-pink', 'oval-gold', 'ornate', 'black'];
+
+export function GalleryWallHeroSkeleton() {
+  const frames = SKELETON_STYLES.map((frame_style) => ({ frame_style }));
+  const objectsBefore = {};
+  WALL_OBJECTS.forEach((o) => { (objectsBefore[Math.min(o.before, frames.length)] ||= []).push(o); });
+  const pushObjects = (idx, acc) => (objectsBefore[idx] || []).forEach((o, k) => acc.push({ object: o, key: `obj-${idx}-${k}` }));
+
+  const tiles = [];
+  frames.forEach((f, i) => {
+    pushObjects(i, tiles);
+    tiles.push({ frame: f, i, key: `f-${i}`, ar: ASPECTS[i % ASPECTS.length], tilt: TILTS[i % TILTS.length], size: SIZES[i % SIZES.length] });
+  });
+  pushObjects(frames.length, tiles);
+
+  return (
+    <section className="gw-hero" aria-busy="true" aria-label="Loading">
+      <div className="container gw-hero__inner">
+        <div className="gw-hero__masthead">
+          <span className="gw-hero__flank gw-hero__flank--l" aria-hidden="true">
+            <span className="gw-frame__art gw-frame__art--oval-gold gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
+          </span>
+
+          <div className="gw-hero__placard" aria-hidden="true">
+            <span className="skeleton gw-skel-line" style={{ height: 11, width: '58%', margin: '0 auto var(--space-4)' }} />
+            <span className="skeleton gw-skel-line" style={{ height: 36, width: '88%', margin: '0 auto 10px' }} />
+            <span className="skeleton gw-skel-line" style={{ height: 36, width: '66%', margin: '0 auto var(--space-5)' }} />
+            <span className="skeleton gw-skel-line" style={{ height: 14, width: '52%', margin: '0 auto var(--space-6)' }} />
+            <span className="gw-skel-btns">
+              <span className="skeleton gw-skel-line" style={{ height: 48, width: 184, borderRadius: 'var(--radius-pill)' }} />
+              <span className="skeleton gw-skel-line" style={{ height: 48, width: 158, borderRadius: 'var(--radius-pill)' }} />
+            </span>
+          </div>
+
+          <span className="gw-hero__flank gw-hero__flank--r" aria-hidden="true">
+            <span className="gw-frame__art gw-frame__art--black gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
+          </span>
+        </div>
+
+        <div className="gw-wall">
+          {tiles.map((t) =>
+            t.object ? (
+              <div key={t.key} className={`gw-tile gw-tile--object gw-tile--${t.object.mod}`} aria-hidden="true">
+                <span className="skeleton gw-skel-object" />
+              </div>
+            ) : (
+              <div key={t.key} className="gw-tile" style={{ '--tilt': `${t.tilt}deg`, '--ar': t.ar, '--w': t.size }}>
+                <span className={`gw-frame__art gw-frame__art--${t.frame.frame_style}`}>
+                  <span className="skeleton gw-skel-fill" />
+                </span>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    </section>
   );
 }

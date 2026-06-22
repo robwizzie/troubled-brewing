@@ -9,6 +9,7 @@ const CONCEPTS = [
   { value: 'gallery_wall', label: 'Gallery Wall', desc: 'Interactive wall of framed products (lead concept).' },
   { value: 'warm_storefront', label: 'Warm Storefront', desc: 'Big photo of the space + hours + Order.' },
   { value: 'cozy_editorial', label: 'Cozy Editorial', desc: 'Magazine-style story layout.' },
+  { value: 'modern_coffee', label: 'Modern Coffee', desc: 'Bold, dark, oversized type with a hero drink shot.' },
 ];
 
 async function loadBlock(key, fallback) {
