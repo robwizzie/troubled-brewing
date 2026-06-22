@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
+import BrandImg from '../BrandImg.jsx';
 import { FoxEmblem } from '../Motifs.jsx';
-import { asset } from '../../lib/config.js';
+import { asset, BRAND } from '../../lib/config.js';
 
 /* Landing concept #4 — Modern Coffee: a bold, dark, contemporary hero. An
    oversized wordmark with the signature drink shot popping in front of it,
@@ -48,7 +49,7 @@ export default function ModernCoffeeHero() {
               </textPath>
             </text>
           </svg>
-          <FoxEmblem className="mch__badge-fox" size={40} />
+          <BrandImg src={BRAND.foxHead} alt="" loading="lazy" className="mch__badge-fox" fallback={<FoxEmblem size={48} />} />
         </div>
 
         <Link to="/menu" className="mch__arrow" aria-label="See the menu">→</Link>
