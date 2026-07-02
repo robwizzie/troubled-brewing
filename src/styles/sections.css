@@ -281,6 +281,28 @@
 .gw-hero__cta .btn--ghost { background: var(--color-paper); color: var(--color-black); box-shadow: 3px 3px 0 rgba(25, 21, 18, 0.18); }
 .gw-hero__cta .btn--ghost:hover { background: var(--color-yellow-soft); color: var(--color-black); border-color: var(--color-black); box-shadow: 5px 5px 0 rgba(25, 21, 18, 0.18); transform: translate(-1px, -1px); }
 .gw-hero__cta .btn--ghost:active { box-shadow: 0 0 0 rgba(25, 21, 18, 0.18); transform: translate(3px, 3px) scale(0.98); }
+/* the sign's small print: today's live status + the specials link. The default
+   white hours pill is undressed to read as lettering on the placard itself. */
+.gw-hero__meta {
+  margin-top: var(--space-5);
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--space-2) var(--space-4); flex-wrap: wrap;
+}
+.gw-hero__meta .hours-today {
+  background: transparent; border: 0; box-shadow: none; padding: 0;
+  gap: var(--space-2);
+  font-weight: 600; color: var(--color-ink-soft); font-size: var(--text-sm);
+}
+.gw-hero__meta .hours-today strong { color: var(--color-black); }
+.gw-hero__meta .hours-override { margin: 0; }
+.gw-hero__meta-star { color: var(--color-accent); font-size: 0.8em; line-height: 1; }
+.gw-hero__specials {
+  font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm);
+  color: var(--color-black);
+  text-decoration: underline; text-decoration-color: var(--color-yellow-deep);
+  text-decoration-thickness: 2px; text-underline-offset: 4px;
+}
+.gw-hero__specials:hover, .gw-hero__specials:focus-visible { color: var(--color-yellow-deep); }
 
 /* loading skeleton fills (mirror the live hero so the swap isn't jarring) */
 .gw-skel-fill { display: block; width: 100%; height: 100%; border-radius: 0; }
@@ -538,6 +560,8 @@
   .gw-hero__placard { transform: none; padding: var(--space-6) var(--space-5); }
   .gw-hero__cta { flex-direction: column; align-items: stretch; gap: var(--space-3); }
   .gw-hero__cta .btn { width: 100%; min-width: 0; }
+  .gw-hero__meta { flex-direction: column; gap: var(--space-2); }
+  .gw-hero__meta-star { display: none; }
 }
 
 /* ---- Concept #2: Warm Storefront (immersive photo hero) ------------------- */

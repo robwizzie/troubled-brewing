@@ -118,6 +118,8 @@ export const SECTION_EDITOR_SCHEMAS = {
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'subheading', label: 'Subheading', type: 'textarea', rows: 2 },
+      { name: 'specials_label', label: 'Specials link text', type: 'text', hint: 'The little link under the welcome sign, next to your live hours.' },
+      { name: 'specials_link', label: 'Specials link URL', type: 'text', hint: '/menu#specials opens the menu on the Specialty tab. Any page or full URL works.' },
       { name: 'frames', label: 'Frames', type: 'frames' },
     ],
   },

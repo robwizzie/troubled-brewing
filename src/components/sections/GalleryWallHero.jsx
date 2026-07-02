@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import BrandImg from '../BrandImg.jsx';
+import HoursToday from '../HoursToday.jsx';
 import { FoxEmblem, Hare, Flourish, CoffeeCup, Beans } from '../Motifs.jsx';
 import { BRAND, asset } from '../../lib/config.js';
 import { normalizeFrameStyle } from '../../lib/frameStyles.js';
+import { track } from '../../lib/analytics.js';
 
 /* THE signature landing concept: the in-shop Gallery Wall recreated as an
    eclectic salon hang on the sage-green wall. Each frame is a legible "poster"
@@ -40,6 +42,8 @@ export default function GalleryWallHero({ data = {} }) {
   const {
     heading = 'Welcome to Trouble Brewing',
     subheading = 'A whole wall of reasons to stop in.',
+    specials_label: specialsLabel = 'Current Drink Specials',
+    specials_link: specialsLink = '/menu#specials',
     frames = [],
   } = data;
 
@@ -92,6 +96,26 @@ export default function GalleryWallHero({ data = {} }) {
             <OrderButton label="Order Now" className="btn btn--accent btn--lg" location="hero" />
             <Link className="btn btn--ghost btn--lg" to="/menu">See the menu</Link>
           </p>
+
+          {/* the sign's small print: live open/closed status + the way to
+              today's specials — like the hours lettered under a shop sign */}
+          <div className="gw-hero__meta">
+            <HoursToday />
+            {specialsLink && specialsLabel && (
+              <>
+                <span className="gw-hero__meta-star" aria-hidden="true">✦</span>
+                {specialsLink.startsWith('/') ? (
+                  <Link className="gw-hero__specials" to={specialsLink} onClick={() => track('specials_click', { location: 'hero' })}>
+                    {specialsLabel}
+                  </Link>
+                ) : (
+                  <a className="gw-hero__specials" href={specialsLink} target="_blank" rel="noopener noreferrer" onClick={() => track('specials_click', { location: 'hero' })}>
+                    {specialsLabel}
+                  </a>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
           <span className="gw-hero__flank gw-hero__flank--r" aria-hidden="true">
@@ -188,6 +212,7 @@ export function GalleryWallHeroSkeleton() {
               <span className="skeleton gw-skel-line" style={{ height: 48, width: 184, borderRadius: 'var(--radius-pill)' }} />
               <span className="skeleton gw-skel-line" style={{ height: 48, width: 158, borderRadius: 'var(--radius-pill)' }} />
             </span>
+            <span className="skeleton gw-skel-line" style={{ height: 18, width: 300, margin: 'var(--space-5) auto 0' }} />
           </div>
 
           <span className="gw-hero__flank gw-hero__flank--r" aria-hidden="true">
