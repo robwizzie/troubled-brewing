@@ -34,15 +34,17 @@ export const PAGES = {
 
 export const SECTIONS = {
   home: [
-    { type: 'gallery_wall_hero', data: { heading: 'Welcome to Trouble Brewing', subheading: 'A whole wall of reasons to stop in.', frames: [
-      { label: 'Order / Menu', link: '/menu', frame_style: 'ornate', image_url: asset('images/wall/order-menu.jpg') },
-      { label: 'The Troublemakers', link: '/troublemakers', frame_style: 'pink', image_url: asset('images/wall/troublemakers.jpg') },
-      { label: 'The Gallery Wall', link: '/gallery-wall', frame_style: 'ornate', image_url: asset('images/wall/gallery-wall.jpg') },
+    /* frame_style values are the vintage molding recipes in frameStyles.js —
+       one of each, like the real wall (no two frames alike) */
+    { type: 'gallery_wall_hero', data: { heading: 'Welcome to Trouble Brewing', subheading: 'A whole wall of reasons to stop in.', specials_label: 'Current Drink Specials', specials_link: '/menu#specials', frames: [
+      { label: 'Order / Menu', link: '/menu', frame_style: 'gilt-grand', image_url: asset('images/wall/order-menu.jpg') },
+      { label: 'The Troublemakers', link: '/troublemakers', frame_style: 'black-stacked', image_url: asset('images/wall/troublemakers.jpg') },
+      { label: 'The Gallery Wall', link: '/gallery-wall', frame_style: 'gold-tapestry', image_url: asset('images/wall/gallery-wall.jpg') },
       { label: 'Events', link: '/events', frame_style: 'oval-black', image_url: asset('images/wall/whats-on.jpg') },
-      { label: 'Local Love', link: '/neighborhood', frame_style: 'oval-pink', image_url: asset('images/wall/local-love.jpg') },
-      { label: 'Reviews', link: '/reviews', frame_style: 'oval-gold', image_url: asset('images/wall/reviews.jpg') },
-      { label: 'The Journey', link: '/timeline', frame_style: 'ornate', image_url: asset('images/wall/our-story-so-far.jpg') },
-      { label: 'Our Story', link: '/about', frame_style: 'black', image_url: asset('images/wall/our-story.jpg') },
+      { label: 'Local Love', link: '/neighborhood', frame_style: 'gold-botanical', image_url: asset('images/wall/local-love.jpg') },
+      { label: 'Reviews', link: '/reviews', frame_style: 'oval-gilt', image_url: asset('images/wall/reviews.jpg') },
+      { label: 'The Journey', link: '/timeline', frame_style: 'bronze-carved', image_url: asset('images/wall/our-story-so-far.jpg') },
+      { label: 'Our Story', link: '/about', frame_style: 'brass-chain', image_url: asset('images/wall/our-story.jpg') },
     ] } },
     { type: 'social_proof', data: { label: 'Loved by the neighborhood' } },
     { type: 'featured_drink', data: { heading: "This Week's Trouble" } },

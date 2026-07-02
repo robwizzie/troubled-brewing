@@ -25,6 +25,14 @@ A plain-English, printable reference for Tom, Cat & Katie. This mirrors the in-a
 ### Update your hours / add a holiday closure
 **Hours Editor** → change the open/close times in the weekly grid. For a holiday, click **+ Add holiday** and pick the date, a label ("Closed for Thanksgiving"), and either new hours or "Closed all day." Save and Publish.
 
+> The homepage welcome sign shows **Open now / Closed** with today's closing (or next opening) time automatically, straight from these hours — always on New Jersey time, wherever the visitor is. There's nothing extra to update.
+
+### Change the "Current Drink Specials" link on the homepage
+**Page Editor** → **Home** → the **Gallery Wall hero** section → **Specials link text** / **Specials link URL**. Out of the box it says "Current Drink Specials" and opens your menu on the **Specialty** tab (`/menu#specials`). Point it anywhere — `/menu#seasonal` for the seasonal list, or a full URL (e.g. an Instagram post announcing this week's special).
+
+### Pick a frame style for a homepage frame
+**Page Editor** → **Home** → the **Gallery Wall hero** section → each frame has a **Frame style** menu with vintage looks matched to your real wall — "Grand gold (ornate)", "Black + wide white mat", "Thin brass on a chain", "Gold oval (specimen)", and more. Like the shop wall, it looks best when no two frames share a style.
+
 ### Add an event
 **Events Manager** → **+ Add event** → title, date, time, description, optional photo. Past events drop off automatically.
 

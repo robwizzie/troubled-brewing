@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import BrandImg from '../BrandImg.jsx';
+import HoursToday from '../HoursToday.jsx';
 import { FoxEmblem, Hare, Flourish, CoffeeCup, Beans } from '../Motifs.jsx';
 import { BRAND, asset } from '../../lib/config.js';
+import { normalizeFrameStyle } from '../../lib/frameStyles.js';
+import { track } from '../../lib/analytics.js';
 
 /* THE signature landing concept: the in-shop Gallery Wall recreated as an
    eclectic salon hang on the sage-green wall. Each frame is a legible "poster"
@@ -18,8 +21,13 @@ import { BRAND, asset } from '../../lib/config.js';
 const ASPECTS = ['4 / 5', '1 / 1', '5 / 6', '3 / 4', '3 / 2', '1 / 1', '7 / 5', '5 / 4', '4 / 5', '5 / 4'];
 const TILTS = [-4, 3, -2, 4.5, -3, 2.5, -4.5, 2, -2.5, 3.5];
 const SIZES = ['100%', '92%', '100%', '80%', '86%', '100%', '100%', '90%', '90%', '78%'];
-const TINTS = ['var(--color-paper)', 'var(--color-pink-soft)', 'var(--color-yellow-soft)', 'var(--color-green-soft)', '#efe7d3'];
-const GLYPHS = { ornate: '☕', 'oval-gold': '🥐', 'oval-black': '✦', 'oval-pink': '✿', 'oval-green': '🌿', black: '✦', wood: '❀', green: '🌿', pink: '✿', gold: '✶' };
+/* mats are white/cream like the real wall — warm paper neutrals, never a color */
+const TINTS = ['var(--color-paper)', '#f6efdd', '#efe7d3', '#fbf7ec', '#f3ecdb'];
+const GLYPHS = {
+  'gilt-grand': '☕', 'gilt-thin': '✶', 'gold-botanical': '❀', 'gold-tapestry': '❖',
+  'bronze-carved': '❦', 'brass-chain': '✦', 'black-flat': '✧', 'black-mat': '❈',
+  'black-stacked': '✧', 'oval-gilt': '🦋', 'oval-black': '✦',
+};
 
 /* Gold sculptures tucked among the frames like the real wall — the fox-head and
    the rabbit-head. Each shows the owner's asset once it's dropped into BRAND,
@@ -34,6 +42,8 @@ export default function GalleryWallHero({ data = {} }) {
   const {
     heading = 'Welcome to Trouble Brewing',
     subheading = 'A whole wall of reasons to stop in.',
+    specials_label: specialsLabel = 'Current Drink Specials',
+    specials_link: specialsLink = '/menu#specials',
     frames = [],
   } = data;
 
@@ -68,7 +78,7 @@ export default function GalleryWallHero({ data = {} }) {
               desktop margins so the centerpiece reads as a curated cluster, like
               the real wall. Purely decorative (no label, not clickable). */}
           <span className="gw-hero__flank gw-hero__flank--l" aria-hidden="true">
-            <span className="gw-frame__art gw-frame__art--oval-gold gw-hero__flank-art">
+            <span className="gw-frame__art gw-frame__art--gilt-thin gw-hero__flank-art">
               <BrandImg src={asset('images/wall/flank-coffee.jpg')} alt="" loading="lazy" className="gw-frame__img" fallback={<CoffeeCup size={56} color="var(--color-green-deep)" steam={false} />} />
             </span>
           </span>
@@ -86,10 +96,30 @@ export default function GalleryWallHero({ data = {} }) {
             <OrderButton label="Order Now" className="btn btn--accent btn--lg" location="hero" />
             <Link className="btn btn--ghost btn--lg" to="/menu">See the menu</Link>
           </p>
+
+          {/* the sign's small print: live open/closed status + the way to
+              today's specials — like the hours lettered under a shop sign */}
+          <div className="gw-hero__meta">
+            <HoursToday />
+            {specialsLink && specialsLabel && (
+              <>
+                <span className="gw-hero__meta-star" aria-hidden="true">✦</span>
+                {specialsLink.startsWith('/') ? (
+                  <Link className="gw-hero__specials" to={specialsLink} onClick={() => track('specials_click', { location: 'hero' })}>
+                    {specialsLabel}
+                  </Link>
+                ) : (
+                  <a className="gw-hero__specials" href={specialsLink} target="_blank" rel="noopener noreferrer" onClick={() => track('specials_click', { location: 'hero' })}>
+                    {specialsLabel}
+                  </a>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
           <span className="gw-hero__flank gw-hero__flank--r" aria-hidden="true">
-            <span className="gw-frame__art gw-frame__art--black gw-hero__flank-art">
+            <span className="gw-frame__art gw-frame__art--black-mat gw-hero__flank-art">
               <BrandImg src={asset('images/wall/flank-food.jpg')} alt="" loading="lazy" className="gw-frame__img" fallback={<Beans size={52} color="var(--color-green-deep)" />} />
             </span>
           </span>
@@ -115,7 +145,7 @@ function FrameTile({ frame, ar, tilt, size, tint, i }) {
   // Show the photo once it exists; until the file is added (or if it fails to
   // load) fall back to the legible "poster" so the wall never shows a broken img.
   const [imgFailed, setImgFailed] = useState(false);
-  const style = frame.frame_style || 'gold';
+  const style = normalizeFrameStyle(frame.frame_style);
   const showImg = frame.image_url && !imgFailed;
   const isInternal = frame.link && frame.link.startsWith('/');
   const tileStyle = { '--tilt': `${tilt}deg`, '--ar': ar, '--w': size, '--tint': tint };
@@ -124,7 +154,7 @@ function FrameTile({ frame, ar, tilt, size, tint, i }) {
       {showImg ? (
         <>
           <img className="gw-frame__img" src={frame.image_url} alt="" loading={i < 3 ? 'eager' : 'lazy'} onError={() => setImgFailed(true)} />
-          <span className="gw-frame__ribbon">{frame.label}</span>
+          <span className="gw-frame__plaque">{frame.label}</span>
         </>
       ) : (
         <span className="gw-frame__poster">
@@ -135,7 +165,9 @@ function FrameTile({ frame, ar, tilt, size, tint, i }) {
     </span>
   );
   return (
-    <div className="gw-tile" style={tileStyle}>
+    /* gw-tile--fs-* lets a style dress the TILE too — the chain + nail and the
+       layered second frame have to live outside the art's overflow clip */
+    <div className={`gw-tile gw-tile--fs-${style}`} style={tileStyle}>
       {isInternal ? (
         <Link to={frame.link} className="gw-frame" aria-label={frame.label}>{art}</Link>
       ) : (
@@ -148,7 +180,7 @@ function FrameTile({ frame, ar, tilt, size, tint, i }) {
 /* Loading state that mirrors the real hero (same green wall, gilt sign, masonry
    of framed tiles + sculptures) so there's no jarring swap when content lands.
    Reuses the same layout constants as the live wall. */
-const SKELETON_STYLES = ['ornate', 'pink', 'ornate', 'oval-black', 'oval-pink', 'oval-gold', 'ornate', 'black'];
+const SKELETON_STYLES = ['gilt-grand', 'black-stacked', 'gold-tapestry', 'oval-black', 'gold-botanical', 'oval-gilt', 'bronze-carved', 'brass-chain'];
 
 export function GalleryWallHeroSkeleton() {
   const frames = SKELETON_STYLES.map((frame_style) => ({ frame_style }));
@@ -168,7 +200,7 @@ export function GalleryWallHeroSkeleton() {
       <div className="container gw-hero__inner">
         <div className="gw-hero__masthead">
           <span className="gw-hero__flank gw-hero__flank--l" aria-hidden="true">
-            <span className="gw-frame__art gw-frame__art--oval-gold gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
+            <span className="gw-frame__art gw-frame__art--gilt-thin gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
           </span>
 
           <div className="gw-hero__placard" aria-hidden="true">
@@ -180,10 +212,11 @@ export function GalleryWallHeroSkeleton() {
               <span className="skeleton gw-skel-line" style={{ height: 48, width: 184, borderRadius: 'var(--radius-pill)' }} />
               <span className="skeleton gw-skel-line" style={{ height: 48, width: 158, borderRadius: 'var(--radius-pill)' }} />
             </span>
+            <span className="skeleton gw-skel-line" style={{ height: 18, width: 300, margin: 'var(--space-5) auto 0' }} />
           </div>
 
           <span className="gw-hero__flank gw-hero__flank--r" aria-hidden="true">
-            <span className="gw-frame__art gw-frame__art--black gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
+            <span className="gw-frame__art gw-frame__art--black-mat gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
           </span>
         </div>
 
@@ -194,7 +227,7 @@ export function GalleryWallHeroSkeleton() {
                 <span className="skeleton gw-skel-object" />
               </div>
             ) : (
-              <div key={t.key} className="gw-tile" style={{ '--tilt': `${t.tilt}deg`, '--ar': t.ar, '--w': t.size }}>
+              <div key={t.key} className={`gw-tile gw-tile--fs-${t.frame.frame_style}`} style={{ '--tilt': `${t.tilt}deg`, '--ar': t.ar, '--w': t.size }}>
                 <span className={`gw-frame__art gw-frame__art--${t.frame.frame_style}`}>
                   <span className="skeleton gw-skel-fill" />
                 </span>
