@@ -30,16 +30,18 @@ on conflict (slug) do nothing;
 
 -- HOME --------------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
+-- frame_style values = the vintage molding recipes in src/lib/frameStyles.js
+-- (one of each, like the real wall). Keep in sync with src/lib/seed.js.
 ('home', 'gallery_wall_hero', 0, '{
   "frames": [
-    {"label": "Order / Menu", "link": "/menu", "frame_style": "ornate", "image_url": ""},
-    {"label": "The Troublemakers", "link": "/troublemakers", "frame_style": "pink", "image_url": ""},
-    {"label": "The Gallery Wall", "link": "/gallery-wall", "frame_style": "gold", "image_url": ""},
-    {"label": "What''s On", "link": "/events", "frame_style": "black", "image_url": ""},
-    {"label": "Our Story So Far", "link": "/timeline", "frame_style": "green", "image_url": ""},
-    {"label": "Local Love", "link": "/neighborhood", "frame_style": "pink", "image_url": ""},
-    {"label": "Reviews", "link": "/reviews", "frame_style": "oval-gold", "image_url": ""},
-    {"label": "Our Story", "link": "/about", "frame_style": "black", "image_url": ""}
+    {"label": "Order / Menu", "link": "/menu", "frame_style": "gilt-grand", "image_url": ""},
+    {"label": "The Troublemakers", "link": "/troublemakers", "frame_style": "black-stacked", "image_url": ""},
+    {"label": "The Gallery Wall", "link": "/gallery-wall", "frame_style": "gold-tapestry", "image_url": ""},
+    {"label": "Events", "link": "/events", "frame_style": "oval-black", "image_url": ""},
+    {"label": "Local Love", "link": "/neighborhood", "frame_style": "gold-botanical", "image_url": ""},
+    {"label": "Reviews", "link": "/reviews", "frame_style": "oval-gilt", "image_url": ""},
+    {"label": "The Journey", "link": "/timeline", "frame_style": "bronze-carved", "image_url": ""},
+    {"label": "Our Story", "link": "/about", "frame_style": "brass-chain", "image_url": ""}
   ],
   "heading": "Welcome to Trouble Brewing",
   "subheading": "A whole wall of reasons to stop in."
