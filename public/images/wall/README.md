@@ -5,22 +5,22 @@ Save your chosen photos in **this folder** (`public/images/wall/`) using these
 wall picks up its file automatically. Until a file exists you just see the
 tasteful labelled "poster" — nothing ever looks broken.
 
-| Filename | Frame (shape) | What photo to use |
+| Filename | Frame (shape + vintage style) | What photo to use |
 |---|---|---|
-| `order-menu.jpg` | **Order / Menu** — tall portrait | A signature **iced drink** shot — the pink→red ombre refresher in the branded *Trouble Brewing* glass, or the Banana-Split iced coffee (DRINKS). Vertical. |
-| `troublemakers.jpg` | **The Troublemakers** — square | A **barista at work** — the latte-art pour / steaming milk at the espresso bar (DRINKS). Centered. |
-| `gallery-wall.jpg` | **The Gallery Wall** — tall portrait | A **portrait shot of the real green gallery wall** of frames (INTERIOR). Vertical. |
-| `whats-on.jpg` | **What's On** — tall **oval** | The **cookie dipped into the latte** in the yellow cup (DRINKS). Subject centered. |
-| `our-story-so-far.jpg` | **Our Story So Far** — wide landscape | A **wide interior** — the room with tin ceiling + plants, or the storefront / floor logo (INTERIOR). Horizontal. |
-| `local-love.jpg` | **Local Love** — wide **oval** | **Two people toasting** with the dark branded mugs (DRINKS). Subjects centered. |
-| `reviews.jpg` | **Reviews** — **circle** | **Latte-art rosetta, top-down** in a dark cup (DRINKS). Subject centered. |
-| `our-story.jpg` | **Our Story** — wide landscape | The **brass condiment station w/ dried flowers**, or the **espresso machine** pulling a shot (INTERIOR). Horizontal. |
+| `order-menu.jpg` | **Order / Menu** — tall portrait, grand carved gold | A signature **iced drink** shot — the pink→red ombre refresher in the branded *Trouble Brewing* glass, or the Banana-Split iced coffee (DRINKS). Vertical. |
+| `troublemakers.jpg` | **The Troublemakers** — square, black + white mat (with a layered second frame) | A **barista at work** — the latte-art pour / steaming milk at the espresso bar (DRINKS). Centered. |
+| `gallery-wall.jpg` | **The Gallery Wall** — tall portrait, woven gold tapestry | A **portrait shot of the real green gallery wall** of frames (INTERIOR). Vertical. |
+| `whats-on.jpg` | **Events** — tall **oval**, black Victorian | The **cookie dipped into the latte** in the yellow cup (DRINKS). Subject centered. |
+| `our-story-so-far.jpg` | **The Journey** — wide landscape, antique carved bronze | A **wide interior** — the room with tin ceiling + plants, or the storefront / floor logo (INTERIOR). Horizontal. |
+| `local-love.jpg` | **Local Love** — wide landscape, gold + cream mat (was an oval — a rectangle shows MORE of this photo, so no re-crop needed) | **Two people toasting** with the dark branded mugs (DRINKS). Subjects centered. |
+| `reviews.jpg` | **Reviews** — **circle**, gold specimen oval on a cream ground | **Latte-art rosetta, top-down** in a dark cup (DRINKS). Subject centered. |
+| `our-story.jpg` | **Our Story** — wide landscape, thin brass on a hanging chain | The **brass condiment station w/ dried flowers**, or the **espresso machine** pulling a shot (INTERIOR). Horizontal. |
 
 ## Tips
 - **Shape matters:** portraits → vertical photos; landscapes → horizontal; the
   **ovals + circle crop the edges**, so keep the subject **centered**.
-- The frame's **label sits on a dark band along the bottom**, so busy photos are
-  fine — you don't need empty space in the shot.
+- The frame's **label sits on a little engraved brass nameplate** at the bottom,
+  so busy photos are fine — you don't need empty space in the shot.
 - Export as **JPG**, roughly **1000–1600px** on the long edge (bigger is fine;
   it's scaled down). If you only have a PNG, save it as `.jpg` anyway — or tell
   me and I'll switch that frame's extension.

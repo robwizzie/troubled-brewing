@@ -24,7 +24,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `testimonials_wall` | `{ heading, layout }` | `testimonials` | `TestimonialsWall.jsx` | `TestimonialsWallEditor.jsx` |
 | `google_reviews_feed` | `{ heading, count }` | `google_profile` | `GoogleReviewsFeed.jsx` | `GoogleReviewsFeedEditor.jsx` |
 | `review_cta` | `{ heading, body, button_label }` | `google_profile.maps_url` | `ReviewCTA.jsx` | `ReviewCTAEditor.jsx` |
-| `gallery_wall_hero` | `{ frames: [{ image_url, label, link, frame_style }] }` | data | `GalleryWallHero.jsx` | `GalleryWallHeroEditor.jsx` |
+| `gallery_wall_hero` | `{ heading, subheading, specials_label, specials_link, frames: [{ image_url, label, link, frame_style }] }` | data | `GalleryWallHero.jsx` | `GalleryWallHeroEditor.jsx` |
 | `gallery_pieces_grid` | `{ heading }` | `gallery_pieces` | `GalleryPiecesGrid.jsx` | `GalleryPiecesGridEditor.jsx` |
 | `troublemakers_grid` | `{ heading }` | `team_members` | `TroublemakersGrid.jsx` | `TroublemakersGridEditor.jsx` |
 | `local_businesses_grid`| `{ heading }` | `local_businesses` | `LocalBusinessesGrid.jsx` | `LocalBusinessesGridEditor.jsx` |
@@ -44,6 +44,8 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 > **Section editors are schema-driven.** Rather than one editor file per type, the admin `SectionEditor` renders forms from declarative schemas in `src/admin/editors/schemas.js` (field types: text, textarea, markdown, image, select, number, `frames`, `images`). Adding a type = add a renderer + a schema entry. Collection-backed types (`menu_block`, `timeline_grid`, …) edit just their heading and point the owner to the relevant manager.
 
 > **`content_blocks` keys:** `homepage_concept`, `featured_drink`, `staff_picks`, `loyalty_copy`, `announcement_banner`, `social_links` (Instagram/Facebook/TikTok/X/YouTube URLs — surfaced in footer + contact/community).
+
+> **`frame_style` values** (gallery wall hero): `gilt-grand`, `gilt-thin`, `gold-botanical`, `gold-tapestry`, `bronze-carved`, `brass-chain`, `black-flat`, `black-mat`, `black-stacked`, `oval-gilt`, `oval-black` — one vintage molding recipe each, defined in `src/lib/frameStyles.js` (friendly labels for the admin select) + `src/styles/sections.css`. Legacy values from before the revamp (`gold`, `ornate`, `black`, `wood`, `green`, `pink`, `oval-*`) auto-map onto the new set via `normalizeFrameStyle()`, so rows saved earlier keep rendering. The hero's `specials_link` defaults to `/menu#specials`; `MenuBlock` maps that hash to the Specialty tab (any exact category key works too, e.g. `#seasonal`).
 
 ## Admin panel surfaces (`/admin`)
 
