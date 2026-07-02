@@ -4,13 +4,12 @@ import { updateData, saveDataDraft } from '../lib/adminData.js';
 import { useToast, Hint } from '../components/ui.jsx';
 import ImageField from '../components/ImageField.jsx';
 import RevisionHistory from '../components/RevisionHistory.jsx';
-
-const FRAME_STYLES = ['gold', 'oval-gold', 'black', 'wood', 'ornate'];
+import { FRAME_STYLE_OPTIONS, normalizeFrameStyle } from '../../lib/frameStyles.js';
 
 function FramesEditor({ value = [], onChange }) {
   const frames = Array.isArray(value) ? value : [];
   const update = (i, key, val) => onChange(frames.map((f, idx) => (idx === i ? { ...f, [key]: val } : f)));
-  const add = () => onChange([...frames, { label: '', link: '/menu', frame_style: 'gold', image_url: '' }]);
+  const add = () => onChange([...frames, { label: '', link: '/menu', frame_style: 'gilt-thin', image_url: '' }]);
   const remove = (i) => onChange(frames.filter((_, idx) => idx !== i));
   const move = (i, dir) => {
     const j = i + dir;
@@ -36,8 +35,10 @@ function FramesEditor({ value = [], onChange }) {
             <div className="field"><label>Label</label><input value={f.label || ''} onChange={(e) => update(i, 'label', e.target.value)} /></div>
             <div className="field"><label>Links to</label><input value={f.link || ''} placeholder="/menu" onChange={(e) => update(i, 'link', e.target.value)} /></div>
             <div className="field"><label>Frame style</label>
-              <select value={f.frame_style || 'gold'} onChange={(e) => update(i, 'frame_style', e.target.value)}>
-                {FRAME_STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
+              {/* normalize so a legacy saved value (e.g. "pink") shows as the
+                  vintage style it now renders as, instead of a blank select */}
+              <select value={normalizeFrameStyle(f.frame_style)} onChange={(e) => update(i, 'frame_style', e.target.value)}>
+                {FRAME_STYLE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           </div>
