@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Reveal from '../Reveal.jsx';
 import OrderButton from '../OrderButton.jsx';
 import { SkeletonCards } from '../Skeleton.jsx';
@@ -7,13 +8,27 @@ import { track } from '../../lib/analytics.js';
 
 const DIETARY_LABELS = { 'gluten-free': 'GF', vegan: 'VG', vegetarian: 'V', 'dairy-free': 'DF' };
 
+/* URL-hash → category tab: /menu#specials lands on the Specialty tab (the
+   homepage "Current Drink Specials" link), and any exact category key works
+   too (/menu#seasonal, /menu#pastry, …). */
+const HASH_TO_CAT = { specials: 'specialty' };
+function catFromHash(hash, allowed) {
+  const key = (hash || '').replace(/^#/, '').toLowerCase();
+  if (!key) return null;
+  const cat = HASH_TO_CAT[key] || key;
+  return allowed.includes(cat) ? cat : null;
+}
+
 /* Category-tabbed menu with dietary filters. Reads through menuService.getMenu()
    (single swap-point for a future SpotOn sync). */
 export default function MenuBlock({ data = {} }) {
   const { heading = 'The Menu', categories } = data;
+  const allowedCats = useMemo(() => (categories?.length ? categories : MENU_CATEGORY_ORDER), [categories]);
   const [items, setItems] = useState(null);
-  const [activeCat, setActiveCat] = useState('all');
+  const [activeCat, setActiveCat] = useState(() => catFromHash(window.location.hash, categories?.length ? categories : MENU_CATEGORY_ORDER) ?? 'all');
   const [diet, setDiet] = useState(new Set());
+  const location = useLocation();
+  const containerRef = useRef(null);
 
   useEffect(() => {
     let alive = true;
@@ -25,7 +40,22 @@ export default function MenuBlock({ data = {} }) {
     return () => { alive = false; };
   }, []);
 
-  const allowedCats = categories?.length ? categories : MENU_CATEGORY_ORDER;
+  /* Follow the hash on every navigation (arriving from the hero link, a shared
+     deep link, or re-clicking while already here), then bring the menu into
+     view once items exist. Double-rAF runs after ScrollToTop's own forced
+     top-jump + rAF re-scroll, so this scroll wins even when the seed resolves
+     instantly. */
+  useEffect(() => {
+    const cat = catFromHash(location.hash, allowedCats);
+    if (!cat) return;
+    setActiveCat(cat);
+    if (items === null) return; // re-runs when items land
+    let raf2;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => containerRef.current?.scrollIntoView({ block: 'start' }));
+    });
+    return () => { cancelAnimationFrame(raf1); if (raf2) cancelAnimationFrame(raf2); };
+  }, [location.key, location.hash, items, allowedCats]);
 
   const dietaryOptions = useMemo(() => {
     const set = new Set();
@@ -54,7 +84,8 @@ export default function MenuBlock({ data = {} }) {
 
   return (
     <Reveal as="section" className="section">
-      <div className="container">
+      {/* id + scroll-margin let #specials land here below the sticky nav */}
+      <div className="container" id="specials" ref={containerRef} style={{ scrollMarginTop: 'calc(var(--header-h) + 8px)' }}>
         <h2 className="section-heading">{heading}</h2>
 
         {/* Category tabs */}

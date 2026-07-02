@@ -44,7 +44,9 @@ insert into sections (page_slug, type, display_order, data) values
     {"label": "Our Story", "link": "/about", "frame_style": "brass-chain", "image_url": ""}
   ],
   "heading": "Welcome to Trouble Brewing",
-  "subheading": "A whole wall of reasons to stop in."
+  "subheading": "A whole wall of reasons to stop in.",
+  "specials_label": "Current Drink Specials",
+  "specials_link": "/menu#specials"
 }'),
 ('home', 'featured_drink', 1, '{"heading": "This Week''s Trouble"}'),
 ('home', 'hours', 2, '{"heading": "Today at Trouble Brewing"}'),

@@ -36,7 +36,7 @@ export const SECTIONS = {
   home: [
     /* frame_style values are the vintage molding recipes in frameStyles.js —
        one of each, like the real wall (no two frames alike) */
-    { type: 'gallery_wall_hero', data: { heading: 'Welcome to Trouble Brewing', subheading: 'A whole wall of reasons to stop in.', frames: [
+    { type: 'gallery_wall_hero', data: { heading: 'Welcome to Trouble Brewing', subheading: 'A whole wall of reasons to stop in.', specials_label: 'Current Drink Specials', specials_link: '/menu#specials', frames: [
       { label: 'Order / Menu', link: '/menu', frame_style: 'gilt-grand', image_url: asset('images/wall/order-menu.jpg') },
       { label: 'The Troublemakers', link: '/troublemakers', frame_style: 'black-stacked', image_url: asset('images/wall/troublemakers.jpg') },
       { label: 'The Gallery Wall', link: '/gallery-wall', frame_style: 'gold-tapestry', image_url: asset('images/wall/gallery-wall.jpg') },
