@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase.js';
+import { shopNow } from './hours.js';
 import * as seed from './seed.js';
 
 /* =============================================================================
@@ -11,7 +12,9 @@ import * as seed from './seed.js';
    ============================================================================= */
 
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  // "Today" on the shop's clock — the UTC date is already tomorrow's during
+  // NJ evenings, which would drop today's holiday override and events.
+  return shopNow().isoDate;
 }
 
 /** Resolve a governed row's content, honoring preview/draft. */

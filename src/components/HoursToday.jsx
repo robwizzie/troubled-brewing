@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { getHours, getHoursOverrides, getGoogleProfile } from '../lib/dataService.js';
-import { computeStatus, dayName } from '../lib/hours.js';
+import { computeStatus, dayName, shopNow } from '../lib/hours.js';
 
 /* Today's open/closed status pill, plus an optional full weekly table.
    Source of truth for hours: defaults to Google (client asked) when the cached
    google_profile has weekday data, falling back to the editable manual tables
-   for holidays/overrides. See docs/INTEGRATIONS.md §Google Places. */
+   for holidays/overrides. See docs/INTEGRATIONS.md §Google Places.
+   Status is derived at render (not stored) and a minute-tick re-renders, so a
+   tab left open flips Open → Closed on time. */
 export default function HoursToday({ showWeek = false }) {
   const [hours, setHours] = useState(null);
   const [overrides, setOverrides] = useState([]);
-  const [status, setStatus] = useState(null);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -17,7 +19,6 @@ export default function HoursToday({ showWeek = false }) {
       if (!alive) return;
       setHours(h);
       setOverrides(o);
-      setStatus(computeStatus(h, o));
       // (Google weekday_hours, when present, are shown in the weekly table below.)
       void g;
     });
@@ -26,11 +27,18 @@ export default function HoursToday({ showWeek = false }) {
     };
   }, []);
 
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const status = hours ? computeStatus(hours, overrides) : null;
+
   if (!status) {
     return <div className="skeleton" style={{ height: 44, width: 220, borderRadius: 'var(--radius-pill)' }} aria-label="Loading hours" />;
   }
 
-  const todayDow = new Date().getDay();
+  const todayDow = shopNow().dow;
 
   return (
     <div>
