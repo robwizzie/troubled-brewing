@@ -200,9 +200,9 @@
 .gw-hero::after { /* the black marble counter with white veining + brass edge */
   content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 46px;
   background:
-    linear-gradient(104deg, rgba(255, 255, 255, 0) 46.8%, rgba(255, 255, 255, 0.2) 47.4%, rgba(255, 255, 255, 0.04) 48.5%, rgba(255, 255, 255, 0) 49%) 0 0 / 380px 100% repeat-x,
-    linear-gradient(62deg, rgba(255, 255, 255, 0) 30.2%, rgba(255, 255, 255, 0.14) 30.8%, rgba(255, 255, 255, 0) 31.6%) 0 0 / 560px 100% repeat-x,
-    linear-gradient(84deg, rgba(255, 255, 255, 0) 75.9%, rgba(255, 255, 255, 0.1) 76.4%, rgba(255, 255, 255, 0) 77.1%) 0 0 / 820px 100% repeat-x,
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 46.8%, rgba(255, 255, 255, 0.26) 47.4%, rgba(255, 255, 255, 0.06) 48.5%, rgba(255, 255, 255, 0) 49%) 0 0 / 380px 100% repeat-x,
+    linear-gradient(62deg, rgba(255, 255, 255, 0) 30.2%, rgba(255, 255, 255, 0.18) 30.8%, rgba(255, 255, 255, 0) 31.6%) 0 0 / 560px 100% repeat-x,
+    linear-gradient(84deg, rgba(255, 255, 255, 0) 75.9%, rgba(255, 255, 255, 0.13) 76.4%, rgba(255, 255, 255, 0) 77.1%) 0 0 / 820px 100% repeat-x,
     linear-gradient(180deg, #26221c 0%, #15120e 42%, #0c0a08 100%);
   box-shadow: inset 0 2px 0 rgba(247, 220, 148, 0.22), inset 0 8px 14px rgba(0, 0, 0, 0.45);
   pointer-events: none;
@@ -360,12 +360,12 @@
    Self-contained contrast (AA inside the plaque), so any photo works under it. */
 .gw-frame__plaque {
   position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%);
-  max-width: calc(100% - 30px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  padding: 4px 22px;
+  max-width: calc(100% - 22px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 4px 17px;
   border-radius: 2px;
   background:
-    radial-gradient(circle at 9px 50%, #8a6a1e 1.7px, rgba(138, 106, 30, 0) 2.6px),
-    radial-gradient(circle at calc(100% - 9px) 50%, #8a6a1e 1.7px, rgba(138, 106, 30, 0) 2.6px),
+    radial-gradient(circle at 7px 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
+    radial-gradient(circle at calc(100% - 7px) 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
     linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
   border: 1px solid #6e5314;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 240, 200, 0.65);
@@ -393,7 +393,7 @@
    edges, stepped profile — the ornament is an SVG molding ---- */
 .gw-frame__art--gilt-grand {
   border: 18px solid #c69a3d; /* solid-gold fallback if the SVG ever fails */
-  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23a87c1c'/%3E%3Crect x='2' y='2' width='92' height='92' fill='none' stroke='%23f7dc94' stroke-width='2.5'/%3E%3Crect x='7' y='7' width='82' height='82' fill='none' stroke='%23e3b53f' stroke-width='7'/%3E%3Crect x='13.5' y='13.5' width='69' height='69' fill='none' stroke='%235e4210' stroke-width='2'/%3E%3Crect x='17' y='17' width='62' height='62' fill='none' stroke='%23c69a3d' stroke-width='5'/%3E%3Crect x='21.5' y='21.5' width='53' height='53' fill='none' stroke='%23f7dc94' stroke-width='1.6'/%3E%3Cg fill='%23f7dc94' stroke='%23a87c1c' stroke-width='0.7'%3E%3Ccircle cx='38' cy='11' r='2.4'/%3E%3Ccircle cx='48' cy='11' r='2.4'/%3E%3Ccircle cx='58' cy='11' r='2.4'/%3E%3Ccircle cx='38' cy='85' r='2.4'/%3E%3Ccircle cx='48' cy='85' r='2.4'/%3E%3Ccircle cx='58' cy='85' r='2.4'/%3E%3Ccircle cx='11' cy='38' r='2.4'/%3E%3Ccircle cx='11' cy='48' r='2.4'/%3E%3Ccircle cx='11' cy='58' r='2.4'/%3E%3Ccircle cx='85' cy='38' r='2.4'/%3E%3Ccircle cx='85' cy='48' r='2.4'/%3E%3Ccircle cx='85' cy='58' r='2.4'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='16' cy='16' r='9' fill='%23e3b53f' stroke='%235e4210' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='4.4' fill='%23f7dc94' stroke='%23a87c1c' stroke-width='1'/%3E%3Ccircle cx='80' cy='16' r='9' fill='%23e3b53f' stroke='%235e4210' stroke-width='1.6'/%3E%3Ccircle cx='80' cy='16' r='4.4' fill='%23f7dc94' stroke='%23a87c1c' stroke-width='1'/%3E%3Ccircle cx='16' cy='80' r='9' fill='%23e3b53f' stroke='%235e4210' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='80' r='4.4' fill='%23f7dc94' stroke='%23a87c1c' stroke-width='1'/%3E%3Ccircle cx='80' cy='80' r='9' fill='%23e3b53f' stroke='%235e4210' stroke-width='1.6'/%3E%3Ccircle cx='80' cy='80' r='4.4' fill='%23f7dc94' stroke='%23a87c1c' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E") 32 round;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23b8892b'/%3E%3Crect x='1' y='1' width='94' height='94' fill='none' stroke='%236b4a12' stroke-width='2'/%3E%3Crect x='4.5' y='4.5' width='87' height='87' fill='none' stroke='%23f2d78a' stroke-width='3'/%3E%3Crect x='10' y='10' width='76' height='76' fill='none' stroke='%23cf9f35' stroke-width='8'/%3E%3Crect x='16.5' y='16.5' width='63' height='63' fill='none' stroke='%238a6414' stroke-width='3'/%3E%3Crect x='21' y='21' width='54' height='54' fill='none' stroke='%23f7dc94' stroke-width='2.5'/%3E%3Crect x='24.5' y='24.5' width='47' height='47' fill='none' stroke='%235e4210' stroke-width='2'/%3E%3Cg%3E%3Ccircle cx='16' cy='16' r='7.5' fill='%23e3b53f' stroke='%236b4a12' stroke-width='1.4'/%3E%3Ccircle cx='16' cy='10.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='16' cy='21.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='10.5' cy='16' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='21.5' cy='16' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%238a6414'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='80' cy='16' r='7.5' fill='%23e3b53f' stroke='%236b4a12' stroke-width='1.4'/%3E%3Ccircle cx='80' cy='10.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='80' cy='21.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='74.5' cy='16' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='85.5' cy='16' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='80' cy='16' r='2.2' fill='%238a6414'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='16' cy='80' r='7.5' fill='%23e3b53f' stroke='%236b4a12' stroke-width='1.4'/%3E%3Ccircle cx='16' cy='74.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='16' cy='85.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='10.5' cy='80' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='21.5' cy='80' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='16' cy='80' r='2.2' fill='%238a6414'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='80' cy='80' r='7.5' fill='%23e3b53f' stroke='%236b4a12' stroke-width='1.4'/%3E%3Ccircle cx='80' cy='74.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='80' cy='85.5' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='74.5' cy='80' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='85.5' cy='80' r='2' fill='%23f7dc94'/%3E%3Ccircle cx='80' cy='80' r='2.2' fill='%238a6414'/%3E%3C/g%3E%3C/svg%3E") 32 round;
   box-shadow: var(--shadow-frame), inset 0 0 0 2px #5e4210, inset 0 0 0 4px rgba(247, 220, 148, 0.55);
 }
 
@@ -492,12 +492,13 @@
    lives in the tile's own padding so the masonry reserves space for it */
 .gw-tile--fs-brass-chain { position: relative; padding-top: 34px; }
 .gw-tile--fs-brass-chain::before {
-  content: ''; position: absolute; top: 6px; left: 50%; width: 4px; height: 29px;
-  transform: translateX(-50%); border-radius: 2px;
-  background: repeating-linear-gradient(180deg, #d8b25c 0 3px, #8a6a26 3px 6px, #6b4f18 6px 7px);
+  content: ''; position: absolute; top: 6px; left: 50%; width: 5px; height: 29px;
+  transform: translateX(-50%); border-radius: 2.5px;
+  background: repeating-linear-gradient(180deg, #e5c06a 0 3px, #8a6a26 3px 6px, #5e4210 6px 7px);
+  box-shadow: 0 0 0 0.5px rgba(60, 42, 8, 0.45);
 }
 .gw-tile--fs-brass-chain::after {
-  content: ''; position: absolute; top: 0; left: 50%; width: 9px; height: 9px;
+  content: ''; position: absolute; top: 0; left: 50%; width: 10px; height: 10px;
   transform: translateX(-50%); border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #f1d795, #a87c1c 55%, #5e4210);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
@@ -561,7 +562,9 @@
   .gw-hero__cta { flex-direction: column; align-items: stretch; gap: var(--space-3); }
   .gw-hero__cta .btn { width: 100%; min-width: 0; }
   .gw-hero__meta { flex-direction: column; gap: var(--space-2); }
+  .gw-hero__meta .hours-today { font-size: 0.82rem; text-align: center; }
   .gw-hero__meta-star { display: none; }
+  .gw-frame__plaque { font-size: 0.72rem; padding: 3px 12px; max-width: calc(100% - 14px); bottom: 7px; }
 }
 
 /* ---- Concept #2: Warm Storefront (immersive photo hero) ------------------- */
