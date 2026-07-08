@@ -535,13 +535,18 @@
 .gw-tile--fox { break-before: column; }
 @keyframes gw-settle { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
 @keyframes gw-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
-@media (max-width: 1000px) { .gw-wall { column-count: 3; } }
+@media (max-width: 1000px) {
+  /* three columns on tablets, with the hang loosened a touch so tilted
+     frames keep clear air between them */
+  .gw-wall { column-count: 3; column-gap: 22px; }
+  .gw-tile { margin-bottom: 22px; }
+}
 @media (max-width: 680px) {
   /* Tighter, balanced wall on mobile: even frame heights so the two columns
      line up (no green-wall dead space), softer tilts, snug gaps. Moldings slim
      down per style so the mix stays varied without eating the small tiles. */
-  .gw-wall { column-count: 2; column-gap: 8px; }
-  .gw-tile { width: 100%; margin-bottom: 8px; transform: rotate(calc(var(--tilt, 0deg) * 0.4)); }
+  .gw-wall { column-count: 2; column-gap: 12px; }
+  .gw-tile { width: 100%; margin-bottom: 12px; transform: rotate(calc(var(--tilt, 0deg) * 0.4)); }
   .gw-frame__art { aspect-ratio: 1 / 1.12; border-width: 6px; }
   .gw-frame__art--gilt-grand, .gw-frame__art--gold-tapestry { border-width: 9px; }
   .gw-frame__art--bronze-carved, .gw-frame__art--black-flat { border-width: 8px; }
