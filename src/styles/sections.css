@@ -361,7 +361,10 @@
    a museum placard — two screw heads, brushed-brass face, letterpress text.
    Self-contained contrast (AA inside the plaque), so any photo works under it. */
 .gw-frame__plaque {
-  position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%);
+  /* centered via inset-0 + auto margins (NOT left:50% — that halves the
+     shrink-to-fit width once text is allowed to wrap) */
+  position: absolute; bottom: 9px; left: 0; right: 0;
+  margin-inline: auto; width: fit-content;
   /* never truncate a label: wrap (balanced, growing upward off the bottom
      anchor) instead of ellipsizing */
   max-width: calc(100% - 22px);
