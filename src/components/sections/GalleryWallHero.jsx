@@ -15,12 +15,13 @@ import { track } from '../../lib/analytics.js';
    tucked among the frames. Masonry columns keep it readable on every screen.
    See docs/DESIGN.md. */
 
-/* Wildly mixed shapes + sizes so the hang feels collected-over-time, like the
-   real shop wall: tall portraits, wide landscapes, squares, and a few small
-   pieces (SIZES < 100% leave breathing room around them). */
-const ASPECTS = ['4 / 5', '1 / 1', '5 / 6', '3 / 4', '3 / 2', '1 / 1', '7 / 5', '5 / 4', '4 / 5', '5 / 4'];
+/* Mixed shapes + sizes so the hang feels collected-over-time, like the real
+   shop wall: tall portraits, wide landscapes, squares, and slightly smaller
+   pieces. SIZES stay ≥88% — dipping lower leaves green pockets in the
+   masonry columns instead of "breathing room". */
+const ASPECTS = ['4 / 5', '1 / 1', '5 / 6', '3 / 4', '4 / 3', '1 / 1', '7 / 5', '5 / 4', '4 / 5', '5 / 4'];
 const TILTS = [-4, 3, -2, 4.5, -3, 2.5, -4.5, 2, -2.5, 3.5];
-const SIZES = ['100%', '92%', '100%', '80%', '86%', '100%', '100%', '90%', '90%', '78%'];
+const SIZES = ['100%', '94%', '100%', '88%', '92%', '100%', '100%', '94%', '92%', '88%'];
 /* mats are white/cream like the real wall — warm paper neutrals, never a color */
 const TINTS = ['var(--color-paper)', '#f6efdd', '#efe7d3', '#fbf7ec', '#f3ecdb'];
 const GLYPHS = {
