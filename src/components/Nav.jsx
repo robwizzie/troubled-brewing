@@ -132,12 +132,15 @@ export default function Nav() {
             </div>
           </div>
 
-          <OrderButton className="btn btn--accent nav__cta" location="nav" />
-
-          {/* the dapper fox peeks into the corner of the open drawer (mobile only) */}
-          {open && (
-            <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__drawer-fox" fallback={null} />
-          )}
+          {/* CTA + fox share one row in the mobile drawer (the fox stands beside
+             the button, presenting it — in flow, so it can never overlap the
+             links); display:contents dissolves the wrapper on desktop */}
+          <div className="nav__cta-row">
+            <OrderButton className="btn btn--accent nav__cta" location="nav" />
+            {open && (
+              <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__drawer-fox" fallback={null} />
+            )}
+          </div>
         </nav>
       </div>
     </header>
