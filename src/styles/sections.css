@@ -253,6 +253,9 @@
   0%, 100% { transform: rotate(1.7deg) translateY(-2px); }
   50% { transform: rotate(-1.6deg) translateY(1px); }
 }
+/* the flanks fill desktop margins: one from 900px (a touch of salon asymmetry
+   on tablets-landscape), the pair from 1080px */
+@media (min-width: 900px) { .gw-hero__flank--l { display: block; } }
 @media (min-width: 1080px) { .gw-hero__flank { display: block; } }
 
 /* The centerpiece: the grandest framed piece on the wall — a sculpted gilt
@@ -411,6 +414,19 @@
 }
 .gw-frame:hover .gw-frame__plaque::after,
 .gw-frame:focus-visible .gw-frame__plaque::after { transform: translate(2px, -3px); }
+/* a light sweep across the brass when the frame is hovered — polished, not
+   animated at rest (and frozen entirely under prefers-reduced-motion) */
+.gw-frame__plaque { overflow: hidden; }
+.gw-frame__plaque::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 248, 220, 0.65) 50%, transparent 62%);
+  transform: translateX(-120%);
+}
+.gw-frame:hover .gw-frame__plaque::before,
+.gw-frame:focus-visible .gw-frame__plaque::before {
+  transition: transform 0.55s var(--ease);
+  transform: translateX(120%);
+}
 /* ovals clip elliptically — keep the plaque inside the curve */
 .gw-frame__art--oval-gilt .gw-frame__plaque,
 .gw-frame__art--oval-black .gw-frame__plaque { bottom: 10%; max-width: 62%; padding: 3px 14px; }
