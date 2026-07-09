@@ -414,18 +414,28 @@
 }
 .gw-frame:hover .gw-frame__plaque::after,
 .gw-frame:focus-visible .gw-frame__plaque::after { transform: translate(2px, -3px); }
-/* a light sweep across the brass when the frame is hovered — polished, not
-   animated at rest (and frozen entirely under prefers-reduced-motion) */
-.gw-frame__plaque { overflow: hidden; }
+/* a light sweep across the brass when the frame is hovered — slow and buttery,
+   trailing the frame's straighten, with a faint echo band. Off-hover the band
+   FREEZES in place while fading (the 0s+delayed transform transition holds its
+   position through the fade), then snaps home invisibly — a mid-flight
+   mouse-out never visibly snaps. Reduced motion: base opacity 0 = no sweep. */
+.gw-frame__plaque { overflow: hidden; transition: filter 0.45s var(--ease); }
+.gw-frame:hover .gw-frame__plaque,
+.gw-frame:focus-visible .gw-frame__plaque { filter: brightness(1.06); }
 .gw-frame__plaque::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 248, 220, 0.65) 50%, transparent 62%);
-  transform: translateX(-120%);
+  background: linear-gradient(105deg,
+    transparent 30%, rgba(255, 248, 220, 0.5) 45%, transparent 60%,
+    rgba(255, 248, 220, 0.2) 66%, transparent 72%);
+  transform: translateX(-130%);
+  opacity: 0;
+  transition: opacity 0.22s var(--ease), transform 0s 0.24s;
 }
 .gw-frame:hover .gw-frame__plaque::before,
 .gw-frame:focus-visible .gw-frame__plaque::before {
-  transition: transform 0.55s var(--ease);
-  transform: translateX(120%);
+  transition: transform 0.95s cubic-bezier(0.33, 0, 0.15, 1) 60ms, opacity 0.15s linear 60ms;
+  transform: translateX(130%);
+  opacity: 1;
 }
 /* ovals clip elliptically — keep the plaque inside the curve */
 .gw-frame__art--oval-gilt .gw-frame__plaque,
