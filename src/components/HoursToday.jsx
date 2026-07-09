@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { getHours, getHoursOverrides, getGoogleProfile } from '../lib/dataService.js';
-import { computeStatus, dayName, shopNow } from '../lib/hours.js';
+import { computeStatus, dayName, shopNow, googleWeekly } from '../lib/hours.js';
 
 /* Today's open/closed status pill, plus an optional full weekly table.
-   Source of truth for hours: defaults to Google (client asked) when the cached
-   google_profile has weekday data, falling back to the editable manual tables
-   for holidays/overrides. See docs/INTEGRATIONS.md §Google Places.
+   Source of truth for hours: the shop's GOOGLE BUSINESS PROFILE once its
+   structured hours are cached (client asked), with the admin-editable manual
+   table as the fallback. Owner holiday overrides ALWAYS apply on top of
+   either source. See docs/INTEGRATIONS.md §Google Places.
    Status is derived at render (not stored) and a minute-tick re-renders, so a
    tab left open flips Open → Closed on time. */
 export default function HoursToday({ showWeek = false }) {
@@ -17,10 +18,9 @@ export default function HoursToday({ showWeek = false }) {
     let alive = true;
     Promise.all([getHours(), getHoursOverrides(), getGoogleProfile()]).then(([h, o, g]) => {
       if (!alive) return;
-      setHours(h);
+      const google = googleWeekly(g);
+      setHours(google.length ? google : h);
       setOverrides(o);
-      // (Google weekday_hours, when present, are shown in the weekly table below.)
-      void g;
     });
     return () => {
       alive = false;
