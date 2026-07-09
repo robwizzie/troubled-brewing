@@ -169,6 +169,11 @@ insert into google_profile (id, rating, review_count, maps_url)
 values (1, 4.9, 0, 'https://www.google.com/maps/search/?api=1&query=Trouble+Brewing+Coffee+House+Haddon+Heights')
 on conflict (id) do nothing;
 
+-- Instagram cache (single placeholder row — refreshed by the Edge Function;
+-- never seed private_secrets: the owner pastes the real token in the Dashboard)
+insert into instagram_feed (id, handle) values (1, 'troublebrewingcoffee')
+on conflict (id) do nothing;
+
 -- -----------------------------------------------------------------------------
 -- Testimonials (placeholder — owner replaces with real favorites)
 -- -----------------------------------------------------------------------------
