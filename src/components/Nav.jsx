@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import OrderButton from './OrderButton.jsx';
 import BrandImg from './BrandImg.jsx';
+import { FoxEmblem } from './Motifs.jsx';
 import { BRAND } from '../lib/config.js';
 
 const PRIMARY = [
@@ -134,12 +135,22 @@ export default function Nav() {
 
           {/* CTA + fox share one row in the mobile drawer (the fox stands beside
              the button, presenting it — in flow, so it can never overlap the
-             links); display:contents dissolves the wrapper on desktop */}
+             links); display:contents dissolves the wrapper on desktop.
+             The fox stays MOUNTED even while the drawer is closed: the PNG then
+             caches at page load (display:none imgs still fetch — keep it eager,
+             never loading="lazy"), each open restarts the peek animation via
+             the display toggle, and if the image ever fails, the brass emblem
+             stands in — a fox always shows. The fallback carries the same
+             className itself because BrandImg doesn't forward it. */}
           <div className="nav__cta-row">
             <OrderButton className="btn btn--accent nav__cta" location="nav" />
-            {open && (
-              <BrandImg src={BRAND.foxMascot} alt="" aria-hidden="true" className="nav__drawer-fox" fallback={null} />
-            )}
+            <BrandImg
+              src={BRAND.foxMascot}
+              alt=""
+              aria-hidden="true"
+              className="nav__drawer-fox"
+              fallback={<FoxEmblem size={88} className="nav__drawer-fox" />}
+            />
           </div>
         </nav>
       </div>
