@@ -38,9 +38,13 @@ export default function SocialProof({ data = {} }) {
           </div>
           <ul className="social-proof__quotes">
             {quotes.map((q) => (
-              <li key={q.id} className="social-proof__quote">
-                <p className="social-proof__text">&ldquo;{q.quote}&rdquo;</p>
-                <p className="social-proof__author">{q.author}{q.source ? ` · ${q.source}` : ''}</p>
+              /* each quote hangs like a small framed note — black molding, wide
+                 mat (gallery frame classes), the byline engraved on brass */
+              <li key={q.id} className="gw-frame__art gw-frame__art--black-mat social-proof__quote" style={{ '--ar': 'auto', '--tint': 'var(--color-paper)' }}>
+                <div>
+                  <p className="social-proof__text">&ldquo;{q.quote}&rdquo;</p>
+                  <p className="social-proof__author"><span className="brass-plate">{q.author}{q.source ? ` · ${q.source}` : ''}</span></p>
+                </div>
               </li>
             ))}
           </ul>

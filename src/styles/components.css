@@ -344,6 +344,35 @@
 .hours-table tr.today { font-weight: 700; background: var(--color-sage-soft); }
 .hours-override { color: var(--color-error); font-size: var(--text-sm); }
 
+/* the weekly hours as a letterboard sign — black like the counter + ticker,
+   brass rim, gold "today" row (wraps <HoursToday showWeek/> in HoursSection) */
+.hours-sign {
+  background: linear-gradient(180deg, #221d17, #171310 60%, #100d0a);
+  border: 3px solid var(--color-yellow);
+  box-shadow: 0 0 0 2px #17130e, var(--shadow-md), inset 0 1px 0 rgba(255, 244, 214, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  width: min(460px, 100%);
+  margin-top: var(--space-4);
+  text-align: center;
+}
+.hours-sign__label {
+  font-family: var(--font-body); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.22em; font-size: var(--text-xs); color: var(--color-yellow);
+  display: flex; align-items: center; justify-content: center; gap: var(--space-3);
+  margin: 0 0 var(--space-3); padding-left: 0.22em;
+}
+.hours-sign__label::before, .hours-sign__label::after { content: '✦'; color: var(--color-pink); font-size: 0.9em; }
+.hours-sign .hours-table { max-width: none; margin-inline: auto; }
+.hours-sign .hours-table th, .hours-sign .hours-table td {
+  color: #f3e9d2; border-bottom: 1px solid rgba(247, 220, 148, 0.16);
+  font-family: var(--font-display);
+}
+.hours-sign .hours-table td { text-align: right; font-variant-numeric: tabular-nums; }
+.hours-sign .hours-table tr.today { background: rgba(227, 181, 63, 0.14); }
+.hours-sign .hours-table tr.today th, .hours-sign .hours-table tr.today td { color: var(--color-yellow); }
+.hours-sign .hours-override { color: #f2b8a0; }
+
 /* ---- Consent banner ------------------------------------------------------- */
 .consent {
   position: fixed; inset: auto var(--space-4) var(--space-4); z-index: 1100;
