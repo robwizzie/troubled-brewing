@@ -129,6 +129,43 @@
 .featured__price { font-family: var(--font-display); font-weight: 900; font-size: var(--text-2xl); color: var(--color-yellow-deep); margin: var(--space-1) 0 0; }
 @media (max-width: 720px) { .featured { grid-template-columns: 1fr; } .featured__media { min-height: 220px; } }
 
+/* ---- Instagram polaroid strip ---------------------------------------------
+   Real shop photos as taped-down snapshots — every one links to the profile.
+   White polaroid lip, masking-tape corner, slight scatter; straighten on hover. */
+.ig-strip {
+  display: flex; justify-content: center; align-items: flex-start;
+  gap: var(--space-4); flex-wrap: wrap;
+  margin: var(--space-6) 0;
+}
+.ig-snap {
+  display: block; width: min(168px, calc(50% - var(--space-4)));
+  background: #fdfbf5; padding: 8px 8px 5px;
+  box-shadow: var(--shadow-md);
+  transform: rotate(var(--r, 0deg));
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  position: relative; text-decoration: none;
+}
+.ig-snap::before { /* masking tape */
+  content: ''; position: absolute; top: -9px; left: 50%;
+  width: 58px; height: 17px;
+  transform: translateX(-50%) rotate(-2deg);
+  background: rgba(233, 195, 94, 0.4);
+  border-left: 1px dashed rgba(124, 86, 26, 0.3);
+  border-right: 1px dashed rgba(124, 86, 26, 0.3);
+}
+.ig-snap:hover, .ig-snap:focus-visible {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  z-index: 2;
+}
+.ig-snap__photo { display: block; aspect-ratio: 1; overflow: hidden; background: var(--color-sage-soft); }
+.ig-snap__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ig-snap__caption {
+  display: block; padding: 6px 2px 2px;
+  font-family: var(--font-display); font-style: italic; font-size: 0.8rem;
+  color: var(--color-ink-soft); text-align: center;
+}
+
 /* ---- Community board ------------------------------------------------------ */
 .board-card__value { font-family: var(--font-display); font-size: var(--text-xl); margin: 0; }
 
