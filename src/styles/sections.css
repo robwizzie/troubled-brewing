@@ -65,14 +65,14 @@
   list-style: none; margin: 0; padding: 0;
   display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: var(--space-4);
 }
-.social-proof__quote {
-  background: var(--color-surface); border: 1px solid var(--color-border);
-  border-bottom: 3px solid var(--color-accent);
-  border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);
-  text-align: left;
-}
-.social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.4; margin: 0 0 var(--space-2); color: var(--color-text); }
-.social-proof__author { font-size: var(--text-sm); color: var(--color-text-soft); margin: 0; font-weight: 600; }
+/* each quote hangs like a little framed note from the wall (black molding +
+   wide mat via the gallery frame classes, set on the <li> in SocialProof.jsx) */
+.social-proof__quote { text-align: center; }
+.social-proof__quote:nth-child(odd) { transform: rotate(-0.8deg); }
+.social-proof__quote:nth-child(even) { transform: rotate(0.9deg); }
+.social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.4; margin: 0 0 var(--space-3); color: var(--color-text); }
+.social-proof__author { margin: 0; }
+.social-proof__author .brass-plate { font-size: 0.72rem; padding: 2px 12px; }
 @media (max-width: 760px) {
   .social-proof__quotes { grid-template-columns: 1fr; }
   .social-proof__quote:nth-child(2) { display: none; } /* keep it compact on phones */
@@ -87,22 +87,21 @@
   transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 .sigdrink:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
-.sigdrink__media {
-  aspect-ratio: 16 / 10; display: grid; place-items: center;
+/* each drink hangs in its own little vintage frame (gallery frame classes set
+   per-card in SignatureDrinks.jsx), name on a brass plate */
+.sigdrink__frame {
+  margin: var(--space-4) var(--space-4) 0;
   background: radial-gradient(120% 120% at 50% 0%, var(--color-yellow-soft), var(--color-sage-soft));
-  overflow: hidden;
 }
-.sigdrink__media img { width: 100%; height: 100%; object-fit: cover; }
-.sigdrink__body { padding: var(--space-4) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
-.sigdrink__name { font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); margin: 0; }
+.sigdrink__body { padding: var(--space-3) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
 .sigdrink__desc { color: var(--color-text-soft); font-size: var(--text-sm); margin: 0; flex: 1; }
 .sigdrink__price { font-family: var(--font-display); font-weight: 700; color: var(--color-wood); margin: var(--space-2) 0 0; }
 .sigdrink--loading { min-height: 220px; background: var(--color-sage-soft); }
 .sigdrinks__cta { text-align: center; margin-top: var(--space-6); }
 @media (max-width: 760px) {
   .sigdrinks { grid-template-columns: 1fr; gap: var(--space-4); }
-  .sigdrink { flex-direction: row; align-items: stretch; }
-  .sigdrink__media { aspect-ratio: 1; width: 116px; flex: none; }
+  .sigdrink { flex-direction: row; align-items: center; }
+  .sigdrink__frame { --ar: 1 / 1; width: 112px; flex: none; margin: var(--space-3) 0 var(--space-3) var(--space-3); }
   .sigdrink__body { padding: var(--space-3) var(--space-4); justify-content: center; }
 }
 
@@ -115,15 +114,57 @@
 .featured__media {
   min-height: 280px; align-self: stretch;
   display: grid; place-items: center;
-  background: radial-gradient(120% 110% at 50% 28%, #eef1e0 0%, var(--color-sage-soft) 72%);
+  padding: var(--space-6);
+  /* the drink hangs on a patch of the shop's green wall */
+  background:
+    radial-gradient(120% 90% at 50% -8%, rgba(255, 253, 247, 0.22), transparent 55%),
+    var(--color-green);
 }
-.featured__media img { width: 100%; height: 100%; object-fit: cover; }
+/* the newest piece on the wall: the featured drink in a gold specimen oval */
+.featured__frame { width: min(300px, 100%); transform: rotate(-2deg); }
 .featured__cup { filter: drop-shadow(0 8px 16px rgba(95, 70, 35, 0.16)); }
 .featured__body { padding: var(--space-7); display: flex; flex-direction: column; gap: var(--space-3); }
 .featured__body h2 { margin: 0; }
 .featured__desc { color: var(--color-text-soft); font-size: var(--text-lg); line-height: 1.5; margin: 0; max-width: 42ch; }
 .featured__price { font-family: var(--font-display); font-weight: 900; font-size: var(--text-2xl); color: var(--color-yellow-deep); margin: var(--space-1) 0 0; }
 @media (max-width: 720px) { .featured { grid-template-columns: 1fr; } .featured__media { min-height: 220px; } }
+
+/* ---- Instagram polaroid strip ---------------------------------------------
+   Real shop photos as taped-down snapshots — every one links to the profile.
+   White polaroid lip, masking-tape corner, slight scatter; straighten on hover. */
+.ig-strip {
+  display: flex; justify-content: center; align-items: flex-start;
+  gap: var(--space-4); flex-wrap: wrap;
+  margin: var(--space-6) 0;
+}
+.ig-snap {
+  display: block; width: min(168px, calc(50% - var(--space-4)));
+  background: #fdfbf5; padding: 8px 8px 5px;
+  box-shadow: var(--shadow-md);
+  transform: rotate(var(--r, 0deg));
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  position: relative; text-decoration: none;
+}
+.ig-snap::before { /* masking tape */
+  content: ''; position: absolute; top: -9px; left: 50%;
+  width: 58px; height: 17px;
+  transform: translateX(-50%) rotate(-2deg);
+  background: rgba(233, 195, 94, 0.4);
+  border-left: 1px dashed rgba(124, 86, 26, 0.3);
+  border-right: 1px dashed rgba(124, 86, 26, 0.3);
+}
+.ig-snap:hover, .ig-snap:focus-visible {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  z-index: 2;
+}
+.ig-snap__photo { display: block; aspect-ratio: 1; overflow: hidden; background: var(--color-sage-soft); }
+.ig-snap__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ig-snap__caption {
+  display: block; padding: 6px 2px 2px;
+  font-family: var(--font-display); font-style: italic; font-size: 0.8rem;
+  color: var(--color-ink-soft); text-align: center;
+}
 
 /* ---- Community board ------------------------------------------------------ */
 .board-card__value { font-family: var(--font-display); font-size: var(--text-xl); margin: 0; }
@@ -212,6 +253,9 @@
   0%, 100% { transform: rotate(1.7deg) translateY(-2px); }
   50% { transform: rotate(-1.6deg) translateY(1px); }
 }
+/* the flanks fill desktop margins: one from 900px (a touch of salon asymmetry
+   on tablets-landscape), the pair from 1080px */
+@media (min-width: 900px) { .gw-hero__flank--l { display: block; } }
 @media (min-width: 1080px) { .gw-hero__flank { display: block; } }
 
 /* The centerpiece: the grandest framed piece on the wall — a sculpted gilt
@@ -370,9 +414,51 @@
 }
 .gw-frame:hover .gw-frame__plaque::after,
 .gw-frame:focus-visible .gw-frame__plaque::after { transform: translate(2px, -3px); }
+/* a light sweep across the brass when the frame is hovered — polished, not
+   animated at rest (and frozen entirely under prefers-reduced-motion) */
+.gw-frame__plaque { overflow: hidden; }
+.gw-frame__plaque::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 248, 220, 0.65) 50%, transparent 62%);
+  transform: translateX(-120%);
+}
+.gw-frame:hover .gw-frame__plaque::before,
+.gw-frame:focus-visible .gw-frame__plaque::before {
+  transition: transform 0.55s var(--ease);
+  transform: translateX(120%);
+}
 /* ovals clip elliptically — keep the plaque inside the curve */
 .gw-frame__art--oval-gilt .gw-frame__plaque,
 .gw-frame__art--oval-black .gw-frame__plaque { bottom: 10%; max-width: 62%; padding: 3px 14px; }
+
+/* ---- Brass plate — the plaque's engraved look for NON-link labels (no ↗):
+   featured drink, signature sips, testimonial bylines. Same recipe as
+   .gw-frame__plaque so every nameplate on the site matches. ---- */
+.brass-plate {
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 7px 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
+    radial-gradient(circle at calc(100% - 7px) 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
+    linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
+  border: 1px solid #6e5314;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 240, 200, 0.65);
+  color: #2f2306;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(0.78rem, 1.3vw, 0.95rem);
+  letter-spacing: 0.04em; line-height: 1.15;
+  text-align: center; text-shadow: 0 1px 0 rgba(255, 238, 190, 0.55);
+  overflow-wrap: break-word; text-wrap: balance;
+  margin: 0;
+}
+/* pinned to the bottom of a framed piece (parent .gw-frame__art is relative) */
+.brass-plate--pin {
+  position: absolute; bottom: 10px; left: 0; right: 0;
+  margin-inline: auto; width: fit-content; max-width: calc(100% - 22px);
+}
+.gw-frame__art--oval-gilt .brass-plate--pin,
+.gw-frame__art--oval-black .brass-plate--pin { bottom: 10%; max-width: 62%; padding: 3px 14px; }
 
 /* ---- gilt-thin — the little thin gold fillet frames (= the base recipe) ---- */
 .gw-frame__art--gilt-thin { /* base */ }
