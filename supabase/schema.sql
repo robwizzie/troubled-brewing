@@ -150,7 +150,8 @@ create table if not exists google_profile (
   reviews jsonb default '[]',              -- [{author, rating, text, time, profile_photo}]
   formatted_address text,
   formatted_phone text,
-  weekday_hours jsonb default '[]',        -- Google opening_hours.weekday_text
+  weekday_hours jsonb default '[]',        -- Google weekdayDescriptions (display strings)
+  weekday_periods jsonb default '[]',      -- Google regularOpeningHours.periods (structured; day 0=Sun) — drives live site hours
   lat numeric, lng numeric,
   maps_url text,                           -- "leave a review" / GBP url
   fetched_at timestamptz default now(),

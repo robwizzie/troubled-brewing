@@ -43,6 +43,7 @@ Deno.serve(async (req) => {
       'formattedAddress',
       'internationalPhoneNumber',
       'regularOpeningHours.weekdayDescriptions',
+      'regularOpeningHours.periods', // structured hours → weekday_periods (drives the live site hours)
       'location',
       'googleMapsUri',
     ].join(',');
@@ -69,6 +70,7 @@ Deno.serve(async (req) => {
       formatted_address: p.formattedAddress ?? null,
       formatted_phone: p.internationalPhoneNumber ?? null,
       weekday_hours: p.regularOpeningHours?.weekdayDescriptions ?? [],
+      weekday_periods: p.regularOpeningHours?.periods ?? [],
       lat: p.location?.latitude ?? null,
       lng: p.location?.longitude ?? null,
       maps_url: p.googleMapsUri ?? null,

@@ -55,6 +55,48 @@ export function toMinutes(str) {
   return h * 60 + min;
 }
 
+/** "7:30 AM" from a Places v1 time point — MUST stay parseable by toMinutes(). */
+function pointLabel(pt) {
+  const h24 = pt?.hour ?? 0;
+  const mer = h24 >= 12 ? 'PM' : 'AM';
+  const h = h24 % 12 || 12;
+  return `${h}:${String(pt?.minute ?? 0).padStart(2, '0')} ${mer}`;
+}
+
+/**
+ * Weekly rows from the cached Google Business profile (weekday_periods) in the
+ * manual `hours` table's shape, so computeStatus + the weekly table work
+ * unchanged. Returns [] when Google data isn't cached yet — the caller falls
+ * back to the manual table. Simplifications (right for a coffee shop):
+ * multiple periods in a day collapse to earliest-open → latest-close, and an
+ * overnight close renders as its clock time (status math then treats
+ * past-midnight as closed).
+ */
+export function googleWeekly(profile) {
+  const periods = profile?.weekday_periods;
+  if (!Array.isArray(periods) || periods.length === 0) return [];
+  // Places' always-open sentinel: a single period open Sun 00:00 with no close.
+  if (periods.some((p) => p?.open && !p?.close)) {
+    return Array.from({ length: 7 }, (_, d) => ({ day_of_week: d, open_time: '12:00 AM', close_time: '11:59 PM' }));
+  }
+  const mins = (pt) => (pt.hour ?? 0) * 60 + (pt.minute ?? 0);
+  const byDay = new Map();
+  for (const p of periods) {
+    const d = p?.open?.day;
+    if (!Number.isInteger(d) || d < 0 || d > 6 || !p.close) continue;
+    const closeRank = ((p.close.day - d + 7) % 7) * 1440 + mins(p.close); // overnight closes rank later
+    const prev = byDay.get(d);
+    byDay.set(d, {
+      open: prev && mins(prev.open) <= mins(p.open) ? prev.open : p.open,
+      close: prev && prev.closeRank >= closeRank ? prev.close : p.close,
+      closeRank: prev ? Math.max(prev.closeRank, closeRank) : closeRank,
+    });
+  }
+  return [...byDay.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([d, v]) => ({ day_of_week: d, open_time: pointLabel(v.open), close_time: pointLabel(v.close) }));
+}
+
 /**
  * Compute today's status given weekly hours + overrides.
  * Returns { open, label, todayHours, override }.
