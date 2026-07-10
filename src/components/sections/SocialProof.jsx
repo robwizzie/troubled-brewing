@@ -19,8 +19,9 @@ export default function SocialProof({ data = {} }) {
     Promise.all([getGoogleProfile(), getTestimonials()]).then(([p, t]) => {
       if (!alive) return;
       setProfile(p);
-      const featured = (t || []).filter((q) => q.featured);
-      const curated = featured.length ? featured : t || [];
+      // featured first, then the rest — the carousel has room for everyone
+      const all = t || [];
+      const curated = [...all.filter((q) => q.featured), ...all.filter((q) => !q.featured)];
       // Real Google reviews first, quality-gated so a terse "ok." or a rant
       // never lands in a frame; curated testimonials fill out the carousel.
       const google = (p?.reviews || [])
