@@ -61,21 +61,46 @@
 .social-proof__label { font-size: var(--text-sm); color: var(--color-text-soft); font-weight: 600; }
 .social-proof__link { font-size: var(--text-sm); font-weight: 700; color: var(--color-accent-text); text-decoration: none; }
 .social-proof__link:hover { text-decoration: underline; }
+/* the review CAROUSEL: a scroll-snap strip of framed notes — swipe on touch,
+   brass chevrons for mouse users. Cards stretch to equal height per view. */
+.social-proof__carousel { flex: 1 1 460px; min-width: 0; }
 .social-proof__quotes {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: var(--space-4);
+  list-style: none; margin: 0;
+  display: flex; align-items: stretch; gap: var(--space-4);
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 14px 4px; /* room for the frames' drop shadows */
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
 }
+.social-proof__quotes::-webkit-scrollbar { display: none; }
 /* each quote hangs like a little framed note from the wall (black molding +
    wide mat via the gallery frame classes, set on the <li> in SocialProof.jsx) */
-.social-proof__quote { text-align: center; }
-.social-proof__quote:nth-child(odd) { transform: rotate(-0.8deg); }
-.social-proof__quote:nth-child(even) { transform: rotate(0.9deg); }
+.social-proof__quote {
+  flex: 0 0 min(300px, 84%);
+  scroll-snap-align: center;
+  text-align: center;
+}
+.social-proof__quote:nth-child(odd) { transform: rotate(-0.6deg); }
+.social-proof__quote:nth-child(even) { transform: rotate(0.7deg); }
 .social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.4; margin: 0 0 var(--space-3); color: var(--color-text); }
 .social-proof__author { margin: 0; }
 .social-proof__author .brass-plate { font-size: 0.72rem; padding: 2px 12px; }
+.social-proof__nav { display: flex; justify-content: center; gap: var(--space-3); margin-top: var(--space-1); }
+.social-proof__navbtn {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1.5px solid var(--color-yellow-deep);
+  background: var(--color-paper); color: var(--color-yellow-deep);
+  font-size: 1.3rem; line-height: 1; font-family: var(--font-body);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.social-proof__navbtn:hover, .social-proof__navbtn:focus-visible { background: var(--color-yellow-soft); transform: translateY(-1px); }
 @media (max-width: 760px) {
-  .social-proof__quotes { grid-template-columns: 1fr; }
-  .social-proof__quote:nth-child(2) { display: none; } /* keep it compact on phones */
+  .social-proof { gap: var(--space-4); }
+  .social-proof__carousel { flex-basis: 100%; }
+  .social-proof__quote { flex-basis: min(280px, 82%); }
 }
 
 /* ---- Signature drinks teaser ---------------------------------------------- */
@@ -99,10 +124,11 @@
 .sigdrink--loading { min-height: 220px; background: var(--color-sage-soft); }
 .sigdrinks__cta { text-align: center; margin-top: var(--space-6); }
 @media (max-width: 760px) {
+  /* stacked full-width cards — the old thumbnail-row squeezed the framed art
+     to 112px and shattered the brass nameplates one word per line */
   .sigdrinks { grid-template-columns: 1fr; gap: var(--space-4); }
-  .sigdrink { flex-direction: row; align-items: center; }
-  .sigdrink__frame { --ar: 1 / 1; width: 112px; flex: none; margin: var(--space-3) 0 var(--space-3) var(--space-3); }
-  .sigdrink__body { padding: var(--space-3) var(--space-4); justify-content: center; }
+  .sigdrink__frame { --ar: 16 / 9; margin: var(--space-3) var(--space-3) 0; }
+  .sigdrink__body { padding: var(--space-3) var(--space-4) var(--space-4); }
 }
 
 /* ---- Featured drink ------------------------------------------------------- */
@@ -459,7 +485,9 @@
   font-size: clamp(0.78rem, 1.3vw, 0.95rem);
   letter-spacing: 0.04em; line-height: 1.15;
   text-align: center; text-shadow: 0 1px 0 rgba(255, 238, 190, 0.55);
-  overflow-wrap: break-word; text-wrap: balance;
+  /* wrap on WORD boundaries only — break-word shattered names one word per
+     line in narrow frames ("Bana/na/Split…") */
+  overflow-wrap: normal; text-wrap: balance;
   margin: 0;
 }
 /* pinned to the bottom of a framed piece (parent .gw-frame__art is relative) */
@@ -623,32 +651,41 @@
   .gw-tile--fox { break-before: auto; }
 }
 @media (max-width: 680px) {
-  /* Tighter, balanced wall on mobile: even frame heights so the two columns
-     line up (no green-wall dead space), softer tilts, snug gaps. Moldings slim
-     down per style so the mix stays varied without eating the small tiles. */
-  .gw-wall { column-count: 2; column-gap: 12px; }
-  .gw-tile { width: 100%; margin-bottom: 12px; transform: rotate(calc(var(--tilt, 0deg) * 0.4)); }
-  .gw-frame__art { aspect-ratio: 1 / 1.12; border-width: 6px; }
-  .gw-frame__art--gilt-grand, .gw-frame__art--gold-tapestry { border-width: 9px; }
-  .gw-frame__art--bronze-carved, .gw-frame__art--black-flat { border-width: 8px; }
-  .gw-frame__art--gilt-thin { border-width: 4px; }
-  .gw-frame__art--brass-chain { border-width: 3px; }
-  .gw-frame__art--black-mat { padding: clamp(10px, 9%, 20px); }
-  .gw-frame__art--black-stacked { padding: clamp(8px, 7%, 16px); }
-  .gw-frame__art--oval-gilt, .gw-frame__art--oval-black { aspect-ratio: 1 / 1; border-width: 8px; }
+  /* Phones: CSS columns fill top-to-bottom and can strand one column short,
+     leaving green voids (and the sculptures floated alone in full-height
+     cells). A GRID flows in row order with uniform frame heights, so the wall
+     packs edge-to-edge by construction — and the fox + rabbit become slim
+     full-width "shelves" between the rows of frames, like mantel pieces. */
+  .gw-wall {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+    align-items: end; /* the chain-hung frame's nail pokes up into the row gap */
+  }
+  /* NOTE: scoped to .gw-wall — the frame classes are reused by the featured
+     drink, signature sips, and review cards, which size themselves */
+  .gw-tile { width: 100%; margin: 0; transform: rotate(calc(var(--tilt, 0deg) * 0.4)); }
+  .gw-wall .gw-frame__art { aspect-ratio: 1 / 1.12; border-width: 6px; }
+  .gw-wall .gw-frame__art--gilt-grand, .gw-wall .gw-frame__art--gold-tapestry { border-width: 9px; }
+  .gw-wall .gw-frame__art--bronze-carved, .gw-wall .gw-frame__art--black-flat { border-width: 8px; }
+  .gw-wall .gw-frame__art--gilt-thin { border-width: 4px; }
+  .gw-wall .gw-frame__art--brass-chain { border-width: 3px; }
+  .gw-wall .gw-frame__art--black-mat { padding: clamp(10px, 9%, 20px); }
+  .gw-wall .gw-frame__art--black-stacked { padding: clamp(8px, 7%, 16px); }
+  /* ovals share the frames' 1/1.12 so every row is flush (a portrait ellipse
+     is the Victorian shape anyway) */
+  .gw-wall .gw-frame__art--oval-gilt, .gw-wall .gw-frame__art--oval-black { aspect-ratio: 1 / 1.12; border-width: 8px; }
   .gw-tile--fs-brass-chain { padding-top: 21px; }
   .gw-tile--fs-brass-chain::before { top: 4px; height: 18px; width: 3px; }
   .gw-tile--fs-brass-chain::after { width: 7px; height: 7px; }
   .gw-tile--fs-brass-chain .gw-frame__art { transform-origin: 50% -21px; }
   .gw-tile--fs-black-stacked::before { inset: -6px 6px 6px -7px; border-width: 5px; }
   .gw-hero { padding: var(--space-5) 0 var(--space-4); }
-  /* show the fox + rabbit sculptures on mobile too, sized down for the narrow
-     two-column grid; let them flow (no forced column break) so the columns stay
-     balanced and the sculptures tuck naturally between the frames */
-  .gw-tile--fox, .gw-tile--rabbit { break-before: auto; }
-  .gw-tile--object { padding: 4px 0; }
-  .gw-object-img { max-width: 108px; }
-  .gw-tile--rabbit .gw-object-img { max-width: 84px; }
+  /* the gold sculptures span the full width as short shelf rows — never a
+     floating head in a tall green cell */
+  .gw-tile--object { grid-column: 1 / -1; padding: 2px 0; align-self: center; }
+  .gw-object-img { max-width: 96px; }
+  .gw-tile--rabbit .gw-object-img { max-width: 74px; }
   .gw-hero__placard { transform: none; padding: var(--space-6) var(--space-5); }
   .gw-hero__cta { flex-direction: column; align-items: stretch; gap: var(--space-3); }
   .gw-hero__cta .btn { width: 100%; min-width: 0; }
