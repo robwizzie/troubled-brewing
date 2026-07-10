@@ -17,12 +17,12 @@ export const asset = (p) => `${import.meta.env.BASE_URL}${String(p).replace(/^\/
    names and they appear automatically (graceful fallbacks until then).
    See public/images/brand/README.md. */
 export const BRAND = {
-  logoPrimary: asset('images/brand/logo-primary.svg'),     // TROUBLE BREWING wordmark (SVG = exact logo, crisp; falls back to vintage text)
+  logoPrimary: asset('images/brand/logo-primary.png'),     // TROUBLE BREWING wordmark (point back at .svg here if a vector ever lands)
   logoSecondary: asset('images/brand/logo-secondary.png'), // secondary logo
   logoFox: asset('images/brand/logo-fox.png'),             // primary logo WITH the fox (badge)
-  foxMascot: asset('images/brand/fox-mascot.png'),         // standing dapper top-hat fox (easter egg)
-  foxHead: asset('images/brand/fox-head.png'),             // gold fox-head sculpture (gallery wall)
-  rabbitHead: asset('images/brand/rabbit-head.png'),       // gold rabbit-head sculpture — tucked into the gallery wall (falls back to a hare motif)
-  footerBanner: asset('images/brand/fox-footer-top.svg'),  // fox emerging from coffee (footer top band) — SVG, crisp at any size
+  foxMascot: asset('images/brand/fox-mascot.webp'),        // standing dapper top-hat fox (nav drawer)
+  foxHead: asset('images/brand/fox-head.webp'),            // gold fox-head sculpture (gallery wall)
+  rabbitHead: asset('images/brand/rabbit-head.webp'),      // gold rabbit-head sculpture — tucked into the gallery wall (falls back to a hare motif)
+  footerBanner: asset('images/brand/fox-footer-top.webp'), // fox emerging from coffee (footer top band)
 };
 
