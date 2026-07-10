@@ -150,7 +150,8 @@ create table if not exists google_profile (
   reviews jsonb default '[]',              -- [{author, rating, text, time, profile_photo}]
   formatted_address text,
   formatted_phone text,
-  weekday_hours jsonb default '[]',        -- Google opening_hours.weekday_text
+  weekday_hours jsonb default '[]',        -- Google weekdayDescriptions (display strings)
+  weekday_periods jsonb default '[]',      -- Google regularOpeningHours.periods (structured; day 0=Sun) — drives live site hours
   lat numeric, lng numeric,
   maps_url text,                           -- "leave a review" / GBP url
   fetched_at timestamptz default now(),
@@ -168,6 +169,26 @@ create table if not exists testimonials (
   status text not null default 'published',
   draft_data jsonb,
   created_at timestamptz default now()
+);
+
+-- Instagram: the shop's last-4 posts, cached by the instagram-feed function
+-- (the homepage polaroid strip renders these; static shop photos otherwise)
+create table if not exists instagram_feed (
+  id int primary key default 1,            -- single row
+  handle text,                             -- @username, refreshed from the API
+  posts jsonb default '[]',                -- [{id, image, caption, permalink, media_type, timestamp}]
+  fetched_at timestamptz,
+  constraint instagram_feed_singleton check (id = 1)
+);
+
+-- Server-only secrets (the Instagram access token). RLS is enabled with NO
+-- policies: anon/authenticated read zero rows; only service_role (edge
+-- functions) and the Dashboard (postgres) can touch it. Owners paste/rotate
+-- the token via Dashboard → Table Editor.
+create table if not exists private_secrets (
+  key text primary key,                    -- 'instagram_token'
+  value text not null,
+  updated_at timestamptz default now()
 );
 
 -- =============================================================================
@@ -255,6 +276,9 @@ alter table content_blocks   enable row level security;
 alter table submissions      enable row level security;
 alter table google_profile   enable row level security;
 alter table testimonials     enable row level security;
+alter table instagram_feed   enable row level security;
+alter table private_secrets  enable row level security;   -- intentionally NO policies (service-role only)
+revoke all on table private_secrets from anon, authenticated; -- belt-and-braces: a future stray policy still can't expose it
 alter table gallery_pieces   enable row level security;
 alter table team_members     enable row level security;
 alter table local_businesses enable row level security;
@@ -267,6 +291,7 @@ create policy "public read pages"            on pages            for select usin
 create policy "public read hours"            on hours            for select using (true);
 create policy "public read hours_overrides"  on hours_overrides  for select using (true);
 create policy "public read google_profile"   on google_profile   for select using (true);
+create policy "public read instagram_feed"   on instagram_feed   for select using (true);
 
 -- Published-only tables: anon sees published rows; admins see all (separate policy below).
 create policy "public read published sections"
@@ -303,6 +328,7 @@ create policy "admin all hours_overrides"  on hours_overrides  for all to authen
 create policy "admin all content_blocks"   on content_blocks   for all to authenticated using (true) with check (true);
 create policy "admin all submissions"      on submissions      for all to authenticated using (true) with check (true);
 create policy "admin all google_profile"   on google_profile   for all to authenticated using (true) with check (true);
+create policy "admin all instagram_feed"   on instagram_feed   for all to authenticated using (true) with check (true);
 create policy "admin all testimonials"     on testimonials     for all to authenticated using (true) with check (true);
 create policy "admin all gallery_pieces"   on gallery_pieces   for all to authenticated using (true) with check (true);
 create policy "admin all team_members"     on team_members     for all to authenticated using (true) with check (true);

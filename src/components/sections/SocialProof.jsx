@@ -18,7 +18,14 @@ export default function SocialProof({ data = {} }) {
       if (!alive) return;
       setProfile(p);
       const featured = (t || []).filter((q) => q.featured);
-      setQuotes((featured.length ? featured : t || []).slice(0, 2));
+      const curated = featured.length ? featured : t || [];
+      // Real Google reviews first, quality-gated so a terse "ok." or a rant
+      // never lands in a frame; curated testimonials top up to two cards.
+      const google = (p?.reviews || [])
+        .map((r, i) => ({ ...r, text: String(r.text || '').replace(/\s+/g, ' ').trim(), i }))
+        .filter((r) => (r.rating ?? 5) >= 4 && r.text.length >= 40 && r.text.length <= 220)
+        .map((r) => ({ id: `g-${r.i}`, quote: r.text, author: r.author, source: 'Google' }));
+      setQuotes([...google, ...curated].slice(0, 2));
     });
     return () => { alive = false; };
   }, []);

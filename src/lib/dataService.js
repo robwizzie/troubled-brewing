@@ -141,6 +141,17 @@ export async function getGoogleProfile() {
   }
 }
 
+export async function getInstagramFeed() {
+  if (!isSupabaseConfigured) return seed.INSTAGRAM_FEED;
+  try {
+    const { data, error } = await supabase.from('instagram_feed').select('*').eq('id', 1).maybeSingle();
+    if (error) throw error;
+    return data || seed.INSTAGRAM_FEED;
+  } catch {
+    return seed.INSTAGRAM_FEED;
+  }
+}
+
 export async function getGalleryPieces() {
   if (!isSupabaseConfigured) return seed.GALLERY_PIECES;
   try {
