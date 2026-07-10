@@ -62,45 +62,72 @@
 .social-proof__link { font-size: var(--text-sm); font-weight: 700; color: var(--color-accent-text); text-decoration: none; }
 .social-proof__link:hover { text-decoration: underline; }
 /* the review CAROUSEL: a scroll-snap strip of framed notes — swipe on touch,
-   brass chevrons for mouse users. Cards stretch to equal height per view. */
-.social-proof__carousel { flex: 1 1 460px; min-width: 0; }
+   overlaid brass chevrons for mouse users (disabled at the ends), dots below
+   tracking the active card. Cards stretch to equal height per view. */
+.social-proof__carousel { position: relative; flex: 1 1 460px; min-width: 0; }
 .social-proof__quotes {
   list-style: none; margin: 0;
   display: flex; align-items: stretch; gap: var(--space-4);
   overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px; /* snap flush with the strip's padded edge */
   padding: 14px 4px; /* room for the frames' drop shadows */
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-  mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
 }
 .social-proof__quotes::-webkit-scrollbar { display: none; }
 /* each quote hangs like a little framed note from the wall (black molding +
-   wide mat via the gallery frame classes, set on the <li> in SocialProof.jsx) */
-.social-proof__quote {
-  flex: 0 0 min(300px, 84%);
-  scroll-snap-align: center;
+   wide mat via the gallery frame classes, set on the <li> in SocialProof.jsx).
+   The compound selector outranks .gw-frame__art's aspect-ratio: content sets
+   the height here, not the wall's 3/4 portrait default. */
+.social-proof__quote.gw-frame__art {
+  aspect-ratio: auto;
+  min-height: 200px;
+  flex: 0 0 min(320px, 86%);
+  scroll-snap-align: start;
+  scroll-snap-stop: always; /* a hard swipe advances one card, never flies past */
   text-align: center;
 }
-.social-proof__quote:nth-child(odd) { transform: rotate(-0.6deg); }
-.social-proof__quote:nth-child(even) { transform: rotate(0.7deg); }
-.social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.4; margin: 0 0 var(--space-3); color: var(--color-text); }
+.social-proof__quote:nth-child(odd) { transform: rotate(-0.5deg); }
+.social-proof__quote:nth-child(even) { transform: rotate(0.6deg); }
+.social-proof__mark {
+  display: block; line-height: 0.55; margin-bottom: var(--space-2);
+  font-family: var(--font-display); font-size: 1.7rem;
+  color: var(--color-yellow-deep); opacity: 0.55;
+}
+.social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.45; margin: 0 0 var(--space-3); color: var(--color-text); }
 .social-proof__author { margin: 0; }
 .social-proof__author .brass-plate { font-size: 0.72rem; padding: 2px 12px; }
-.social-proof__nav { display: flex; justify-content: center; gap: var(--space-3); margin-top: var(--space-1); }
 .social-proof__navbtn {
-  width: 38px; height: 38px; border-radius: 50%;
+  position: absolute; top: 50%; z-index: 2;
+  width: 42px; height: 42px; border-radius: 50%;
   border: 1.5px solid var(--color-yellow-deep);
   background: var(--color-paper); color: var(--color-yellow-deep);
-  font-size: 1.3rem; line-height: 1; font-family: var(--font-body);
+  font-size: 1.45rem; line-height: 1; font-family: var(--font-body);
   display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 3px 10px rgba(60, 44, 16, 0.22);
+  transform: translateY(-50%);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+.social-proof__navbtn--prev { left: -10px; }
+.social-proof__navbtn--next { right: -10px; }
+.social-proof__navbtn:hover:not(:disabled), .social-proof__navbtn:focus-visible { background: var(--color-yellow-soft); transform: translateY(-50%) scale(1.07); }
+.social-proof__navbtn:disabled { opacity: 0.28; cursor: default; box-shadow: none; }
+.social-proof__dots { display: flex; justify-content: center; gap: 9px; padding-bottom: 2px; }
+.social-proof__dot {
+  width: 9px; height: 9px; padding: 0; border-radius: 50%;
+  border: 1.5px solid var(--color-yellow-deep); background: transparent;
+  cursor: pointer;
   transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.social-proof__navbtn:hover, .social-proof__navbtn:focus-visible { background: var(--color-yellow-soft); transform: translateY(-1px); }
+.social-proof__dot:hover { transform: scale(1.2); }
+.social-proof__dot.is-active { background: var(--color-yellow-deep); transform: scale(1.15); }
 @media (max-width: 760px) {
   .social-proof { gap: var(--space-4); }
   .social-proof__carousel { flex-basis: 100%; }
-  .social-proof__quote { flex-basis: min(280px, 82%); }
+  .social-proof__quote.gw-frame__art { flex-basis: min(280px, 82%); min-height: 180px; }
+  /* touch scrolls the strip; the dots carry position — chevrons would crowd the cards */
+  .social-proof__navbtn { display: none; }
 }
 
 /* ---- Signature drinks teaser ---------------------------------------------- */
