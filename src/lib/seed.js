@@ -162,8 +162,11 @@ export const GOOGLE_PROFILE = {
   formatted_address: '514 Station Ave, Haddon Heights, NJ 08035',
   formatted_phone: '(856) 617-6638',
   weekday_hours: [],
+  weekday_periods: [],
   maps_url: 'https://www.google.com/maps/search/?api=1&query=Trouble+Brewing+Coffee+House+Haddon+Heights',
 };
+
+export const INSTAGRAM_FEED = { id: 1, handle: 'troublebrewingcoffee', posts: [] };
 
 export const TESTIMONIALS = [
   { id: 't-1', author: 'Sarah M.', source: 'Google', rating: 5, quote: 'The Banana Split Coffee is unreal and the team always remembers my order. My favorite spot in Haddon Heights.', featured: true, display_order: 0 },

@@ -10,19 +10,22 @@ export default function HoursEditor() {
   const toast = useToast();
   const [hours, setHours] = useState(null);
   const [overrides, setOverrides] = useState([]);
+  const [googleLive, setGoogleLive] = useState(false);
   const [saving, setSaving] = useState(false);
   const [newOverride, setNewOverride] = useState({ override_date: '', label: '', open_time: '', close_time: '', closed: false });
   const [confirmDel, setConfirmDel] = useState(null);
 
   async function load() {
-    const [{ data: h }, { data: o }] = await Promise.all([
+    const [{ data: h }, { data: o }, { data: g }] = await Promise.all([
       supabase.from('hours').select('*').order('day_of_week'),
       supabase.from('hours_overrides').select('*').order('override_date'),
+      supabase.from('google_profile').select('weekday_periods').eq('id', 1).maybeSingle(),
     ]);
     // Ensure all 7 days exist in the editor even if not seeded.
     const byDay = Object.fromEntries((h || []).map((r) => [r.day_of_week, r]));
     setHours(Array.from({ length: 7 }, (_, d) => byDay[d] || { day_of_week: d, open_time: '', close_time: '' }));
     setOverrides(o || []);
+    setGoogleLive(Array.isArray(g?.weekday_periods) && g.weekday_periods.length > 0);
   }
   useEffect(() => { load().catch(() => toast('Could not load hours', 'error')); /* eslint-disable-next-line */ }, []);
 
@@ -85,6 +88,13 @@ export default function HoursEditor() {
       <h1>Hours</h1>
       <section className="admin__panel">
         <h2>Weekly hours</h2>
+        {googleLive && (
+          <p className="field__hint">
+            ✅ <strong>Your Google Business hours are live on the site.</strong> This grid is only the
+            backup if Google is ever unavailable — to change your regular hours, update them on your
+            Google Business Profile (they refresh here daily). Holiday closures below always apply.
+          </p>
+        )}
         <p className="field__hint">Leave both blank for a day you’re closed. Use a consistent format like “7:30 AM”.</p>
         <table className="admin-hours">
           <thead><tr><th>Day</th><th>Opens</th><th>Closes</th></tr></thead>

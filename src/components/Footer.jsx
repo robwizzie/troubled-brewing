@@ -3,11 +3,13 @@ import { FaLocationDot, FaPhone } from 'react-icons/fa6';
 import { SITE } from '../lib/seed.js';
 import SocialLinks from './SocialLinks.jsx';
 import BrandImg from './BrandImg.jsx';
+import { Flourish } from './Motifs.jsx';
 import { BRAND } from '../lib/config.js';
 
 /* Footer: a fox-in-coffee banner up top, a clean cream body (Navigation /
-   Visit / Connect), real social icons, and a big HTML-text wordmark. The cream
-   (#f5e5d3) matches the banner art so they blend. */
+   Visit / Connect), real social icons, and the wordmark signed off small —
+   flanked by the logo's own letterpress flourishes over an engraved hairline.
+   The cream (#f5e5d3) matches the banner art so they blend. */
 const NAV = [
   { to: '/menu', label: 'Menu' },
   { to: '/about', label: 'Our Story' },
@@ -62,12 +64,16 @@ export default function Footer() {
         </div>
 
         <div className="footer__wordmark">
-          <BrandImg
-            src={BRAND.logoPrimary}
-            alt="Trouble Brewing"
-            className="footer__wm-img"
-            fallback={<span className="footer__wm-title">Trouble Brewing</span>}
-          />
+          <div className="footer__wm-row">
+            <Flourish className="footer__wm-flourish" width={120} color="var(--color-wood-deep)" />
+            <BrandImg
+              src={BRAND.logoPrimary}
+              alt="Trouble Brewing"
+              className="footer__wm-img"
+              fallback={<span className="footer__wm-title">Trouble Brewing</span>}
+            />
+            <Flourish className="footer__wm-flourish" width={120} color="var(--color-wood-deep)" />
+          </div>
           <span className="footer__wm-sub">
             <i className="footer__wm-star" aria-hidden="true">✦</i>
             Haddon Heights · NJ
