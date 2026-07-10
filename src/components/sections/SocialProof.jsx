@@ -5,25 +5,30 @@ import StarRating from '../StarRating.jsx';
 import { getGoogleProfile, getTestimonials } from '../../lib/dataService.js';
 
 /* Trust strip near the top of the home page: the live Google rating plus a
-   swipeable CAROUSEL of framed reviews — real Google reviews first (quality-
-   gated), curated testimonials after, up to six. Scroll-snap does the work;
-   the brass chevrons nudge a card at a time for mouse users. */
+   slideshow of framed reviews — real Google reviews first (quality-gated),
+   curated testimonials after, up to six. Scroll-snap does the sliding; the
+   overlaid brass chevrons page a card at a time (disabled at the ends) and
+   the dots track + jump to a card. */
 export default function SocialProof({ data = {} }) {
   const { label = 'Loved by the neighborhood' } = data;
   const [profile, setProfile] = useState(null);
   const [quotes, setQuotes] = useState([]);
+  // dots mark scroll STOPS, not cards — on desktop ~2.5 cards share a view,
+  // so per-card dots would include dead ones that never light up
+  const [pos, setPos] = useState({ atStart: true, atEnd: false, index: 0, stops: 1 });
   const stripRef = useRef(null);
+  const rafRef = useRef(0);
 
   useEffect(() => {
     let alive = true;
     Promise.all([getGoogleProfile(), getTestimonials()]).then(([p, t]) => {
       if (!alive) return;
       setProfile(p);
-      // featured first, then the rest — the carousel has room for everyone
+      // featured first, then the rest — the slideshow has room for everyone
       const all = t || [];
       const curated = [...all.filter((q) => q.featured), ...all.filter((q) => !q.featured)];
       // Real Google reviews first, quality-gated so a terse "ok." or a rant
-      // never lands in a frame; curated testimonials fill out the carousel.
+      // never lands in a frame; curated testimonials fill out the set.
       const google = (p?.reviews || [])
         .map((r, i) => ({ ...r, text: String(r.text || '').replace(/\s+/g, ' ').trim(), i }))
         .filter((r) => (r.rating ?? 5) >= 4 && r.text.length >= 40 && r.text.length <= 220)
@@ -33,16 +38,51 @@ export default function SocialProof({ data = {} }) {
     return () => { alive = false; };
   }, []);
 
-  const rating = profile?.rating || 4.9;
-  const mapsUrl = profile?.maps_url;
-
-  function nudge(dir) {
+  // One "step" = a card width + the strip gap (16px = --space-4).
+  function stepWidth(el) {
+    const card = el.querySelector('.social-proof__quote');
+    return card ? card.getBoundingClientRect().width + 16 : 300;
+  }
+  // Track scroll position → chevron disabled states + the active dot.
+  function readPos() {
     const el = stripRef.current;
     if (!el) return;
-    const card = el.querySelector('.social-proof__quote');
-    const step = card ? card.getBoundingClientRect().width + 16 : 300;
-    el.scrollBy({ left: dir * step, behavior: 'smooth' });
+    const max = el.scrollWidth - el.clientWidth;
+    const w = stepWidth(el);
+    const stops = max > 8 ? Math.ceil(max / w) + 1 : 1;
+    const atEnd = el.scrollLeft >= max - 4;
+    setPos({
+      atStart: el.scrollLeft <= 4,
+      atEnd,
+      stops,
+      // the last stop is the clamped max-scroll position, shy of a full step
+      index: atEnd ? stops - 1 : Math.min(Math.round(el.scrollLeft / w), stops - 1),
+    });
   }
+  function onScroll() {
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(readPos);
+  }
+  useEffect(() => { readPos(); }, [quotes]);
+  useEffect(() => {
+    window.addEventListener('resize', onScroll);
+    return () => { window.removeEventListener('resize', onScroll); cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  function step(dir) {
+    const el = stripRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * stepWidth(el), behavior: 'smooth' });
+  }
+  function jumpTo(i) {
+    const el = stripRef.current;
+    if (!el) return;
+    el.scrollTo({ left: i * stepWidth(el), behavior: 'smooth' });
+  }
+
+  const rating = profile?.rating || 4.9;
+  const mapsUrl = profile?.maps_url;
+  const slides = pos.stops > 1; // controls only when the strip actually scrolls
 
   return (
     <Reveal as="section" className="section section--tight">
@@ -55,23 +95,37 @@ export default function SocialProof({ data = {} }) {
             <Link className="social-proof__link" to="/reviews">Read the reviews</Link>
           </div>
           <div className="social-proof__carousel">
-            <ul className="social-proof__quotes" ref={stripRef} aria-label="Reviews">
+            <ul className="social-proof__quotes" ref={stripRef} onScroll={onScroll} aria-label="Reviews">
               {quotes.map((q) => (
                 /* each quote hangs like a small framed note — black molding, wide
                    mat (gallery frame classes), the byline engraved on brass */
                 <li key={q.id} className="gw-frame__art gw-frame__art--black-mat social-proof__quote" style={{ '--tint': 'var(--color-paper)' }}>
                   <div>
-                    <p className="social-proof__text">&ldquo;{q.quote}&rdquo;</p>
+                    <span className="social-proof__mark" aria-hidden="true">❝</span>
+                    <p className="social-proof__text">{q.quote}</p>
                     <p className="social-proof__author"><span className="brass-plate">{q.author}{q.source ? ` · ${q.source}` : ''}</span></p>
                   </div>
                 </li>
               ))}
             </ul>
-            {quotes.length > 2 && (
-              <div className="social-proof__nav">
-                <button type="button" className="social-proof__navbtn" aria-label="Previous review" onClick={() => nudge(-1)}>‹</button>
-                <button type="button" className="social-proof__navbtn" aria-label="Next review" onClick={() => nudge(1)}>›</button>
-              </div>
+            {slides && (
+              <>
+                <button type="button" className="social-proof__navbtn social-proof__navbtn--prev" aria-label="Previous review" disabled={pos.atStart} onClick={() => step(-1)}>‹</button>
+                <button type="button" className="social-proof__navbtn social-proof__navbtn--next" aria-label="Next review" disabled={pos.atEnd} onClick={() => step(1)}>›</button>
+                <div className="social-proof__dots" role="tablist" aria-label="Reviews position">
+                  {Array.from({ length: pos.stops }, (_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      role="tab"
+                      aria-label={`Go to position ${i + 1} of ${pos.stops}`}
+                      aria-selected={pos.index === i}
+                      className={`social-proof__dot ${pos.index === i ? 'is-active' : ''}`}
+                      onClick={() => jumpTo(i)}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>
