@@ -34,14 +34,14 @@ insert into sections (page_slug, type, display_order, data) values
 -- (one of each, like the real wall). Keep in sync with src/lib/seed.js.
 ('home', 'gallery_wall_hero', 0, '{
   "frames": [
-    {"label": "Order / Menu", "link": "/menu", "frame_style": "gilt-grand", "image_url": ""},
-    {"label": "The Troublemakers", "link": "/troublemakers", "frame_style": "black-stacked", "image_url": ""},
-    {"label": "The Gallery Wall", "link": "/gallery-wall", "frame_style": "gold-tapestry", "image_url": ""},
-    {"label": "Events", "link": "/events", "frame_style": "oval-black", "image_url": ""},
-    {"label": "Local Love", "link": "/neighborhood", "frame_style": "gold-botanical", "image_url": ""},
-    {"label": "Reviews", "link": "/reviews", "frame_style": "oval-gilt", "image_url": ""},
-    {"label": "The Journey", "link": "/timeline", "frame_style": "bronze-carved", "image_url": ""},
-    {"label": "Our Story", "link": "/about", "frame_style": "brass-chain", "image_url": ""}
+    {"label": "Order / Menu", "link": "/menu", "frame_style": "gilt-grand", "image_url": "images/wall/order-menu.jpg"},
+    {"label": "The Troublemakers", "link": "/troublemakers", "frame_style": "black-stacked", "image_url": "images/wall/troublemakers.jpg"},
+    {"label": "The Gallery Wall", "link": "/gallery-wall", "frame_style": "gold-tapestry", "image_url": "images/wall/gallery-wall.jpg"},
+    {"label": "Events", "link": "/events", "frame_style": "oval-black", "image_url": "images/wall/whats-on.jpg"},
+    {"label": "Local Love", "link": "/neighborhood", "frame_style": "gold-botanical", "image_url": "images/wall/local-love.jpg"},
+    {"label": "Reviews", "link": "/reviews", "frame_style": "oval-gilt", "image_url": "images/wall/reviews.jpg"},
+    {"label": "The Journey", "link": "/timeline", "frame_style": "bronze-carved", "image_url": "images/wall/our-story-so-far.jpg"},
+    {"label": "Our Story", "link": "/about", "frame_style": "brass-chain", "image_url": "images/wall/our-story.jpg"}
   ],
   "heading": "Welcome to Trouble Brewing",
   "subheading": "A whole wall of reasons to stop in.",

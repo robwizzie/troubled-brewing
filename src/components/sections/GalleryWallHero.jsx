@@ -148,13 +148,18 @@ function FrameTile({ frame, ar, tilt, size, tint, i }) {
   const [imgFailed, setImgFailed] = useState(false);
   const style = normalizeFrameStyle(frame.frame_style);
   const showImg = frame.image_url && !imgFailed;
+  // absolute URLs (admin uploads, seeds run through asset()) pass untouched;
+  // bare repo paths from the DB get the deploy base prefixed
+  const imgSrc = showImg && (/^(https?:)?\/\//i.test(frame.image_url) || frame.image_url.startsWith('/')
+    ? frame.image_url
+    : asset(frame.image_url));
   const isInternal = frame.link && frame.link.startsWith('/');
   const tileStyle = { '--tilt': `${tilt}deg`, '--ar': ar, '--w': size, '--tint': tint };
   const art = (
     <span className={`gw-frame__art gw-frame__art--${style}`}>
       {showImg ? (
         <>
-          <img className="gw-frame__img" src={frame.image_url} alt="" loading={i < 3 ? 'eager' : 'lazy'} onError={() => setImgFailed(true)} />
+          <img className="gw-frame__img" src={imgSrc} alt="" loading={i < 3 ? 'eager' : 'lazy'} onError={() => setImgFailed(true)} />
           <span className="gw-frame__plaque">{frame.label}</span>
         </>
       ) : (
