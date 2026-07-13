@@ -164,6 +164,7 @@ create table if not exists testimonials (
   source text default 'Google',
   rating int,                              -- 1-5, optional
   quote text not null,
+  image_url text default '',              -- optional photo from the review (owner-added)
   featured boolean default false,
   display_order int default 0,
   status text not null default 'published',

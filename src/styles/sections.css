@@ -279,6 +279,17 @@
 .testimonials--google .testimonial blockquote { font-family: var(--font-body); font-size: var(--text-base); line-height: 1.6; }
 .testimonials--grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: var(--space-5); }
 .testimonial blockquote { font-family: var(--font-display); font-size: var(--text-lg); margin: var(--space-2) 0; line-height: 1.4; }
+/* photo attached to a review — sits above the quote like a print in the card */
+.testimonial__photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.testimonials-filter { display: flex; justify-content: center; gap: var(--space-2); margin: calc(-1 * var(--space-2)) 0 var(--space-5); }
+.testimonials-filter__chip {
+  padding: 6px 18px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--color-border); background: var(--color-surface);
+  font: inherit; font-size: var(--text-sm); font-weight: 700; color: var(--color-text-soft);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.testimonials-filter__chip:hover { border-color: var(--color-yellow-deep); color: var(--color-text); }
+.testimonials-filter__chip.is-active { background: var(--color-yellow-soft); border-color: var(--color-yellow-deep); color: var(--color-text); }
 .testimonial__source { color: var(--color-text-soft); font-size: var(--text-sm); font-weight: 400; }
 .testimonial__head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2); }
 .testimonial__avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
