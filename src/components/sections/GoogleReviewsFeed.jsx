@@ -28,7 +28,7 @@ export default function GoogleReviewsFeed({ data = {} }) {
     <Reveal as="section" className="section section--alt">
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
-        <div className="testimonials testimonials--masonry">
+        <div className="testimonials testimonials--masonry testimonials--google">
           {visible.map((r, i) => (
             <figure key={i} className="card testimonial">
               <div className="card__body">
