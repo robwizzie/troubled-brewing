@@ -16,6 +16,7 @@ export default function SocialProof({ data = {} }) {
   // dots mark scroll STOPS, not cards — on desktop ~2.5 cards share a view,
   // so per-card dots would include dead ones that never light up
   const [pos, setPos] = useState({ atStart: true, atEnd: false, index: 0, stops: 1 });
+  const [expanded, setExpanded] = useState(() => new Set());
   const stripRef = useRef(null);
   const rafRef = useRef(0);
 
@@ -28,14 +29,12 @@ export default function SocialProof({ data = {} }) {
       const all = t || [];
       const curated = [...all.filter((q) => q.featured), ...all.filter((q) => !q.featured)];
       // Real Google reviews first — 4★+ with an actual quote (rating-only
-      // reviews have nothing to frame). Long ones get clipped at a word
-      // boundary so every note fits its frame; curated favorites fill out
-      // the set.
-      const clip = (t) => (t.length <= 230 ? t : `${t.slice(0, 230).trimEnd().replace(/\s+\S*$/, '')}…`);
+      // reviews have nothing to frame); curated favorites fill out the set.
+      // Full text is kept: the card clips it behind a Read-more toggle.
       const google = (p?.reviews || [])
         .map((r, i) => ({ ...r, text: String(r.text || '').replace(/\s+/g, ' ').trim(), i }))
         .filter((r) => (r.rating ?? 5) >= 4 && r.text.length >= 30)
-        .map((r) => ({ id: `g-${r.i}`, quote: clip(r.text), author: r.author, source: 'Google' }));
+        .map((r) => ({ id: `g-${r.i}`, quote: r.text, author: r.author, source: 'Google' }));
       setQuotes([...google, ...curated].slice(0, 6));
     });
     return () => { alive = false; };
@@ -99,17 +98,32 @@ export default function SocialProof({ data = {} }) {
           </div>
           <div className="social-proof__carousel">
             <ul className="social-proof__quotes" ref={stripRef} onScroll={onScroll} aria-label="Reviews">
-              {quotes.map((q) => (
-                /* each quote hangs like a small framed note — black molding, wide
-                   mat (gallery frame classes), the byline engraved on brass */
-                <li key={q.id} className="gw-frame__art gw-frame__art--black-mat social-proof__quote" style={{ '--tint': 'var(--color-paper)' }}>
-                  <div>
-                    <span className="social-proof__mark" aria-hidden="true">❝</span>
-                    <p className="social-proof__text">{q.quote}</p>
-                    <p className="social-proof__author"><span className="brass-plate">{q.author}{q.source ? ` · ${q.source}` : ''}</span></p>
-                  </div>
-                </li>
-              ))}
+              {quotes.map((q) => {
+                const isLong = q.quote.length > 190;
+                const open = expanded.has(q.id);
+                const shown = !isLong || open ? q.quote : `${q.quote.slice(0, 190).trimEnd().replace(/\s+\S*$/, '')}…`;
+                return (
+                  /* each quote hangs like a small framed note — black molding, wide
+                     mat (gallery frame classes), the byline engraved on brass */
+                  <li key={q.id} className="gw-frame__art gw-frame__art--black-mat social-proof__quote" style={{ '--tint': 'var(--color-paper)' }}>
+                    <div>
+                      <span className="social-proof__mark" aria-hidden="true">❝</span>
+                      <p className="social-proof__text">{shown}</p>
+                      {isLong && (
+                        <button
+                          type="button"
+                          className="social-proof__more"
+                          aria-expanded={open}
+                          onClick={() => setExpanded((s) => { const n = new Set(s); if (open) n.delete(q.id); else n.add(q.id); return n; })}
+                        >
+                          {open ? 'Show less' : 'Read more'}
+                        </button>
+                      )}
+                      <p className="social-proof__author"><span className="brass-plate">{q.author}{q.source ? ` · ${q.source}` : ''}</span></p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             {slides && (
               <>
