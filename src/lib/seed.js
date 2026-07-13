@@ -169,9 +169,9 @@ export const GOOGLE_PROFILE = {
 export const INSTAGRAM_FEED = { id: 1, handle: 'troublebrewingcoffee', posts: [] };
 
 export const TESTIMONIALS = [
-  { id: 't-1', author: 'Sarah M.', source: 'Google', rating: 5, quote: 'The Banana Split Coffee is unreal and the team always remembers my order. My favorite spot in Haddon Heights.', featured: true, display_order: 0 },
-  { id: 't-2', author: 'Dave R.', source: 'Google', rating: 5, quote: 'Real La Colombe coffee, fresh paninis, and a room you actually want to hang out in. This is what a coffee shop should be.', featured: true, display_order: 1 },
-  { id: 't-3', author: 'Priya K.', source: 'Google', rating: 5, quote: 'The cranberry walnut chicken salad panini ruined every other panini for me. Cozy, friendly, local — go.', featured: false, display_order: 2 },
+  { id: 't-1', author: 'Sarah M.', source: '', rating: 5, quote: 'The Banana Split Coffee is unreal and the team always remembers my order. My favorite spot in Haddon Heights.', featured: true, display_order: 0 },
+  { id: 't-2', author: 'Dave R.', source: '', rating: 5, quote: 'Real La Colombe coffee, fresh paninis, and a room you actually want to hang out in. This is what a coffee shop should be.', featured: true, display_order: 1 },
+  { id: 't-3', author: 'Priya K.', source: '', rating: 5, quote: 'The cranberry walnut chicken salad panini ruined every other panini for me. Cozy, friendly, local — go.', featured: false, display_order: 2 },
 ];
 
 export const GALLERY_PIECES = [
