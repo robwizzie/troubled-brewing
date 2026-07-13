@@ -65,6 +65,7 @@ Seeded before the home page gained the reviews carousel + signature sips? Re-syn
 delete from sections where page_slug = 'home';
 -- then re-run ONLY the "-- HOME ---" insert block from supabase/seed.sql
 delete from testimonials; -- placeholder quotes; owners add real favorites in /admin
+alter table testimonials add column if not exists image_url text default ''; -- review photos
 ```
 
 ### Row Level Security summary
