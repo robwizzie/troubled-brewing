@@ -82,21 +82,34 @@
    the height here, not the wall's 3/4 portrait default. */
 .social-proof__quote.gw-frame__art {
   aspect-ratio: auto;
-  min-height: 200px;
-  flex: 0 0 min(320px, 86%);
+  min-height: 240px;
+  flex: 0 0 min(340px, 86%);
   scroll-snap-align: start;
   scroll-snap-stop: always; /* a hard swipe advances one card, never flies past */
   text-align: center;
 }
+/* the note's interior: mark / quote / (read more) / brass byline as one
+   column with even air, so the plate never crowds the mat's keyline */
+.social-proof__quote > div {
+  width: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--space-2); padding: var(--space-2) 0;
+}
 .social-proof__quote:nth-child(odd) { transform: rotate(-0.5deg); }
 .social-proof__quote:nth-child(even) { transform: rotate(0.6deg); }
 .social-proof__mark {
-  display: block; line-height: 0.55; margin-bottom: var(--space-2);
+  display: block; line-height: 0.55;
   font-family: var(--font-display); font-size: 1.7rem;
   color: var(--color-yellow-deep); opacity: 0.55;
 }
-.social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.45; margin: 0 0 var(--space-3); color: var(--color-text); }
-.social-proof__author { margin: 0; }
+.social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.5; margin: 0; color: var(--color-text); }
+.social-proof__more {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font-family: var(--font-body); font-size: var(--text-sm); font-weight: 700;
+  color: var(--color-accent-text); text-decoration: underline; text-underline-offset: 3px;
+}
+.social-proof__more:hover { text-decoration-thickness: 2px; }
+.social-proof__author { margin: var(--space-1) 0 0; }
 .social-proof__author .brass-plate { font-size: 0.72rem; padding: 2px 12px; }
 .social-proof__navbtn {
   position: absolute; top: 50%; z-index: 2;
