@@ -3,41 +3,55 @@ import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
 import { getGoogleProfile } from '../../lib/dataService.js';
 
-/* A rotating set of fresh Google reviews from the cached google_profile.reviews
-   (Places returns up to 5). Renders nothing extra if none are cached yet. */
+/* Real Google reviews from the cached google_profile.reviews library (the
+   Edge Function merges each refresh's top-5 in, so it grows over time).
+   Renders a masonry wall a page at a time with a "Show more" control. */
 export default function GoogleReviewsFeed({ data = {} }) {
-  const { heading = 'Fresh from Google', count = 5 } = data;
+  const { heading = 'Fresh from Google', count = 6 } = data;
+  const pageSize = Math.max(3, count);
   const [reviews, setReviews] = useState(null);
+  const [shown, setShown] = useState(pageSize);
 
   useEffect(() => {
     let alive = true;
-    getGoogleProfile().then((p) => alive && setReviews(p?.reviews || []));
+    // only 4★ and up make the wall — same bar as the homepage carousel
+    getGoogleProfile().then((p) => alive && setReviews((p?.reviews || []).filter((r) => (r.rating ?? 5) >= 4)));
     return () => { alive = false; };
   }, []);
 
   if (reviews && reviews.length === 0) return null; // nothing cached yet — testimonials carry the page
 
+  const visible = (reviews || []).slice(0, shown);
+  const remaining = (reviews?.length || 0) - visible.length;
+
   return (
     <Reveal as="section" className="section section--alt">
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
-        <div className="grid grid--3">
-          {(reviews || []).slice(0, count).map((r, i) => (
+        <div className="testimonials testimonials--masonry">
+          {visible.map((r, i) => (
             <figure key={i} className="card testimonial">
               <div className="card__body">
                 <div className="testimonial__head">
-                  {r.profile_photo && <img className="testimonial__avatar" src={r.profile_photo} alt="" loading="lazy" />}
+                  {r.profile_photo && <img className="testimonial__avatar" src={r.profile_photo} alt="" loading="lazy" referrerPolicy="no-referrer" />}
                   <div>
                     <strong>{r.author}</strong>
                     {r.rating ? <StarRating value={r.rating} size={14} /> : null}
                   </div>
                 </div>
                 <blockquote>“{r.text}”</blockquote>
-                {r.time && <figcaption className="testimonial__source">{r.time}</figcaption>}
+                {r.time && <figcaption className="testimonial__source">{r.time} · Google</figcaption>}
               </div>
             </figure>
           ))}
         </div>
+        {remaining > 0 && (
+          <p style={{ textAlign: 'center', marginTop: 'var(--space-5)' }}>
+            <button type="button" className="btn btn--ghost" onClick={() => setShown((n) => n + pageSize)}>
+              Show more reviews ({remaining})
+            </button>
+          </p>
+        )}
       </div>
     </Reveal>
   );
