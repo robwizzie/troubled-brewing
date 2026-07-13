@@ -1,6 +1,11 @@
 // Supabase Edge Function: fetch the shop's Google Business Profile via the
 // Places API and cache it into the `google_profile` table (build plan §5.5).
-// Feeds the live rating/count, up to 5 reviews, address, geo, and hours.
+// Feeds the live rating/count, reviews, address, geo, and hours.
+//
+// Places returns AT MOST 5 "most relevant" reviews per call (hard API cap —
+// the full set needs owner OAuth via the Business Profile API). Because that
+// top-5 rotates, each refresh MERGES new reviews into the cached list instead
+// of overwriting it, so the library grows over time (newest fetch first).
 //
 // The Places key is BILLABLE and must stay server-side — it lives here as a
 // function secret and never reaches the browser.
@@ -25,11 +30,12 @@ Deno.serve(async (req) => {
 
   try {
     // Read the configured place_id from the single google_profile row.
-    const cfgRes = await fetch(`${SUPABASE_URL}/rest/v1/google_profile?id=eq.1&select=place_id`, {
+    const cfgRes = await fetch(`${SUPABASE_URL}/rest/v1/google_profile?id=eq.1&select=place_id,reviews`, {
       headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` },
     });
     const cfg = await cfgRes.json();
     const placeId = cfg?.[0]?.place_id || Deno.env.get('GOOGLE_PLACE_ID');
+    const prev: Record<string, any>[] = Array.isArray(cfg?.[0]?.reviews) ? cfg[0].reviews : [];
 
     if (!PLACES_KEY || !placeId) {
       return json({ ok: false, error: 'Missing GOOGLE_PLACES_API_KEY or place_id' }, 200);
@@ -54,13 +60,18 @@ Deno.serve(async (req) => {
     if (!g.ok) throw new Error(`Places ${g.status}: ${await g.text()}`);
     const p = await g.json();
 
-    const reviews = (p.reviews || []).slice(0, 5).map((r: Record<string, any>) => ({
+    const fresh = (p.reviews || []).slice(0, 5).map((r: Record<string, any>) => ({
       author: r.authorAttribution?.displayName || 'Google user',
       rating: r.rating,
       text: r.text?.text || r.originalText?.text || '',
       time: r.relativePublishTimeDescription || '',
       profile_photo: r.authorAttribution?.photoUri || '',
     }));
+    // merge into the cached library — key on author+text ("2 weeks ago" keeps
+    // shifting, so `time` can't identify a review). Fresh fetch leads; cap 48.
+    const key = (r: Record<string, any>) => `${r.author}|${String(r.text || '').slice(0, 40)}`;
+    const seen = new Set(fresh.map(key));
+    const reviews = [...fresh, ...prev.filter((r) => !seen.has(key(r)))].slice(0, 48);
 
     const row = {
       id: 1,
