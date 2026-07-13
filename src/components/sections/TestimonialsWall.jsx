@@ -16,6 +16,9 @@ export default function TestimonialsWall({ data = {} }) {
     return () => { alive = false; };
   }, []);
 
+  // no hand-picked favorites yet — the Google feed carries the page
+  if (items && items.length === 0) return null;
+
   return (
     <Reveal as="section" className="section">
       <div className="container">

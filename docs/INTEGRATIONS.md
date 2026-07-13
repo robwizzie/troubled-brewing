@@ -59,6 +59,14 @@ alter table private_secrets enable row level security;
 revoke all on table private_secrets from anon, authenticated;
 ```
 
+Seeded before the home page gained the reviews carousel + signature sips? Re-sync once:
+
+```sql
+delete from sections where page_slug = 'home';
+-- then re-run ONLY the "-- HOME ---" insert block from supabase/seed.sql
+delete from testimonials; -- placeholder quotes; owners add real favorites in /admin
+```
+
 ### Row Level Security summary
 
 - **anon:** SELECT on public content tables (sections only where `visible` + published); INSERT on `submissions` only.

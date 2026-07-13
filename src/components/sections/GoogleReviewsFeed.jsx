@@ -11,7 +11,8 @@ export default function GoogleReviewsFeed({ data = {} }) {
 
   useEffect(() => {
     let alive = true;
-    getGoogleProfile().then((p) => alive && setReviews(p?.reviews || []));
+    // only 4★ and up make the wall — same bar as the homepage carousel
+    getGoogleProfile().then((p) => alive && setReviews((p?.reviews || []).filter((r) => (r.rating ?? 5) >= 4)));
     return () => { alive = false; };
   }, []);
 

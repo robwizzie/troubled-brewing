@@ -48,13 +48,14 @@ insert into sections (page_slug, type, display_order, data) values
   "specials_label": "Current Drink Specials",
   "specials_link": "/menu#specials"
 }'),
-('home', 'featured_drink', 1, '{"heading": "This Week''s Trouble"}'),
-('home', 'hours', 2, '{"heading": "Today at Trouble Brewing"}'),
-('home', 'cta', 3, '{"heading": "Skip the line", "body": "Order ahead on SpotOn and we''ll have it ready.", "button_label": "Order Now", "button_url": ""}'),
-('home', 'rich_text', 4, '{"heading": "We proudly pour La Colombe", "body_markdown": "Every cup starts with **La Colombe** coffee — thoughtfully roasted, ethically sourced, and pulled with care. It''s the backbone of everything we make, from a classic cappuccino to our signature Banana Split Coffee."}'),
-('home', 'rich_text', 5, '{"heading": "A neighborhood spot", "body_markdown": "We''re more than coffee. Come for an event, meet the team, or just settle into the green-walled, art-covered room that regulars call a second home."}'),
-('home', 'instagram', 6, '{"embed_handle": "troublebrewingcoffee"}'),
-('home', 'newsletter', 7, '{"heading": "Stay in the loop", "body": "New drinks, events, and the occasional bit of Trouble — straight to your inbox.", "mailchimp_action_url": ""}');
+('home', 'social_proof', 1, '{"label": "Loved by the neighborhood"}'),
+('home', 'featured_drink', 2, '{"heading": "This Week''s Trouble"}'),
+('home', 'signature_drinks', 3, '{"heading": "Signature sips", "button_label": "See the full menu"}'),
+('home', 'hours', 4, '{"heading": "Today at Trouble Brewing"}'),
+('home', 'cta', 5, '{"heading": "Skip the line", "body": "Order ahead on SpotOn and we''ll have it ready.", "button_label": "Order Now", "button_url": ""}'),
+('home', 'intro_duo', 6, '{"heading_a": "Good coffee, real food", "body_a": "We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options.", "heading_b": "More than a coffee shop", "body_b": "Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That''s the good kind of Trouble."}'),
+('home', 'instagram', 7, '{"embed_handle": "troublebrewingcoffee"}'),
+('home', 'newsletter', 8, '{"heading": "Stay in the loop", "body": "New drinks, events, and the occasional bit of Trouble — straight to your inbox.", "mailchimp_action_url": ""}');
 
 -- MENU --------------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
@@ -175,12 +176,10 @@ insert into instagram_feed (id, handle) values (1, 'troublebrewingcoffee')
 on conflict (id) do nothing;
 
 -- -----------------------------------------------------------------------------
--- Testimonials (placeholder — owner replaces with real favorites)
+-- Testimonials: intentionally NOT seeded. The site shows only real reviews —
+-- Google reviews arrive via the google-profile Edge Function, and owners add
+-- hand-picked favorites in /admin. Never insert invented quotes here.
 -- -----------------------------------------------------------------------------
-insert into testimonials (author, source, rating, quote, featured, display_order) values
-('Sarah M.', 'Google', 5, 'The Banana Split Coffee is unreal and the team always remembers my order. My favorite spot in Haddon Heights.', true, 0),
-('Dave R.', 'Google', 5, 'Real La Colombe coffee, fresh paninis, and a room you actually want to hang out in. This is what a coffee shop should be.', true, 1),
-('Priya K.', 'Google', 5, 'The cranberry walnut chicken salad panini ruined every other panini for me. Cozy, friendly, local — go.', false, 2);
 
 -- -----------------------------------------------------------------------------
 -- Gallery pieces (placeholder — owner adds the real wall + stories)

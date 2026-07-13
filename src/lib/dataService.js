@@ -124,7 +124,9 @@ export async function getTestimonials() {
       .order('featured', { ascending: false })
       .order('display_order', { ascending: true });
     if (error) throw error;
-    return data && data.length ? data : seed.TESTIMONIALS;
+    // an empty table is the owner's truth (no placeholders resurrected) —
+    // seeds only cover the no-Supabase preview and hard failures
+    return data || [];
   } catch {
     return seed.TESTIMONIALS;
   }
