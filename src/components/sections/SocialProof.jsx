@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
-import { getGoogleProfile, getTestimonials } from '../../lib/dataService.js';
+import { getGoogleProfile, getTestimonials, reviewKey } from '../../lib/dataService.js';
 
 /* Trust strip near the top of the home page: the live Google rating plus a
    slideshow of framed reviews — real Google reviews first (quality-gated),
@@ -30,10 +30,13 @@ export default function SocialProof({ data = {} }) {
       const curated = [...all.filter((q) => q.featured), ...all.filter((q) => !q.featured)];
       // Real Google reviews first — 4★+ with an actual quote (rating-only
       // reviews have nothing to frame); curated favorites fill out the set.
+      // A review the owners imported as a testimonial is dropped from the
+      // Google side (same author+text) so a quote never hangs twice.
       // Full text is kept: the card clips it behind a Read-more toggle.
+      const curatedKeys = new Set(curated.map((q) => reviewKey(q.author, q.quote)));
       const google = (p?.reviews || [])
         .map((r, i) => ({ ...r, text: String(r.text || '').replace(/\s+/g, ' ').trim(), i }))
-        .filter((r) => (r.rating ?? 5) >= 4 && r.text.length >= 30)
+        .filter((r) => (r.rating ?? 5) >= 4 && r.text.length >= 30 && !curatedKeys.has(reviewKey(r.author, r.text)))
         .map((r) => ({ id: `g-${r.i}`, quote: r.text, author: r.author, source: 'Google' }));
       setQuotes([...google, ...curated].slice(0, 6));
     });

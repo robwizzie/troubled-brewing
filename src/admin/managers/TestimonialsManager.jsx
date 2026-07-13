@@ -1,24 +1,35 @@
 import { useEffect, useState } from 'react';
 import CollectionManager from '../components/CollectionManager.jsx';
-import { createRecord } from '../lib/adminData.js';
-import { getGoogleProfile } from '../../lib/dataService.js';
+import { createRecord, listAll } from '../lib/adminData.js';
+import { getGoogleProfile, reviewKey } from '../../lib/dataService.js';
 import { useToast, Hint } from '../components/ui.jsx';
 
 /* One-click import from the cached Google review library: pick a review,
    it becomes a curated testimonial (then attach the review's photo by hand —
-   Google's APIs don't expose per-review images, so owners add them). */
+   Google's APIs don't expose per-review images, so owners add them).
+   Already-imported reviews are hidden — matched by author+text against the
+   testimonials table, so it survives reloads (not just this session). */
 function GoogleImport({ onAdded }) {
   const [reviews, setReviews] = useState(null);
   const [added, setAdded] = useState(() => new Set());
   const toast = useToast();
 
   useEffect(() => {
-    getGoogleProfile().then((p) => setReviews((p?.reviews || []).filter((r) => (r.rating ?? 5) >= 4 && r.text)));
+    Promise.all([getGoogleProfile(), listAll('testimonials').catch(() => [])]).then(([p, t]) => {
+      const imported = new Set((t || []).map((x) => reviewKey(x.author, x.quote)));
+      setReviews(
+        (p?.reviews || []).filter(
+          (r) => (r.rating ?? 5) >= 4 && r.text && !imported.has(reviewKey(r.author, r.text)),
+        ),
+      );
+    });
   }, []);
 
   if (!reviews || reviews.length === 0) return null;
+  const remaining = reviews.filter((r) => !added.has(reviewKey(r.author, r.text)));
+  if (remaining.length === 0) return null;
 
-  async function add(r, i) {
+  async function add(r) {
     try {
       await createRecord('testimonials', {
         author: r.author,
@@ -27,7 +38,7 @@ function GoogleImport({ onAdded }) {
         quote: r.text,
         featured: false,
       });
-      setAdded((s) => new Set(s).add(i));
+      setAdded((s) => new Set(s).add(reviewKey(r.author, r.text)));
       toast('Added to testimonials');
       onAdded();
     } catch (e) {
@@ -44,16 +55,14 @@ function GoogleImport({ onAdded }) {
         it joins the “with photos” wall.
       </Hint>
       <ul className="admin-import__list">
-        {reviews.map((r, i) => (
+        {remaining.map((r, i) => (
           <li key={i} className="admin-import__row">
             <div className="admin-import__meta">
               <strong>{r.author}</strong>
               <span className="admin-import__stars">{'★'.repeat(Math.min(5, Math.round(r.rating || 5)))}</span>
               <p className="admin-import__text">{r.text}</p>
             </div>
-            <button type="button" className="btn btn--sm" disabled={added.has(i)} onClick={() => add(r, i)}>
-              {added.has(i) ? 'Added ✓' : '+ Add'}
-            </button>
+            <button type="button" className="btn btn--sm" onClick={() => add(r)}>+ Add</button>
           </li>
         ))}
       </ul>

@@ -115,6 +115,15 @@ export async function getEvents({ upcomingOnly = true } = {}) {
   }
 }
 
+/* Identity of a review across sources: a testimonial imported from the Google
+   cache keeps its author + text, so this key links the two. Used to hide
+   already-imported reviews in admin and to stop the same quote rendering
+   twice on the site (once curated, once from the Google feed). */
+export function reviewKey(author, text) {
+  const norm = (s) => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  return `${norm(author)}|${norm(text).slice(0, 60)}`;
+}
+
 export async function getTestimonials() {
   if (!isSupabaseConfigured) return seed.TESTIMONIALS;
   try {
