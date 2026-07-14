@@ -4,8 +4,8 @@ import StarRating from '../StarRating.jsx';
 import { getTestimonials } from '../../lib/dataService.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 
-/* Owner-curated testimonials — the reliable backbone of the reviews page
-   (build plan §5.5). Owners paste their favorite quotes in admin. */
+/* Owner-curated favorites (optional) — hand-picked quotes owners paste in
+   admin; the Google feed below carries the page when this is empty. */
 export default function TestimonialsWall({ data = {} }) {
   const { heading = 'A few of our favorites', layout = 'masonry' } = data;
   const [items, setItems] = useState(null);
@@ -15,6 +15,9 @@ export default function TestimonialsWall({ data = {} }) {
     getTestimonials().then((t) => alive && setItems(t));
     return () => { alive = false; };
   }, []);
+
+  // no hand-picked favorites yet — the Google feed carries the page
+  if (items && items.length === 0) return null;
 
   return (
     <Reveal as="section" className="section">

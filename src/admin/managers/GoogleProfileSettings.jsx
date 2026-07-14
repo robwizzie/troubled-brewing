@@ -77,7 +77,7 @@ export default function GoogleProfileSettings() {
           <li><span>Address</span><strong>{profile.formatted_address || '—'}</strong></li>
           <li><span>Last refreshed</span><strong>{profile.fetched_at ? new Date(profile.fetched_at).toLocaleString() : '—'}</strong></li>
         </ul>
-        <p className="field__hint">The site shows up to 5 Google reviews. Your curated <a href="/admin/testimonials">Testimonials</a> are the backbone of the reviews page and always show.</p>
+        <p className="field__hint">Google returns its 5 most relevant reviews per refresh (an API cap); each refresh adds unseen ones to the site’s library, so it grows over time. Only 4★+ are shown. Hand-picked <a href="/admin/testimonials">Testimonials</a> are optional and appear above the Google feed.</p>
       </section>
     </div>
   );
