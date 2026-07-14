@@ -23,6 +23,9 @@
 .admin__title { font-family: var(--font-display); font-weight: 700; }
 .admin__topbar-right { margin-left: auto; display: flex; align-items: center; gap: var(--space-3); }
 .admin__viewsite, .admin__user { color: #d8cdb6; font-size: var(--text-sm); text-decoration: none; }
+/* ghost buttons inherit dark text/border - invisible on the ink topbar */
+.admin__topbar .btn--ghost { color: #f3ede1; border-color: rgba(243, 237, 225, 0.45); }
+.admin__topbar .btn--ghost:hover { color: #fff; border-color: #f3ede1; background: rgba(243, 237, 225, 0.12); }
 .admin__burger { display: none; background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; }
 
 /* ---- Body / sidebar ------------------------------------------------------- */
