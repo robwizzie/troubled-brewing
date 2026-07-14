@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
-import { getGoogleProfile } from '../../lib/dataService.js';
+import { getGoogleProfile, getTestimonials, reviewKey } from '../../lib/dataService.js';
 
 /* Real Google reviews from the cached google_profile.reviews library (the
    Edge Function merges each refresh's top-5 in, so it grows over time).
@@ -14,8 +14,14 @@ export default function GoogleReviewsFeed({ data = {} }) {
 
   useEffect(() => {
     let alive = true;
-    // only 4★ and up make the wall — same bar as the homepage carousel
-    getGoogleProfile().then((p) => alive && setReviews((p?.reviews || []).filter((r) => (r.rating ?? 5) >= 4)));
+    // only 4★ and up make the wall — same bar as the homepage carousel.
+    // Reviews imported as curated testimonials are dropped here (matched by
+    // author+text) so they don't show twice on this page.
+    Promise.all([getGoogleProfile(), getTestimonials()]).then(([p, t]) => {
+      if (!alive) return;
+      const curated = new Set((t || []).map((x) => reviewKey(x.author, x.quote)));
+      setReviews((p?.reviews || []).filter((r) => (r.rating ?? 5) >= 4 && !curated.has(reviewKey(r.author, r.text))));
+    });
     return () => { alive = false; };
   }, []);
 
