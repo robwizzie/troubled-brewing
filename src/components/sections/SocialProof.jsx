@@ -27,12 +27,15 @@ export default function SocialProof({ data = {} }) {
       // featured first, then the rest — the slideshow has room for everyone
       const all = t || [];
       const curated = [...all.filter((q) => q.featured), ...all.filter((q) => !q.featured)];
-      // Real Google reviews first, quality-gated so a terse "ok." or a rant
-      // never lands in a frame; curated testimonials fill out the set.
+      // Real Google reviews first — 4★+ with an actual quote (rating-only
+      // reviews have nothing to frame). Long ones get clipped at a word
+      // boundary so every note fits its frame; curated favorites fill out
+      // the set.
+      const clip = (t) => (t.length <= 230 ? t : `${t.slice(0, 230).trimEnd().replace(/\s+\S*$/, '')}…`);
       const google = (p?.reviews || [])
         .map((r, i) => ({ ...r, text: String(r.text || '').replace(/\s+/g, ' ').trim(), i }))
-        .filter((r) => (r.rating ?? 5) >= 4 && r.text.length >= 40 && r.text.length <= 220)
-        .map((r) => ({ id: `g-${r.i}`, quote: r.text, author: r.author, source: 'Google' }));
+        .filter((r) => (r.rating ?? 5) >= 4 && r.text.length >= 30)
+        .map((r) => ({ id: `g-${r.i}`, quote: clip(r.text), author: r.author, source: 'Google' }));
       setQuotes([...google, ...curated].slice(0, 6));
     });
     return () => { alive = false; };
