@@ -14,6 +14,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
     "browser-image-compression": "^2.0.2",
+    "gsap": "^3.13.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.6.0",
