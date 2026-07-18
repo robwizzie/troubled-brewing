@@ -407,12 +407,21 @@
 }
 .gw-hero__specials:hover, .gw-hero__specials:focus-visible { color: var(--color-yellow-deep); }
 
-/* loading skeleton fills (mirror the live hero so the swap isn't jarring) */
-.gw-skel-fill { display: block; width: 100%; height: 100%; border-radius: 0; }
-.gw-skel-line { display: block; }
-.gw-skel-btns { display: flex; gap: var(--space-3); justify-content: center; }
-.gw-skel-object { display: block; width: 74%; margin: 0 auto; aspect-ratio: 3 / 4;
-  border-radius: 46% 46% 42% 42% / 54% 54% 34% 34%; opacity: 0.85; }
+/* ---- GSAP entrance (progressive enhancement) -------------------------------
+   The hero animates itself in via GSAP (src/lib/useGsapEntrance.js + the timeline
+   in GalleryWallHero.jsx), so there's no loading skeleton — the top of the page
+   paints its real content and hands it in with a staggered reveal.
+
+   `gw-hero--gsap` is present whenever the component rendered (JS ran), so it
+   hands the per-tile CSS settle over to GSAP. `is-entering` is added by the hook
+   before the first paint and hides the animated pieces until GSAP takes over;
+   it's removed once GSAP has applied its start states (or by a safety fallback).
+   Visitors with reduced motion never get `is-entering`, so the content shows at
+   once with no animation — while the settle stays off, exactly as they'd want. */
+.gw-hero--gsap .gw-tile { animation: none; }
+.gw-hero.is-entering .gw-hero__placard,
+.gw-hero.is-entering .gw-hero__flank,
+.gw-hero.is-entering .gw-tile { opacity: 0; }
 
 /* the salon wall: an eclectic masonry hang — legible on every screen */
 .gw-wall { column-count: 4; column-gap: 30px; margin-top: var(--space-2); }

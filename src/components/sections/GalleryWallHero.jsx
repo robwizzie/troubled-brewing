@@ -7,6 +7,7 @@ import { FoxEmblem, Hare, Flourish, CoffeeCup, Beans } from '../Motifs.jsx';
 import { BRAND, asset } from '../../lib/config.js';
 import { normalizeFrameStyle } from '../../lib/frameStyles.js';
 import { track } from '../../lib/analytics.js';
+import { useGsapEntrance } from '../../lib/useGsapEntrance.js';
 
 /* THE signature landing concept: the in-shop Gallery Wall recreated as an
    eclectic salon hang on the sage-green wall. Each frame is a legible "poster"
@@ -39,7 +40,44 @@ const WALL_OBJECTS = [
   { before: 4, mod: 'rabbit', src: BRAND.rabbitHead, fallback: <Hare size={104} /> },
 ];
 
+/* The entrance: the museum sign drops in and settles onto its nail, its lettering
+   cascades, the flanking pieces fade up, then the wall gets "hung" — each framed
+   piece drops and settles into place with a little overshoot, scattered across
+   the salon like the collection came together over time. Module-level so the
+   reference is stable (the hook re-runs only on real change, never per render).
+   `.from()` tweens on the tiles clearProps at the end, handing the resting tilt +
+   hover back to CSS. Gated + lazy-loaded by useGsapEntrance (reduced-motion safe). */
+function buildHeroTimeline(gsap) {
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  tl.from('.gw-hero__placard', { autoAlpha: 0, y: -30, scale: 0.94, rotate: -3, duration: 0.7, ease: 'back.out(1.4)' })
+    .from(
+      ['.gw-hero__eyebrow', '.gw-hero__placard h1', '.gw-hero__flourish', '.gw-hero__placard .hero__sub', '.gw-hero__cta', '.gw-hero__meta'],
+      { autoAlpha: 0, y: 16, duration: 0.5, stagger: 0.08 },
+      '-=0.35'
+    )
+    .from('.gw-hero__flank', { autoAlpha: 0, duration: 0.5, stagger: 0.12 }, '-=0.3')
+    .from(
+      '.gw-tile',
+      {
+        autoAlpha: 0,
+        y: 40,
+        scale: 0.86,
+        transformOrigin: '50% 0%',
+        duration: 0.55,
+        ease: 'back.out(1.5)',
+        stagger: { each: 0.045, from: 'random' },
+        // Clear ONLY what GSAP animated so the resting tilt + hover transitions go
+        // back to CSS. NB: never 'all' here — that wipes the inline --tilt/--ar/--w/
+        // --tint the tiles rely on for their varied, collected-over-time hang.
+        clearProps: 'transform,transformOrigin,opacity,visibility',
+      },
+      '-=0.15'
+    );
+  return tl;
+}
+
 export default function GalleryWallHero({ data = {} }) {
+  const scope = useGsapEntrance(buildHeroTimeline);
   const {
     heading = 'Welcome to Trouble Brewing',
     subheading = 'A whole wall of reasons to stop in.',
@@ -72,7 +110,7 @@ export default function GalleryWallHero({ data = {} }) {
   pushObjects(frames.length); // trailing sculptures (e.g. the rabbit) close out the wall
 
   return (
-    <section className="gw-hero">
+    <section className="gw-hero gw-hero--gsap" ref={scope}>
       <div className="container gw-hero__inner">
         <div className="gw-hero__masthead">
           {/* small framed photos hung either side of the sign — they fill the
@@ -180,68 +218,5 @@ function FrameTile({ frame, ar, tilt, size, tint, i }) {
         <a href={frame.link || '#'} className="gw-frame" aria-label={frame.label} target={frame.link ? '_blank' : undefined} rel="noopener noreferrer">{art}</a>
       )}
     </div>
-  );
-}
-
-/* Loading state that mirrors the real hero (same green wall, gilt sign, masonry
-   of framed tiles + sculptures) so there's no jarring swap when content lands.
-   Reuses the same layout constants as the live wall. */
-const SKELETON_STYLES = ['gilt-grand', 'black-stacked', 'gold-tapestry', 'oval-black', 'gold-botanical', 'oval-gilt', 'bronze-carved', 'brass-chain'];
-
-export function GalleryWallHeroSkeleton() {
-  const frames = SKELETON_STYLES.map((frame_style) => ({ frame_style }));
-  const objectsBefore = {};
-  WALL_OBJECTS.forEach((o) => { (objectsBefore[Math.min(o.before, frames.length)] ||= []).push(o); });
-  const pushObjects = (idx, acc) => (objectsBefore[idx] || []).forEach((o, k) => acc.push({ object: o, key: `obj-${idx}-${k}` }));
-
-  const tiles = [];
-  frames.forEach((f, i) => {
-    pushObjects(i, tiles);
-    tiles.push({ frame: f, i, key: `f-${i}`, ar: ASPECTS[i % ASPECTS.length], tilt: TILTS[i % TILTS.length], size: SIZES[i % SIZES.length] });
-  });
-  pushObjects(frames.length, tiles);
-
-  return (
-    <section className="gw-hero" aria-busy="true" aria-label="Loading">
-      <div className="container gw-hero__inner">
-        <div className="gw-hero__masthead">
-          <span className="gw-hero__flank gw-hero__flank--l" aria-hidden="true">
-            <span className="gw-frame__art gw-frame__art--gilt-thin gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
-          </span>
-
-          <div className="gw-hero__placard" aria-hidden="true">
-            <span className="skeleton gw-skel-line" style={{ height: 11, width: '58%', margin: '0 auto var(--space-4)' }} />
-            <span className="skeleton gw-skel-line" style={{ height: 36, width: '88%', margin: '0 auto 10px' }} />
-            <span className="skeleton gw-skel-line" style={{ height: 36, width: '66%', margin: '0 auto var(--space-5)' }} />
-            <span className="skeleton gw-skel-line" style={{ height: 14, width: '52%', margin: '0 auto var(--space-6)' }} />
-            <span className="gw-skel-btns">
-              <span className="skeleton gw-skel-line" style={{ height: 48, width: 184, borderRadius: 'var(--radius-pill)' }} />
-              <span className="skeleton gw-skel-line" style={{ height: 48, width: 158, borderRadius: 'var(--radius-pill)' }} />
-            </span>
-            <span className="skeleton gw-skel-line" style={{ height: 18, width: 300, margin: 'var(--space-5) auto 0' }} />
-          </div>
-
-          <span className="gw-hero__flank gw-hero__flank--r" aria-hidden="true">
-            <span className="gw-frame__art gw-frame__art--black-mat gw-hero__flank-art"><span className="skeleton gw-skel-fill" /></span>
-          </span>
-        </div>
-
-        <div className="gw-wall">
-          {tiles.map((t) =>
-            t.object ? (
-              <div key={t.key} className={`gw-tile gw-tile--object gw-tile--${t.object.mod}`} aria-hidden="true">
-                <span className="skeleton gw-skel-object" />
-              </div>
-            ) : (
-              <div key={t.key} className={`gw-tile gw-tile--fs-${t.frame.frame_style}`} style={{ '--tilt': `${t.tilt}deg`, '--ar': t.ar, '--w': t.size }}>
-                <span className={`gw-frame__art gw-frame__art--${t.frame.frame_style}`}>
-                  <span className="skeleton gw-skel-fill" />
-                </span>
-              </div>
-            )
-          )}
-        </div>
-      </div>
-    </section>
   );
 }

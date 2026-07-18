@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { getPage, getSections, getContentBlock } from '../lib/dataService.js';
 import SectionRenderer from '../components/SectionRenderer.jsx';
 import SEO from '../components/SEO.jsx';
-import { GalleryWallHeroSkeleton } from '../components/sections/GalleryWallHero.jsx';
 import { SECTION_RENDERERS } from '../components/sections/registry.js';
 import Ticker from '../components/Ticker.jsx';
 import { localBusinessJsonLd } from '../lib/jsonld.js';
+import * as seed from '../lib/seed.js';
 
 /* Home is concept-swappable: the hero renders as Gallery Wall (lead), Warm
    Storefront, or Cozy Editorial based on content_blocks.homepage_concept, so the
@@ -18,6 +18,11 @@ const CONCEPT_TO_TYPE = {
   modern_coffee: 'modern_coffee_hero',
 };
 const HERO_TYPES = new Set(Object.values(CONCEPT_TO_TYPE));
+
+/* The hero's content ships in the bundle (seed), so the top of the page can paint
+   — and run its entrance animation — immediately, instead of behind a loading
+   skeleton. Any owner edits from Supabase reconcile in once the fetch resolves. */
+const SEED_HERO = (seed.SECTIONS.home || []).find((s) => HERO_TYPES.has(s.type)) || null;
 
 export default function Home() {
   const [page, setPage] = useState(null);
@@ -41,24 +46,19 @@ export default function Home() {
     return () => { alive = false; };
   }, [isPreview]);
 
-  if (sections === null) {
-    return (
-      <>
-        <SEO title={page?.title} description={page?.meta_description} path="/" jsonLd={localBusinessJsonLd()} />
-        <GalleryWallHeroSkeleton />
-      </>
-    );
-  }
-
-  // Pull the seeded hero (any concept type) out and render the CHOSEN concept in its place.
-  const heroSection = sections.find((s) => HERO_TYPES.has(s.type));
-  const rest = sections.filter((s) => s !== heroSection);
+  // The hero renders from seed on the first paint and stays mounted across the
+  // fetch (same component + position), so its GSAP entrance plays exactly once —
+  // no skeleton, and no swap flash for the default concept. The rest of the page
+  // fills in below once the sections land.
+  const loadedHero = sections?.find((s) => HERO_TYPES.has(s.type));
+  const heroData = (loadedHero || SEED_HERO)?.data || {};
+  const rest = sections ? sections.filter((s) => s !== loadedHero) : [];
   const ConceptHero = SECTION_RENDERERS[CONCEPT_TO_TYPE[concept]];
 
   return (
     <>
       <SEO title={page?.title} description={page?.meta_description} path="/" jsonLd={localBusinessJsonLd()} />
-      {ConceptHero && <ConceptHero data={heroSection?.data || {}} />}
+      {ConceptHero && <ConceptHero data={heroData} />}
       <Ticker />
       {rest.map((s) => (
         <SectionRenderer key={s.id} section={s} />
