@@ -5,17 +5,17 @@ import { Link } from 'react-router-dom';
 const VIDEO_URL = '';
 
 const GUIDES = [
-  { q: 'Add or edit a menu item', a: 'Go to Menu → “+ Add item” (or click an existing one). Fill in the name, price, category, and any dietary tags. Add a photo if you like. Use “Available” to temporarily hide a sold-out item. Save & publish.' },
-  { q: 'Update your hours / add a holiday closure', a: 'Go to Hours. Change the open/close times in the weekly grid and Save. For a holiday, use “+ Add holiday”, pick the date and a label, and either set special hours or check “Closed all day”.' },
-  { q: 'Add an event', a: 'Go to Events → “+ Add event”. Add a title, date, time, description, and an optional photo. Past events drop off the site automatically.' },
-  { q: 'Add a Troublemaker', a: 'Go to Troublemakers → “+ Add Troublemaker”. Add a photo, name, role, short bio, and fun facts. You can add your own fun-fact rows too. Mark someone inactive when they move on (it keeps their record).' },
-  { q: 'Add a Gallery Wall story', a: 'Go to Gallery Wall → “+ Add piece”. Upload a photo of the framed art, give it a title, and tell its story.' },
-  { q: 'Add a local business', a: 'Go to Local Love → “+ Add business”. Add their name, a sentence about them, and a link. Tip: ask them to link back to you — it helps you both on Google.' },
-  { q: 'Feature a review', a: 'Go to Testimonials → “+ Add testimonial”. Paste the quote, add the reviewer’s name and stars, and mark your favorites “featured”. Your live Google rating shows automatically once your Google Profile is connected.' },
-  { q: 'Change a page’s layout', a: 'Go to Pages → pick a page. You’ll see its sections in order. Edit any section, use the ▲▼ arrows to reorder, Hide/Show to toggle, or “+ Add a section”. Use Preview to check it, then Publish.' },
-  { q: 'Publish your changes (Draft vs Published)', a: 'Edits can be saved as a Draft (only you see them) or Published (live to everyone). Use Preview to see drafts in context. “Publish all” on a page pushes every pending change at once.' },
-  { q: 'Undo a mistake', a: 'Open the item you changed and expand “History & restore”. Pick an earlier version and click Restore. (Restoring is itself undoable.)' },
-  { q: 'Swap the homepage look', a: 'Go to Quick Blocks → Homepage look. Choose Gallery Wall, Warm Storefront, or Cozy Editorial, and Save.' },
+  { q: 'Change words or photos on any page', a: 'Open “Edit your site”. Click the part of the page you want to change — it gets a blue outline and a little label. Type in the panel on the right and watch the page update as you go. Your edits save automatically as a private draft; press Publish (top right) when you want them live.' },
+  { q: 'What “draft” and “Publish” mean', a: 'While you edit, everything autosaves as a draft only you can see — the real site is untouched. The Publish button (top of the editor) pushes all your pending changes live at once. The button shows how many changes are waiting.' },
+  { q: 'Add or edit a menu item', a: 'In the editor, go to the Menu page and click the menu. Press “Manage menu →” in the panel, then “+ Add item” (or click an existing one). Fill in the name, price, category, and any dietary tags. Use “Available” to temporarily hide a sold-out item.' },
+  { q: 'Update your hours / add a holiday closure', a: 'Go to Settings → Hours. Change the open/close times in the weekly grid and Save. For a holiday, use “+ Add holiday”, pick the date and a label, and either set special hours or check “Closed all day”.' },
+  { q: 'Add an event', a: 'In the editor, go to the Events page, click the events list, and press “Manage events →”. Add a title, date, time, description, and an optional photo. Past events drop off the site automatically.' },
+  { q: 'Add a Troublemaker, gallery story, or local business', a: 'Same trick everywhere: click the section on its page (Troublemakers, Gallery Wall, or Local Love), then press the “Manage —” button in the panel. Add, edit, reorder, or remove from right there.' },
+  { q: 'Feature a review', a: 'On the Reviews page, click the testimonials wall and press “Manage testimonials →”. Paste the quote, add the reviewer’s name and stars, and mark your favorites “featured”. Your live Google rating shows automatically once your Google Profile is connected.' },
+  { q: 'Rearrange, hide, add, or remove sections', a: 'In the editor with nothing selected, the right panel lists every section on the page in order. Use ▲▼ to reorder, the 👁 to hide or show, 🗑 to remove, and “+ Add a section” at the bottom. These apply right away; hidden sections stay ghosted in the editor so you can bring them back.' },
+  { q: 'Swap the homepage look', a: 'On the Home page, click the big hero at the top. The panel shows “Homepage look” with all four styles — pick one and the page swaps instantly. Each look has its own text and photos you can edit below.' },
+  { q: 'See how it looks on a phone', a: 'Use the 📱 button in the editor’s top bar. It shows the real phone layout — same site, honest widths. Press 🖥 to go back.' },
+  { q: 'Undo a mistake', a: 'Select the section (or open the item) you changed and expand “History & restore”. Pick an earlier version and click Restore. (Restoring is itself undoable.)' },
 ];
 
 export default function HelpCenter() {
@@ -26,7 +26,11 @@ export default function HelpCenter() {
 
       <section className="admin__panel">
         <h2>Quick start</h2>
-        <p>New here? Work through the checklist on your <Link to="/admin">Dashboard</Link>: confirm hours, review the menu, add your team, add an event, connect Google, and pick your homepage look.</p>
+        <p>
+          One idea runs the whole thing: <Link to="/admin/editor">open the editor</Link>, click the part
+          of your site you want to change, and change it. The page updates while you type, nothing goes
+          live until you press <strong>Publish</strong>, and every edit can be undone.
+        </p>
       </section>
 
       {VIDEO_URL ? (

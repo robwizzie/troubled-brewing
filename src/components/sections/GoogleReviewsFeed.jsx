@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
 import { getGoogleProfile, getTestimonials, reviewKey } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 
 /* Real Google reviews from the cached google_profile.reviews library (the
    Edge Function merges each refresh's top-5 in, so it grows over time).
@@ -12,6 +13,7 @@ export default function GoogleReviewsFeed({ data = {} }) {
   const [reviews, setReviews] = useState(null);
   const [shown, setShown] = useState(pageSize);
 
+  const version = useDataVersion('google_profile');
   useEffect(() => {
     let alive = true;
     // only 4★ and up make the wall — same bar as the homepage carousel.
@@ -23,7 +25,7 @@ export default function GoogleReviewsFeed({ data = {} }) {
       setReviews((p?.reviews || []).filter((r) => (r.rating ?? 5) >= 4 && !curated.has(reviewKey(r.author, r.text))));
     });
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   if (reviews && reviews.length === 0) return null; // nothing cached yet — testimonials carry the page
 

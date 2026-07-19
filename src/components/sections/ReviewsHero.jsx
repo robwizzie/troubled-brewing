@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getGoogleProfile } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import StarRating from '../StarRating.jsx';
 
 /* Live Google rating + review count from the cached google_profile row
@@ -8,11 +9,12 @@ export default function ReviewsHero({ data = {} }) {
   const { heading = 'What the neighborhood says' } = data;
   const [profile, setProfile] = useState(null);
 
+  const version = useDataVersion('google_profile');
   useEffect(() => {
     let alive = true;
     getGoogleProfile().then((p) => alive && setProfile(p));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   return (
     <section className="hero">

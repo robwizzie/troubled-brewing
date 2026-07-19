@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getInstagramFeed } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { asset } from '../../lib/config.js';
 import { track } from '../../lib/analytics.js';
 
@@ -41,11 +42,12 @@ function Snap({ image, caption, tilt, href, label, onClick }) {
 export default function InstagramFeed({ data = {} }) {
   const [feed, setFeed] = useState(null);
 
+  const version = useDataVersion('instagram_feed');
   useEffect(() => {
     let alive = true;
     getInstagramFeed().then((f) => alive && setFeed(f));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   const posts = (feed?.posts || []).slice(0, 4);
   const handle = feed?.handle || data.embed_handle || 'troublebrewingcoffee';

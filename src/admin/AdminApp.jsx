@@ -3,10 +3,9 @@ import { AuthProvider } from './lib/auth.jsx';
 import { ToastProvider } from './components/ui.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import AdminLayout from './AdminLayout.jsx';
+import EditorApp from './editor/EditorApp.jsx';
 import Login from './Login.jsx';
-import Dashboard from './Dashboard.jsx';
-import PageList from './PageList.jsx';
-import PageEditor from './PageEditor.jsx';
+import SettingsHome from './SettingsHome.jsx';
 import MenuManager from './managers/MenuManager.jsx';
 import EventsManager from './managers/EventsManager.jsx';
 import TestimonialsManager from './managers/TestimonialsManager.jsx';
@@ -22,12 +21,18 @@ import MediaLibrary from './managers/MediaLibrary.jsx';
 import HelpCenter from './HelpCenter.jsx';
 import './admin.css';
 
+/* The on-page editor is the front door (/admin → editor). The sidebar layout
+   survives as a slim settings area for everything that isn't page content. */
 export default function AdminApp() {
   return (
     <AuthProvider>
       <ToastProvider>
         <Routes>
           <Route path="login" element={<Login />} />
+          <Route index element={<Navigate to="/admin/editor" replace />} />
+          {/* On-page editor — full-bleed, outside the sidebar layout */}
+          <Route path="editor" element={<ProtectedRoute><EditorApp /></ProtectedRoute>} />
+          <Route path="editor/:slug" element={<ProtectedRoute><EditorApp /></ProtectedRoute>} />
           <Route
             element={
               <ProtectedRoute>
@@ -35,9 +40,7 @@ export default function AdminApp() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />
-            <Route path="pages" element={<PageList />} />
-            <Route path="pages/:slug" element={<PageEditor />} />
+            <Route path="settings" element={<SettingsHome />} />
             <Route path="menu" element={<MenuManager />} />
             <Route path="events" element={<EventsManager />} />
             <Route path="testimonials" element={<TestimonialsManager />} />

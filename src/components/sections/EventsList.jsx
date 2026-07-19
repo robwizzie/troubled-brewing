@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getEvents } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 
 function fmtDate(iso) {
@@ -13,11 +14,12 @@ export default function EventsList({ data = {} }) {
   const { heading = 'Upcoming Events' } = data;
   const [events, setEvents] = useState(null);
 
+  const version = useDataVersion('events');
   useEffect(() => {
     let alive = true;
     getEvents({ upcomingOnly: true }).then((e) => alive && setEvents(e));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   return (
     <Reveal as="section" className="section">

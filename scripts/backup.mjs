@@ -29,6 +29,8 @@ const TABLES = [
   'gallery_pieces',
   'team_members',
   'local_businesses',
+  'timeline_events',
+  'instagram_feed',
 ];
 
 async function fetchTable(table) {

@@ -9,34 +9,48 @@ import { asset, BRAND } from '../../lib/config.js';
    a stat row, and a rotating badge. Dark espresso → caramel palette. */
 const DRINK = asset('images/wall/order-menu.jpg');
 
-export default function ModernCoffeeHero() {
+export default function ModernCoffeeHero({ data = {} }) {
+  // Concept-specific keys (mch_*) so editing this look never bleeds into the
+  // other concepts sharing the same hero row's data object.
+  const {
+    mch_eyebrow: eyebrow = 'Coffee House · Haddon Heights, New Jersey',
+    mch_word: word = 'TROUBLE',
+    mch_brand: brand = 'Brewing',
+    mch_lead: lead = 'Bold espresso, scratch-made paninis and pastries, and a green-walled room worth lingering in — crafted fresh on Station Ave.',
+    mch_drink_image_url: drinkPhoto = DRINK,
+    mch_stats: statsSrc = '20+ | Signature drinks\n4.9★ | Neighborhood rating\n7 days | Open weekly',
+    order_label: orderLabel = 'Order Now',
+  } = data;
+  // "Big | Little label" per line
+  const stats = String(statsSrc)
+    .split('\n')
+    .map((line) => line.split('|'))
+    .filter((parts) => parts[0]?.trim())
+    .map(([b, s]) => ({ b: b.trim(), s: (s || '').trim() }));
   return (
     <section className="mch">
       <div className="container mch__inner">
-        <p className="mch__eyebrow">Coffee House · Haddon Heights, New Jersey</p>
+        <p className="mch__eyebrow">{eyebrow}</p>
 
         <div className="mch__stage">
-          <h1 className="mch__word">TROUBLE</h1>
+          <h1 className="mch__word">{word}</h1>
           <div className="mch__drink">
-            <img src={DRINK} alt="Trouble Brewing signature iced coffee" loading="eager" />
+            <img src={drinkPhoto} alt="Trouble Brewing signature iced coffee" loading="eager" />
           </div>
           <Link to="/menu" className="mch__menu">Menu</Link>
         </div>
-        <p className="mch__brand"><i aria-hidden="true">✦</i> Brewing <i aria-hidden="true">✦</i></p>
+        <p className="mch__brand"><i aria-hidden="true">✦</i> {brand} <i aria-hidden="true">✦</i></p>
 
         <div className="mch__row">
-          <p className="mch__lead">
-            Bold espresso, scratch-made paninis and pastries, and a green-walled
-            room worth lingering in — crafted fresh on Station Ave.
-          </p>
+          <p className="mch__lead">{lead}</p>
           <ul className="mch__stats">
-            <li><b>20+</b><span>Signature drinks</span></li>
-            <li><b>4.9★</b><span>Neighborhood rating</span></li>
-            <li><b>7&nbsp;days</b><span>Open weekly</span></li>
+            {stats.map((st, i) => (
+              <li key={i}><b>{st.b}</b><span>{st.s}</span></li>
+            ))}
           </ul>
         </div>
 
-        <OrderButton label="Order Now" className="btn btn--accent btn--lg mch__order" location="hero" />
+        <OrderButton label={orderLabel} className="btn btn--accent btn--lg mch__order" location="hero" />
 
         <div className="mch__badge" aria-hidden="true">
           <svg viewBox="0 0 140 140" className="mch__badge-svg">

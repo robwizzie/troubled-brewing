@@ -70,28 +70,30 @@ function GoogleImport({ onAdded }) {
   );
 }
 
+/* Exported so the on-page editor can embed this collection in its panel. */
+export const TESTIMONIALS_COLLECTION = {
+  table: 'testimonials',
+  title: 'Testimonials',
+  singular: 'testimonial',
+  labelKey: 'author',
+  defaultItem: { source: 'Google', featured: false },
+  summary: (t) => `${t.rating ? '★'.repeat(t.rating) + ' · ' : ''}${t.source || ''}${t.featured ? ' · featured' : ''}${t.image_url ? ' · 📷' : ''}`,
+  fields: [
+    { name: 'quote', label: 'Quote', type: 'textarea', required: true, hint: 'Paste the review text. Pick your best!' },
+    { name: 'author', label: 'Name', type: 'text', required: true, hint: "First name + last initial, e.g. 'Sarah M.'" },
+    { name: 'source', label: 'Source', type: 'text', hint: "Usually 'Google'." },
+    { name: 'rating', label: 'Stars (1–5)', type: 'number', min: 1 },
+    { name: 'image_url', label: 'Photo (optional)', type: 'image', preset: 'card', hint: 'If the review has a photo on Google, add it here — photo reviews get their own filter on the site.' },
+    { name: 'featured', label: 'Feature this one', type: 'checkbox', hint: 'Featured testimonials show first.' },
+  ],
+};
+
 export default function TestimonialsManager() {
   // bump remounts the list after a Google import so the new row appears
   const [bump, setBump] = useState(0);
   return (
     <>
-      <CollectionManager
-        key={bump}
-        table="testimonials"
-        title="Testimonials"
-        singular="testimonial"
-        labelKey="author"
-        defaultItem={{ source: 'Google', featured: false }}
-        summary={(t) => `${t.rating ? '★'.repeat(t.rating) + ' · ' : ''}${t.source || ''}${t.featured ? ' · featured' : ''}${t.image_url ? ' · 📷' : ''}`}
-        fields={[
-          { name: 'quote', label: 'Quote', type: 'textarea', required: true, hint: 'Paste the review text. Pick your best!' },
-          { name: 'author', label: 'Name', type: 'text', required: true, hint: "First name + last initial, e.g. 'Sarah M.'" },
-          { name: 'source', label: 'Source', type: 'text', hint: "Usually 'Google'." },
-          { name: 'rating', label: 'Stars (1–5)', type: 'number', min: 1 },
-          { name: 'image_url', label: 'Photo (optional)', type: 'image', preset: 'card', hint: 'If the review has a photo on Google, add it here — photo reviews get their own filter on the site.' },
-          { name: 'featured', label: 'Feature this one', type: 'checkbox', hint: 'Featured testimonials show first.' },
-        ]}
-      />
+      <CollectionManager key={bump} {...TESTIMONIALS_COLLECTION} />
       <GoogleImport onAdded={() => setBump((b) => b + 1)} />
     </>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getGoogleProfile } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { track } from '../../lib/analytics.js';
 
 /* "Leave a review on Google" — links to the shop's Google Business Profile
@@ -9,11 +10,12 @@ export default function ReviewCTA({ data = {} }) {
   const { heading = 'Been in lately?', body, button_label = 'Leave a review on Google' } = data;
   const [url, setUrl] = useState('');
 
+  const version = useDataVersion('google_profile');
   useEffect(() => {
     let alive = true;
     getGoogleProfile().then((p) => alive && setUrl(p?.maps_url || ''));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   return (
     <Reveal as="section" className="section">

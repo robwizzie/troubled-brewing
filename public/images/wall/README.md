@@ -39,3 +39,17 @@ They only appear on wider desktop screens (hidden on tablet/phone).
 Note: the **Events** frame still uses `whats-on.jpg` and **The Journey** frame
 still uses `our-story-so-far.jpg` — only the on-screen labels changed, so you do
 **not** need to rename those files.
+
+## The Immersive Gallery scene (`immersive-scene.jpg`)
+The **Immersive Gallery** homepage look uses one **UNBRANDED** scene artwork
+(the café interior with empty labeled-nowhere frames) as its canvas — all
+lettering, frame labels, the chalkboard, notes, and the signup panel are live
+HTML drawn over it, so the copy stays editable and scales with the image.
+
+- The file here is **`immersive-scene.jpg`**, **1536×1024** (3:2). Export a
+  new one from the same composition if the artwork is refreshed.
+- If the artwork is ever **re-generated with frames moved**, the link boxes in
+  `src/components/sections/ImmersiveGalleryHero.jsx` (`FRAME_LINKS`) need
+  re-tuning to match.
+- Under 1020px the scene renders as a backdrop banner and the frame links
+  re-form as tappable plaques, so phones and tablets get a clean layout.

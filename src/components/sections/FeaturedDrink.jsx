@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getContentBlock } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { asset } from '../../lib/config.js';
 import { SkeletonBlock } from '../Skeleton.jsx';
 import { CoffeeCup } from '../Motifs.jsx';
@@ -15,11 +16,12 @@ export default function FeaturedDrink({ data = {} }) {
   const [drink, setDrink] = useState(undefined);
   const [srcIdx, setSrcIdx] = useState(0);
 
+  const version = useDataVersion('content_blocks');
   useEffect(() => {
     let alive = true;
     getContentBlock('featured_drink').then((d) => alive && setDrink(d));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   const sources = [drink?.image_url, asset('images/drinks/featured.jpg')].filter(Boolean);
   const src = sources[srcIdx];

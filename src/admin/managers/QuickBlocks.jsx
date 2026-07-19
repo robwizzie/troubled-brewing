@@ -2,15 +2,11 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, Hint } from '../components/ui.jsx';
 import ImageField from '../components/ImageField.jsx';
+import { CONCEPTS } from '../../lib/concepts.js';
 
 /* One-off editable bits: featured drink, staff picks, announcement banner, and
-   the swappable homepage concept (content_blocks). */
-const CONCEPTS = [
-  { value: 'gallery_wall', label: 'Gallery Wall', desc: 'Interactive wall of framed products (lead concept).' },
-  { value: 'warm_storefront', label: 'Warm Storefront', desc: 'Big photo of the space + hours + Order.' },
-  { value: 'cozy_editorial', label: 'Cozy Editorial', desc: 'Magazine-style story layout.' },
-  { value: 'modern_coffee', label: 'Modern Coffee', desc: 'Bold, dark, oversized type with a hero drink shot.' },
-];
+   the swappable homepage concept (content_blocks — options come from the
+   shared concepts registry so new looks appear here automatically). */
 
 async function loadBlock(key, fallback) {
   const { data } = await supabase.from('content_blocks').select('data').eq('key', key).maybeSingle();

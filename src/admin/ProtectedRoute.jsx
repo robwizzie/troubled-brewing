@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './lib/auth.jsx';
+import { publicUrl } from '../lib/config.js';
 
 export default function ProtectedRoute({ children }) {
   const { user, loading, configured } = useAuth();
@@ -14,7 +15,7 @@ export default function ProtectedRoute({ children }) {
           <code>VITE_SUPABASE_ANON_KEY</code>, then run the SQL in <code>/supabase</code>.
         </p>
         <p className="field__hint">See docs/DEPLOYMENT.md and docs/INTEGRATIONS.md.</p>
-        <a className="btn btn--primary" href="/">Back to the site</a>
+        <a className="btn btn--primary" href={publicUrl()}>Back to the site</a>
       </div>
     );
   }

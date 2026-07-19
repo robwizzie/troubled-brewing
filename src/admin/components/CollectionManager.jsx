@@ -1,78 +1,27 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   listAll, createRecord, updateRecord, saveDraft, publishRecord, deleteRecord, reorder,
 } from '../lib/adminData.js';
-import { ConfirmModal, useToast, StatusBadge, Hint, Empty, Spinner } from './ui.jsx';
-import ImageField from './ImageField.jsx';
-import RevisionHistory from './RevisionHistory.jsx';
+import { ConfirmModal, useToast, StatusBadge, Empty, Spinner } from './ui.jsx';
+import { coerceFieldValue } from './FieldRenderer.jsx';
+import ItemEditorForm from './ItemEditorForm.jsx';
 
 /* Schema-driven manager for a structured table (build plan §4.4, §5.7).
-   Handles list + add/edit/delete + reorder + draft/publish + revisions + autosave.
-   Specific managers (Menu, Events, …) just provide a `fields` schema. */
+   Handles list + add/edit/delete + reorder + draft/publish + revisions.
+   Specific managers (Menu, Events, …) just provide a `fields` schema.
 
-const AUTOSAVE_PREFIX = 'tbch-draft-';
-
-function FieldInput({ field, value, onChange }) {
-  const common = { id: field.name, value: value ?? '', onChange: (e) => onChange(e.target.value) };
-  switch (field.type) {
-    case 'textarea':
-      return <textarea {...common} rows={field.rows || 4} />;
-    case 'select':
-      return (
-        <select {...common}>
-          <option value="">Choose…</option>
-          {field.options.map((o) => (
-            <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>
-          ))}
-        </select>
-      );
-    case 'number':
-    case 'price':
-      return <input type="number" step={field.type === 'price' ? '0.01' : '1'} min={field.min} {...common} />;
-    case 'date':
-      return <input type="date" {...common} />;
-    case 'checkbox':
-      return <input type="checkbox" id={field.name} checked={Boolean(value)} onChange={(e) => onChange(e.target.checked)} />;
-    case 'tags':
-      return (
-        <input
-          type="text"
-          id={field.name}
-          value={Array.isArray(value) ? value.join(', ') : value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="comma, separated, tags"
-        />
-      );
-    default:
-      return <input type="text" {...common} />;
-  }
-}
-
-function FunFactsEditor({ value, onChange }) {
-  const entries = Object.entries(value || {});
-  function update(i, key, val) {
-    const next = entries.map(([k, v], idx) => (idx === i ? [key, val] : [k, v]));
-    onChange(Object.fromEntries(next));
-  }
-  function add() { onChange({ ...(value || {}), '': '' }); }
-  function remove(i) { onChange(Object.fromEntries(entries.filter((_, idx) => idx !== i))); }
-  return (
-    <div className="funfacts">
-      {entries.map(([k, v], i) => (
-        <div key={i} className="funfacts__row">
-          <input placeholder="Label (e.g. favorite_movie)" value={k} onChange={(e) => update(i, e.target.value, v)} />
-          <input placeholder="Answer" value={v} onChange={(e) => update(i, k, e.target.value)} />
-          <button type="button" className="btn btn--ghost btn--sm" onClick={() => remove(i)}>✕</button>
-        </div>
-      ))}
-      <button type="button" className="btn btn--ghost btn--sm" onClick={add}>+ Add a fun fact</button>
-    </div>
-  );
-}
-
+   Two render modes:
+   - default: full page with heading + fullscreen right drawer for editing.
+   - embedded: compact variant for the on-page editor's docked panel — no
+     page heading, and editing swaps the list for an inline form instead of
+     overlaying a fixed drawer.
+   `onChanged(table)` fires after any successful mutation so the editor can
+   tell the canvas to refetch. (The old localStorage autosave is gone — it
+   silently resurrected stale drafts; server-side draft_data is the real
+   crash safety.) */
 export default function CollectionManager({
   table, title, singular, fields, defaultItem = {}, labelKey = 'name', orderable = true,
-  summary,
+  summary, embedded = false, onChanged, autoOpenLabel,
 }) {
   const toast = useToast();
   const [items, setItems] = useState(null);
@@ -82,7 +31,7 @@ export default function CollectionManager({
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const autosaveKey = editing ? `${AUTOSAVE_PREFIX}${table}-${editing.id || 'new'}` : null;
+  const notifyChanged = () => onChanged?.(table);
 
   async function refresh() {
     try {
@@ -95,41 +44,40 @@ export default function CollectionManager({
   }
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [table]);
 
+  /* One-shot deep link from the on-page editor: the owner clicked a SPECIFIC
+     item on the canvas (a menu item, a team member…) — open that record. */
+  const autoOpenedRef = useRef(false);
+  useEffect(() => {
+    if (!autoOpenLabel || autoOpenedRef.current || !items || editing) return;
+    autoOpenedRef.current = true;
+    const n = (s) => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const target = n(autoOpenLabel);
+    const found = items.find((it) => {
+      const l = n(it[labelKey]);
+      return l && (l === target || target.includes(l) || l.includes(target));
+    });
+    if (found) openEditor(found);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, autoOpenLabel]);
+
   function openEditor(item) {
-    const base = item ? { ...item, ...(item.draft_data || {}) } : { ...defaultItem };
-    // crash-safety: restore autosaved draft if present
-    try {
-      const saved = localStorage.getItem(`${AUTOSAVE_PREFIX}${table}-${item?.id || 'new'}`);
-      if (saved) Object.assign(base, JSON.parse(saved));
-    } catch { /* ignore */ }
-    setForm(base);
+    // Collection tables use column-based governance: draft_data holds PARTIAL
+    // changes, so merging over the live row is correct here (unlike sections).
+    setForm(item ? { ...item, ...(item.draft_data || {}) } : { ...defaultItem });
     setErrors({});
     setEditing(item || {});
   }
   function closeEditor() {
-    if (autosaveKey) { try { localStorage.removeItem(autosaveKey); } catch { /* ignore */ } }
     setEditing(null);
     setForm({});
   }
-
   function setField(name, val) {
-    setForm((f) => {
-      const next = { ...f, [name]: val };
-      if (autosaveKey) { try { localStorage.setItem(autosaveKey, JSON.stringify(next)); } catch { /* ignore */ } }
-      return next;
-    });
+    setForm((f) => ({ ...f, [name]: val }));
   }
 
   function buildPayload() {
     const out = {};
-    for (const f of fields) {
-      let v = form[f.name];
-      if (f.type === 'tags') v = (Array.isArray(v) ? v : String(v || '').split(',')).map((s) => s.trim()).filter(Boolean);
-      else if (f.type === 'number') v = v === '' || v == null ? null : Number(v);
-      else if (f.type === 'price') v = v === '' || v == null ? null : Number(v);
-      else if (f.type === 'checkbox') v = Boolean(v);
-      out[f.name] = v;
-    }
+    for (const f of fields) out[f.name] = coerceFieldValue(f, form[f.name]);
     return out;
   }
 
@@ -164,6 +112,7 @@ export default function CollectionManager({
       }
       closeEditor();
       refresh();
+      notifyChanged();
     } catch (e) {
       toast(e.message || 'Save failed', 'error');
     } finally {
@@ -176,6 +125,7 @@ export default function CollectionManager({
       await publishRecord(table, item.id);
       toast('Published');
       refresh();
+      notifyChanged();
     } catch (e) {
       toast(e.message || 'Publish failed', 'error');
     }
@@ -187,6 +137,7 @@ export default function CollectionManager({
       toast(`${singular} deleted`);
       setConfirmDelete(null);
       refresh();
+      notifyChanged();
     } catch (e) {
       toast(e.message || 'Delete failed', 'error');
     }
@@ -201,13 +152,108 @@ export default function CollectionManager({
     setItems(next);
     try {
       await reorder(table, next.map((i) => i.id));
+      notifyChanged();
     } catch (e) {
       toast(e.message || 'Reorder failed', 'error');
       refresh();
     }
   }
 
-  const orderedFields = useMemo(() => fields, [fields]);
+  const list =
+    items === null ? (
+      <Spinner />
+    ) : items.length === 0 ? (
+      <Empty>No {title.toLowerCase()} yet. Click “Add {singular}” to create your first one.</Empty>
+    ) : (
+      <ul className="admin-list">
+        {items.map((item, i) => (
+          <li key={item.id} className="admin-list__row">
+            {orderable && (
+              <div className="admin-list__reorder">
+                <button className="iconbtn" aria-label="Move up" disabled={i === 0} onClick={() => move(i, -1)}>▲</button>
+                <button className="iconbtn" aria-label="Move down" disabled={i === items.length - 1} onClick={() => move(i, 1)}>▼</button>
+              </div>
+            )}
+            {item.image_url || item.photo_url ? (
+              <img className="admin-list__thumb" src={item.image_url || item.photo_url} alt="" />
+            ) : null}
+            <div className="admin-list__body">
+              <strong>{item[labelKey] || '(untitled)'}</strong>
+              <div className="admin-list__meta">{summary ? summary(item) : null}</div>
+            </div>
+            <div className="admin-list__status">
+              <StatusBadge status={item.status} hasDraft={Boolean(item.draft_data)} />
+            </div>
+            <div className="admin-list__actions">
+              {(item.status === 'draft' || item.draft_data) && (
+                <button className="btn btn--accent btn--sm" onClick={() => publishExisting(item)}>Publish</button>
+              )}
+              <button className="btn btn--ghost btn--sm" onClick={() => openEditor(item)}>Edit</button>
+              <button className="btn btn--danger btn--sm" onClick={() => setConfirmDelete(item)}>Delete</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+
+  const editorForm = editing && (
+    <ItemEditorForm
+      fields={fields}
+      form={form}
+      errors={errors}
+      onField={setField}
+      table={table}
+      labelKey={labelKey}
+      recordId={editing.id}
+      onRestored={() => { closeEditor(); refresh(); notifyChanged(); }}
+    />
+  );
+
+  const saveButtons = editing && (
+    <>
+      <button className="btn btn--ghost" onClick={() => save({ publish: false })} disabled={saving}>Save as draft</button>
+      <button className="btn btn--primary" onClick={() => save({ publish: true })} disabled={saving}>
+        {saving ? 'Saving…' : editing.id ? 'Save & publish' : 'Publish'}
+      </button>
+    </>
+  );
+
+  const confirm = (
+    <ConfirmModal
+      open={Boolean(confirmDelete)}
+      title={`Delete this ${singular.toLowerCase()}?`}
+      body="This removes it from your site. You can restore it later from this record's history if needed."
+      confirmLabel="Delete"
+      onConfirm={() => doDelete(confirmDelete)}
+      onCancel={() => setConfirmDelete(null)}
+    />
+  );
+
+  if (embedded) {
+    return (
+      <div className="cm-embedded">
+        {editing ? (
+          <div>
+            <div className="cm-embedded__head">
+              <button className="btn btn--ghost btn--sm" onClick={closeEditor}>← All {title.toLowerCase()}</button>
+              <strong>{editing.id ? `Edit ${singular}` : `Add ${singular}`}</strong>
+            </div>
+            {editorForm}
+            <div className="cm-embedded__foot">{saveButtons}</div>
+          </div>
+        ) : (
+          <div>
+            <div className="cm-embedded__head">
+              <strong>{title}</strong>
+              <button className="btn btn--primary btn--sm" onClick={() => openEditor(null)}>+ Add {singular}</button>
+            </div>
+            {list}
+          </div>
+        )}
+        {confirm}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -216,41 +262,7 @@ export default function CollectionManager({
         <button className="btn btn--primary" onClick={() => openEditor(null)}>+ Add {singular}</button>
       </div>
 
-      {items === null ? (
-        <Spinner />
-      ) : items.length === 0 ? (
-        <Empty>No {title.toLowerCase()} yet. Click “Add {singular}” to create your first one.</Empty>
-      ) : (
-        <ul className="admin-list">
-          {items.map((item, i) => (
-            <li key={item.id} className="admin-list__row">
-              {orderable && (
-                <div className="admin-list__reorder">
-                  <button className="iconbtn" aria-label="Move up" disabled={i === 0} onClick={() => move(i, -1)}>▲</button>
-                  <button className="iconbtn" aria-label="Move down" disabled={i === items.length - 1} onClick={() => move(i, 1)}>▼</button>
-                </div>
-              )}
-              {item.image_url || item.photo_url ? (
-                <img className="admin-list__thumb" src={item.image_url || item.photo_url} alt="" />
-              ) : null}
-              <div className="admin-list__body">
-                <strong>{item[labelKey] || '(untitled)'}</strong>
-                <div className="admin-list__meta">{summary ? summary(item) : null}</div>
-              </div>
-              <div className="admin-list__status">
-                <StatusBadge status={item.status} hasDraft={Boolean(item.draft_data)} />
-              </div>
-              <div className="admin-list__actions">
-                {(item.status === 'draft' || item.draft_data) && (
-                  <button className="btn btn--accent btn--sm" onClick={() => publishExisting(item)}>Publish</button>
-                )}
-                <button className="btn btn--ghost btn--sm" onClick={() => openEditor(item)}>Edit</button>
-                <button className="btn btn--danger btn--sm" onClick={() => setConfirmDelete(item)}>Delete</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      {list}
 
       {editing && (
         <div className="admin-drawer-backdrop" onClick={closeEditor}>
@@ -259,58 +271,13 @@ export default function CollectionManager({
               <h2>{editing.id ? `Edit ${singular}` : `Add ${singular}`}</h2>
               <button className="iconbtn" aria-label="Close" onClick={closeEditor}>✕</button>
             </div>
-
-            <div className="admin-drawer__body">
-              {orderedFields.map((f) => (
-                <div key={f.name} className={`field ${errors[f.name] ? 'field--error' : ''} ${f.fullWidth ? 'field--full' : ''}`}>
-                  {f.type !== 'checkbox' && (
-                    <label htmlFor={f.name}>
-                      {f.label} {f.required && <span style={{ color: 'var(--color-error)' }}>*</span>}
-                      {f.hint && <Hint>{f.hint}</Hint>}
-                    </label>
-                  )}
-                  {f.type === 'image' ? (
-                    <ImageField label="" value={form[f.name]} preset={f.preset || 'card'} folder={table} onChange={(url) => setField(f.name, url)} />
-                  ) : f.type === 'funfacts' ? (
-                    <FunFactsEditor value={form[f.name]} onChange={(v) => setField(f.name, v)} />
-                  ) : f.type === 'checkbox' ? (
-                    <label className="checkfield">
-                      <FieldInput field={f} value={form[f.name]} onChange={(v) => setField(f.name, v)} />
-                      <span>{f.label}{f.hint && <Hint>{f.hint}</Hint>}</span>
-                    </label>
-                  ) : (
-                    <FieldInput field={f} value={form[f.name]} onChange={(v) => setField(f.name, v)} />
-                  )}
-                  {errors[f.name] && <p className="field__error">{errors[f.name]}</p>}
-                </div>
-              ))}
-
-              {editing.id && (
-                <details className="admin-history">
-                  <summary>History & restore</summary>
-                  <RevisionHistory table={table} recordId={editing.id} labelKey={labelKey} onRestored={() => { closeEditor(); refresh(); }} />
-                </details>
-              )}
-            </div>
-
-            <div className="admin-drawer__foot">
-              <button className="btn btn--ghost" onClick={() => save({ publish: false })} disabled={saving}>Save as draft</button>
-              <button className="btn btn--primary" onClick={() => save({ publish: true })} disabled={saving}>
-                {saving ? 'Saving…' : editing.id ? 'Save & publish' : 'Publish'}
-              </button>
-            </div>
+            <div className="admin-drawer__body">{editorForm}</div>
+            <div className="admin-drawer__foot">{saveButtons}</div>
           </aside>
         </div>
       )}
 
-      <ConfirmModal
-        open={Boolean(confirmDelete)}
-        title={`Delete this ${singular.toLowerCase()}?`}
-        body="This removes it from your site. You can restore it later from this record's history if needed."
-        confirmLabel="Delete"
-        onConfirm={() => doDelete(confirmDelete)}
-        onCancel={() => setConfirmDelete(null)}
-      />
+      {confirm}
     </div>
   );
 }

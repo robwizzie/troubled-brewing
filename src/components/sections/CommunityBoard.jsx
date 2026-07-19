@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getContentBlock } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 
 /* The community board: owner-edited "staff picks" / what's flying off the menu,
    from content_blocks.staff_picks. */
 export default function CommunityBoard({ data = {} }) {
   const { heading = 'On the Community Board' } = data;
   const [block, setBlock] = useState(null);
+  const version = useDataVersion('content_blocks');
 
   useEffect(() => {
     let alive = true;
     getContentBlock('staff_picks').then((b) => alive && setBlock(b));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   const items = block?.items || [];
 

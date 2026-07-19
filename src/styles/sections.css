@@ -53,37 +53,71 @@
 
 /* ---- Social proof (home trust strip) -------------------------------------- */
 .social-proof {
-  display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap;
+  display: flex; align-items: stretch; gap: var(--space-5); flex-wrap: wrap;
   justify-content: center; text-align: center;
+  padding: clamp(18px, 3vw, 34px);
+  border: 1px solid color-mix(in srgb, var(--color-green-deep) 25%, transparent);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(55rem 25rem at 15% 0%, rgba(255, 253, 247, 0.34), transparent 62%),
+    color-mix(in srgb, var(--color-green) 76%, var(--color-paper));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 12px 34px rgba(39, 44, 25, 0.12);
 }
-.social-proof__rating { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); flex: none; }
+.social-proof__rating {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--space-1); flex: 0 0 190px;
+  padding: var(--space-5) var(--space-5) var(--space-5) 0;
+  border-right: 1px solid color-mix(in srgb, var(--color-green-deep) 25%, transparent);
+}
+.social-proof__eyebrow {
+  margin-bottom: var(--space-2);
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--color-green-deep);
+}
 .social-proof__num { font-family: var(--font-display); font-weight: 900; font-size: var(--text-3xl); line-height: 1; color: var(--color-text); }
-.social-proof__label { font-size: var(--text-sm); color: var(--color-text-soft); font-weight: 600; }
+.social-proof__label { max-width: 18ch; font-size: var(--text-sm); color: var(--color-ink); font-weight: 700; line-height: 1.35; }
 .social-proof__link { font-size: var(--text-sm); font-weight: 700; color: var(--color-accent-text); text-decoration: none; }
 .social-proof__link:hover { text-decoration: underline; }
-/* the review CAROUSEL: a scroll-snap strip of framed notes — swipe on touch,
-   overlaid brass chevrons for mouse users (disabled at the ends), dots below
-   tracking the active card. Cards stretch to equal height per view. */
-.social-proof__carousel { position: relative; flex: 1 1 460px; min-width: 0; }
+/* the review CAROUSEL: a scroll-snap strip of framed notes that PAGES by whole
+   cards — swipe on touch, brass chevrons + dots in a bar underneath. `--per-view`
+   (set from JS off the carousel's OWN width, since it shares a row with the
+   rating block) makes N cards exactly fill the visible strip, so a frame is
+   never sliced mid-word at the edge and one dot == one view you can land on.
+   Cards stretch to equal height per view. */
+.social-proof__carousel {
+  position: relative; flex: 1 1 520px; min-width: 0;
+  --sp-gap: var(--space-4);
+  --sp-pad: 26px;
+}
 .social-proof__quotes {
   list-style: none; margin: 0;
-  display: flex; align-items: stretch; gap: var(--space-4);
+  display: flex; align-items: stretch; gap: var(--sp-gap);
   overflow-x: auto; scroll-snap-type: x mandatory;
-  scroll-padding-inline: 4px; /* snap flush with the strip's padded edge */
-  padding: 14px 4px; /* room for the frames' drop shadows */
+  scroll-padding-inline: var(--sp-pad); /* snap flush with the strip's padded edge */
+  /* A horizontal scroller clips paint at its own box. This gutter is at least
+     as deep as --shadow-frame, so no molding shadow is sliced at an edge. */
+  padding: 16px var(--sp-pad) 30px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
 .social-proof__quotes::-webkit-scrollbar { display: none; }
+.social-proof__quotes:focus-visible {
+  outline: 2px solid var(--color-yellow-deep); outline-offset: 2px; border-radius: 4px;
+}
 /* each quote hangs like a little framed note from the wall (black molding +
    wide mat via the gallery frame classes, set on the <li> in SocialProof.jsx).
    The compound selector outranks .gw-frame__art's aspect-ratio: content sets
    the height here, not the wall's 3/4 portrait default. */
 .social-proof__quote.gw-frame__art {
   aspect-ratio: auto;
-  min-height: 240px;
-  flex: 0 0 min(340px, 86%);
+  min-height: 260px;
+  height: auto;
+  padding: clamp(18px, 4%, 26px);
+  border-width: 7px;
+  /* exactly --per-view cards across the visible strip, gaps included — the
+     whole point: no half-card hanging off the edge */
+  flex: 0 0 calc((100% - (var(--per-view, 1) - 1) * var(--sp-gap)) / var(--per-view, 1));
   scroll-snap-align: start;
   scroll-snap-stop: always; /* a hard swipe advances one card, never flies past */
   text-align: center;
@@ -93,54 +127,82 @@
 .social-proof__quote > div {
   width: 100%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: var(--space-2); padding: var(--space-2) 0;
+  gap: var(--space-2); padding: var(--space-1) 0;
 }
-.social-proof__quote:nth-child(odd) { transform: rotate(-0.5deg); }
-.social-proof__quote:nth-child(even) { transform: rotate(0.6deg); }
+.social-proof__quote:nth-child(odd) { transform: rotate(-0.25deg); }
+.social-proof__quote:nth-child(even) { transform: rotate(0.3deg); }
 .social-proof__mark {
   display: block; line-height: 0.55;
   font-family: var(--font-display); font-size: 1.7rem;
   color: var(--color-yellow-deep); opacity: 0.55;
 }
-.social-proof__text { font-family: var(--font-display); font-size: var(--text-base); line-height: 1.5; margin: 0; color: var(--color-text); }
+.social-proof__text {
+  max-width: 34ch; font-family: var(--font-display);
+  font-size: clamp(0.92rem, 1.45vw, 1.08rem); line-height: 1.45;
+  margin: 0; color: var(--color-text); text-wrap: balance; overflow-wrap: anywhere;
+}
 .social-proof__more {
-  background: none; border: 0; padding: 0; cursor: pointer;
-  font-family: var(--font-body); font-size: var(--text-sm); font-weight: 700;
-  color: var(--color-accent-text); text-decoration: underline; text-underline-offset: 3px;
+  appearance: none; border: 0; padding: 2px 0 3px;
+  background: transparent; color: var(--color-accent-text); cursor: pointer;
+  font: 700 var(--text-sm)/1.2 var(--font-body);
+  text-decoration: underline; text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
 }
-.social-proof__more:hover { text-decoration-thickness: 2px; }
+.social-proof__more:hover { color: var(--color-pink-deep); text-decoration-thickness: 2px; }
 .social-proof__author { margin: var(--space-1) 0 0; }
-.social-proof__author .brass-plate { font-size: 0.72rem; padding: 2px 12px; }
-.social-proof__navbtn {
-  position: absolute; top: 50%; z-index: 2;
-  width: 42px; height: 42px; border-radius: 50%;
-  border: 1.5px solid var(--color-yellow-deep);
-  background: var(--color-paper); color: var(--color-yellow-deep);
-  font-size: 1.45rem; line-height: 1; font-family: var(--font-body);
-  display: grid; place-items: center; cursor: pointer;
-  box-shadow: 0 3px 10px rgba(60, 44, 16, 0.22);
-  transform: translateY(-50%);
-  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+.social-proof__author .brass-plate { max-width: 100%; font-size: 0.68rem; padding: 3px 12px; line-height: 1.25; }
+/* one control bar under the strip, identical on touch and mouse. The chevrons
+   used to overlay the strip edges, which parked a brass disc on the frame
+   molding and over the neighbouring card's text — on framed art that reads as
+   a smudge, not a control. Down here they also give touch users real arrows. */
+.social-proof__controls {
+  display: flex; align-items: center; justify-content: center;
+  width: fit-content; min-height: 46px;
+  gap: var(--space-3); margin: -5px auto 0; padding: 5px 7px;
+  border: 1px solid color-mix(in srgb, var(--color-yellow-deep) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-paper) 92%, transparent);
+  box-shadow: 0 5px 16px rgba(60, 44, 16, 0.1);
 }
-.social-proof__navbtn--prev { left: -10px; }
-.social-proof__navbtn--next { right: -10px; }
-.social-proof__navbtn:hover:not(:disabled), .social-proof__navbtn:focus-visible { background: var(--color-yellow-soft); transform: translateY(-50%) scale(1.07); }
-.social-proof__navbtn:disabled { opacity: 0.28; cursor: default; box-shadow: none; }
-.social-proof__dots { display: flex; justify-content: center; gap: 9px; padding-bottom: 2px; }
+.social-proof__navbtn {
+  width: 34px; height: 34px; border-radius: 50%; padding: 0;
+  border: 0;
+  background: var(--color-yellow-deep); color: var(--color-paper);
+  display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 3px 8px rgba(60, 44, 16, 0.2), inset 0 1px 0 rgba(255, 244, 214, 0.28);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.social-proof__navbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+.social-proof__navbtn:hover:not(:disabled), .social-proof__navbtn:focus-visible {
+  background: var(--color-black); transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(30, 24, 16, 0.24);
+}
+.social-proof__navbtn:disabled { opacity: 0.24; cursor: default; box-shadow: none; }
+.social-proof__dots { display: flex; justify-content: center; align-items: center; gap: 8px; padding-inline: 2px; }
 .social-proof__dot {
-  width: 9px; height: 9px; padding: 0; border-radius: 50%;
-  border: 1.5px solid var(--color-yellow-deep); background: transparent;
+  width: 8px; height: 8px; padding: 0; border-radius: 999px;
+  border: 0; background: color-mix(in srgb, var(--color-yellow-deep) 32%, transparent);
   cursor: pointer;
-  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  transition: width var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
 .social-proof__dot:hover { transform: scale(1.2); }
-.social-proof__dot.is-active { background: var(--color-yellow-deep); transform: scale(1.15); }
+.social-proof__dot.is-active { width: 22px; background: var(--color-yellow-deep); transform: none; }
 @media (max-width: 760px) {
-  .social-proof { gap: var(--space-4); }
+  .social-proof { gap: var(--space-3); padding: var(--space-4) var(--space-2) var(--space-5); }
+  .social-proof__rating {
+    flex: 1 1 100%; padding: 0 var(--space-3) var(--space-4);
+    border-right: 0; border-bottom: 1px solid color-mix(in srgb, var(--color-green-deep) 25%, transparent);
+  }
+  .social-proof__eyebrow { margin-bottom: var(--space-1); }
   .social-proof__carousel { flex-basis: 100%; }
-  .social-proof__quote.gw-frame__art { flex-basis: min(280px, 82%); min-height: 180px; }
-  /* touch scrolls the strip; the dots carry position — chevrons would crowd the cards */
-  .social-proof__navbtn { display: none; }
+  .social-proof__carousel { --sp-pad: 18px; --sp-gap: var(--space-3); }
+  .social-proof__quotes { padding-top: 14px; padding-bottom: 28px; }
+  .social-proof__quote.gw-frame__art {
+    min-height: 0; height: auto;
+    padding: 20px 18px; border-width: 6px;
+  }
+  .social-proof__text { max-width: 30ch; font-size: 0.95rem; line-height: 1.48; }
+  .social-proof__author .brass-plate { white-space: normal; overflow-wrap: anywhere; }
 }
 
 /* ---- Signature drinks teaser ---------------------------------------------- */
@@ -429,18 +491,21 @@
   break-inside: avoid;
   width: var(--w, 100%); margin: 0 auto 30px;  /* --w varies size for a sporadic, collected hang */
   transform: rotate(var(--tilt, 0deg));
-  transition: transform var(--dur) var(--ease), filter var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease);
   animation: gw-settle var(--dur-slow) var(--ease) both;
-  will-change: transform;
 }
-.gw-tile:hover, .gw-tile:focus-within {
-  transform: rotate(0deg) scale(1.04);
-  position: relative; z-index: 6;
-  filter: drop-shadow(0 14px 24px rgba(20, 18, 16, 0.45));
-}
-/* the fox + rabbit sculptures sit still — no hover lift (they're decor, not links) */
-.gw-tile--object:hover, .gw-tile--object:focus-within { transform: none; filter: none; z-index: auto; }
+/* GSAP owns transform during the entrance. Letting the normal hover transition
+   run at the same time makes CSS interpolate each animation-frame update and
+   creates a laggy, stepped reveal. Only the currently moving batch is promoted
+   to a compositor layer; the class is removed as soon as it settles. */
+.gw-tile.is-gsap-pending { transition: none; }
+.gw-tile.is-gsap-active { will-change: transform, opacity; }
+/* Keep the physical frames completely still on interaction. Scaling or
+   straightening a tilted molding makes its rectangular layer flash beyond the
+   artwork and reads as a white outline on light mats. The plaque carries the
+   interaction feedback instead. */
 .gw-frame { display: block; text-decoration: none; color: var(--color-ink); }
+.gw-frame:focus-visible { outline: none; }
 /* ===========================================================================
    THE FRAMES — like the real wall, no two moldings alike. Every frame_style
    below is a distinct vintage recipe modeled on a physical frame in the shop:
@@ -510,6 +575,9 @@
 .gw-frame__plaque { overflow: hidden; transition: filter 0.45s var(--ease); }
 .gw-frame:hover .gw-frame__plaque,
 .gw-frame:focus-visible .gw-frame__plaque { filter: brightness(1.06); }
+.gw-frame:focus-visible .gw-frame__plaque {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 240, 200, 0.65), 0 0 0 2px #6e5314;
+}
 .gw-frame__plaque::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(105deg,

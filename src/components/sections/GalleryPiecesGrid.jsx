@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getGalleryPieces } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 
 /* The real framed art on the wall, each with its fun backstory. Owner-managed
@@ -9,11 +10,12 @@ export default function GalleryPiecesGrid({ data = {} }) {
   const { heading = 'The collection' } = data;
   const [pieces, setPieces] = useState(null);
 
+  const version = useDataVersion('gallery_pieces');
   useEffect(() => {
     let alive = true;
     getGalleryPieces().then((p) => alive && setPieces(p));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   return (
     <Reveal as="section" className="section">
