@@ -4,6 +4,7 @@ import Reveal from '../Reveal.jsx';
 import OrderButton from '../OrderButton.jsx';
 import { SkeletonCards } from '../Skeleton.jsx';
 import { getMenu, groupByCategory, MENU_CATEGORY_LABELS, MENU_CATEGORY_ORDER } from '../../lib/menuService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { track } from '../../lib/analytics.js';
 
 const DIETARY_LABELS = { 'gluten-free': 'GF', vegan: 'VG', vegetarian: 'V', 'dairy-free': 'DF' };
@@ -30,6 +31,7 @@ export default function MenuBlock({ data = {} }) {
   const location = useLocation();
   const containerRef = useRef(null);
 
+  const version = useDataVersion('menu_items');
   useEffect(() => {
     let alive = true;
     getMenu().then((m) => {
@@ -38,7 +40,7 @@ export default function MenuBlock({ data = {} }) {
       track('menu_view');
     });
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   /* Follow the hash on every navigation (arriving from the hero link, a shared
      deep link, or re-clicking while already here), then bring the menu into

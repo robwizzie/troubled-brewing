@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
 import { getTestimonials } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 
 /* Owner-curated favorites (optional) — hand-picked quotes owners paste in
@@ -12,11 +13,12 @@ export default function TestimonialsWall({ data = {} }) {
   const [items, setItems] = useState(null);
   const [photosOnly, setPhotosOnly] = useState(false);
 
+  const version = useDataVersion('testimonials');
   useEffect(() => {
     let alive = true;
     getTestimonials().then((t) => alive && setItems(t));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   // no hand-picked favorites yet — the Google feed carries the page
   if (items && items.length === 0) return null;

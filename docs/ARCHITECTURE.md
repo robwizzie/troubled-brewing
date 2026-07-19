@@ -35,10 +35,11 @@ Every editable page is a **list of typed sections** rendered in order. This is w
 
 - `pages` — fixed, seeded set (home, menu, about, ...). Holds title + meta description.
 - `sections` — rows belonging to a page. Each has a `type`, a `display_order`, a `visible` flag, and a `data` jsonb blob whose shape depends on the type.
-- For each section `type` there are **two** components:
-  - a **renderer** in `src/components/sections/` (public site), and
-  - an **editor** in `src/admin/editors/` (admin panel).
-- A central registry (`src/components/sections/registry.js` + `src/admin/editors/registry.js`) maps `type → component`. Adding a section type = add a renderer, an editor, register both, document in `CMS.md`.
+- For each section `type` there is a **renderer** in `src/components/sections/` (public site); editing forms are generated from declarative **schemas** in `src/admin/editors/schemas.js` — no per-type editor files. A central registry (`src/components/sections/registry.js`) maps `type → renderer + label`. Adding a section type = add a renderer + a schema entry, register, document in `CMS.md`.
+
+### The on-page editor (`/admin/editor`)
+
+Admins edit **on the real page**, Squarespace-style. The editor (`src/admin/editor/`) embeds the public site in an `<iframe src=".../?canvas=1">` — the app boots as its own document (`src/canvas/CanvasApp.jsx`), so viewport units, media queries, and all `document`/`window` behavior resolve against the canvas, and the 📱 toggle shows the honest mobile layout. Sections are loaded by the parent (including hidden + draft rows) and pushed over origin-checked postMessage; clicking a section on the canvas opens a docked panel whose fields update the canvas live and autosave to `draft_data` (debounced, per-row-serialized — `src/admin/editor/editorStore.js`); one **Publish** button applies the page's drafts. Collection-backed sections embed their `CollectionManager` behind a "Manage —" button, and a `dataVersion` bump (`src/lib/dataVersion.js`) tells the canvas's self-fetching sections to refetch in place.
 
 Structured content that is *not* freeform (menu items, events, hours, team, gallery pieces, local businesses, testimonials) lives in its **own typed table** and is surfaced by "collection" section types (e.g. `menu_block` reads `menu_items`). This keeps that data clean and queryable instead of stuffed in jsonb.
 
@@ -47,8 +48,8 @@ See [CMS.md](./CMS.md) for the full type catalog and every `data` shape.
 ## Content governance (protect non-technical owners)
 
 - **Draft / Publish:** editable records carry a `status` (`draft`|`published`) and a `draft_data` jsonb. The **public site reads published state only**; admins can preview drafts via `?preview=1`.
-- **Revisions:** before any save, the previous state is snapshotted into `revisions`. Admin UI offers per-record History + one-click Restore. Retention capped (~20/record).
-- **Guardrails:** confirm modals on destructive actions, required-field validation, localStorage autosave as a crash net.
+- **Revisions:** explicit saves snapshot prior state into `revisions`; the on-page editor's debounced autosave snapshots once per section per editing session (+ once on publish) so typing can't churn through the retention cap. Admin UI offers per-record History + one-click Restore. Retention capped (~20/record).
+- **Guardrails:** confirm modals on destructive actions, required-field validation; autosaved `draft_data` in Postgres is the crash net.
 
 See [CMS.md](./CMS.md) §governance and §5.7 of the build plan.
 

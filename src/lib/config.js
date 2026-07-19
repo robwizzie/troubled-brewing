@@ -13,6 +13,14 @@ export const CONSENT_KEY = 'tbch-consent-v1';
    static asset in public/ so it works on the project-page subpath. */
 export const asset = (p) => `${import.meta.env.BASE_URL}${String(p).replace(/^\//, '')}`;
 
+/* Absolute-path URL for a public page slug, honoring the deploy base. Use for
+   raw <a href> / iframe src (react-router Links get the basename for free).
+   publicUrl() or publicUrl('home') → the home page; publicUrl('menu') → /menu. */
+export const publicUrl = (slug = '') => {
+  const s = String(slug).replace(/^\//, '');
+  return `${import.meta.env.BASE_URL}${s === 'home' ? '' : s}`;
+};
+
 /* Brand image slots. Drop the real files in public/images/brand/ with these exact
    names and they appear automatically (graceful fallbacks until then).
    See public/images/brand/README.md. */

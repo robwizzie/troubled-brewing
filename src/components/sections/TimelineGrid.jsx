@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getTimelineEvents } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 
 /* The TB Timeline: a vertical, scrollable run of milestones with playful markers
@@ -9,11 +10,12 @@ export default function TimelineGrid({ data = {} }) {
   const { heading = 'The Trouble Brewing timeline' } = data;
   const [events, setEvents] = useState(null);
 
+  const version = useDataVersion('timeline_events');
   useEffect(() => {
     let alive = true;
     getTimelineEvents().then((e) => alive && setEvents(e));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   return (
     <Reveal as="section" className="section">

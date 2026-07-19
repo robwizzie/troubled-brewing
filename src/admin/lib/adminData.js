@@ -148,6 +148,23 @@ export async function reorder(table, orderedIds, { idCol = 'id' } = {}) {
    column-based collection tables above. See docs/CMS.md.
    --------------------------------------------------------------------------- */
 
+/** Autosave variant: stage `data` as a draft WITHOUT snapshotting a revision.
+    The on-page editor calls this on a keystroke debounce; snapshotting here
+    would flood `revisions` (four round-trips per save) and the retention cap
+    would erase the owner's real restore history within one session. Callers
+    snapshot once per editing session instead — see snapshotRecord(). */
+export async function saveDataDraftQuiet(table, id, dataObj) {
+  const { data, error } = await supabase.from(table).update({ draft_data: dataObj }).eq('id', id).select().maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Explicitly snapshot a record into revisions (session-boundary marker for
+    the quiet autosave path: once when editing starts, once on publish). */
+export async function snapshotRecord(table, id, idCol = 'id') {
+  await snapshot(table, id, idCol);
+}
+
 /** Stage a new `data` object as a draft (public keeps seeing published `data`). */
 export async function saveDataDraft(table, id, dataObj) {
   await snapshot(table, id);

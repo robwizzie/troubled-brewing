@@ -22,6 +22,7 @@ import TestimonialsWall from './TestimonialsWall.jsx';
 import GoogleReviewsFeed from './GoogleReviewsFeed.jsx';
 import ReviewCTA from './ReviewCTA.jsx';
 import GalleryWallHero from './GalleryWallHero.jsx';
+import ImmersiveGalleryHero from './ImmersiveGalleryHero.jsx';
 import WarmStorefrontHero from './WarmStorefrontHero.jsx';
 import CozyEditorialHero from './CozyEditorialHero.jsx';
 import ModernCoffeeHero from './ModernCoffeeHero.jsx';
@@ -53,6 +54,7 @@ export const SECTION_RENDERERS = {
   google_reviews_feed: GoogleReviewsFeed,
   review_cta: ReviewCTA,
   gallery_wall_hero: GalleryWallHero,
+  immersive_gallery_hero: ImmersiveGalleryHero,
   warm_storefront_hero: WarmStorefrontHero,
   cozy_editorial_hero: CozyEditorialHero,
   modern_coffee_hero: ModernCoffeeHero,
@@ -116,8 +118,10 @@ export const SECTION_LABELS = {
   google_reviews_feed: 'Google reviews feed',
   review_cta: 'Leave-a-review CTA',
   gallery_wall_hero: 'Gallery Wall hero',
+  immersive_gallery_hero: 'Immersive gallery hero',
   warm_storefront_hero: 'Warm storefront hero',
   cozy_editorial_hero: 'Cozy editorial hero',
+  modern_coffee_hero: 'Modern coffee hero',
   gallery_pieces_grid: 'Gallery pieces',
   troublemakers_grid: 'Troublemakers',
   local_businesses_grid: 'Local businesses',

@@ -1,0 +1,71 @@
+/* =============================================================================
+   Editor-canvas-only styles. Loaded solely by CanvasApp (the ?canvas=1 iframe),
+   so nothing here can reach the public site. Edit affordances use a deliberate
+   "editor blue" that exists nowhere in the site palette.
+   ============================================================================= */
+
+/* Reveal-on-scroll would leave below-the-fold sections invisible in a canvas
+   that hasn't been scrolled; in the editor everything is simply visible. */
+.tb-canvas-root .reveal { opacity: 1 !important; transform: none !important; }
+
+/* Section hit targets. The wrapper is display:contents (no box), so hover and
+   outlines are styled on its real first child. */
+[data-tb-section-id] > * { cursor: pointer; }
+[data-tb-section-id] * { user-select: none; }
+[data-tb-section-id]:hover > * { outline: 2px dashed #2563eb; outline-offset: -2px; }
+[data-tb-selected] > *,
+[data-tb-selected]:hover > * { outline: 3px solid #2563eb; outline-offset: -3px; }
+
+/* Hidden sections stay visible to the owner, but clearly ghosted.
+   (!important + higher specificity so it beats the .reveal override above.) */
+.tb-canvas-root [data-tb-hidden] > * { opacity: 0.45 !important; }
+
+/* Nested embeds (maps etc.) would swallow clicks before our select handler. */
+[data-tb-section-id] iframe { pointer-events: none; }
+
+/* Placeholder for a section with no content yet — the teaching surface. */
+.tb-empty {
+  margin: 24px auto;
+  max-width: 720px;
+  padding: 56px 24px;
+  text-align: center;
+  border: 2px dashed #94a3b8;
+  border-radius: 12px;
+  color: #475569;
+  font: 600 1rem/1.4 var(--font-body, sans-serif);
+}
+.tb-empty small { display: block; font-weight: 400; margin-top: 6px; color: #64748b; }
+
+/* Element-level highlight rings: what you're pointing at (dashed) and what
+   you've selected (solid). Fixed-position overlays so React re-renders can't
+   wipe them; JS keeps them glued to the element's rect. */
+.tb-ring {
+  position: fixed;
+  z-index: 998;
+  pointer-events: none;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.tb-ring--hover { border: 2px dashed #60a5fa; }
+.tb-ring--sel { border: 2px solid #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18); }
+
+/* Floating "what is this" chip that follows the hovered section. */
+.tb-chip {
+  position: fixed;
+  z-index: 1000; /* above the sticky nav (z 500) */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1d4ed8;
+  color: #fff;
+  font: 600 12px/1.2 var(--font-body, sans-serif);
+  padding: 6px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.tb-chip span { font-weight: 400; opacity: 0.85; }
+.tb-chip--locked { background: #475569; }
+
+/* Developer-managed regions read as untouchable, not broken. */
+[data-tb-locked] * { cursor: not-allowed !important; user-select: none; }

@@ -40,6 +40,12 @@ Client confirmed the frames-as-navigation concept ("other ideas welcome"), so it
 **2026-06 — Added TB Timeline page + owner-managed social links.**
 New `/timeline` ("Our Story So Far") backed by `timeline_events` with a `timeline_grid` section + manager — a whimsical, SEO-friendly milestone story. Social links live in `content_blocks.social_links` (owner-editable in Quick Blocks) and surface in the footer everywhere + the contact/community pages. `timeline_events` got `status`/`draft_data` beyond the client's base DDL so it shares the same governance + CollectionManager as every other collection.
 
+**2026-07 — On-page editor with a real-URL iframe canvas, replacing the sidebar back-office.**
+The owner shouldn't edit abstract section rows in forms — they click the actual page (`/admin/editor`), and a docked panel edits what they're looking at, live. The canvas is an `<iframe src="…?canvas=1">` booting the app as its own document, NOT a div or a parent-rendered React root: `vw` clamps (`--text-4xl` sizes every h1 off viewport width), 11 media-query breakpoints, and height queries all resolve against the iframe's viewport (honest mobile toggle), and every `document`/`window` reference in components (Nav's body-scroll lock, ScrollToTop, SEO head writes) stays iframe-local. Dev HMR works natively in both frames with zero stylesheet plumbing. State flows over origin-checked postMessage; the canvas never calls `getSections` (it must show hidden + draft rows, which that helper filters). The old Dashboard/PageList/PageEditor/SectionEditor are deleted; the sidebar survives as a slim Settings area.
+
+**2026-07 — Autosave-to-draft + one Publish button; revision snapshots per session, not per save.**
+Typing debounces (~700 ms) straight into `sections.draft_data` (`saveDataDraftQuiet`) — the owner never sees a "Save" button and can't lose work to a closed tab or an expired session; the live site changes only on Publish. Because autosave would otherwise flood `revisions` (cap 20/record — one paragraph of typing would erase the real restore history), the quiet path snapshots exactly once per section per editing session plus once on publish. The buggy localStorage autosave in CollectionManager (stale-draft resurrection, StrictMode double-writes) was deleted — Postgres `draft_data` is the crash net.
+
 ---
 
 ## Out of scope for v1 (build stubs, document, don't wire) — from build plan §12.5 / §13

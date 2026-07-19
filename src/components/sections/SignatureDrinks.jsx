@@ -4,6 +4,7 @@ import Reveal from '../Reveal.jsx';
 import { CoffeeCup, Beans, Hare } from '../Motifs.jsx';
 import { asset } from '../../lib/config.js';
 import { getMenu } from '../../lib/menuService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 
 /* A teaser of a few signature drinks to pull people toward the full menu.
    Pulls live from the menu (menuService). `data.items` can name specific drinks;
@@ -35,6 +36,7 @@ function DrinkArt({ drink, index }) {
 export default function SignatureDrinks({ data = {} }) {
   const { heading = 'Signature sips', items, button_label = 'See the full menu' } = data;
   const [drinks, setDrinks] = useState(null);
+  const version = useDataVersion('menu_items');
 
   useEffect(() => {
     let alive = true;
@@ -49,7 +51,7 @@ export default function SignatureDrinks({ data = {} }) {
       setDrinks(picks.slice(0, 3));
     });
     return () => { alive = false; };
-  }, [items]);
+  }, [items, version]);
 
   if (drinks && drinks.length === 0) return null;
 

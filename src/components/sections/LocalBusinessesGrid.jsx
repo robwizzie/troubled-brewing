@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getLocalBusinesses } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 import { track } from '../../lib/analytics.js';
 
@@ -10,11 +11,12 @@ export default function LocalBusinessesGrid({ data = {} }) {
   const { heading = 'Our neighbors' } = data;
   const [list, setList] = useState(null);
 
+  const version = useDataVersion('local_businesses');
   useEffect(() => {
     let alive = true;
     getLocalBusinesses().then((l) => alive && setList(l));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   return (
     <Reveal as="section" className="section">

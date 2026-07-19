@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import { getTeamMembers } from '../../lib/dataService.js';
+import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 
 /* Human-readable labels for the extensible fun_facts keys. Unknown keys are
@@ -18,11 +19,12 @@ export default function TroublemakersGrid({ data = {} }) {
   const { heading = 'Meet the team' } = data;
   const [team, setTeam] = useState(null);
 
+  const version = useDataVersion('team_members');
   useEffect(() => {
     let alive = true;
     getTeamMembers().then((t) => alive && setTeam(t));
     return () => { alive = false; };
-  }, []);
+  }, [version]);
 
   return (
     <Reveal as="section" className="section">

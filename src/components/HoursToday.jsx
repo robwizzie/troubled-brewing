@@ -9,7 +9,7 @@ import { computeStatus, dayName, shopNow, googleWeekly } from '../lib/hours.js';
    either source. See docs/INTEGRATIONS.md §Google Places.
    Status is derived at render (not stored) and a minute-tick re-renders, so a
    tab left open flips Open → Closed on time. */
-export default function HoursToday({ showWeek = false }) {
+export default function HoursToday({ showWeek = false, variant }) {
   const [hours, setHours] = useState(null);
   const [overrides, setOverrides] = useState([]);
   const [, setTick] = useState(0);
@@ -39,6 +39,23 @@ export default function HoursToday({ showWeek = false }) {
   }
 
   const todayDow = shopNow().dow;
+
+  // "sign" variant: today's RANGE leads (like lettering on a real shop sign)
+  // with the live status as a small line under it. Used by hero signage.
+  if (variant === 'sign') {
+    return (
+      <div className="hours-today--sign">
+        <strong className="hours-today__range">{status.todayHours}</strong>
+        <span className="hours-today__status">
+          <span className={`hours-today__dot ${status.open ? 'is-open' : 'is-closed'}`} aria-hidden="true" />
+          {status.open ? (status.closingSoon ? 'Closing soon' : 'Open now') : 'Closed'}
+        </span>
+        {status.override && status.overrideLabel && (
+          <span className="hours-today__override">{status.overrideLabel}</span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div>
