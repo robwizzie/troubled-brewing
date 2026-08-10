@@ -1,0 +1,46 @@
+name: Set homepage look
+
+# Flips the LIVE site's homepage hero concept (content_blocks.homepage_concept)
+# — the same write admin → Quick Blocks makes, from Actions instead. Takes
+# effect immediately for visitors; no redeploy involved. The dev-branch push
+# trigger exists so the flip can be executed from a working branch; the normal
+# path is Actions → "Set homepage look" → Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      concept:
+        description: 'Homepage look'
+        type: choice
+        default: immersive_gallery
+        options:
+          - immersive_gallery
+          - gallery_wall
+          - warm_storefront
+          - cozy_editorial
+          - modern_coffee
+  push:
+    branches: [claude/landing-page-menu-sync-3qxpdk]
+    paths:
+      - 'scripts/set-homepage-concept.mjs'
+      - '.github/workflows/set-homepage-concept.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  set:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Update homepage_concept
+        run: node scripts/set-homepage-concept.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CONCEPT: ${{ inputs.concept || 'immersive_gallery' }}

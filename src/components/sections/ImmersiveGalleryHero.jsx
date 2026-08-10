@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import HoursToday from '../HoursToday.jsx';
 import { asset } from '../../lib/config.js';
 import { track } from '../../lib/analytics.js';
+import {
+  CoffeeCup, FoxFace, Balloon, FramedScene, Heart, TopHat, Star, Bunting,
+  MapPin, OpenBook, Envelope,
+} from '../Motifs.jsx';
 
 /* "Immersive Gallery" landing concept — the unbranded café scene artwork is
    the canvas (public/images/wall/immersive-scene.jpg, 1536×1024), and every
@@ -12,68 +16,40 @@ import { track } from '../../lib/analytics.js';
    note, and the Stay-in-the-Know signup. Overlay geometry is % of the scene
    and type is sized in cqw, so everything scales as one piece of art.
    Under 1020px the wall RE-HANGS ITSELF for phones: the scene becomes a
-   backdrop banner, and every frame link becomes a little framed picture —
-   its art is that frame's actual crop out of the scene image (background-
-   position math over the same file, no extra assets) — hung from a nail on
-   a wire, gently tilted, with the same brass nameplate. Same wall, same
-   paintings, phone-sized. No HTML top bar: the site nav is the navbar. */
+   backdrop banner, and every destination becomes a little FRAMED SIGN hung
+   from a nail and wire — a distinct vintage molding (the Gallery Wall frame
+   vocabulary, no two alike), a tinted sign board, a gold line-drawn
+   pictogram, and painted lettering. All vector + CSS, so the phone wall is
+   pin-sharp and shares one material language with the chalkboard, the taped
+   note, and the gold fox. No HTML top bar: the site nav is the navbar. */
 
 const SCENE = 'images/wall/immersive-scene.jpg';
-/* the artwork's native aspect (1536×1024) — used for crop-box math below */
-const SCENE_AR = 1536 / 1024;
 
 /* Frame hotspots: % boxes of the 1536×1024 artwork. Every destination in the
    navbar (primary + More) hangs somewhere on the wall. Boxes are tuned to hug
    each frame's molding — the label renders as a brass nameplate centered on
-   the frame's bottom edge, so box centers/bottoms must be exact. */
+   the frame's bottom edge, so box centers/bottoms must be exact.
+   `sign` is the destination's PHONE incarnation: which vintage molding it
+   hangs in (frameStyles.js vocabulary — all 11 recipes used once, no two
+   alike), the sign board's shape + tint, and its line-drawn pictogram. */
 const FRAME_LINKS = [
-  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1 },
-  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8 },
-  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true },
-  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7 },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3 },
-  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4 },
-  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6 },
-  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9 },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0 },
-  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0 },
-  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0 },
+  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gilt-grand', ar: '4 / 3', tint: 'chalk', Motif: CoffeeCup } },
+  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'bronze-carved', ar: '4 / 2.9', Motif: FoxFace } },
+  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', ar: '1 / 1.08', Motif: Balloon } },
+  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-tapestry', ar: '4 / 3.7', Motif: FramedScene } },
+  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'gold-botanical', ar: '4 / 3.1', tint: 'pink', Motif: Heart } },
+  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, sign: { frame: 'black-stacked', ar: '4 / 3.2', Motif: TopHat } },
+  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, sign: { frame: 'gilt-thin', ar: '4 / 2.8', Motif: Star } },
+  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, sign: { frame: 'brass-chain', ar: '4 / 3.1', tint: 'sage', Motif: Bunting } },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-flat', ar: '4 / 3.3', Motif: MapPin } },
+  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, sign: { frame: 'black-mat', ar: '4 / 3.6', Motif: OpenBook } },
+  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, sign: { frame: 'oval-black', ar: '1 / 1.1', Motif: Envelope } },
 ];
 
 const box = ({ x, y, w, h }) => ({ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` });
 
-/* ---- mobile "re-hung wall" crops -----------------------------------------
-   Each mini frame shows ITS painting cropped straight out of the scene file.
-   The hotspot boxes hug the moldings, so a light pad keeps the painting's own
-   frame filling the tile edge-to-edge (the artwork moldings ARE the frames —
-   the CSS border is just the shadowbox). Tiny frames get a minimum size (so a
-   4%-wide frame isn't a 4× blurry upscale), and aspects clamp into a hangable
-   range for the grid's rhythm. */
-function mobileCrop({ x, y, w, h }, { pad = 1.05, minW = 9, minH = 10, minAR = 0.78, maxAR = 1.42 } = {}) {
-  const cx = x + w / 2;
-  const cy = y + h / 2;
-  let cw = Math.max(w * pad, minW);
-  let ch = Math.max(h * pad, minH);
-  // aspect of the crop as rendered (image is wider than tall, so scale by it)
-  let ar = (cw * SCENE_AR) / ch;
-  if (ar > maxAR) cw = (maxAR * ch) / SCENE_AR;
-  if (ar < minAR) ch = (cw * SCENE_AR) / minAR;
-  cw = Math.min(cw, 100);
-  ch = Math.min(ch, 100);
-  const cxc = Math.min(Math.max(cx - cw / 2, 0), 100 - cw);
-  const cyc = Math.min(Math.max(cy - ch / 2, 0), 100 - ch);
-  return {
-    aspectRatio: `${((cw * SCENE_AR) / ch).toFixed(4)} / 1`,
-    backgroundSize: `${(10000 / cw).toFixed(2)}% ${(10000 / ch).toFixed(2)}%`,
-    backgroundPosition: `${(cw >= 100 ? 0 : (cxc / (100 - cw)) * 100).toFixed(2)}% ${(ch >= 100 ? 0 : (cyc / (100 - ch)) * 100).toFixed(2)}%`,
-  };
-}
-
-/* precomputed once — alternating hand-hung tilts, one crop per link */
+/* alternating hand-hung tilts for the phone wall */
 const MINI_TILTS = [-1.2, 0.9, -0.7, 1.3, -1.0, 0.8];
-const MINI_CROPS = FRAME_LINKS.map((f) =>
-  mobileCrop(f, f.round ? { pad: 1.12, minAR: 0.8, maxAR: 0.85 } : undefined)
-);
 
 function KnowForm({ idSuffix, action }) {
   return (
@@ -275,30 +251,36 @@ export default function ImmersiveGalleryHero({ data = {} }) {
         </div>
       </div>
 
-      {/* ---- under 1020px the wall re-hangs itself: every link becomes a
-              little framed picture (its art cropped from the scene), hung on
-              a nail + wire with its brass nameplate ---- */}
+      {/* ---- under 1020px the wall re-hangs itself: every destination is a
+              framed SIGN — vintage molding, tinted board, gold pictogram,
+              painted lettering — on a nail + wire. All vector, all crisp ---- */}
       <div className="ig2-mobile">
         <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
-          {FRAME_LINKS.map((f, i) => (
-            <Link
-              key={f.to}
-              className={`ig2-mini${f.round ? ' ig2-mini--round' : ''}`}
-              to={f.to}
-              style={{ '--tilt': `${MINI_TILTS[i % MINI_TILTS.length]}deg` }}
-            >
-              {/* inner hanger so the entrance tween never fights the tilt */}
-              <span className="ig2-mini__hang">
-                <span className="ig2-mini__wire" aria-hidden="true" />
-                <span
-                  className={`ig2-mini__art ig2-mini__art--m${i % 4}`}
-                  style={{ backgroundImage: `url(${asset(SCENE)})`, ...MINI_CROPS[i] }}
-                  aria-hidden="true"
-                />
-                <span className="ig2-mini__plate">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
-              </span>
-            </Link>
-          ))}
+          {FRAME_LINKS.map((f, i) => {
+            const { frame, ar, tint, Motif } = f.sign;
+            return (
+              <Link
+                key={f.to}
+                className="ig2-mini"
+                to={f.to}
+                style={{ '--tilt': `${MINI_TILTS[i % MINI_TILTS.length]}deg` }}
+              >
+                {/* inner hanger so the entrance tween never fights the tilt */}
+                <span className="ig2-mini__hang">
+                  <span className="ig2-mini__wire" aria-hidden="true" />
+                  <span
+                    className={`gw-frame__art gw-frame__art--${frame} ig2-mini__frame${tint ? ` ig2-mini__frame--${tint}` : ''}`}
+                    style={{ '--ar': ar }}
+                  >
+                    <span className="ig2-mini__sign">
+                      <Motif className="ig2-mini__motif" size={42} />
+                      <span className="ig2-mini__label">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
+                    </span>
+                  </span>
+                </span>
+              </Link>
+            );
+          })}
           {/* the shop's gold fox takes the twelfth hook and keeps watch */}
           <img
             className="ig2-mobile__fox"
