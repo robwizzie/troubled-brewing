@@ -83,11 +83,13 @@ Two related things — don't confuse them:
 
 ## Landing page concepts (client picks one)
 
-The homepage hero is swappable via `content_blocks.homepage_concept` (`gallery_wall` | `warm_storefront` | `cozy_editorial`). All three are built so the client can review and choose.
+The homepage hero is swappable via `content_blocks.homepage_concept` (`immersive_gallery` | `gallery_wall` | `warm_storefront` | `cozy_editorial` | `modern_coffee`). All are built so the client can review and switch any time (admin → Quick Blocks, or live in the editor).
 
-1. **Gallery Wall** *(lead — CONFIRMED by client; "other ideas welcome")* — interactive framed hero rendered **on the sage-green wall** like the real shop, frames mounted on it. Each frame links to a key page: **Menu/Order, Troublemakers, Gallery Wall, Events, Timeline, Neighborhood** (+ Reviews, About). Memorable, unlike any template. We still build all three concepts so they can compare before final lock-in.
-2. **Warm Storefront** — photography-led hero, big inviting shot of the space, hours-today + Order CTA. Lets the room sell itself.
-3. **Cozy Editorial** — magazine layout, serif headlines, featured drink, a short "why we exist," soft scrolling rhythm.
+1. **Immersive Gallery** *(lead — the default)* — the cinematic café-scene artwork IS the homepage: brand lettering painted on the dappled wall, every navbar destination hung as a brass-labeled frame in the scene, a chalkboard with the real live hours, the taped "Today's Special" note, and the newsletter card on the counter. **On phones the wall re-hangs itself**: the scene becomes a banner and each frame link becomes a mini framed picture — its art cropped straight out of the scene file — on a nail + wire with its brass nameplate, followed by the gold fox, the chalkboard, and the note. Same room at every size.
+2. **Gallery Wall** *(previous lead — CONFIRMED earlier by client; "other ideas welcome")* — interactive framed hero rendered **on the sage-green wall** like the real shop, frames mounted on it. Each frame links to a key page: **Menu/Order, Troublemakers, Gallery Wall, Events, Timeline, Neighborhood** (+ Reviews, About).
+3. **Warm Storefront** — photography-led hero, big inviting shot of the space, hours-today + Order CTA. Lets the room sell itself.
+4. **Cozy Editorial** — magazine layout, serif headlines, featured drink, a short "why we exist," soft scrolling rhythm.
+5. **Modern Coffee** — bold, dark, oversized type with a hero drink shot.
 
 ## Accessibility (non-negotiable)
 

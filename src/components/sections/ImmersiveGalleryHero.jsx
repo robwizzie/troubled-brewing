@@ -11,11 +11,16 @@ import { track } from '../../lib/analytics.js';
    the navbar), a chalkboard with the real live hours, the taped specials
    note, and the Stay-in-the-Know signup. Overlay geometry is % of the scene
    and type is sized in cqw, so everything scales as one piece of art.
-   Under 820px the scene becomes a backdrop banner and the links re-form as
-   plaques — same content, phone-sized. No HTML top bar: the site nav is the
-   navbar. */
+   Under 1020px the wall RE-HANGS ITSELF for phones: the scene becomes a
+   backdrop banner, and every frame link becomes a little framed picture —
+   its art is that frame's actual crop out of the scene image (background-
+   position math over the same file, no extra assets) — hung from a nail on
+   a wire, gently tilted, with the same brass nameplate. Same wall, same
+   paintings, phone-sized. No HTML top bar: the site nav is the navbar. */
 
 const SCENE = 'images/wall/immersive-scene.jpg';
+/* the artwork's native aspect (1536×1024) — used for crop-box math below */
+const SCENE_AR = 1536 / 1024;
 
 /* Frame hotspots: % boxes of the 1536×1024 artwork. Every destination in the
    navbar (primary + More) hangs somewhere on the wall. Boxes are tuned to hug
@@ -36,6 +41,39 @@ const FRAME_LINKS = [
 ];
 
 const box = ({ x, y, w, h }) => ({ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` });
+
+/* ---- mobile "re-hung wall" crops -----------------------------------------
+   Each mini frame shows ITS painting cropped straight out of the scene file.
+   The hotspot boxes hug the moldings, so a light pad keeps the painting's own
+   frame filling the tile edge-to-edge (the artwork moldings ARE the frames —
+   the CSS border is just the shadowbox). Tiny frames get a minimum size (so a
+   4%-wide frame isn't a 4× blurry upscale), and aspects clamp into a hangable
+   range for the grid's rhythm. */
+function mobileCrop({ x, y, w, h }, { pad = 1.05, minW = 9, minH = 10, minAR = 0.78, maxAR = 1.42 } = {}) {
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+  let cw = Math.max(w * pad, minW);
+  let ch = Math.max(h * pad, minH);
+  // aspect of the crop as rendered (image is wider than tall, so scale by it)
+  let ar = (cw * SCENE_AR) / ch;
+  if (ar > maxAR) cw = (maxAR * ch) / SCENE_AR;
+  if (ar < minAR) ch = (cw * SCENE_AR) / minAR;
+  cw = Math.min(cw, 100);
+  ch = Math.min(ch, 100);
+  const cxc = Math.min(Math.max(cx - cw / 2, 0), 100 - cw);
+  const cyc = Math.min(Math.max(cy - ch / 2, 0), 100 - ch);
+  return {
+    aspectRatio: `${((cw * SCENE_AR) / ch).toFixed(4)} / 1`,
+    backgroundSize: `${(10000 / cw).toFixed(2)}% ${(10000 / ch).toFixed(2)}%`,
+    backgroundPosition: `${(cw >= 100 ? 0 : (cxc / (100 - cw)) * 100).toFixed(2)}% ${(ch >= 100 ? 0 : (cyc / (100 - ch)) * 100).toFixed(2)}%`,
+  };
+}
+
+/* precomputed once — alternating hand-hung tilts, one crop per link */
+const MINI_TILTS = [-1.2, 0.9, -0.7, 1.3, -1.0, 0.8];
+const MINI_CROPS = FRAME_LINKS.map((f) =>
+  mobileCrop(f, f.round ? { pad: 1.12, minAR: 0.8, maxAR: 0.85 } : undefined)
+);
 
 function KnowForm({ idSuffix, action }) {
   return (
@@ -125,6 +163,19 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             stagger: { each: 0.05, from: 'random' },
             clearProps: 'transform,opacity,visibility',
           }, '-=0.25')
+          // phone wall: the mini frames drop onto their nails one after the
+          // other, then the fox takes its perch (display:none no-ops ≥1020px)
+          .from('.ig2-mini__hang', {
+            autoAlpha: 0, y: 20, scale: 0.9, transformOrigin: '50% 0%',
+            duration: 0.5, ease: 'back.out(1.6)',
+            stagger: { each: 0.055, from: 'start' },
+            clearProps: 'transform,opacity,visibility',
+          }, '-=0.35')
+          .from('.ig2-mobile__fox', {
+            autoAlpha: 0, y: 14, rotation: -8, transformOrigin: '50% 100%',
+            duration: 0.5, ease: 'back.out(2)',
+            clearProps: 'transform,opacity,visibility',
+          }, '-=0.3')
           .from('.ig2-chalk, .ig2-note, .ig2-know', {
             autoAlpha: 0, y: 18, duration: 0.55, ease: 'back.out(1.4)', stagger: 0.12,
             clearProps: 'transform,opacity,visibility',
@@ -224,15 +275,42 @@ export default function ImmersiveGalleryHero({ data = {} }) {
         </div>
       </div>
 
-      {/* ---- under 820px the links re-form as plaques below the banner ---- */}
+      {/* ---- under 1020px the wall re-hangs itself: every link becomes a
+              little framed picture (its art cropped from the scene), hung on
+              a nail + wire with its brass nameplate ---- */}
       <div className="ig2-mobile">
-        <nav className="ig2-plaques" aria-label="Explore Trouble Brewing">
-          {FRAME_LINKS.map((f) => (
-            <Link key={f.to} className="ig2-plaque" to={f.to}>
-              {f.label} <b aria-hidden="true">→</b>
+        <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
+          {FRAME_LINKS.map((f, i) => (
+            <Link
+              key={f.to}
+              className={`ig2-mini${f.round ? ' ig2-mini--round' : ''}`}
+              to={f.to}
+              style={{ '--tilt': `${MINI_TILTS[i % MINI_TILTS.length]}deg` }}
+            >
+              {/* inner hanger so the entrance tween never fights the tilt */}
+              <span className="ig2-mini__hang">
+                <span className="ig2-mini__wire" aria-hidden="true" />
+                <span
+                  className={`ig2-mini__art ig2-mini__art--m${i % 4}`}
+                  style={{ backgroundImage: `url(${asset(SCENE)})`, ...MINI_CROPS[i] }}
+                  aria-hidden="true"
+                />
+                <span className="ig2-mini__plate">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
+              </span>
             </Link>
           ))}
+          {/* the shop's gold fox takes the twelfth hook and keeps watch */}
+          <img
+            className="ig2-mobile__fox"
+            src={asset('images/brand/fox-head.webp')}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            width="82"
+            height="120"
+          />
         </nav>
+
         <div className="ig2-mobile__boards">
           {chalk}
           {note}
