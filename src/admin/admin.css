@@ -43,6 +43,8 @@
 .admin__pagehead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-5); }
 .admin__back { font-size: var(--text-sm); }
 .admin__panel { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); margin-bottom: var(--space-5); }
+/* soft callout for "this is synced from elsewhere" notes (Menu ↔ SpotOn) */
+.admin__note { background: var(--color-yellow-soft); border: 1px solid var(--color-yellow); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-5); font-size: var(--text-sm); line-height: 1.5; color: var(--color-ink); }
 .admin-note { background: var(--color-sage-soft); padding: var(--space-3); border-radius: var(--radius-md); font-size: var(--text-sm); }
 .admin-empty { color: var(--color-ink-soft); padding: var(--space-5); text-align: center; }
 

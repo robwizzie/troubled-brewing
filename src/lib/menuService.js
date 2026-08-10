@@ -7,51 +7,51 @@ import { MENU_ITEMS } from './seed.js';
  * Everything that needs the menu calls getMenu() — never Supabase directly —
  * so the data source can be swapped in ONE place.
  *
- * v1: reads the owner-maintained `menu_items` table (managed in /admin).
- * Falls back to bundled seed if Supabase is unconfigured/unreachable.
+ * Reads the `menu_items` table; falls back to the bundled snapshot
+ * (src/data/spoton-menu.json via seed.js) if Supabase is unconfigured or
+ * unreachable.
  *
  * ---------------------------------------------------------------------------
- * // FUTURE: SpotOn menu sync
+ * SpotOn alignment (implemented — see scripts/sync-spoton-menu.mjs)
  * ---------------------------------------------------------------------------
- * SpotOn has NO open API. Access requires becoming an approved "Preferred
- * Integration Partner" (application + certification). Auth is OAuth2
- * client_credentials with a Client ID + Secret that CANNOT live in this static
- * bundle, and service tokens expire every 24h with no refresh token — so it
- * needs a persistent backend.
+ * The "SpotOn menu sync" GitHub Action scrapes the shop's PUBLIC hosted
+ * ordering page daily (plus on-demand) and mirrors it into `menu_items`:
+ * names, prices, categories, availability, and order follow SpotOn; owner
+ * descriptions, photos, and dietary tags are preserved; items that leave
+ * SpotOn are hidden, never deleted. It also refreshes the bundled snapshot,
+ * so this fallback tracks SpotOn too. Ordering itself stays a deep link —
+ * the site only VIEWS the menu.
  *
- * When/if the shop justifies it (have Cat, the merchant, request API access
- * from her SpotOn rep), implement a Supabase Edge Function that:
- *   1. holds the SpotOn client secret (function secret, never client-side),
- *   2. manages the 24h service token,
- *   3. subscribes to SpotOn menu webhooks (menu:all:read),
- *   4. caches the catalog into a Postgres table.
- * Then swap ONLY the body of fetchFromSpotOn() below and point getMenu() at it.
- * The rest of the app does not change. See docs/INTEGRATIONS.md §SpotOn.
+ * Upgrade path: SpotOn's official partner API (application + certification,
+ * OAuth2 secrets, 24h tokens → needs a token-broker Edge Function). If the
+ * shop ever gets API access via Cat's SpotOn rep, replace the scraper inside
+ * the sync script with real API calls + webhooks — nothing in the app
+ * changes. See docs/INTEGRATIONS.md §SpotOn.
  */
 
-const FALLBACK_NOTE = '[menuService] using bundled seed menu';
+const FALLBACK_NOTE = '[menuService] using bundled snapshot menu';
 
-function normalize(items) {
+function normalize(items, { includeUnavailable = false } = {}) {
   return [...items]
-    .filter((i) => i && i.name)
+    .filter((i) => i && i.name && (includeUnavailable || i.available !== false))
     .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
 }
 
 export async function getMenu({ includeUnavailable = false } = {}) {
   if (!isSupabaseConfigured) {
     if (import.meta.env.DEV) console.info(FALLBACK_NOTE);
-    return normalize(MENU_ITEMS);
+    return normalize(MENU_ITEMS, { includeUnavailable });
   }
   try {
     let query = supabase.from('menu_items').select('*').order('display_order', { ascending: true });
     if (!includeUnavailable) query = query.eq('available', true);
     const { data, error } = await query;
     if (error) throw error;
-    if (!data || data.length === 0) return normalize(MENU_ITEMS);
+    if (!data || data.length === 0) return normalize(MENU_ITEMS, { includeUnavailable });
     return normalize(data);
   } catch (err) {
-    if (import.meta.env.DEV) console.warn('[menuService] live fetch failed, falling back to seed:', err.message);
-    return normalize(MENU_ITEMS);
+    if (import.meta.env.DEV) console.warn('[menuService] live fetch failed, falling back to snapshot:', err.message);
+    return normalize(MENU_ITEMS, { includeUnavailable });
   }
 }
 
@@ -73,11 +73,4 @@ export function groupByCategory(items, only = MENU_CATEGORY_ORDER) {
     if (inCat.length) groups[cat] = inCat;
   }
   return groups;
-}
-
-// eslint-disable-next-line no-unused-vars
-async function fetchFromSpotOn() {
-  // FUTURE: SpotOn menu sync — replace this stub with a fetch to the Supabase
-  // Edge Function that proxies SpotOn's cached, webhook-fed menu. Not wired in v1.
-  throw new Error('SpotOn menu sync not enabled. See // FUTURE note above.');
 }

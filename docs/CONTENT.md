@@ -9,7 +9,7 @@ This is the real content used to seed the database (`supabase/seed.sql`) and the
 - **Phone:** (856) 617-6638
 - **Instagram:** [@troublebrewingcoffee](https://instagram.com/troublebrewingcoffee) (confirmed). The shop also has a **"Let's get social" Instagram + TikTok** display, so TikTok exists — **get the full handle list** (Facebook, TikTok, X, YouTube). Stored owner-editable in `content_blocks.social_links`; surfaced in the footer + contact/community pages.
 - **Coffee:** La Colombe partnership (credibility signal — **no celebrity quotes**, the Gordon Ramsay quote was cut by the client)
-- **Online ordering:** moving to SpotOn Order — exact hosted URL **(confirm — TODO #1)**, wired via `VITE_SPOTON_ORDER_URL`
+- **Online ordering:** SpotOn Order — `https://order.spoton.com/so-trouble-brewing-coffee-house-26471/haddon-heights-nj/BL-BBE4-95CF-80CD` (confirmed), wired via `VITE_SPOTON_ORDER_URL`. The site menu auto-syncs from this page daily (INTEGRATIONS.md §SpotOn).
 - **Domain:** troublebrewingcoffeehouse.com
 
 ## Hours (confirm — TODO #4)

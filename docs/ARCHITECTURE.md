@@ -53,13 +53,13 @@ See [CMS.md](./CMS.md) for the full type catalog and every `data` shape.
 
 See [CMS.md](./CMS.md) §governance and §5.7 of the build plan.
 
-## The `menuService` + SpotOn future-sync stub
+## The `menuService` + SpotOn menu sync
 
-Menu data is read through a **single service module**, `src/lib/menuService.js`, exposing `getMenu()`. Today it reads the `menu_items` table (owner-maintained in admin). This indirection is deliberate:
+Menu data is read through a **single service module**, `src/lib/menuService.js`, exposing `getMenu()`. It reads the `menu_items` table, falling back to the bundled snapshot. That table is now **kept aligned with SpotOn automatically**:
 
-> **FUTURE: SpotOn menu sync.** SpotOn has no open API — access requires becoming an approved Preferred Integration Partner, and OAuth2 `client_credentials` needs a Client Secret that *cannot* live in a static site, plus 24h tokens with no refresh. If the shop ever justifies it, swap **only** `getMenu()` to read from a Supabase Edge Function that holds the SpotOn secret, manages the token, listens to menu webhooks, and caches the menu to Postgres. Nothing else in the app changes. The stub is clearly marked in the file.
+> **SpotOn menu sync (implemented).** SpotOn's partner API is application-gated, but the shop's hosted ordering page is public — so a scheduled GitHub Action (`.github/workflows/spoton-menu-sync.yml` → `scripts/sync-spoton-menu.mjs`) reads that page daily exactly like a customer's browser (static HTML first, headless Chrome if needed), detects the menu payload structurally, and mirrors it into `menu_items`: names/prices/categories/availability/order follow SpotOn; owner descriptions, photos, and dietary tags are preserved; items that leave SpotOn are hidden, never deleted; a failed parse writes nothing. It also commits the refreshed `src/data/spoton-menu.json`, so the no-Supabase fallback tracks SpotOn too. If the shop ever gets official API access (via Cat's SpotOn rep), the scraper inside that one script becomes real API calls + webhooks — nothing else changes.
 
-For v1, **online ordering is a deep link** to the shop's hosted SpotOn Order page (`VITE_SPOTON_ORDER_URL`), surfaced as a prominent "Order Now" CTA everywhere. We do not rebuild ordering.
+**Online ordering stays a deep link** to the shop's hosted SpotOn Order page (`VITE_SPOTON_ORDER_URL`), surfaced as a prominent "Order Now" CTA everywhere. The site only *views* the menu; we do not rebuild ordering.
 
 ## Resilience: the seed fallback
 
@@ -75,4 +75,4 @@ See build plan §10. Top level: `src/` (app), `supabase/` (schema + seed SQL + E
 
 ## Key architectural decisions
 
-See [DECISIONS.md](./DECISIONS.md) — Supabase over static JSON (owner-editing is the whole point), section-based CMS over freeform HTML, menu in CMS over live SpotOn (partner approval pending), Google-as-source-of-truth for hours with manual fallback.
+See [DECISIONS.md](./DECISIONS.md) — Supabase over static JSON (owner-editing is the whole point), section-based CMS over freeform HTML, SpotOn-as-source-of-truth for the menu via a scheduled public-page sync (partner API still gated), Google-as-source-of-truth for hours with manual fallback.
