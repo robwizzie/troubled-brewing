@@ -337,65 +337,77 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
     box-shadow: 0 1px 2px rgba(0, 0, 0, .55);
   }
 
-  /* the art IS the scene file, cropped tight to this frame's box (inline
-     styles) — the paintings' own painted moldings are the frames; the CSS
-     border is just a slim shadowbox seating each one on the wall */
-  .ig2-mini__art {
-    display: block;
+  /* each sign hangs in a REAL vintage molding (the shared gw-frame__art
+     recipes — all 11, no two alike). The tinted board + gold pictogram +
+     painted lettering live inside; the hang's drop-shadow seats rectangles
+     and ovals alike on the wall. */
+  .ig2-mini__hang { filter: drop-shadow(0 .55rem .8rem rgba(0, 0, 0, .5)); }
+
+  .ig2-mini__frame {
+    --ar: 4 / 3.2;
+    --tint: #f2e7cd; /* warm scene paper, not bright site paper */
     width: 100%;
-    background-repeat: no-repeat;
-    background-color: #201d12;
-    border: 3px solid rgba(24, 20, 10, .85);
-    border-radius: 4px;
-    box-shadow:
-      inset 0 1px 8px rgba(0, 0, 0, .35),
-      0 .5rem 1rem rgba(0, 0, 0, .45),
-      0 1.15rem .9rem -.7rem rgba(0, 0, 0, .62);
-    transition: filter var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-  }
-  /* alternate shadowbox metals — a whisper of variety, not a second molding */
-  .ig2-mini__art--m1 { border-color: rgba(185, 145, 60, .75); }
-  .ig2-mini__art--m3 { border-color: rgba(110, 79, 38, .85); }
-  .ig2-mini:hover .ig2-mini__art,
-  .ig2-mini:focus-visible .ig2-mini__art {
-    filter: brightness(1.1) saturate(1.05);
-    box-shadow:
-      0 .6rem 1.3rem rgba(0, 0, 0, .5),
-      0 0 0 2px rgba(201, 163, 79, .65);
-  }
-
-  /* the oval one (Events) hangs in an oval gilt ring, just like the scene */
-  .ig2-mini--round .ig2-mini__art { border-radius: 50%; border-color: #c9a34f; border-width: 4px; }
-
-  /* same brass nameplate as the big wall, riding the bottom molding */
-  .ig2-mini__plate {
-    position: relative;
-    z-index: 2;
-    display: block;
-    width: fit-content;
-    max-width: calc(100% - .5rem);
-    margin: -.72rem auto 0;
-    padding: .4em .78em .42em;
-    border: 1px solid #6f541c;
-    border-radius: 2px;
-    background: linear-gradient(180deg, #d3ad55, #a07a2a);
-    box-shadow: inset 0 1px 0 rgba(255, 240, 200, .55), inset 0 -1px 0 rgba(60, 40, 6, .5), 0 .3em .8em rgba(0, 0, 0, .45);
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: .7rem;
-    line-height: 1.05;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: #241c06;
-    text-shadow: 0 1px 0 rgba(255, 240, 200, .35);
+    /* faint top-light aging so the boards read as old card, not fresh print */
+    background-image: radial-gradient(130% 105% at 50% -5%, rgba(126, 96, 34, .08), transparent 62%);
     transition: filter var(--dur) var(--ease);
   }
-  .ig2-mini__plate b { font-weight: 700; display: inline-block; transition: transform var(--dur) var(--ease); }
-  .ig2-mini:hover .ig2-mini__plate,
-  .ig2-mini:focus-visible .ig2-mini__plate { filter: brightness(1.12); }
-  .ig2-mini:hover .ig2-mini__plate b,
-  .ig2-mini:focus-visible .ig2-mini__plate b { transform: translateX(3px); }
+  /* frame moldings sized for ~10rem tiles (mirrors .gw-wall's small screens) */
+  .ig2-mini__frame.gw-frame__art { border-width: 5px; }
+  .ig2-mini__frame.gw-frame__art--gilt-grand,
+  .ig2-mini__frame.gw-frame__art--gold-tapestry { border-width: 9px; }
+  .ig2-mini__frame.gw-frame__art--bronze-carved,
+  .ig2-mini__frame.gw-frame__art--black-flat { border-width: 7px; }
+  .ig2-mini__frame.gw-frame__art--gilt-thin { border-width: 4px; }
+  .ig2-mini__frame.gw-frame__art--brass-chain { border-width: 3px; }
+  .ig2-mini__frame.gw-frame__art--black-mat { padding: clamp(8px, 8%, 14px); }
+  .ig2-mini__frame.gw-frame__art--black-stacked { padding: clamp(6px, 6%, 12px); }
+  .ig2-mini__frame.gw-frame__art--oval-gilt,
+  .ig2-mini__frame.gw-frame__art--oval-black { border-width: 6px; }
+
+  /* board tints: chalk (the menu board), blush (Local Love), sage (Community) */
+  .ig2-mini__frame--chalk {
+    --tint: #17140c;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .06), transparent 55%),
+      linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
+  }
+  .ig2-mini__frame--pink { --tint: #eed9ce; }
+  .ig2-mini__frame--sage { --tint: #d4dabe; }
+
+  .ig2-mini__sign {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    padding: .7rem .55rem;
+    max-width: 100%;
+    text-align: center;
+  }
+  .gw-frame__art--oval-gilt .ig2-mini__sign,
+  .gw-frame__art--oval-black .ig2-mini__sign { max-width: 76%; gap: .4rem; }
+
+  .ig2-mini__motif { display: block; color: #a8791f; }
+  .ig2-mini__frame--chalk .ig2-mini__motif { color: #d9c489; }
+  .ig2-mini__label {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: .74rem;
+    line-height: 1.15;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: #33301f;
+    text-wrap: balance;
+  }
+  .ig2-mini__frame--chalk .ig2-mini__label { color: #f2e5c4; }
+  .ig2-mini__label b { font-weight: 700; color: #a8791f; display: inline-block; transition: transform var(--dur) var(--ease); }
+  .ig2-mini__frame--chalk .ig2-mini__label b { color: #d9c489; }
+
+  .ig2-mini:hover .ig2-mini__frame,
+  .ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.05); }
+  .ig2-mini:focus-visible .ig2-mini__frame { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 3px; }
+  .ig2-mini:hover .ig2-mini__label b,
+  .ig2-mini:focus-visible .ig2-mini__label b { transform: translateX(3px); }
 
   /* roomier screens hang three to a row */
   @media (min-width: 640px) {
@@ -433,5 +445,5 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
 
 @media (prefers-reduced-motion: reduce) {
   .ig2-frame, .ig2-board-overlay, .ig2-note, .ig2-frame__label b, .ig2-note__cta b,
-  .ig2-mini__hang, .ig2-mini__art, .ig2-mini__plate, .ig2-mini__plate b { transition: none !important; }
+  .ig2-mini__hang, .ig2-mini__frame, .ig2-mini__label b { transition: none !important; }
 }
