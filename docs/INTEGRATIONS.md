@@ -68,7 +68,7 @@ delete from testimonials; -- placeholder quotes; owners add real favorites in /a
 alter table testimonials add column if not exists image_url text default ''; -- review photos
 ```
 
-Project seeded before **Immersive Gallery became the default homepage look**? Flip the stored choice once (or click it in `/admin` → Quick Blocks → Homepage look):
+Project seeded before **Immersive Gallery became the default homepage look**? Flip the stored choice once — click it in `/admin` → Quick Blocks → Homepage look, run Actions → **"Set homepage look"**, or:
 
 ```sql
 update content_blocks set data = '{"concept": "immersive_gallery"}', status = 'published'
