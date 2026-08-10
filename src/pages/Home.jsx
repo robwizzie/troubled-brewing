@@ -8,11 +8,12 @@ import Ticker from '../components/Ticker.jsx';
 import { localBusinessJsonLd } from '../lib/jsonld.js';
 import * as seed from '../lib/seed.js';
 
-/* Home is concept-swappable: the hero renders as Gallery Wall (lead), Warm
-   Storefront, or Cozy Editorial based on content_blocks.homepage_concept, so the
-   client can review all three and lock one in. The chosen concept reuses the
-   seeded hero section's data; the rest of the page renders normally. */
-import { CONCEPT_TO_TYPE, HERO_TYPES } from '../lib/concepts.js';
+/* Home is concept-swappable: the hero renders as Immersive Gallery (lead),
+   Gallery Wall, Warm Storefront, Cozy Editorial, or Modern Coffee based on
+   content_blocks.homepage_concept, so the client can review them and lock one
+   in. The chosen concept reuses the seeded hero section's data; the rest of
+   the page renders normally. */
+import { CONCEPT_TO_TYPE, DEFAULT_CONCEPT, HERO_TYPES } from '../lib/concepts.js';
 
 /* The hero's content ships in the bundle (seed), so the top of the page can paint
    — and run its entrance animation — immediately, instead of behind a loading
@@ -31,7 +32,7 @@ export default function Home() {
   // to see a concept without changing the saved choice (admin → Quick Blocks).
   const previewConcept = new URLSearchParams(window.location.search).get('concept');
   const isPreview = !!CONCEPT_TO_TYPE[previewConcept];
-  const [concept, setConcept] = useState(isPreview ? previewConcept : 'gallery_wall');
+  const [concept, setConcept] = useState(isPreview ? previewConcept : DEFAULT_CONCEPT);
 
   useEffect(() => {
     if (canvas) return undefined;

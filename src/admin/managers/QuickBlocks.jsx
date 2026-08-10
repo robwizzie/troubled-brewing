@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, Hint } from '../components/ui.jsx';
 import ImageField from '../components/ImageField.jsx';
-import { CONCEPTS } from '../../lib/concepts.js';
+import { CONCEPTS, DEFAULT_CONCEPT } from '../../lib/concepts.js';
 
 /* One-off editable bits: featured drink, staff picks, announcement banner, and
    the swappable homepage concept (content_blocks — options come from the
@@ -23,7 +23,7 @@ export default function QuickBlocks() {
   const [featured, setFeatured] = useState({ name: '', description: '', price: '', image_url: '' });
   const [picks, setPicks] = useState({ items: [] });
   const [announce, setAnnounce] = useState({ enabled: false, message: '' });
-  const [concept, setConcept] = useState({ concept: 'gallery_wall' });
+  const [concept, setConcept] = useState({ concept: DEFAULT_CONCEPT });
   const [social, setSocial] = useState({ instagram: '', facebook: '', tiktok: '', x: '', youtube: '' });
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function QuickBlocks() {
       loadBlock('featured_drink', { name: '', description: '', price: '', image_url: '' }),
       loadBlock('staff_picks', { items: [] }),
       loadBlock('announcement_banner', { enabled: false, message: '' }),
-      loadBlock('homepage_concept', { concept: 'gallery_wall' }),
+      loadBlock('homepage_concept', { concept: DEFAULT_CONCEPT }),
       loadBlock('social_links', { instagram: '', facebook: '', tiktok: '', x: '', youtube: '' }),
     ]).then(([f, p, a, c, s]) => {
       setFeatured(f); setPicks(p); setAnnounce(a); setConcept(c); setSocial(s); setLoading(false);
