@@ -27,7 +27,9 @@ A plain-English, printable reference for Tom, Cat & Katie. This mirrors the in-a
 Pick the page from the dropdown in the top bar (or just click a link on the page — the editor follows you). Click the section, edit in the panel, watch it change. Publish when ready.
 
 ### Add or edit a menu item
-Go to the **Menu** page, click the menu, press **Manage menu →** in the panel. **+ Add item** (or click one to edit): name, description, price, category, dietary tags, photo. Toggle **Available** off to hide something temporarily (e.g. sold out).
+**The menu keeps itself in sync with SpotOn.** Every morning the site reads your SpotOn ordering menu and updates itself — new items, price changes, things you 86'd, all of it. So for names, prices, and what's available, **just edit SpotOn like you already do** and the site follows (need it *right now*? Ask us to press the "Run workflow" button, or press it yourself under GitHub → Actions → SpotOn menu sync).
+
+What's still yours to polish here: **descriptions, photos, and dietary tags** — the fun wording and pictures never get overwritten. To edit those: go to the **Menu** page, click the menu, press **Manage menu →** in the panel, and click an item.
 
 ### Update your hours / add a holiday closure
 **⚙ Settings → Hours** → change the open/close times in the weekly grid. For a holiday, click **+ Add holiday** and pick the date, a label ("Closed for Thanksgiving"), and either new hours or "Closed all day."

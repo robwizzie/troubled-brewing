@@ -2,6 +2,9 @@
    which renderer the home hero row uses (the stored row keeps its own type —
    only the renderer swaps). Shared by Home, the on-page editor, and admin. */
 
+/** The concept the site falls back to before/without a stored choice. */
+export const DEFAULT_CONCEPT = 'immersive_gallery';
+
 export const CONCEPT_TO_TYPE = {
   gallery_wall: 'gallery_wall_hero',
   immersive_gallery: 'immersive_gallery_hero',
@@ -13,8 +16,8 @@ export const CONCEPT_TO_TYPE = {
 export const HERO_TYPES = new Set(Object.values(CONCEPT_TO_TYPE));
 
 export const CONCEPTS = [
-  { value: 'gallery_wall', label: 'Gallery Wall', desc: 'Interactive wall of framed products (lead concept).' },
-  { value: 'immersive_gallery', label: 'Immersive Gallery', desc: 'Cinematic photo of the shop wall — framed links, chalkboard hours, taped specials note.' },
+  { value: 'immersive_gallery', label: 'Immersive Gallery', desc: 'Cinematic photo of the shop wall — framed links, chalkboard hours, taped specials note (lead concept).' },
+  { value: 'gallery_wall', label: 'Gallery Wall', desc: 'Interactive wall of framed products.' },
   { value: 'warm_storefront', label: 'Warm Storefront', desc: 'Big photo of the space + hours + Order.' },
   { value: 'cozy_editorial', label: 'Cozy Editorial', desc: 'Magazine-style story layout.' },
   { value: 'modern_coffee', label: 'Modern Coffee', desc: 'Bold, dark, oversized type with a hero drink shot.' },

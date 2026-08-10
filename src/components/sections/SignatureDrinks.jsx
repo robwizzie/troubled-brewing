@@ -46,7 +46,11 @@ export default function SignatureDrinks({ data = {} }) {
       if (Array.isArray(items) && items.length) {
         picks = items.map((name) => all.find((m) => m.name === name)).filter(Boolean);
       } else {
-        picks = all.filter((m) => m.category === 'specialty');
+        // the SpotOn-synced menu is broad — lead with the specialty drinks
+        // that have something to say (a description or a price)
+        const specialty = all.filter((m) => m.category === 'specialty');
+        const presentable = specialty.filter((m) => (m.description || '').trim() || m.price != null);
+        picks = presentable.length >= 3 ? presentable : specialty;
       }
       setDrinks(picks.slice(0, 3));
     });
@@ -71,7 +75,7 @@ export default function SignatureDrinks({ data = {} }) {
               {d && (
                 <div className="sigdrink__body">
                   <p className="sigdrink__desc">{d.description}</p>
-                  <p className="sigdrink__price">${Number(d.price).toFixed(2)}</p>
+                  {d.price != null && <p className="sigdrink__price">${Number(d.price).toFixed(2)}</p>}
                 </div>
               )}
             </article>

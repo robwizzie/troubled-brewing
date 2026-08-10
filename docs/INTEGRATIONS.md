@@ -68,6 +68,13 @@ delete from testimonials; -- placeholder quotes; owners add real favorites in /a
 alter table testimonials add column if not exists image_url text default ''; -- review photos
 ```
 
+Project seeded before **Immersive Gallery became the default homepage look**? Flip the stored choice once (or click it in `/admin` → Quick Blocks → Homepage look):
+
+```sql
+update content_blocks set data = '{"concept": "immersive_gallery"}', status = 'published'
+where key = 'homepage_concept';
+```
+
 ### Row Level Security summary
 
 - **anon:** SELECT on public content tables (sections only where `visible` + published); INSERT on `submissions` only.
@@ -96,10 +103,17 @@ Owners upload large phone photos, so the uploader (`src/admin/lib/uploadImage.js
 
 Embedded form. The `newsletter` section stores the `mailchimp_action_url`; the form POSTs to Mailchimp directly (no server). Free under 500 contacts. Need the client's Mailchimp embed/action URL (TODO #5).
 
-## SpotOn (ordering + future menu sync)
+## SpotOn (ordering + menu sync)
 
-- **v1:** deep-link "Order Now" to the shop's hosted SpotOn Order URL (`VITE_SPOTON_ORDER_URL`). No API.
-- **Future:** SpotOn has no open API (Preferred Integration Partner application + cert required; OAuth2 client_credentials with a secret that can't live client-side; 24h tokens, no refresh). If justified later, a Supabase Edge Function becomes the token broker + webhook cache and `menuService.getMenu()` flips to read it. Have **Cat (the merchant)** request API access from her SpotOn rep — carries more weight than a developer cold-applying. Stub lives in `src/lib/menuService.js`.
+- **Ordering:** deep-link "Order Now" to the shop's hosted SpotOn Order URL (`VITE_SPOTON_ORDER_URL` — currently `https://order.spoton.com/so-trouble-brewing-coffee-house-26471/haddon-heights-nj/BL-BBE4-95CF-80CD`). Ordering only ever happens on SpotOn; the site just shows the menu.
+- **Menu sync (implemented — the site menu mirrors SpotOn):** the **"SpotOn menu sync"** GitHub Action (`.github/workflows/spoton-menu-sync.yml` → `scripts/sync-spoton-menu.mjs`) runs **daily at 09:00 UTC** (before the shop opens) and on demand (Actions → SpotOn menu sync → **Run workflow**). It fetches the *public* order page like a browser (static HTML first; headless Chrome via `playwright-core` + the runner's system Chrome when the menu loads client-side), finds the menu JSON structurally (so SpotOn frontend redesigns don't silently break it), maps SpotOn categories onto the site's buckets (exact map + keyword rules in the script), and merges into `menu_items`:
+  - **SpotOn wins:** names, prices, categories, availability, item order.
+  - **Owners win:** descriptions (SpotOn's only fill empty ones), photos, dietary tags.
+  - Items that disappear from SpotOn are **hidden** (`available=false`), never deleted; if fewer than 5 items parse, the run fails and **nothing is written**.
+  - It then commits the refreshed `src/data/spoton-menu.json` — the bundled fallback menu — so even Supabase-less builds track SpotOn.
+  - Uses the existing `VITE_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` Action secrets (plus optional `VITE_SPOTON_ORDER_URL`); no new secrets needed.
+- **Latency:** changes made in SpotOn appear on the live site after the next run — same morning by default, instantly via the manual **Run workflow** button. (True real-time needs SpotOn webhooks, which are partner-gated.)
+- **Official API (upgrade path):** SpotOn's partner API needs a Preferred Integration Partner application + cert (OAuth2 client_credentials, 24h tokens — would live in a Supabase Edge Function, not client-side). If ever granted (have **Cat, the merchant,** request it from her SpotOn rep), replace only the scraping half of `scripts/sync-spoton-menu.mjs` with API calls + webhooks; the merge, the table, and the whole app stay identical.
 
 ## Google Analytics 4 (§5.10)
 
