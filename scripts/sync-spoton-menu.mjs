@@ -524,14 +524,28 @@ async function main() {
   }
   let cats = detectMenu(blobs);
 
+  // share of detected items that carry a price (directly or via a size group) —
+  // static payloads sometimes omit per-size pricing that the app fetches live
+  const pricedShare = (cs) => {
+    const items = cs.flatMap((c) => c.items);
+    if (!items.length) return 0;
+    return items.filter((i) => priceOf(i) != null || sizeMinPrice(i) != null).length / items.length;
+  };
+
   let rendered = null;
-  if (cats.reduce((n, c) => n + c.items.length, 0) < MIN_ITEMS) {
-    console.log('menu not in static HTML — rendering with headless Chrome…');
+  const count = cats.reduce((n, c) => n + c.items.length, 0);
+  if (count < MIN_ITEMS || pricedShare(cats) < 0.75) {
+    console.log(count < MIN_ITEMS
+      ? 'menu not in static HTML — rendering with headless Chrome…'
+      : `only ${Math.round(pricedShare(cats) * 100)}% of items carry prices — trying a rendered pass for size pricing…`);
     rendered = await fetchRendered(ORDER_URL);
     if (rendered) {
       const netParsed = rendered.netBlobs.map((b) => tryParse(b.text)).filter(Boolean);
       console.log(`rendered fetch: ${rendered.netBlobs.length} JSON response(s) captured`);
-      cats = detectMenu([...blobs, ...netParsed, ...extractJsonBlobs(rendered.html)]);
+      // rendered blobs go first so richer copies of an item win the dedupe
+      const merged = detectMenu([...netParsed, ...extractJsonBlobs(rendered.html), ...blobs]);
+      const mergedCount = merged.reduce((n, c) => n + c.items.length, 0);
+      if (mergedCount >= count && pricedShare(merged) >= pricedShare(cats)) cats = merged;
     }
   }
 
