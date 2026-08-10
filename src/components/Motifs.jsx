@@ -145,6 +145,132 @@ export function Beans({ size = 64, className = '', color = 'currentColor' }) {
   );
 }
 
+/* ---- Vintage pictogram set — one line-drawn sign icon per navbar
+   destination, used by the immersive hero's phone wall of framed signs.
+   Same ink-line style as CoffeeCup (stroke currentColor, no fills) so the
+   whole wall reads as one hand's work. ---- */
+
+const line = { fill: 'none', stroke: 'currentColor', strokeWidth: 3.2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+
+function Pictogram({ size, className, children }) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" role="presentation">
+      <g {...line}>{children}</g>
+    </svg>
+  );
+}
+
+/* A minimal line fox face — ears up, sly and friendly (About Us). */
+export function FoxFace({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <path d="M32 16 L42 36 M68 16 L58 36" />
+      <path d="M32 16 C28 30 26 40 30 46 C24 58 32 70 50 78 C68 70 76 58 70 46 C74 40 72 30 68 16" />
+      <path d="M30 46 C38 38 62 38 70 46" opacity="0.45" />
+      <circle cx="41" cy="52" r="1.6" fill="currentColor" stroke="none" />
+      <circle cx="59" cy="52" r="1.6" fill="currentColor" stroke="none" />
+      <path d="M46 62 L54 62 L50 68 Z" fill="currentColor" stroke="none" />
+    </Pictogram>
+  );
+}
+
+/* The balloon-fox painting's hot-air balloon (Events). */
+export function Balloon({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <circle cx="50" cy="36" r="22" />
+      <path d="M50 14 C42 26 42 46 50 58" opacity="0.5" />
+      <path d="M50 14 C58 26 58 46 50 58" opacity="0.5" />
+      <path d="M40 54 L44 72 M60 54 L56 72" />
+      <rect x="42" y="72" width="16" height="12" rx="2" />
+    </Pictogram>
+  );
+}
+
+/* A tiny framed landscape — a picture of a picture (Gallery Wall). */
+export function FramedScene({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <rect x="22" y="24" width="56" height="54" rx="2" />
+      <rect x="32" y="34" width="36" height="34" />
+      <circle cx="43" cy="43" r="4" />
+      <path d="M34 62 L45 50 L52 57 L58 51 L66 62" />
+    </Pictogram>
+  );
+}
+
+/* An honest line heart (Local Love). */
+export function Heart({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <path d="M50 79 C24 60 20 38 34 30 C43 25 50 32 50 40 C50 32 57 25 66 30 C80 38 76 60 50 79 Z" />
+    </Pictogram>
+  );
+}
+
+/* The logo fox's top hat (the Troublemakers' uniform). */
+export function TopHat({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <ellipse cx="50" cy="68" rx="31" ry="8" />
+      <path d="M33 68 V38 C33 30 67 30 67 38 V68" />
+      <path d="M33 54 H67" opacity="0.5" />
+    </Pictogram>
+  );
+}
+
+/* A five-point review star (Reviews). */
+export function Star({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <path d="M50 24 L57.4 43.8 L78.5 44.7 L62 57.9 L67.6 78.3 L50 66.6 L32.4 78.3 L38 57.9 L21.5 44.7 L42.6 43.8 Z" />
+    </Pictogram>
+  );
+}
+
+/* Party bunting on a swagged line (Community). */
+export function Bunting({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <path d="M8 26 C32 48 68 48 92 26" />
+      <path d="M20 36 L36 40 L27 62 Z" />
+      <path d="M42 42 L58 42 L50 66 Z" />
+      <path d="M64 40 L80 36 L73 62 Z" />
+    </Pictogram>
+  );
+}
+
+/* A map pin for Station Ave (Visit Us). */
+export function MapPin({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <path d="M50 16 C34 16 26 30 26 42 C26 58 50 84 50 84 C50 84 74 58 74 42 C74 30 66 16 50 16 Z" />
+      <circle cx="50" cy="42" r="8" />
+    </Pictogram>
+  );
+}
+
+/* An open storybook (Our Story). */
+export function OpenBook({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <path d="M50 32 V70" />
+      <path d="M50 32 C40 24 26 23 16 27 V66 C26 62 40 63 50 70" />
+      <path d="M50 32 C60 24 74 23 84 27 V66 C74 62 60 63 50 70" />
+    </Pictogram>
+  );
+}
+
+/* A sealed letter (Contact). */
+export function Envelope({ size = 44, className = '' }) {
+  return (
+    <Pictogram size={size} className={className}>
+      <rect x="18" y="30" width="64" height="44" rx="3" />
+      <path d="M18 32 L50 56 L82 32" />
+    </Pictogram>
+  );
+}
+
 /* Ornate TB monogram badge for the nav/footer brand lockup. */
 export function Monogram({ size = 40, className = '' }) {
   const g = useId();
