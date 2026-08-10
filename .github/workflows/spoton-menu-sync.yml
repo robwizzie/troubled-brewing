@@ -1,0 +1,69 @@
+name: SpotOn menu sync
+
+# Mirrors the shop's LIVE SpotOn ordering menu into the site (§docs/INTEGRATIONS.md
+# §SpotOn): scrapes the public order page, upserts Supabase `menu_items` (the live
+# site reads those instantly), and commits the refreshed src/data/spoton-menu.json
+# bundled fallback. Names/prices/categories/availability follow SpotOn; owner
+# descriptions, photos, and dietary tags are preserved. If SpotOn can't be parsed
+# the run fails loudly and nothing is written.
+#
+# Runs daily before open + on demand (Actions → "SpotOn menu sync" → Run workflow).
+# Pushes to the dev branch run it in DRY RUN (no Supabase writes) unless the
+# commit message contains [sync-live].
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # daily 09:00 UTC = 4/5am in NJ, before the shop opens
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (parse + snapshot only, no Supabase writes)'
+        type: boolean
+        default: false
+  push:
+    branches: [claude/landing-page-menu-sync-3qxpdk]
+    paths:
+      - 'scripts/sync-spoton-menu.mjs'
+      - '.github/workflows/spoton-menu-sync.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: spoton-menu-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # playwright-core only (no browser download) — the runner's own Chrome is used
+      - name: Install playwright-core
+        run: npm i --no-save --no-audit --no-fund playwright-core@1.54.2
+
+      - name: Sync menu from SpotOn
+        run: node scripts/sync-spoton-menu.mjs
+        env:
+          SPOTON_ORDER_URL: ${{ secrets.VITE_SPOTON_ORDER_URL }}
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DRY_RUN: ${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[sync-live]')) || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+
+      - name: Commit refreshed snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain src/data/spoton-menu.json)" ]; then
+            git add src/data/spoton-menu.json
+            git commit -m "chore: sync menu from SpotOn"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          else
+            echo "Menu unchanged."
+          fi

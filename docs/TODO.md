@@ -10,7 +10,8 @@ Read this and `PROJECT.md` first each session.
 - [x] `supabase/schema.sql` (all tables + RLS)
 - [x] `supabase/seed.sql` (pages/sections/menu/hours/etc.)
 - [x] `src/lib/supabase.js` client (anon key)
-- [x] `src/lib/menuService.js` — `getMenu()` + `// FUTURE: SpotOn sync` stub
+- [x] `src/lib/menuService.js` — `getMenu()` reading `menu_items` + bundled snapshot fallback
+- [x] SpotOn menu sync — daily Action scrapes the public order page → `menu_items` + `src/data/spoton-menu.json` (INTEGRATIONS.md §SpotOn)
 - [x] `src/lib/seed.js` fallback content
 - [x] `src/styles/tokens.css` design tokens
 
@@ -21,7 +22,7 @@ Read this and `PROJECT.md` first each session.
 - [x] Pages: Reviews, Gallery Wall, Troublemakers, Neighborhood
 - [x] Page: TB Timeline (`/timeline`) + `timeline_grid` section + renderer
 - [x] Pages: Privacy, Accessibility
-- [x] 3 landing-page concepts (Gallery Wall lead, CONFIRMED), concept-swappable home
+- [x] 5 landing-page concepts, concept-swappable home — **Immersive Gallery is the default** (whimsical "re-hung wall" mobile experience included)
 - [x] Official palette (black/green/pink/yellow) tuned to shop photos; Gallery Wall hero on sage wall
 - [x] Social links (owner-managed) in footer + contact/community pages
 - [x] Seed fallback + loading skeletons wired everywhere
@@ -51,8 +52,8 @@ Read this and `PROJECT.md` first each session.
 
 ## Open questions for the client (from build plan §12)
 
-1. Exact **SpotOn Order URL** for the "Order Now" links.
-2. Final **menu + prices** to seed (placeholders in place).
+1. ~~Exact **SpotOn Order URL**~~ — RECEIVED: `https://order.spoton.com/so-trouble-brewing-coffee-house-26471/haddon-heights-nj/BL-BBE4-95CF-80CD` (set it as the `VITE_SPOTON_ORDER_URL` Action secret).
+2. ~~Final **menu + prices** to seed~~ — now auto-synced from SpotOn daily (the shop keeps SpotOn current; the site follows).
 3. **Photos** of space/food/drinks (or schedule a shoot).
 4. Confirm **hours** + standing holiday closures.
 5. **Mailchimp** account → embed/action URL (or set one up).

@@ -4,7 +4,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase.js';
 import { getContentBlock } from '../../lib/dataService.js';
 import { publishData, saveDataDraftQuiet, snapshotRecord } from '../lib/adminData.js';
 import { publicUrl } from '../../lib/config.js';
-import { CONCEPT_TO_TYPE, HERO_TYPES, CONCEPTS } from '../../lib/concepts.js';
+import { CONCEPT_TO_TYPE, DEFAULT_CONCEPT, HERO_TYPES, CONCEPTS } from '../../lib/concepts.js';
 import * as seed from '../../lib/seed.js';
 import { useToast, Spinner } from '../components/ui.jsx';
 import Canvas from './Canvas.jsx';
@@ -100,7 +100,7 @@ export default function EditorApp() {
   }, [loadSections]);
 
   useEffect(() => {
-    getContentBlock('homepage_concept').then((c) => setConcept(c?.concept || 'gallery_wall'));
+    getContentBlock('homepage_concept').then((c) => setConcept(c?.concept || DEFAULT_CONCEPT));
   }, []);
 
   // Escape closes the section panel (back to the page outline).

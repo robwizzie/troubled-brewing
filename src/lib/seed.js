@@ -7,6 +7,7 @@
    ============================================================================= */
 
 import { asset } from './config.js';
+import SPOTON_MENU from '../data/spoton-menu.json';
 
 export const SITE = {
   name: 'Trouble Brewing Coffee House',
@@ -117,20 +118,11 @@ export const SECTIONS = {
   ],
 };
 
-export const MENU_ITEMS = [
-  { id: 's-1', name: 'Cappuccino', description: 'Espresso and steamed milk, balanced and classic.', price: 4.5, category: 'espresso', dietary_flags: [], available: true, display_order: 0 },
-  { id: 's-2', name: 'Iced Chai Latte', description: 'Spiced chai over ice with milk — cozy, even cold.', price: 5.5, category: 'specialty', dietary_flags: [], available: true, display_order: 1 },
-  { id: 's-3', name: 'Banana Split Coffee', description: "Our signature: a playful, dessert-inspired coffee you can't get anywhere else.", price: 6.5, category: 'specialty', dietary_flags: [], available: true, display_order: 2 },
-  { id: 's-4', name: 'Coffee Flight', description: 'A tasting flight through our espresso lineup.', price: 9.0, category: 'specialty', dietary_flags: [], available: true, display_order: 3 },
-  { id: 's-5', name: 'Croissant', description: 'Buttery, flaky, baked-fresh.', price: 3.75, category: 'pastry', dietary_flags: [], available: true, display_order: 4 },
-  { id: 's-6', name: 'Brioche Breakfast Sandwich', description: 'Egg and cheese on soft brioche. Add pork roll or bacon.', price: 7.5, category: 'food', dietary_flags: [], available: true, display_order: 5 },
-  { id: 's-7', name: 'Scone', description: "Rotating flavors — ask what's in today.", price: 3.5, category: 'pastry', dietary_flags: [], available: true, display_order: 6 },
-  { id: 's-8', name: 'Buffalo Chicken Panini', description: "Spicy three-cheese, Frank's RedHot, fire-braised chicken on seeded rye.", price: 11.0, category: 'food', dietary_flags: [], available: true, display_order: 7 },
-  { id: 's-9', name: 'Cranberry Walnut Chicken Salad Panini', description: 'Our most popular — cranberry walnut chicken salad, pressed warm.', price: 11.0, category: 'food', dietary_flags: [], available: true, display_order: 8 },
-  { id: 's-10', name: 'BLT', description: 'Bacon, lettuce, tomato on seeded rye.', price: 9.5, category: 'food', dietary_flags: [], available: true, display_order: 9 },
-  { id: 's-11', name: 'Gluten-Free Cookie', description: 'All the cookie, none of the gluten.', price: 3.25, category: 'pastry', dietary_flags: ['gluten-free'], available: true, display_order: 10 },
-  { id: 's-12', name: 'Vegan Cookie', description: 'Plant-based and genuinely good.', price: 3.25, category: 'pastry', dietary_flags: ['vegan'], available: true, display_order: 11 },
-];
+/* The bundled menu now tracks SpotOn: the "SpotOn menu sync" workflow scrapes
+   the shop's live ordering page daily, updates Supabase, and commits the
+   refreshed snapshot here — so even the no-Supabase fallback stays aligned
+   with what customers can actually order. See scripts/sync-spoton-menu.mjs. */
+export const MENU_ITEMS = SPOTON_MENU.items.map((i) => ({ dietary_flags: [], available: true, ...i }));
 
 // day_of_week: 0=Sun ... 6=Sat
 export const HOURS = [
@@ -146,7 +138,7 @@ export const HOURS = [
 export const HOURS_OVERRIDES = [];
 
 export const CONTENT_BLOCKS = {
-  homepage_concept: { concept: 'gallery_wall' },
+  homepage_concept: { concept: 'immersive_gallery' },
   featured_drink: { name: 'Banana Split Coffee', description: 'Our signature dessert-in-a-cup. If you only try one thing, make it this.', price: '6.50', image_url: '' },
   staff_picks: { items: [ { label: 'Flying off the menu', value: 'Cranberry Walnut Chicken Salad Panini' }, { label: "Barista's pick", value: 'Banana Split Coffee' } ] },
   loyalty_copy: { body_markdown: 'Ask a Troublemaker about loyalty perks. Full program details coming soon.' },

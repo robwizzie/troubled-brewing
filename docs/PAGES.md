@@ -4,7 +4,7 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 
 | # | Page | Route | Purpose | Default seeded sections |
 |---|---|---|---|---|
-| 1 | Home | `/` | First impression + funnel to Order | `gallery_wall_hero` (or chosen concept; the gallery hero's placard shows the live open/closed status + the owner-editable **Current Drink Specials** link) → `featured_drink` → `hours` strip → `cta` (Order) → La Colombe `rich_text` → community teaser → `instagram` → `announcement` (if set) → `newsletter` |
+| 1 | Home | `/` | First impression + funnel to Order | `immersive_gallery_hero` by default (or chosen concept; the hero carries the live open/closed chalkboard + the owner-editable **Today's Special** note) → `featured_drink` → `hours` strip → `cta` (Order) → La Colombe `rich_text` → community teaser → `instagram` → `announcement` (if set) → `newsletter` |
 | 2 | Menu | `/menu` | Browse the menu, order | `menu_block` (category-tabbed, dietary filters) → `cta` (Order on SpotOn) |
 | 3 | About | `/about` | Tom & Cat's story, La Colombe, why local | `hero` → `rich_text` (story) → `rich_text` (La Colombe, factual) → `image`/`gallery` |
 | 4 | Events & Community | `/events` | Upcoming events, host-an-event | `hero` → `events_list` → `cta` (host an event → catering) |
@@ -26,7 +26,7 @@ Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" groupin
 
 ## Concept-swappable home
 
-The Home hero swaps between `gallery_wall` (lead), `warm_storefront`, and `cozy_editorial` via `content_blocks.homepage_concept` so the client can review all three and lock one in. See DESIGN.md.
+The Home hero swaps between `immersive_gallery` (lead/default), `gallery_wall`, `warm_storefront`, `cozy_editorial`, and `modern_coffee` via `content_blocks.homepage_concept` so the client can review them and lock one in. See DESIGN.md.
 
 ## SEO per page
 
