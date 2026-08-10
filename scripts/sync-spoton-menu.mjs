@@ -53,18 +53,31 @@ const UA =
    the shop's menu evolves (the run log prints every mapping it used).
 --------------------------------------------------------------------------- */
 const EXACT_CATEGORY_MAP = {
-  // 'Signature Drinks': 'specialty',
+  // The shop's real SpotOn categories (from the live scrape) — keep current:
+  'Coffee & Espresso Drinks': 'espresso',
+  'Iced Coffee & Espresso Drinks': 'espresso',
+  'Frozen Drinks': 'specialty',
+  'Tea & Other': 'specialty',
+  'Iced Teas & Other': 'specialty',
+  'Bakery': 'pastry',
+  'Breakfast': 'food',
+  'Lunch': 'food',
+  'Grab n Go': 'food',
 };
 const CATEGORY_RULES = [
   ['seasonal', /season|holiday|limited|pumpkin|peppermint|\bfall\b|autumn|winter|summer|spring/i],
   ['pastry', /pastr|bak(e|ery)|dessert|sweet|muffin|scone|croissant|cookie|cake|donut|doughnut|loaf|brownie|treat/i],
-  ['food', /food|sandwich|panini|breakfast|brunch|lunch|bagel|salad|wrap|bowl|toast|savory|kitchen|melt|waffle|plate|blt/i],
+  ['food', /food|sandwich|panini|breakfast|brunch|lunch|bagel|salad|wrap|bowl|toast|savory|kitchen|melt|waffle|plate|blt|grab/i],
   ['specialty', /special|signature|smoothie|frapp|blended|refresher|lemonade|energy|soda|kombucha|float|flight/i],
   ['espresso', /espresso|coffee|latte|cappuccino|americano|macchiato|cortado|mocha|drip|brew|roast/i],
-  ['specialty', /\btea\b|chai|matcha|hot choc|cocoa|cider|drink|beverage/i],
+  ['specialty', /\bteas?\b|chai|matcha|hot choc|cocoa|cider|drink|beverage/i],
 ];
 /* meta-collections that duplicate real categories — skip unless they're all we have */
 const META_CATEGORY = /popular|featured|favorites|recommended|suggest|upsell|deals|reorder/i;
+/* never menu content: merch/retail, modifier groups ("Bread Choice"), and
+   internal size-variant groups ("{Bevs} Espresso Tonic 16oz/20oz/24oz") whose
+   drinks already live in the real categories */
+const EXCLUDED_CATEGORY = /retail|merch|gift ?card|choice|add[\s-]?ons?\b|toppings?\b|modifier|\{.*\}|\b\d+\s*oz\b/i;
 
 const norm = (s) => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
 
@@ -237,6 +250,33 @@ function isItem(o) {
   return PRICE_KEYS.some((k) => o[k] != null && asPriceNumber(o[k], /cents/i.test(k)) != null);
 }
 
+/* Sized drinks (Hot Latte, Cold Brew, …) carry no item-level price — SpotOn
+   prices them per size in a nested modifier group. Find that group by its
+   size-ish name and take the cheapest size, so the menu can show the classic
+   "smallest size" price. Add-on groups (syrups, milks) are never entered. */
+function sizeMinPrice(raw) {
+  let min = null;
+  const seen = new Set();
+  (function walk(node, depth, inSizeGroup) {
+    if (!node || typeof node !== 'object' || depth > 8 || seen.has(node)) return;
+    seen.add(node);
+    if (Array.isArray(node)) {
+      for (const c of node) walk(c, depth + 1, inSizeGroup);
+      return;
+    }
+    if (inSizeGroup) {
+      const p = priceOf(node);
+      if (p != null && (min == null || p < min)) min = p;
+    }
+    const nm = strFrom(node, NAME_KEYS, 60) || '';
+    const sizeish = /\bsizes?\b/i.test(nm) || /\b\d+\s*oz\b/i.test(nm);
+    for (const v of Object.values(node)) {
+      if (v && typeof v === 'object') walk(v, depth + 1, inSizeGroup || sizeish);
+    }
+  })(raw, 0, false);
+  return min;
+}
+
 function availOf(o) {
   for (const k of ['available', 'isAvailable', 'is_available', 'active', 'enabled', 'inStock', 'in_stock', 'visible']) {
     if (typeof o[k] === 'boolean') return o[k];
@@ -300,6 +340,9 @@ function detectMenu(blobRoots) {
     }
   }
   let cats = [...byCat.values()];
+  const excluded = cats.filter((c) => EXCLUDED_CATEGORY.test(c.category));
+  if (excluded.length) console.log(`skipping non-menu categories: ${excluded.map((c) => c.category).join(' · ')}`);
+  cats = cats.filter((c) => !EXCLUDED_CATEGORY.test(c.category));
   const real = cats.filter((c) => !META_CATEGORY.test(c.category));
   if (real.reduce((n, c) => n + c.items.length, 0) >= MIN_ITEMS) cats = real;
   if (!cats.length && bareArrays.length) {
@@ -516,13 +559,15 @@ async function main() {
       scraped.push({
         name,
         description: (strFrom(raw, DESC_KEYS, 800) || '').trim(),
-        price: priceOf(raw),
+        price: priceOf(raw) ?? sizeMinPrice(raw),
         category: bucketFor(c.category, name),
         spoton_category: c.category,
         available: availOf(raw),
       });
     }
   }
+  const sized = scraped.filter((s) => s.price != null).length;
+  console.log(`${sized}/${scraped.length} items carry a price (sized drinks show their smallest size when SpotOn nests it)`);
   console.log('\ndetected menu:');
   for (const c of categories) console.log(`  ${c.spoton} → ${c.site} (${c.items} items)`);
 
