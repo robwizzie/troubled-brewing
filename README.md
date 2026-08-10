@@ -27,7 +27,7 @@ Everything lives in [`/docs`](./docs) — start with **[docs/PROJECT.md](./docs/
 
 | | |
 |---|---|
-| [ARCHITECTURE](./docs/ARCHITECTURE.md) | Hosting model, data flow, section-based CMS, SpotOn stub |
+| [ARCHITECTURE](./docs/ARCHITECTURE.md) | Hosting model, data flow, section-based CMS, SpotOn menu sync |
 | [CMS](./docs/CMS.md) | Section types, data shapes, renderers & editors |
 | [PAGES](./docs/PAGES.md) · [CONTENT](./docs/CONTENT.md) · [DESIGN](./docs/DESIGN.md) | Pages, seed content, look & feel |
 | [INTEGRATIONS](./docs/INTEGRATIONS.md) · [DEPLOYMENT](./docs/DEPLOYMENT.md) | Supabase, Google, Mailchimp, GA4; Pages + DNS |
