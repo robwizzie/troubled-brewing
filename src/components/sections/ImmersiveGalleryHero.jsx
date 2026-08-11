@@ -29,22 +29,26 @@ const SCENE = 'images/wall/immersive-scene.jpg';
    navbar (primary + More) hangs somewhere on the wall. Boxes are tuned to hug
    each frame's molding — the label renders as a brass nameplate centered on
    the frame's bottom edge, so box centers/bottoms must be exact.
-   `sign` is the destination's PHONE incarnation: which vintage molding it
-   hangs in (frameStyles.js vocabulary — all 11 recipes used once, no two
-   alike), the sign board's shape + tint, and its line-drawn pictogram. */
+   `sign` is the destination's PHONE incarnation: the SIX headline pages hang
+   as framed signs (distinct moldings from the frameStyles.js vocabulary, a
+   tinted board, a line-drawn pictogram); the rest become small engraved brass
+   chips under the wall (`chip: true`) so the phone hero stays SHORT — one
+   wall, not an endless one. */
 const FRAME_LINKS = [
-  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gilt-grand', ar: '4 / 3', tint: 'chalk', Motif: CoffeeCup } },
-  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'bronze-carved', ar: '4 / 2.9', Motif: FoxFace } },
-  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', ar: '1 / 1.08', Motif: Balloon } },
-  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-tapestry', ar: '4 / 3.7', Motif: FramedScene } },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'gold-botanical', ar: '4 / 3.1', tint: 'pink', Motif: Heart } },
-  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, sign: { frame: 'black-stacked', ar: '4 / 3.2', Motif: TopHat } },
-  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, sign: { frame: 'gilt-thin', ar: '4 / 2.8', Motif: Star } },
-  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, sign: { frame: 'brass-chain', ar: '4 / 3.1', tint: 'sage', Motif: Bunting } },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-flat', ar: '4 / 3.3', Motif: MapPin } },
-  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, sign: { frame: 'black-mat', ar: '4 / 3.6', Motif: OpenBook } },
-  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, sign: { frame: 'oval-black', ar: '1 / 1.1', Motif: Envelope } },
+  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gilt-grand', ar: '4 / 2.9', tint: 'chalk', Motif: CoffeeCup } },
+  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'bronze-carved', ar: '4 / 2.8', Motif: FoxFace } },
+  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', ar: '1 / 1.02', Motif: Balloon } },
+  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-tapestry', ar: '4 / 3', Motif: FramedScene } },
+  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'gold-botanical', ar: '4 / 2.9', tint: 'pink', Motif: Heart } },
+  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, chip: true, sign: { Motif: TopHat } },
+  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, chip: true, sign: { Motif: Star } },
+  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, chip: true, sign: { Motif: Bunting } },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-flat', ar: '4 / 2.9', Motif: MapPin } },
+  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, chip: true, sign: { Motif: OpenBook } },
+  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, chip: true, sign: { Motif: Envelope } },
 ];
+const WALL_LINKS = FRAME_LINKS.filter((f) => !f.chip);
+const CHIP_LINKS = FRAME_LINKS.filter((f) => f.chip);
 
 const box = ({ x, y, w, h }) => ({ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` });
 
@@ -152,6 +156,10 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             duration: 0.5, ease: 'back.out(2)',
             clearProps: 'transform,opacity,visibility',
           }, '-=0.3')
+          .from('.ig2-chip', {
+            autoAlpha: 0, y: 8, duration: 0.35, stagger: 0.05,
+            clearProps: 'transform,opacity,visibility',
+          }, '-=0.3')
           .from('.ig2-chalk, .ig2-note, .ig2-know', {
             autoAlpha: 0, y: 18, duration: 0.55, ease: 'back.out(1.4)', stagger: 0.12,
             clearProps: 'transform,opacity,visibility',
@@ -256,7 +264,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
               painted lettering — on a nail + wire. All vector, all crisp ---- */}
       <div className="ig2-mobile">
         <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
-          {FRAME_LINKS.map((f, i) => {
+          {WALL_LINKS.map((f, i) => {
             const { frame, ar, tint, Motif } = f.sign;
             return (
               <Link
@@ -273,7 +281,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
                     style={{ '--ar': ar }}
                   >
                     <span className="ig2-mini__sign">
-                      <Motif className="ig2-mini__motif" size={42} />
+                      <Motif className="ig2-mini__motif" size={36} />
                       <span className="ig2-mini__label">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
                     </span>
                   </span>
@@ -281,7 +289,11 @@ export default function ImmersiveGalleryHero({ data = {} }) {
               </Link>
             );
           })}
-          {/* the shop's gold fox takes the twelfth hook and keeps watch */}
+        </nav>
+
+        {/* everything else hangs as small engraved brass plates, the gold fox
+            keeping watch above them */}
+        <div className="ig2-more">
           <img
             className="ig2-mobile__fox"
             src={asset('images/brand/fox-head.webp')}
@@ -291,7 +303,18 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             width="82"
             height="120"
           />
-        </nav>
+          <nav className="ig2-chips" aria-label="More at Trouble Brewing">
+            {CHIP_LINKS.map((f) => {
+              const { Motif } = f.sign;
+              return (
+                <Link key={f.to} className="ig2-chip" to={f.to}>
+                  <Motif className="ig2-chip__motif" size={17} />
+                  {f.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
 
         <div className="ig2-mobile__boards">
           {chalk}
