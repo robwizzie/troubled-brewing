@@ -27,25 +27,33 @@ const SCENE = 'images/wall/immersive-scene.jpg';
    each frame's molding — the label renders as a brass nameplate centered on
    the frame's bottom edge, so box centers/bottoms must be exact.
    `sign` is the destination's PHONE incarnation: the SIX headline pages hang
-   as framed PHOTOGRAPHS — the shop's real gallery-wall shots in distinct
-   vintage moldings with engraved brass nameplates; the rest become small
-   brass chips under the wall (`chip: true`) so the phone hero stays SHORT —
-   one wall, not an endless one. `pos` = the photo's object-position. */
+   as photos set INSIDE real painted frames cropped from this same artwork
+   (public/images/wall/frames/* — the identical moldings desktop visitors
+   see), each with an engraved brass nameplate; the rest become small brass
+   chips under the wall (`chip: true`) so the phone hero stays SHORT.
+   `frame` = the molding crop, `par` = its true aspect, `inset` = the photo
+   opening inside the crop (top right bottom left), `pos` = object-position. */
 const FRAME_LINKS = [
-  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { ar: '4 / 3.9', photo: 'images/wall/order-menu.jpg', pos: '50% 42%' } },
-  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { ar: '4 / 3.6', photo: 'images/wall/our-story.jpg', pos: '50% 58%' } },
-  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { ar: '1 / 1.05', photo: 'images/wall/whats-on.jpg', pos: '50% 42%' } },
-  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { ar: '4 / 4.1', photo: 'images/wall/gallery-wall.jpg', pos: '50% 32%' } },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { ar: '4 / 3.6', photo: 'images/wall/local-love.jpg', pos: '50% 45%' } },
+  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gold-portrait', par: '241 / 339', inset: '4.8% 5.4% 7.5% 6.6%', photo: 'images/wall/order-menu.jpg', pos: '50% 42%' } },
+  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'gold-landscape', par: '261 / 177', inset: '8.5% 6% 11.5% 6%', photo: 'images/wall/our-story.jpg', pos: '50% 58%' } },
+  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', par: '147 / 194', inset: '8.5% 11% 8.5% 11%', oval: true, photo: 'images/wall/whats-on.jpg', pos: '50% 42%' } },
+  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-patterned', par: '149 / 251', inset: '4.6% 8% 5.8% 8%', photo: 'images/wall/gallery-wall.jpg', pos: '50% 32%' } },
+  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'black-mat', par: '298 / 171', inset: '15.5% 9.6% 17.5% 9.6%', photo: 'images/wall/local-love.jpg', pos: '50% 45%' } },
   { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, chip: true, sign: { Motif: TopHat } },
   { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, chip: true, sign: { Motif: Star } },
   { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, chip: true, sign: { Motif: Bunting } },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { ar: '4 / 3.7', photo: 'images/wall/our-story-so-far.jpg', pos: '50% 58%' } },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-small', par: '108 / 144', inset: '6.5% 8% 7% 8%', photo: 'images/wall/our-story-so-far.jpg', pos: '42% 55%' } },
   { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, chip: true, sign: { Motif: OpenBook } },
   { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, chip: true, sign: { Motif: Envelope } },
 ];
 const WALL_LINKS = FRAME_LINKS.filter((f) => !f.chip);
 const CHIP_LINKS = FRAME_LINKS.filter((f) => f.chip);
+
+/* 'top right bottom left' opening → explicit absolute box for the photo */
+function opening(inset) {
+  const [t, r, b, l] = inset.split(/\s+/).map(parseFloat);
+  return { top: `${t}%`, left: `${l}%`, width: `${(100 - l - r).toFixed(2)}%`, height: `${(100 - t - b).toFixed(2)}%` };
+}
 
 const box = ({ x, y, w, h }) => ({ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` });
 
@@ -262,7 +270,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
       <div className="ig2-mobile">
         <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
           {WALL_LINKS.map((f, i) => {
-            const { ar, photo, pos } = f.sign;
+            const { frame, par, inset, oval, photo, pos } = f.sign;
             return (
               <Link
                 key={f.to}
@@ -272,16 +280,18 @@ export default function ImmersiveGalleryHero({ data = {} }) {
               >
                 {/* inner hanger so the entrance tween never fights the tilt */}
                 <span className="ig2-shot__hang">
-                  <span className="ig2-shot__card">
-                    <span className="ig2-shot__photo" style={{ '--par': ar }}>
-                      <img
-                        src={asset(photo)}
-                        alt=""
-                        loading="lazy"
-                        style={pos ? { objectPosition: pos } : undefined}
-                      />
-                    </span>
-                    <span className="ig2-shot__caption">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
+                  <span
+                    className={`ig2-fr${oval ? ' ig2-fr--oval' : ''}`}
+                    style={{ '--par': par, backgroundImage: `url(${asset(`images/wall/frames/${frame}.jpg`)})` }}
+                  >
+                    <img
+                      className="ig2-fr__photo"
+                      src={asset(photo)}
+                      alt=""
+                      loading="lazy"
+                      style={{ ...opening(inset), ...(pos ? { objectPosition: pos } : {}) }}
+                    />
+                    <span className="ig2-fr__plate">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
                   </span>
                 </span>
               </Link>

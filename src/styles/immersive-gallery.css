@@ -315,61 +315,70 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   .ig2-shot__hang { display: block; transition: transform var(--dur) var(--ease); }
   .ig2-shot:active .ig2-shot__hang { transform: translateY(2px) scale(.985); }
 
-  .ig2-shot__card {
+  /* the REAL painted frames, cropped from the scene artwork — the photo sits
+     in each molding's opening, so the phone wall is hung with the very same
+     frames desktop visitors see */
+  .ig2-fr {
     display: block;
     position: relative;
-    background: #fdfbf5;
-    padding: 7px 7px 0;
-    border-radius: 2px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .35), 0 .55rem 1.1rem rgba(0, 0, 0, .38);
+    aspect-ratio: var(--par, 4 / 3);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 3px;
     transform: rotate(var(--r, 0deg));
-    transition: box-shadow var(--dur) var(--ease);
   }
-  /* masking tape over the top edge, catching the wall behind it */
-  .ig2-shot__card::before {
-    content: '';
-    position: absolute;
-    top: -9px;
-    left: 50%;
-    width: 56px;
-    height: 17px;
-    transform: translateX(-50%) rotate(-3deg);
-    background: rgba(233, 195, 94, .45);
-    border-left: 1px dashed rgba(124, 86, 26, .35);
-    border-right: 1px dashed rgba(124, 86, 26, .35);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
-  }
-  .ig2-shot:nth-child(even) .ig2-shot__card::before { transform: translateX(-50%) rotate(2.5deg); }
-  /* a couple of prints get corner tape instead — hand-pinned variety */
-  .ig2-shot:nth-child(3) .ig2-shot__card::before,
-  .ig2-shot:nth-child(6) .ig2-shot__card::before { left: 4%; top: -8px; width: 46px; transform: rotate(-38deg); }
+  .ig2-fr--oval { border-radius: 50%; }
+  /* the hang's drop-shadow seats rectangles and the oval alike on the wall */
+  .ig2-shot__hang { filter: drop-shadow(0 .5rem .85rem rgba(0, 0, 0, .5)); }
 
-  .ig2-shot__photo {
-    display: block;
-    aspect-ratio: var(--par, 4 / 3.6);
-    overflow: hidden;
+  .ig2-fr__photo {
+    position: absolute;
+    max-width: none;
+    object-fit: cover;
     border-radius: 1px;
+    /* seated behind the glass: a whisper of inner shade off the molding */
+    box-shadow: inset 0 0 0 1px rgba(30, 24, 12, .18), inset 0 2px 8px rgba(30, 24, 12, .22);
     background: #e7e0cd;
   }
-  .ig2-shot__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .ig2-fr--oval .ig2-fr__photo { border-radius: 50%; }
 
-  .ig2-shot__caption {
-    display: block;
-    padding: 7px 4px 9px;
+  /* the engraved brass nameplate riding the bottom molding, like the scene */
+  .ig2-fr__plate {
+    position: absolute;
+    bottom: 1.5%;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    margin-inline: auto;
+    width: fit-content;
+    max-width: calc(100% - 1rem);
+    padding: .4em .8em .44em;
+    border: 1px solid #6f541c;
+    border-radius: 2px;
+    background:
+      radial-gradient(circle at 6px 50%, #8a6a1e 1.5px, rgba(138, 106, 30, 0) 2.4px),
+      radial-gradient(circle at calc(100% - 6px) 50%, #8a6a1e 1.5px, rgba(138, 106, 30, 0) 2.4px),
+      linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 240, 200, .65);
     font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 600;
-    font-size: .86rem;
+    font-weight: 800;
+    font-size: .68rem;
+    line-height: 1.12;
     text-align: center;
-    color: #4a4433;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: #2f2306;
+    text-shadow: 0 1px 0 rgba(255, 238, 190, .55);
   }
-  .ig2-shot__caption b { font-style: normal; font-weight: 700; color: #a8791f; display: inline-block; transition: transform var(--dur) var(--ease); }
+  .ig2-fr__plate b { font-weight: 700; display: inline-block; transition: transform var(--dur) var(--ease); }
+  .ig2-fr--oval .ig2-fr__plate { bottom: 8%; max-width: 68%; }
 
-  .ig2-shot:hover .ig2-shot__card,
-  .ig2-shot:focus-visible .ig2-shot__card { box-shadow: 0 1px 3px rgba(0, 0, 0, .35), 0 .8rem 1.5rem rgba(0, 0, 0, .45); }
-  .ig2-shot:focus-visible .ig2-shot__card { outline: 2px solid rgba(233, 195, 94, .9); outline-offset: 3px; }
-  .ig2-shot:hover .ig2-shot__caption b,
-  .ig2-shot:focus-visible .ig2-shot__caption b { transform: translateX(3px); }
+  .ig2-fr { transition: filter var(--dur) var(--ease); }
+  .ig2-shot:hover .ig2-fr,
+  .ig2-shot:focus-visible .ig2-fr { filter: brightness(1.06) saturate(1.04); }
+  .ig2-shot:focus-visible .ig2-fr { outline: 2px solid rgba(233, 195, 94, .9); outline-offset: 3px; }
+  .ig2-shot:hover .ig2-fr__plate b,
+  .ig2-shot:focus-visible .ig2-fr__plate b { transform: translateX(3px); }
 
   /* roomier screens hang three to a row */
   @media (min-width: 640px) {
@@ -440,5 +449,5 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
 
 @media (prefers-reduced-motion: reduce) {
   .ig2-frame, .ig2-board-overlay, .ig2-note, .ig2-frame__label b, .ig2-note__cta b,
-  .ig2-shot__hang, .ig2-shot__card, .ig2-shot__caption b, .ig2-chip { transition: none !important; }
+  .ig2-shot__hang, .ig2-fr, .ig2-fr__plate b, .ig2-chip { transition: none !important; }
 }
