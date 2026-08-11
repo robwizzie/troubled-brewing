@@ -497,6 +497,9 @@ async function fetchRendered(url, wantedNames = []) {
     }
     const html = await page.content();
     const bodyText = await page.evaluate(() => document.body.innerText).catch(() => '');
+    // menu detection must only see the page's own payloads — the detail pass
+    // below adds modifier/option payloads that would leak junk "items"
+    const menuBlobs = netBlobs.slice();
     let details = null;
     if (wantedNames.length) {
       details = await clickForDetails(page, netBlobs, wantedNames).catch((e) => {
@@ -504,7 +507,7 @@ async function fetchRendered(url, wantedNames = []) {
         return null;
       });
     }
-    return { html, netBlobs, bodyText, details };
+    return { html, netBlobs: menuBlobs, bodyText, details };
   } finally {
     await browser.close().catch(() => {});
   }
@@ -685,6 +688,9 @@ async function main() {
     for (const raw of c.items) {
       const name = strFrom(raw, NAME_KEYS);
       if (!name) continue;
+      // modifier rows dress like items ("w/ [Tuscan Butter]", "* [Gridled]") —
+      // real menu names start with a letter/number and don't bracket-tag
+      if (!/^[a-z0-9"'¡!]/i.test(name) || /\[.+\]/.test(name)) continue;
       scraped.push({
         name,
         description: (strFrom(raw, DESC_KEYS, 800) || '').trim(),
