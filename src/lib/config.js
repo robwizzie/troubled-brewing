@@ -2,10 +2,13 @@
 export const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://troublebrewingcoffeehouse.com';
 export const GA4_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID || '';
 
-// The shop's hosted SpotOn Order page. v1 ordering is a deep link to this.
-// A section/content_block button_url can override per-instance; this is the default.
+// The shop's hosted SpotOn Order page — every "Order Now" deep-links here.
+// A section/content_block button_url can override per-instance, and the
+// VITE_SPOTON_ORDER_URL env/secret can override the default; the real store
+// URL is baked in so the button works even with no env configured.
 export const SPOTON_ORDER_URL =
-  import.meta.env.VITE_SPOTON_ORDER_URL || 'https://www.spoton.com/order/';
+  import.meta.env.VITE_SPOTON_ORDER_URL ||
+  'https://order.spoton.com/so-trouble-brewing-coffee-house-26471/haddon-heights-nj/BL-BBE4-95CF-80CD';
 
 export const CONSENT_KEY = 'tbch-consent-v1';
 
