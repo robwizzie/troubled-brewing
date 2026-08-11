@@ -364,50 +364,44 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   .ig2-mini__frame.gw-frame__art--oval-gilt,
   .ig2-mini__frame.gw-frame__art--oval-black { border-width: 6px; }
 
-  /* board tints: chalk (the menu board), blush (Local Love), sage (Community) */
-  .ig2-mini__frame--chalk {
-    --tint: #17140c;
+  /* the engraved brass nameplate riding inside the photo's bottom molding —
+     self-contained contrast, so it reads over any shot */
+  .ig2-mini__plate {
+    position: absolute;
+    bottom: .5rem;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    margin-inline: auto;
+    width: fit-content;
+    max-width: calc(100% - 1rem);
+    padding: .4em .8em .44em;
+    border: 1px solid #6f541c;
+    border-radius: 2px;
     background:
-      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .06), transparent 55%),
-      linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
-  }
-  .ig2-mini__frame--pink { --tint: #eed9ce; }
-  .ig2-mini__frame--sage { --tint: #d4dabe; }
-
-  .ig2-mini__sign {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: .4rem;
-    padding: .6rem .5rem;
-    max-width: 100%;
-    text-align: center;
-  }
-  .gw-frame__art--oval-gilt .ig2-mini__sign,
-  .gw-frame__art--oval-black .ig2-mini__sign { max-width: 76%; gap: .4rem; }
-
-  .ig2-mini__motif { display: block; color: #a8791f; }
-  .ig2-mini__frame--chalk .ig2-mini__motif { color: #d9c489; }
-  .ig2-mini__label {
+      radial-gradient(circle at 6px 50%, #8a6a1e 1.5px, rgba(138, 106, 30, 0) 2.4px),
+      radial-gradient(circle at calc(100% - 6px) 50%, #8a6a1e 1.5px, rgba(138, 106, 30, 0) 2.4px),
+      linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 240, 200, .65);
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: .7rem;
-    line-height: 1.15;
+    font-size: .66rem;
+    line-height: 1.12;
+    text-align: center;
     text-transform: uppercase;
-    letter-spacing: .1em;
-    color: #33301f;
-    text-wrap: balance;
+    letter-spacing: .09em;
+    color: #2f2306;
+    text-shadow: 0 1px 0 rgba(255, 238, 190, .55);
   }
-  .ig2-mini__frame--chalk .ig2-mini__label { color: #f2e5c4; }
-  .ig2-mini__label b { font-weight: 700; color: #a8791f; display: inline-block; transition: transform var(--dur) var(--ease); }
-  .ig2-mini__frame--chalk .ig2-mini__label b { color: #d9c489; }
+  .ig2-mini__plate b { font-weight: 700; display: inline-block; transition: transform var(--dur) var(--ease); }
+  .gw-frame__art--oval-gilt .ig2-mini__plate,
+  .gw-frame__art--oval-black .ig2-mini__plate { bottom: 11%; max-width: 70%; }
 
   .ig2-mini:hover .ig2-mini__frame,
-  .ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.05); }
+  .ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.06) saturate(1.04); }
   .ig2-mini:focus-visible .ig2-mini__frame { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 3px; }
-  .ig2-mini:hover .ig2-mini__label b,
-  .ig2-mini:focus-visible .ig2-mini__label b { transform: translateX(3px); }
+  .ig2-mini:hover .ig2-mini__plate b,
+  .ig2-mini:focus-visible .ig2-mini__plate b { transform: translateX(3px); }
 
   /* roomier screens hang three to a row */
   @media (min-width: 640px) {
@@ -478,5 +472,5 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
 
 @media (prefers-reduced-motion: reduce) {
   .ig2-frame, .ig2-board-overlay, .ig2-note, .ig2-frame__label b, .ig2-note__cta b,
-  .ig2-mini__hang, .ig2-mini__frame, .ig2-mini__label b { transition: none !important; }
+  .ig2-mini__hang, .ig2-mini__frame, .ig2-mini__plate b, .ig2-chip { transition: none !important; }
 }

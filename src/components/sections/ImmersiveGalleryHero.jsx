@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import HoursToday from '../HoursToday.jsx';
 import { asset } from '../../lib/config.js';
 import { track } from '../../lib/analytics.js';
-import {
-  CoffeeCup, FoxFace, Balloon, FramedScene, Heart, TopHat, Star, Bunting,
-  MapPin, OpenBook, Envelope,
-} from '../Motifs.jsx';
+import { TopHat, Star, Bunting, OpenBook, Envelope } from '../Motifs.jsx';
 
 /* "Immersive Gallery" landing concept — the unbranded café scene artwork is
    the canvas (public/images/wall/immersive-scene.jpg, 1536×1024), and every
@@ -30,20 +27,20 @@ const SCENE = 'images/wall/immersive-scene.jpg';
    each frame's molding — the label renders as a brass nameplate centered on
    the frame's bottom edge, so box centers/bottoms must be exact.
    `sign` is the destination's PHONE incarnation: the SIX headline pages hang
-   as framed signs (distinct moldings from the frameStyles.js vocabulary, a
-   tinted board, a line-drawn pictogram); the rest become small engraved brass
-   chips under the wall (`chip: true`) so the phone hero stays SHORT — one
-   wall, not an endless one. */
+   as framed PHOTOGRAPHS — the shop's real gallery-wall shots in distinct
+   vintage moldings with engraved brass nameplates; the rest become small
+   brass chips under the wall (`chip: true`) so the phone hero stays SHORT —
+   one wall, not an endless one. `pos` = the photo's object-position. */
 const FRAME_LINKS = [
-  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gilt-grand', ar: '4 / 2.9', tint: 'chalk', Motif: CoffeeCup } },
-  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'bronze-carved', ar: '4 / 2.8', Motif: FoxFace } },
-  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', ar: '1 / 1.02', Motif: Balloon } },
-  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-tapestry', ar: '4 / 3', Motif: FramedScene } },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'gold-botanical', ar: '4 / 2.9', tint: 'pink', Motif: Heart } },
+  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gilt-grand', ar: '4 / 3.6', photo: 'images/wall/order-menu.jpg', pos: '50% 42%' } },
+  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'bronze-carved', ar: '4 / 3.4', photo: 'images/wall/our-story.jpg', pos: '50% 58%' } },
+  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', ar: '1 / 1.14', photo: 'images/wall/whats-on.jpg', pos: '50% 42%' } },
+  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-tapestry', ar: '4 / 3.8', photo: 'images/wall/gallery-wall.jpg', pos: '50% 32%' } },
+  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'gold-botanical', ar: '4 / 3.4', photo: 'images/wall/local-love.jpg', pos: '50% 45%' } },
   { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, chip: true, sign: { Motif: TopHat } },
   { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, chip: true, sign: { Motif: Star } },
   { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, chip: true, sign: { Motif: Bunting } },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-flat', ar: '4 / 2.9', Motif: MapPin } },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-flat', ar: '4 / 3.5', photo: 'images/wall/our-story-so-far.jpg', pos: '50% 58%' } },
   { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, chip: true, sign: { Motif: OpenBook } },
   { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, chip: true, sign: { Motif: Envelope } },
 ];
@@ -265,7 +262,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
       <div className="ig2-mobile">
         <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
           {WALL_LINKS.map((f, i) => {
-            const { frame, ar, tint, Motif } = f.sign;
+            const { frame, ar, photo, pos } = f.sign;
             return (
               <Link
                 key={f.to}
@@ -277,13 +274,17 @@ export default function ImmersiveGalleryHero({ data = {} }) {
                 <span className="ig2-mini__hang">
                   <span className="ig2-mini__wire" aria-hidden="true" />
                   <span
-                    className={`gw-frame__art gw-frame__art--${frame} ig2-mini__frame${tint ? ` ig2-mini__frame--${tint}` : ''}`}
+                    className={`gw-frame__art gw-frame__art--${frame} ig2-mini__frame`}
                     style={{ '--ar': ar }}
                   >
-                    <span className="ig2-mini__sign">
-                      <Motif className="ig2-mini__motif" size={36} />
-                      <span className="ig2-mini__label">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
-                    </span>
+                    <img
+                      className="gw-frame__img"
+                      src={asset(photo)}
+                      alt=""
+                      loading="lazy"
+                      style={pos ? { objectPosition: pos } : undefined}
+                    />
+                    <span className="ig2-mini__plate">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
                   </span>
                 </span>
               </Link>
