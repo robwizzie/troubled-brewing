@@ -295,7 +295,7 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   .ig2-wall {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.05rem .95rem;
+    gap: .95rem .85rem;
     align-items: start;
     max-width: 30rem;
     margin: 0 auto;
@@ -379,8 +379,8 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: .45rem;
-    padding: .7rem .55rem;
+    gap: .4rem;
+    padding: .6rem .5rem;
     max-width: 100%;
     text-align: center;
   }
@@ -392,7 +392,7 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   .ig2-mini__label {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: .74rem;
+    font-size: .7rem;
     line-height: 1.15;
     text-transform: uppercase;
     letter-spacing: .1em;
@@ -416,26 +416,59 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
     .ig2-wall > .ig2-mini:nth-child(3n + 2) { margin-top: .85rem; }
   }
 
-  /* the gold fox with the chained glasses takes the last hook on the wall */
+  /* ---- the rest of the destinations: engraved brass plates under the hang,
+     the gold fox keeping watch above them ---- */
+  .ig2-more { margin-top: 1.6rem; text-align: center; }
   .ig2-mobile__fox {
     display: block;
-    width: 72px;
+    width: 58px;
     height: auto;
-    justify-self: center;
-    align-self: center;
-    margin-top: .85rem; /* hangs low like the even column */
+    margin: 0 auto .8rem;
     transform: rotate(-2deg);
-    filter: drop-shadow(0 .55rem .9rem rgba(0, 0, 0, .55));
+    filter: drop-shadow(0 .45rem .8rem rgba(0, 0, 0, .55));
   }
+  .ig2-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .55rem .5rem;
+    max-width: 24rem;
+    margin: 0 auto;
+  }
+  .ig2-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .38em;
+    padding: .42em .8em .44em;
+    border: 1px solid #6f541c;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #d3ad55, #a07a2a);
+    box-shadow: inset 0 1px 0 rgba(255, 240, 200, .55), inset 0 -1px 0 rgba(60, 40, 6, .5), 0 .25em .6em rgba(0, 0, 0, .4);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: .68rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: #241c06;
+    text-shadow: 0 1px 0 rgba(255, 240, 200, .35);
+    text-decoration: none;
+    transition: filter var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .ig2-chip__motif { color: #4b3a10; }
+  .ig2-chip:hover,
+  .ig2-chip:focus-visible { filter: brightness(1.1); }
+  .ig2-chip:active { transform: translateY(1px); }
+  .ig2-chip:focus-visible { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 2px; }
 
-  .ig2-mobile__boards { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.2rem; margin-top: 1.9rem; }
+  .ig2-mobile__boards { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.2rem; margin-top: 1.7rem; }
   /* the scene copies are hidden above; these are the mobile copies — they keep
      their prop styling, tilted like they were set down by hand */
   .ig2-mobile__boards .ig2-chalk,
   .ig2-mobile__boards .ig2-note { display: block; position: static; width: auto; max-width: 250px; font-size: .8rem; }
   .ig2-mobile__boards .ig2-chalk {
-    width: min(100%, 330px); max-width: 330px;
-    padding: 1.5rem 1.35rem 1.3rem; font-size: .9rem;
+    width: min(100%, 310px); max-width: 310px;
+    padding: 1.35rem 1.2rem 1.15rem; font-size: .84rem;
     transform: rotate(-.8deg);
   }
   .ig2-mobile__boards .ig2-note { transform: rotate(2.2deg); }
