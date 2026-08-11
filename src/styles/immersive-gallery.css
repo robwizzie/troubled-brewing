@@ -291,151 +291,156 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
       linear-gradient(168deg, #4c472c 0%, #3d3922 55%, #2c291a 100%);
   }
 
-  /* ---- the re-hung wall: a salon grid of little framed crops ---- */
+  /* ---- the snapshot wall: the shop's photos as taped-down prints — the
+     same visual language as the Instagram polaroid strip, so the whole
+     site's photography feels like one hand pinned it up ---- */
   .ig2-wall {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.05rem .95rem;
+    gap: 1.15rem .9rem;
     align-items: start;
     max-width: 30rem;
     margin: 0 auto;
+    padding-top: .4rem; /* room for the tape to overhang the first row */
   }
-  /* every other picture hangs a touch lower — hand-hung, not machine-set */
-  .ig2-wall > .ig2-mini:nth-child(even) { margin-top: .85rem; }
+  /* every other print sits a touch lower — pinned by hand, not machine-set */
+  .ig2-wall > .ig2-shot:nth-child(even) { margin-top: .9rem; }
 
-  .ig2-mini {
+  .ig2-shot {
     display: block;
     text-decoration: none;
-    transform: rotate(var(--tilt, 0deg));
     -webkit-tap-highlight-color: transparent;
     outline: none;
   }
-  .ig2-mini__hang { display: block; transition: transform var(--dur) var(--ease); }
-  .ig2-mini:active .ig2-mini__hang { transform: translateY(2px) scale(.985); }
+  .ig2-shot__hang { display: block; transition: transform var(--dur) var(--ease); }
+  .ig2-shot:active .ig2-shot__hang { transform: translateY(2px) scale(.985); }
 
-  /* nail + hanging wire (Λ) above each frame */
-  .ig2-mini__wire {
-    position: relative;
+  /* the REAL painted frames, cropped from the scene artwork — the photo sits
+     in each molding's opening, so the phone wall is hung with the very same
+     frames desktop visitors see */
+  .ig2-fr {
     display: block;
-    width: 54%;
-    height: .95rem;
-    margin: 0 auto;
-    background:
-      linear-gradient(to bottom left, transparent calc(50% - .7px), rgba(214, 186, 120, .5) calc(50% - .7px) calc(50% + .7px), transparent calc(50% + .7px)) left / 50.5% 100% no-repeat,
-      linear-gradient(to bottom right, transparent calc(50% - .7px), rgba(214, 186, 120, .5) calc(50% - .7px) calc(50% + .7px), transparent calc(50% + .7px)) right / 50.5% 100% no-repeat;
+    position: relative;
+    aspect-ratio: var(--par, 4 / 3);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 3px;
+    transform: rotate(var(--r, 0deg));
   }
-  .ig2-mini__wire::before {
-    content: '';
+  .ig2-fr--oval { border-radius: 50%; }
+  /* the hang's drop-shadow seats rectangles and the oval alike on the wall */
+  .ig2-shot__hang { filter: drop-shadow(0 .5rem .85rem rgba(0, 0, 0, .5)); }
+
+  /* the photo spans the whole crop and is clipped to the frame's painted
+     opening (per-tile clip-path traces it, perspective and all) */
+  .ig2-fr__photo {
     position: absolute;
-    top: -.18rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: .46rem;
-    height: .46rem;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #f2dda4, #b8923e 55%, #77571c);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .55);
-  }
-
-  /* each sign hangs in a REAL vintage molding (the shared gw-frame__art
-     recipes — all 11, no two alike). The tinted board + gold pictogram +
-     painted lettering live inside; the hang's drop-shadow seats rectangles
-     and ovals alike on the wall. */
-  .ig2-mini__hang { filter: drop-shadow(0 .55rem .8rem rgba(0, 0, 0, .5)); }
-
-  .ig2-mini__frame {
-    --ar: 4 / 3.2;
-    --tint: #f2e7cd; /* warm scene paper, not bright site paper */
+    inset: 0;
     width: 100%;
-    /* faint top-light aging so the boards read as old card, not fresh print */
-    background-image: radial-gradient(130% 105% at 50% -5%, rgba(126, 96, 34, .08), transparent 62%);
-    transition: filter var(--dur) var(--ease);
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    background: #e7e0cd;
   }
-  /* frame moldings sized for ~10rem tiles (mirrors .gw-wall's small screens) */
-  .ig2-mini__frame.gw-frame__art { border-width: 5px; }
-  .ig2-mini__frame.gw-frame__art--gilt-grand,
-  .ig2-mini__frame.gw-frame__art--gold-tapestry { border-width: 9px; }
-  .ig2-mini__frame.gw-frame__art--bronze-carved,
-  .ig2-mini__frame.gw-frame__art--black-flat { border-width: 7px; }
-  .ig2-mini__frame.gw-frame__art--gilt-thin { border-width: 4px; }
-  .ig2-mini__frame.gw-frame__art--brass-chain { border-width: 3px; }
-  .ig2-mini__frame.gw-frame__art--black-mat { padding: clamp(8px, 8%, 14px); }
-  .ig2-mini__frame.gw-frame__art--black-stacked { padding: clamp(6px, 6%, 12px); }
-  .ig2-mini__frame.gw-frame__art--oval-gilt,
-  .ig2-mini__frame.gw-frame__art--oval-black { border-width: 6px; }
 
-  /* board tints: chalk (the menu board), blush (Local Love), sage (Community) */
-  .ig2-mini__frame--chalk {
-    --tint: #17140c;
+  /* the engraved brass nameplate riding the bottom molding, like the scene */
+  .ig2-fr__plate {
+    position: absolute;
+    bottom: 1.5%;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    margin-inline: auto;
+    width: fit-content;
+    max-width: calc(100% - 1rem);
+    padding: .4em .8em .44em;
+    border: 1px solid #6f541c;
+    border-radius: 2px;
     background:
-      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .06), transparent 55%),
-      linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
-  }
-  .ig2-mini__frame--pink { --tint: #eed9ce; }
-  .ig2-mini__frame--sage { --tint: #d4dabe; }
-
-  .ig2-mini__sign {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: .45rem;
-    padding: .7rem .55rem;
-    max-width: 100%;
-    text-align: center;
-  }
-  .gw-frame__art--oval-gilt .ig2-mini__sign,
-  .gw-frame__art--oval-black .ig2-mini__sign { max-width: 76%; gap: .4rem; }
-
-  .ig2-mini__motif { display: block; color: #a8791f; }
-  .ig2-mini__frame--chalk .ig2-mini__motif { color: #d9c489; }
-  .ig2-mini__label {
+      radial-gradient(circle at 6px 50%, #8a6a1e 1.5px, rgba(138, 106, 30, 0) 2.4px),
+      radial-gradient(circle at calc(100% - 6px) 50%, #8a6a1e 1.5px, rgba(138, 106, 30, 0) 2.4px),
+      linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 240, 200, .65);
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: .74rem;
-    line-height: 1.15;
+    font-size: .68rem;
+    line-height: 1.12;
+    text-align: center;
     text-transform: uppercase;
-    letter-spacing: .1em;
-    color: #33301f;
-    text-wrap: balance;
+    letter-spacing: .09em;
+    color: #2f2306;
+    text-shadow: 0 1px 0 rgba(255, 238, 190, .55);
   }
-  .ig2-mini__frame--chalk .ig2-mini__label { color: #f2e5c4; }
-  .ig2-mini__label b { font-weight: 700; color: #a8791f; display: inline-block; transition: transform var(--dur) var(--ease); }
-  .ig2-mini__frame--chalk .ig2-mini__label b { color: #d9c489; }
+  .ig2-fr__plate b { font-weight: 700; display: inline-block; transition: transform var(--dur) var(--ease); }
+  .ig2-fr--oval .ig2-fr__plate { bottom: 8%; max-width: 68%; }
 
-  .ig2-mini:hover .ig2-mini__frame,
-  .ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.05); }
-  .ig2-mini:focus-visible .ig2-mini__frame { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 3px; }
-  .ig2-mini:hover .ig2-mini__label b,
-  .ig2-mini:focus-visible .ig2-mini__label b { transform: translateX(3px); }
+  .ig2-fr { transition: filter var(--dur) var(--ease); }
+  .ig2-shot:hover .ig2-fr,
+  .ig2-shot:focus-visible .ig2-fr { filter: brightness(1.06) saturate(1.04); }
+  .ig2-shot:focus-visible .ig2-fr { outline: 2px solid rgba(233, 195, 94, .9); outline-offset: 3px; }
+  .ig2-shot:hover .ig2-fr__plate b,
+  .ig2-shot:focus-visible .ig2-fr__plate b { transform: translateX(3px); }
 
   /* roomier screens hang three to a row */
   @media (min-width: 640px) {
     .ig2-wall { grid-template-columns: repeat(3, 1fr); max-width: 40rem; }
-    .ig2-wall > .ig2-mini:nth-child(even) { margin-top: 0; }
-    .ig2-wall > .ig2-mini:nth-child(3n + 2) { margin-top: .85rem; }
+    .ig2-wall > .ig2-shot:nth-child(even) { margin-top: 0; }
+    .ig2-wall > .ig2-shot:nth-child(3n + 2) { margin-top: .85rem; }
   }
 
-  /* the gold fox with the chained glasses takes the last hook on the wall */
+  /* ---- the rest of the destinations: engraved brass plates under the hang,
+     the gold fox keeping watch above them ---- */
+  .ig2-more { margin-top: 1.6rem; text-align: center; }
   .ig2-mobile__fox {
     display: block;
-    width: 72px;
+    width: 58px;
     height: auto;
-    justify-self: center;
-    align-self: center;
-    margin-top: .85rem; /* hangs low like the even column */
+    margin: 0 auto .8rem;
     transform: rotate(-2deg);
-    filter: drop-shadow(0 .55rem .9rem rgba(0, 0, 0, .55));
+    filter: drop-shadow(0 .45rem .8rem rgba(0, 0, 0, .55));
   }
+  .ig2-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .55rem .5rem;
+    max-width: 24rem;
+    margin: 0 auto;
+  }
+  .ig2-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .38em;
+    padding: .42em .8em .44em;
+    border: 1px solid #6f541c;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #d3ad55, #a07a2a);
+    box-shadow: inset 0 1px 0 rgba(255, 240, 200, .55), inset 0 -1px 0 rgba(60, 40, 6, .5), 0 .25em .6em rgba(0, 0, 0, .4);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: .68rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: #241c06;
+    text-shadow: 0 1px 0 rgba(255, 240, 200, .35);
+    text-decoration: none;
+    transition: filter var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .ig2-chip__motif { color: #4b3a10; }
+  .ig2-chip:hover,
+  .ig2-chip:focus-visible { filter: brightness(1.1); }
+  .ig2-chip:active { transform: translateY(1px); }
+  .ig2-chip:focus-visible { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 2px; }
 
-  .ig2-mobile__boards { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.2rem; margin-top: 1.9rem; }
+  .ig2-mobile__boards { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.2rem; margin-top: 1.7rem; }
   /* the scene copies are hidden above; these are the mobile copies — they keep
      their prop styling, tilted like they were set down by hand */
   .ig2-mobile__boards .ig2-chalk,
   .ig2-mobile__boards .ig2-note { display: block; position: static; width: auto; max-width: 250px; font-size: .8rem; }
   .ig2-mobile__boards .ig2-chalk {
-    width: min(100%, 330px); max-width: 330px;
-    padding: 1.5rem 1.35rem 1.3rem; font-size: .9rem;
+    width: min(100%, 310px); max-width: 310px;
+    padding: 1.35rem 1.2rem 1.15rem; font-size: .84rem;
     transform: rotate(-.8deg);
   }
   .ig2-mobile__boards .ig2-note { transform: rotate(2.2deg); }
@@ -445,5 +450,5 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
 
 @media (prefers-reduced-motion: reduce) {
   .ig2-frame, .ig2-board-overlay, .ig2-note, .ig2-frame__label b, .ig2-note__cta b,
-  .ig2-mini__hang, .ig2-mini__frame, .ig2-mini__label b { transition: none !important; }
+  .ig2-shot__hang, .ig2-fr, .ig2-fr__plate b, .ig2-chip { transition: none !important; }
 }

@@ -221,6 +221,8 @@
   background: radial-gradient(120% 120% at 50% 0%, var(--color-yellow-soft), var(--color-sage-soft));
 }
 .sigdrink__body { padding: var(--space-3) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
+/* hidden except on phone cards that dropped their empty frame */
+.sigdrink__name { display: none; align-self: center; font-size: 0.8rem; margin-bottom: var(--space-2); }
 .sigdrink__desc { color: var(--color-text-soft); font-size: var(--text-sm); margin: 0; flex: 1; }
 .sigdrink__price { font-family: var(--font-display); font-weight: 700; color: var(--color-wood); margin: var(--space-2) 0 0; }
 .sigdrink--loading { min-height: 220px; background: var(--color-sage-soft); }
@@ -229,8 +231,14 @@
   /* stacked full-width cards — the old thumbnail-row squeezed the framed art
      to 112px and shattered the brass nameplates one word per line */
   .sigdrinks { grid-template-columns: 1fr; gap: var(--space-4); }
+  /* phones: compact centered cards, not full-bleed frames */
+  .sigdrink { width: min(100%, 310px); margin-inline: auto; }
   .sigdrink__frame { --ar: 16 / 9; margin: var(--space-3) var(--space-3) 0; }
   .sigdrink__body { padding: var(--space-3) var(--space-4) var(--space-4); }
+  /* no real photo? drop the empty frame — the nameplate moves into the body */
+  .sigdrink--nophoto .sigdrink__frame { display: none; }
+  .sigdrink--nophoto .sigdrink__name { display: inline-block; }
+  .sigdrink--nophoto .sigdrink__body { padding-top: var(--space-4); }
 }
 
 /* ---- Featured drink ------------------------------------------------------- */
@@ -255,7 +263,13 @@
 .featured__body h2 { margin: 0; }
 .featured__desc { color: var(--color-text-soft); font-size: var(--text-lg); line-height: 1.5; margin: 0; max-width: 42ch; }
 .featured__price { font-family: var(--font-display); font-weight: 900; font-size: var(--text-2xl); color: var(--color-yellow-deep); margin: var(--space-1) 0 0; }
-@media (max-width: 720px) { .featured { grid-template-columns: 1fr; } .featured__media { min-height: 220px; } }
+@media (max-width: 720px) {
+  .featured { grid-template-columns: 1fr; }
+  /* phones: the specimen oval shrinks to an accent, not a full screen */
+  .featured__media { min-height: 0; padding: var(--space-4); }
+  .featured__frame { width: min(210px, 70%); }
+  .featured__body { padding: var(--space-5); }
+}
 
 /* ---- Instagram polaroid strip ---------------------------------------------
    Real shop photos as taped-down snapshots — every one links to the profile.

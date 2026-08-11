@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import HoursToday from '../HoursToday.jsx';
 import { asset } from '../../lib/config.js';
 import { track } from '../../lib/analytics.js';
-import {
-  CoffeeCup, FoxFace, Balloon, FramedScene, Heart, TopHat, Star, Bunting,
-  MapPin, OpenBook, Envelope,
-} from '../Motifs.jsx';
+import { TopHat, Star, Bunting, OpenBook, Envelope } from '../Motifs.jsx';
 
 /* "Immersive Gallery" landing concept — the unbranded café scene artwork is
    the canvas (public/images/wall/immersive-scene.jpg, 1536×1024), and every
@@ -29,22 +26,30 @@ const SCENE = 'images/wall/immersive-scene.jpg';
    navbar (primary + More) hangs somewhere on the wall. Boxes are tuned to hug
    each frame's molding — the label renders as a brass nameplate centered on
    the frame's bottom edge, so box centers/bottoms must be exact.
-   `sign` is the destination's PHONE incarnation: which vintage molding it
-   hangs in (frameStyles.js vocabulary — all 11 recipes used once, no two
-   alike), the sign board's shape + tint, and its line-drawn pictogram. */
+   `sign` is the destination's PHONE incarnation: the SIX headline pages hang
+   as photos set inside REAL frames from the shop's actual gallery wall —
+   cropped straight out of the gallery-wall.jpg photograph
+   (public/images/wall/frames/real-*.jpg) — each with an engraved brass
+   nameplate; the rest become small brass chips under the wall (`chip: true`).
+   `frame` = the crop, `par` = its true aspect, `clip` = the photo's clip-path
+   tracing that frame's painted opening (matching the photo's perspective),
+   `pos` = object-position. */
 const FRAME_LINKS = [
-  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gilt-grand', ar: '4 / 3', tint: 'chalk', Motif: CoffeeCup } },
-  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'bronze-carved', ar: '4 / 2.9', Motif: FoxFace } },
-  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', ar: '1 / 1.08', Motif: Balloon } },
-  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-tapestry', ar: '4 / 3.7', Motif: FramedScene } },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'gold-botanical', ar: '4 / 3.1', tint: 'pink', Motif: Heart } },
-  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, sign: { frame: 'black-stacked', ar: '4 / 3.2', Motif: TopHat } },
-  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, sign: { frame: 'gilt-thin', ar: '4 / 2.8', Motif: Star } },
-  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, sign: { frame: 'brass-chain', ar: '4 / 3.1', tint: 'sage', Motif: Bunting } },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-flat', ar: '4 / 3.3', Motif: MapPin } },
-  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, sign: { frame: 'black-mat', ar: '4 / 3.6', Motif: OpenBook } },
-  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, sign: { frame: 'oval-black', ar: '1 / 1.1', Motif: Envelope } },
+  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'real-duck', par: '310 / 234', clip: 'polygon(8.8% 7.5%, 90.2% 25.5%, 90.5% 90.5%, 6.2% 82%)', photo: 'images/wall/order-menu.jpg', pos: '50% 42%' } },
+  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'real-crab', par: '221 / 197', clip: 'polygon(15.8% 13.8%, 84.2% 18.3%, 83.9% 78.9%, 12.9% 82.2%)', photo: 'images/wall/our-story.jpg', pos: '50% 58%' } },
+  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'real-oval-gold', par: '136 / 190', clip: 'ellipse(36% 41.5% at 52.5% 48.5%)', oval: true, photo: 'images/wall/whats-on.jpg', pos: '50% 42%' } },
+  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'real-courthouse', par: '164 / 234', clip: 'polygon(13.4% 6.8%, 89.3% 9%, 88.4% 89.6%, 12.4% 90.4%)', photo: 'images/wall/gallery-wall.jpg', pos: '50% 32%' } },
+  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'real-press', par: '149 / 162', clip: 'polygon(22.8% 12.2%, 78.6% 10.8%, 80% 69.8%, 20.8% 72.3%)', photo: 'images/wall/local-love.jpg', pos: '42% 45%' } },
+  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, chip: true, sign: { Motif: TopHat } },
+  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, chip: true, sign: { Motif: Star } },
+  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, chip: true, sign: { Motif: Bunting } },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'real-oval-black', par: '93 / 148', clip: 'ellipse(36.5% 36% at 50.8% 41%)', oval: true, photo: 'images/wall/our-story-so-far.jpg', pos: '42% 55%' } },
+  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, chip: true, sign: { Motif: OpenBook } },
+  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, chip: true, sign: { Motif: Envelope } },
 ];
+const WALL_LINKS = FRAME_LINKS.filter((f) => !f.chip);
+const CHIP_LINKS = FRAME_LINKS.filter((f) => f.chip);
+
 
 const box = ({ x, y, w, h }) => ({ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` });
 
@@ -139,17 +144,21 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             stagger: { each: 0.05, from: 'random' },
             clearProps: 'transform,opacity,visibility',
           }, '-=0.25')
-          // phone wall: the mini frames drop onto their nails one after the
+          // phone wall: the snapshots settle onto the wall one after the
           // other, then the fox takes its perch (display:none no-ops ≥1020px)
-          .from('.ig2-mini__hang', {
-            autoAlpha: 0, y: 20, scale: 0.9, transformOrigin: '50% 0%',
-            duration: 0.5, ease: 'back.out(1.6)',
+          .from('.ig2-shot__hang', {
+            autoAlpha: 0, y: 20, scale: 0.94, transformOrigin: '50% 20%',
+            duration: 0.5, ease: 'back.out(1.5)',
             stagger: { each: 0.055, from: 'start' },
             clearProps: 'transform,opacity,visibility',
           }, '-=0.35')
           .from('.ig2-mobile__fox', {
             autoAlpha: 0, y: 14, rotation: -8, transformOrigin: '50% 100%',
             duration: 0.5, ease: 'back.out(2)',
+            clearProps: 'transform,opacity,visibility',
+          }, '-=0.3')
+          .from('.ig2-chip', {
+            autoAlpha: 0, y: 8, duration: 0.35, stagger: 0.05,
             clearProps: 'transform,opacity,visibility',
           }, '-=0.3')
           .from('.ig2-chalk, .ig2-note, .ig2-know', {
@@ -256,32 +265,39 @@ export default function ImmersiveGalleryHero({ data = {} }) {
               painted lettering — on a nail + wire. All vector, all crisp ---- */}
       <div className="ig2-mobile">
         <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
-          {FRAME_LINKS.map((f, i) => {
-            const { frame, ar, tint, Motif } = f.sign;
+          {WALL_LINKS.map((f, i) => {
+            const { frame, par, clip, oval, photo, pos } = f.sign;
             return (
               <Link
                 key={f.to}
-                className="ig2-mini"
+                className="ig2-shot"
                 to={f.to}
-                style={{ '--tilt': `${MINI_TILTS[i % MINI_TILTS.length]}deg` }}
+                style={{ '--r': `${MINI_TILTS[i % MINI_TILTS.length]}deg` }}
               >
                 {/* inner hanger so the entrance tween never fights the tilt */}
-                <span className="ig2-mini__hang">
-                  <span className="ig2-mini__wire" aria-hidden="true" />
+                <span className="ig2-shot__hang">
                   <span
-                    className={`gw-frame__art gw-frame__art--${frame} ig2-mini__frame${tint ? ` ig2-mini__frame--${tint}` : ''}`}
-                    style={{ '--ar': ar }}
+                    className={`ig2-fr${oval ? ' ig2-fr--oval' : ''}`}
+                    style={{ '--par': par, backgroundImage: `url(${asset(`images/wall/frames/${frame}.jpg`)})` }}
                   >
-                    <span className="ig2-mini__sign">
-                      <Motif className="ig2-mini__motif" size={42} />
-                      <span className="ig2-mini__label">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
-                    </span>
+                    <img
+                      className="ig2-fr__photo"
+                      src={asset(photo)}
+                      alt=""
+                      loading="lazy"
+                      style={{ clipPath: clip, ...(pos ? { objectPosition: pos } : {}) }}
+                    />
+                    <span className="ig2-fr__plate">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
                   </span>
                 </span>
               </Link>
             );
           })}
-          {/* the shop's gold fox takes the twelfth hook and keeps watch */}
+        </nav>
+
+        {/* everything else hangs as small engraved brass plates, the gold fox
+            keeping watch above them */}
+        <div className="ig2-more">
           <img
             className="ig2-mobile__fox"
             src={asset('images/brand/fox-head.webp')}
@@ -291,7 +307,18 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             width="82"
             height="120"
           />
-        </nav>
+          <nav className="ig2-chips" aria-label="More at Trouble Brewing">
+            {CHIP_LINKS.map((f) => {
+              const { Motif } = f.sign;
+              return (
+                <Link key={f.to} className="ig2-chip" to={f.to}>
+                  <Motif className="ig2-chip__motif" size={17} />
+                  {f.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
 
         <div className="ig2-mobile__boards">
           {chalk}

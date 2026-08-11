@@ -22,10 +22,14 @@ const MOTIFS = [
 
 const slugify = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-function DrinkArt({ drink, index }) {
+function DrinkArt({ drink, index, onMissing }) {
   const [srcIdx, setSrcIdx] = useState(0);
   const sources = [drink.image_url, asset(`images/drinks/${slugify(drink.name)}.jpg`)].filter(Boolean);
   const src = sources[srcIdx];
+  // let the card know no real photo resolved, so phones can drop the frame
+  useEffect(() => {
+    if (!src) onMissing?.();
+  }, [src, onMissing]);
   if (!src) {
     const Motif = MOTIFS[index % MOTIFS.length];
     return <Motif size={54} color="var(--color-yellow-deep)" />;
@@ -36,6 +40,8 @@ function DrinkArt({ drink, index }) {
 export default function SignatureDrinks({ data = {} }) {
   const { heading = 'Signature sips', items, button_label = 'See the full menu' } = data;
   const [drinks, setDrinks] = useState(null);
+  // ids whose art fell back to a motif — phones render those as compact cards
+  const [noPhoto, setNoPhoto] = useState({});
   const version = useDataVersion('menu_items');
 
   useEffect(() => {
@@ -65,15 +71,17 @@ export default function SignatureDrinks({ data = {} }) {
         <h2 className="section-heading">{heading}</h2>
         <div className="sigdrinks">
           {(drinks || Array.from({ length: 3 })).map((d, i) => (
-            <article key={d?.id || i} className={`sigdrink ${d ? '' : 'sigdrink--loading'}`}>
+            <article key={d?.id || i} className={`sigdrink ${d ? '' : 'sigdrink--loading'}${d && noPhoto[d.id] ? ' sigdrink--nophoto' : ''}`}>
               {d && (
                 <span className={`gw-frame__art gw-frame__art--${FRAME_STYLES[i % FRAME_STYLES.length]} sigdrink__frame`} style={{ '--ar': '16 / 10', '--tint': 'var(--color-paper)' }}>
-                  <DrinkArt drink={d} index={i} />
+                  <DrinkArt drink={d} index={i} onMissing={() => setNoPhoto((m) => (m[d.id] ? m : { ...m, [d.id]: true }))} />
                   <h3 className="brass-plate brass-plate--pin">{d.name}</h3>
                 </span>
               )}
               {d && (
                 <div className="sigdrink__body">
+                  {/* stands in for the framed nameplate when phones drop the empty frame */}
+                  <h3 className="brass-plate sigdrink__name">{d.name}</h3>
                   <p className="sigdrink__desc">{d.description}</p>
                   {d.price != null && <p className="sigdrink__price">${Number(d.price).toFixed(2)}</p>}
                 </div>
