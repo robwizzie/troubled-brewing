@@ -150,6 +150,7 @@ p { margin: 0 0 var(--space-4); }
 .hero--image > * { position: relative; z-index: 1; }
 .hero--image h1 { color: #fff; }
 .hero__flourish { display: block; margin: var(--space-2) auto var(--space-3); }
+.hero__cta { margin-top: var(--space-5); }
 /* faint coffee cues tucked in the hero corners — a quiet "this is a coffee shop" */
 .hero { overflow: hidden; }
 .hero .container { position: relative; z-index: 1; }
@@ -229,8 +230,15 @@ p { margin: 0 0 var(--space-4); }
   /* full-width CTAs are the phone convention and give a real thumb target */
   .btn--lg { font-size: var(--text-base); padding: var(--space-3) var(--space-5); }
   .card__body { padding: var(--space-4); }
-  .hero { padding-block: var(--space-8); }
-  .hero p.hero__sub { font-size: var(--text-base); }
+  /* Every interior page opens with this band, and it was spending ~290px on a
+     title and one line of subtitle before a phone saw any content. Same band,
+     sized for the screen: tighter padding, a smaller flourish, less air around
+     the rule. */
+  .hero { padding-block: var(--space-5); }
+  .hero h1 { margin-bottom: var(--space-2); }
+  .hero__flourish { width: 150px; margin-block: var(--space-1) var(--space-2); }
+  .hero p.hero__sub { font-size: var(--text-base); margin-bottom: 0; }
+  .hero__cta { margin-top: var(--space-3); margin-bottom: 0; }
   /* toasts sit above the thumb rail, not under it */
   .toast-wrap { left: var(--space-4); right: var(--space-4); bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px)); }
 }

@@ -18,7 +18,9 @@ export default function GoogleProfileSettings() {
     setPlaceId(data?.place_id || '');
     setMapsUrl(data?.maps_url || '');
   }
-  useEffect(() => { load().catch(() => toast('Could not load profile', 'error')); /* eslint-disable-next-line */ }, []);
+  // load-once on mount: `load` and `toast` are new identities every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load().catch(() => toast('Could not load profile', 'error')); }, []);
 
   async function saveSettings() {
     try {

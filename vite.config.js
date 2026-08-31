@@ -11,6 +11,15 @@ const base = process.env.VITE_BASE_PATH || '/troubled-brewing/';
 export default defineConfig({
   plugins: [react()],
   base,
+  // Route smoke tests (`npm test`). jsdom + a stubbed matchMedia/IntersectionObserver
+  // (test/setup.js) is enough to prove every public route renders off the seed
+  // fallbacks, which is the failure mode that actually bites this data layer.
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./test/setup.js'],
+    include: ['test/**/*.test.{js,jsx}'],
+    restoreMocks: true,
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
