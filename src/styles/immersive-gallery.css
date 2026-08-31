@@ -4,7 +4,7 @@
    lettering scales as part of the artwork. Under 1020px the wall re-hangs
    itself: the scene turns into a backdrop banner, the counter (hours board +
    taped note) comes down underneath it, and every frame link becomes a real
-   framed PHOTOGRAPH from public/images/wall/ hung on a nail and wire in two
+   framed PHOTOGRAPH from public/images/wall/ hung in two
    masonry columns — the same moldings and brass nameplates as the desktop
    wall. Palette sampled from the artwork: olive wall, gold light, chalk
    #16140c, paper #ece0c4.
@@ -255,7 +255,7 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
    things a thumb actually came for are above the fold. Below that the WALL
    CONTINUES on the same olive paint: two masonry columns of REAL framed
    photographs from the shop, each in its own vintage molding from the shared
-   `.gw-frame__art--*` vocabulary, on a nail and wire, knocked a degree off
+   `.gw-frame__art--*` vocabulary, knocked a degree off
    true, labelled with the same engraved brass nameplate the desktop wall
    uses. Same wall, re-hung for a phone — not a list of buttons.
    ========================================================================= */
@@ -327,8 +327,11 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 2.1rem;
+    /* the note's tape overhangs its own top edge, so a 1rem gap left the two
+       props touching — they need to read as a board and a note set down near
+       it, not one object */
+    gap: 2.2rem 1.6rem;
+    margin-bottom: 2.4rem;
   }
   /* the scene copies are hidden above; these are the phone copies — same prop
      styling, tilted like they were set down by hand */
@@ -358,15 +361,16 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   .ig2-mini {
     display: block;
     break-inside: avoid;
-    margin-bottom: 1.15rem;
+    /* the pieces carry their own air now that the hanging wire is gone */
+    margin-bottom: 1.45rem;
     text-decoration: none;
     transform: rotate(var(--tilt, 0deg));
     -webkit-tap-highlight-color: transparent;
     outline: none;
   }
   /* uneven drops between pieces — a hang measured by eye, not by ruler */
-  .ig2-mini:nth-child(3n) { margin-bottom: 1.65rem; }
-  .ig2-mini:nth-child(4n) { margin-bottom: 0.85rem; }
+  .ig2-mini:nth-child(3n) { margin-bottom: 1.95rem; }
+  .ig2-mini:nth-child(4n) { margin-bottom: 1.1rem; }
   .ig2-mini__hang {
     display: block;
     transition: transform var(--dur) var(--ease);
@@ -374,30 +378,6 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
     filter: drop-shadow(0 .5rem .85rem rgba(0, 0, 0, .48));
   }
   .ig2-mini:active .ig2-mini__hang { transform: translateY(2px) scale(.985); }
-
-  /* nail + hanging wire (Λ) above each frame */
-  .ig2-mini__wire {
-    position: relative;
-    display: block;
-    width: 52%;
-    height: .72rem;
-    margin: 0 auto;
-    background:
-      linear-gradient(to bottom left, transparent calc(50% - .7px), rgba(214, 186, 120, .5) calc(50% - .7px) calc(50% + .7px), transparent calc(50% + .7px)) left / 50.5% 100% no-repeat,
-      linear-gradient(to bottom right, transparent calc(50% - .7px), rgba(214, 186, 120, .5) calc(50% - .7px) calc(50% + .7px), transparent calc(50% + .7px)) right / 50.5% 100% no-repeat;
-  }
-  .ig2-mini__wire::before {
-    content: '';
-    position: absolute;
-    top: -.18rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: .44rem;
-    height: .44rem;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #f2dda4, #b8923e 55%, #77571c);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .55);
-  }
 
   /* ---- the framed picture: the shared molding recipes, scaled for a
           ~9rem tile so the ornament still reads at thumb size ---- */
@@ -432,7 +412,6 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   }
   .ig2-mini__frame.gw-frame__art--oval-gilt .gw-frame__plaque,
   .ig2-mini__frame.gw-frame__art--oval-black .gw-frame__plaque { bottom: 7%; max-width: 78%; padding: 3px 7px; }
-  .ig2-mini__frame .gw-frame__plaque::after { font-size: .72em; }
 
   /* ---- the one drawn piece (a destination with no photograph yet): a
           painted board with its gold line drawing — a real small wall piece,
@@ -473,7 +452,7 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
      masonry redistributes and rebalances itself, no re-splitting needed */
   @media (min-width: 640px) {
     .ig2-wall { columns: 3; column-gap: 1.4rem; max-width: 46rem; }
-    .ig2-mini { margin-bottom: 1.4rem; }
+    .ig2-mini { margin-bottom: 1.7rem; }
     .ig2-mini__frame .gw-frame__plaque { font-size: .74rem; padding: 3px 12px; }
   }
 

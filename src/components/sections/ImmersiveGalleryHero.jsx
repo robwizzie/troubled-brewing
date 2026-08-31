@@ -21,7 +21,8 @@ import {
    plaques, but as a real salon hang: the scene becomes a banner and every
    destination becomes an actual FRAMED PHOTOGRAPH from the shop
    (public/images/wall/*.jpg — the same photographs the Gallery Wall concept
-   hangs) in its own vintage molding, on a nail and wire, tilted by hand, with
+   hangs) in its own vintage molding, hung flush on the paint and tilted by
+   hand, with
    the SAME engraved brass nameplate the desktop wall uses. Two masonry
    columns let tall portraits and wide landscapes nest the way a collected
    wall really does. The gold fox and the brass hare keep watch among them.
@@ -96,7 +97,7 @@ function KnowForm({ idSuffix, action }) {
 }
 
 /* One piece on the phone wall: a real photograph in a real vintage molding,
-   hung from a nail and wire and knocked a degree off true. The molding, the
+   hung flush on the paint and knocked a degree off true. The molding, the
    engraved brass nameplate and the hover sweep are the SHARED `.gw-frame__*`
    recipes — the same ones the desktop Gallery Wall hangs — so the phone wall
    is the same wall, not a phone-shaped imitation of it. If a photograph is
@@ -116,7 +117,6 @@ function WallPiece({ link, index }) {
     >
       {/* inner hanger so the entrance tween never fights the resting tilt */}
       <span className="ig2-mini__hang">
-        <span className="ig2-mini__wire" aria-hidden="true" />
         <span
           className={`gw-frame__art ig2-mini__frame gw-frame__art--${frame}${
             tint ? ` ig2-mini__frame--${tint}` : ''
@@ -217,7 +217,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             autoAlpha: 0, y: 18, duration: 0.55, ease: 'back.out(1.4)', stagger: 0.12,
             clearProps: 'transform,opacity,visibility',
           }, '-=0.3')
-          // phone wall: the pictures drop onto their nails one after the other,
+          // phone wall: the pictures settle onto the paint one after the other,
           // then the gold sculptures take their hooks (no-ops ≥1020px, where
           // the whole .ig2-mobile block is display:none)
           .from('.ig2-mini__hang', {
@@ -332,7 +332,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
 
       {/* ---- under 1020px the wall re-hangs itself as a real salon hang:
               every destination is an actual PHOTOGRAPH from the shop in its
-              own vintage molding, on a nail + wire, with the same engraved
+              own vintage molding, with the same engraved
               brass nameplate the desktop wall uses ---- */}
       <div className="ig2-mobile">
         {/* the counter, brought down off the scene: today's hours and the
