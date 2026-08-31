@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef } from 'react';
+import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import HoursToday from '../HoursToday.jsx';
+import OrderButton from '../OrderButton.jsx';
 import { asset } from '../../lib/config.js';
 import { track } from '../../lib/analytics.js';
 import {
@@ -15,13 +16,16 @@ import {
    the navbar), a chalkboard with the real live hours, the taped specials
    note, and the Stay-in-the-Know signup. Overlay geometry is % of the scene
    and type is sized in cqw, so everything scales as one piece of art.
-   Under 1020px the wall RE-HANGS ITSELF for phones: the scene becomes a
-   backdrop banner, and every destination becomes a little FRAMED SIGN hung
-   from a nail and wire — a distinct vintage molding (the Gallery Wall frame
-   vocabulary, no two alike), a tinted sign board, a gold line-drawn
-   pictogram, and painted lettering. All vector + CSS, so the phone wall is
-   pin-sharp and shares one material language with the chalkboard, the taped
-   note, and the gold fox. No HTML top bar: the site nav is the navbar. */
+
+   Under 1020px the wall RE-HANGS ITSELF for phones — not as a menu of
+   plaques, but as a real salon hang: the scene becomes a banner and every
+   destination becomes an actual FRAMED PHOTOGRAPH from the shop
+   (public/images/wall/*.jpg — the same photographs the Gallery Wall concept
+   hangs) in its own vintage molding, on a nail and wire, tilted by hand, with
+   the SAME engraved brass nameplate the desktop wall uses. Two masonry
+   columns let tall portraits and wide landscapes nest the way a collected
+   wall really does. The gold fox and the brass hare keep watch among them.
+   No HTML top bar: the site nav is the navbar. */
 
 const SCENE = 'images/wall/immersive-scene.jpg';
 
@@ -29,21 +33,40 @@ const SCENE = 'images/wall/immersive-scene.jpg';
    navbar (primary + More) hangs somewhere on the wall. Boxes are tuned to hug
    each frame's molding — the label renders as a brass nameplate centered on
    the frame's bottom edge, so box centers/bottoms must be exact.
-   `sign` is the destination's PHONE incarnation: which vintage molding it
-   hangs in (frameStyles.js vocabulary — all 11 recipes used once, no two
-   alike), the sign board's shape + tint, and its line-drawn pictogram. */
+
+   `piece` is the destination's PHONE incarnation — a real framed picture on
+   the re-hung wall:
+     frame  a vintage molding from the shared vocabulary (frameStyles.js /
+            `.gw-frame__art--*`) — all 11 recipes used once, no two alike
+     ar     the piece's shape, so the hang mixes portraits, landscapes,
+            squares and ovals like a wall collected over years
+     img    the PHOTOGRAPH inside it (public/images/wall/ — the shop's own
+            pictures, the same ones the Gallery Wall concept hangs).
+            Swap a file there and the phone wall re-hangs itself.
+     Motif  fallback line drawing for the one piece with no photograph
+            (Visit Us hangs as a little painted address sign) and for any
+            photo that fails to load. */
 const FRAME_LINKS = [
-  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, sign: { frame: 'gilt-grand', ar: '4 / 3', tint: 'chalk', Motif: CoffeeCup } },
-  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, sign: { frame: 'bronze-carved', ar: '4 / 2.9', Motif: FoxFace } },
-  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, sign: { frame: 'oval-gilt', ar: '1 / 1.08', Motif: Balloon } },
-  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, sign: { frame: 'gold-tapestry', ar: '4 / 3.7', Motif: FramedScene } },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, sign: { frame: 'gold-botanical', ar: '4 / 3.1', tint: 'pink', Motif: Heart } },
-  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, sign: { frame: 'black-stacked', ar: '4 / 3.2', Motif: TopHat } },
-  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, sign: { frame: 'gilt-thin', ar: '4 / 2.8', Motif: Star } },
-  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, sign: { frame: 'brass-chain', ar: '4 / 3.1', tint: 'sage', Motif: Bunting } },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, sign: { frame: 'black-flat', ar: '4 / 3.3', Motif: MapPin } },
-  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, sign: { frame: 'black-mat', ar: '4 / 3.6', Motif: OpenBook } },
-  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, sign: { frame: 'oval-black', ar: '1 / 1.1', Motif: Envelope } },
+  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, piece: { frame: 'gilt-grand', ar: '4 / 5', img: 'images/wall/order-menu.jpg', Motif: CoffeeCup } },
+  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, piece: { frame: 'brass-chain', ar: '4 / 3', img: 'images/wall/our-story.jpg', Motif: FoxFace } },
+  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, piece: { frame: 'oval-black', ar: '1 / 1.1', img: 'images/wall/whats-on.jpg', Motif: Balloon } },
+  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, piece: { frame: 'gold-tapestry', ar: '3 / 4', img: 'images/wall/gallery-wall.jpg', Motif: FramedScene } },
+  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, piece: { frame: 'gold-botanical', ar: '7 / 5', img: 'images/wall/local-love.jpg', Motif: Heart } },
+  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, piece: { frame: 'black-stacked', ar: '1 / 1', img: 'images/wall/troublemakers.jpg', Motif: TopHat } },
+  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, piece: { frame: 'oval-gilt', ar: '1 / 1', img: 'images/wall/reviews.jpg', Motif: Star } },
+  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, piece: { frame: 'black-mat', ar: '4 / 3.4', img: 'images/wall/flank-coffee.jpg', Motif: Bunting } },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, piece: { frame: 'black-flat', ar: '4 / 3', tint: 'chalk', Motif: MapPin } },
+  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, piece: { frame: 'bronze-carved', ar: '7 / 5', img: 'images/wall/our-story-so-far.jpg', Motif: OpenBook } },
+  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, piece: { frame: 'gilt-thin', ar: '3 / 4', img: 'images/wall/flank-food.jpg', Motif: Envelope } },
+];
+
+/* The two gold sculptures from the real wall, hung among the pictures. Each
+   is keyed to the piece it hangs UNDER, so the masonry carries them into
+   different columns instead of stacking them in whichever column has room —
+   which is exactly how they sit on the real wall, tucked between frames. */
+const WALL_OBJECTS = [
+  { after: 3, mod: 'fox', src: 'images/brand/fox-head.webp' },
+  { after: 7, mod: 'hare', src: 'images/brand/rabbit-head.webp' },
 ];
 
 const box = ({ x, y, w, h }) => ({ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` });
@@ -69,6 +92,55 @@ function KnowForm({ idSuffix, action }) {
         <button type="submit" aria-label="Subscribe">→</button>
       </div>
     </form>
+  );
+}
+
+/* One piece on the phone wall: a real photograph in a real vintage molding,
+   hung from a nail and wire and knocked a degree off true. The molding, the
+   engraved brass nameplate and the hover sweep are the SHARED `.gw-frame__*`
+   recipes — the same ones the desktop Gallery Wall hangs — so the phone wall
+   is the same wall, not a phone-shaped imitation of it. If a photograph is
+   missing (or fails), the piece falls back to a painted board with the
+   destination's gold line drawing, which is a legitimate small wall piece
+   rather than a hole in the hang. */
+function WallPiece({ link, index }) {
+  const { frame, ar, tint, img, Motif } = link.piece;
+  const [failed, setFailed] = useState(false);
+  const showPhoto = Boolean(img) && !failed;
+
+  return (
+    <Link
+      className="ig2-mini"
+      to={link.to}
+      style={{ '--tilt': `${MINI_TILTS[index % MINI_TILTS.length]}deg` }}
+    >
+      {/* inner hanger so the entrance tween never fights the resting tilt */}
+      <span className="ig2-mini__hang">
+        <span className="ig2-mini__wire" aria-hidden="true" />
+        <span
+          className={`gw-frame__art ig2-mini__frame gw-frame__art--${frame}${
+            tint ? ` ig2-mini__frame--${tint}` : ''
+          }${showPhoto ? '' : ' ig2-mini__frame--drawn'}`}
+          style={{ '--ar': ar }}
+        >
+          {showPhoto ? (
+            <img
+              className="gw-frame__img"
+              src={asset(img)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              onError={() => setFailed(true)}
+            />
+          ) : (
+            <span className="ig2-mini__drawn" aria-hidden="true">
+              <Motif className="ig2-mini__motif" size={44} />
+            </span>
+          )}
+          <span className="gw-frame__plaque">{link.label}</span>
+        </span>
+      </span>
+    </Link>
   );
 }
 
@@ -139,23 +211,26 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             stagger: { each: 0.05, from: 'random' },
             clearProps: 'transform,opacity,visibility',
           }, '-=0.25')
-          // phone wall: the mini frames drop onto their nails one after the
-          // other, then the fox takes its perch (display:none no-ops ≥1020px)
-          .from('.ig2-mini__hang', {
-            autoAlpha: 0, y: 20, scale: 0.9, transformOrigin: '50% 0%',
-            duration: 0.5, ease: 'back.out(1.6)',
-            stagger: { each: 0.055, from: 'start' },
-            clearProps: 'transform,opacity,visibility',
-          }, '-=0.35')
-          .from('.ig2-mobile__fox', {
-            autoAlpha: 0, y: 14, rotation: -8, transformOrigin: '50% 100%',
-            duration: 0.5, ease: 'back.out(2)',
-            clearProps: 'transform,opacity,visibility',
-          }, '-=0.3')
+          // the props settle onto the counter (both the scene's copies and the
+          // phone's — whichever the breakpoint is showing)
           .from('.ig2-chalk, .ig2-note, .ig2-know', {
             autoAlpha: 0, y: 18, duration: 0.55, ease: 'back.out(1.4)', stagger: 0.12,
             clearProps: 'transform,opacity,visibility',
-          }, '-=0.35');
+          }, '-=0.3')
+          // phone wall: the pictures drop onto their nails one after the other,
+          // then the gold sculptures take their hooks (no-ops ≥1020px, where
+          // the whole .ig2-mobile block is display:none)
+          .from('.ig2-mini__hang', {
+            autoAlpha: 0, y: 20, scale: 0.92, transformOrigin: '50% 0%',
+            duration: 0.5, ease: 'back.out(1.5)',
+            stagger: { each: 0.05, from: 'start' },
+            clearProps: 'transform,opacity,visibility',
+          }, '-=0.35')
+          .from('.ig2-mobile__object', {
+            autoAlpha: 0, y: 14, rotation: -8, transformOrigin: '50% 100%',
+            duration: 0.5, ease: 'back.out(2)', stagger: 0.1,
+            clearProps: 'transform,opacity,visibility',
+          }, '-=0.3');
       }, root);
       reveal();
     }).catch(() => {
@@ -221,10 +296,14 @@ export default function ImmersiveGalleryHero({ data = {} }) {
       {/* ---- the scene: full art ≥820px, backdrop banner below ---- */}
       <div className="ig2-scene">
         <div className="ig2-stage">
+          {/* the page's LCP element on every screen size — never lazy, and
+              flagged high so it isn't queued behind the wall's photographs */}
           <img
             className="ig2-scene__img"
             src={asset(SCENE)}
             alt="The Trouble Brewing gallery wall over the coffee counter"
+            fetchpriority="high"
+            decoding="async"
           />
 
           {brand}
@@ -251,52 +330,57 @@ export default function ImmersiveGalleryHero({ data = {} }) {
         </div>
       </div>
 
-      {/* ---- under 1020px the wall re-hangs itself: every destination is a
-              framed SIGN — vintage molding, tinted board, gold pictogram,
-              painted lettering — on a nail + wire. All vector, all crisp ---- */}
+      {/* ---- under 1020px the wall re-hangs itself as a real salon hang:
+              every destination is an actual PHOTOGRAPH from the shop in its
+              own vintage molding, on a nail + wire, with the same engraved
+              brass nameplate the desktop wall uses ---- */}
       <div className="ig2-mobile">
-        <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
-          {FRAME_LINKS.map((f, i) => {
-            const { frame, ar, tint, Motif } = f.sign;
-            return (
-              <Link
-                key={f.to}
-                className="ig2-mini"
-                to={f.to}
-                style={{ '--tilt': `${MINI_TILTS[i % MINI_TILTS.length]}deg` }}
-              >
-                {/* inner hanger so the entrance tween never fights the tilt */}
-                <span className="ig2-mini__hang">
-                  <span className="ig2-mini__wire" aria-hidden="true" />
-                  <span
-                    className={`gw-frame__art gw-frame__art--${frame} ig2-mini__frame${tint ? ` ig2-mini__frame--${tint}` : ''}`}
-                    style={{ '--ar': ar }}
-                  >
-                    <span className="ig2-mini__sign">
-                      <Motif className="ig2-mini__motif" size={42} />
-                      <span className="ig2-mini__label">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
-                    </span>
-                  </span>
-                </span>
-              </Link>
-            );
-          })}
-          {/* the shop's gold fox takes the twelfth hook and keeps watch */}
-          <img
-            className="ig2-mobile__fox"
-            src={asset('images/brand/fox-head.webp')}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            width="82"
-            height="120"
-          />
-        </nav>
-
-        <div className="ig2-mobile__boards">
+        {/* the counter, brought down off the scene: today's hours and the
+            taped special sit ABOVE the wall on phones, so the two things a
+            thumb actually came for are the first things under the banner */}
+        <div className="ig2-mobile__counter">
           {chalk}
           {note}
         </div>
+
+        {/* A CSS multi-column masonry, not a grid of equal cells: pieces of
+            different shapes nest under each other and the browser balances the
+            column heights itself, so the hang stays composed at every width and
+            simply gains a column on a tablet. Column-major fill means the
+            visual order and the tab order are the same order. */}
+        <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
+          {FRAME_LINKS.map((link, i) => {
+            const object = WALL_OBJECTS.find((o) => o.after === i);
+            return (
+              <Fragment key={link.to}>
+                <WallPiece link={link} index={i} />
+                {object && (
+                  <img
+                    className={`ig2-mobile__object ig2-mobile__object--${object.mod}`}
+                    src={asset(object.src)}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    width="82"
+                    height="120"
+                  />
+                )}
+              </Fragment>
+            );
+          })}
+        </nav>
+
+        {/* The wall closes on the one thing a phone visitor most often wants:
+            ordering. It hangs as the widest piece on the wall — a brass sign
+            over both columns — so the hang finishes on a straight bottom edge
+            instead of two ragged columns, and the primary conversion is never
+            more than a scroll away on the screen most people arrive on. */}
+        <div className="ig2-wall__closer">
+          <OrderButton className="btn btn--accent ig2-mobile__order" location="immersive-hero-mobile" />
+          <p className="ig2-wall__closer-note">Order ahead on SpotOn — we&rsquo;ll have it ready.</p>
+        </div>
+
         {mailchimpUrl && <KnowForm idSuffix="mobile" action={mailchimpUrl} />}
       </div>
     </section>
