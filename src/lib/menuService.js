@@ -39,6 +39,7 @@ function normalize(items, { includeUnavailable = false } = {}) {
 
 export async function getMenu({ includeUnavailable = false } = {}) {
   if (!isSupabaseConfigured) {
+    // eslint-disable-next-line no-console
     if (import.meta.env.DEV) console.info(FALLBACK_NOTE);
     return normalize(MENU_ITEMS, { includeUnavailable });
   }
@@ -50,6 +51,7 @@ export async function getMenu({ includeUnavailable = false } = {}) {
     if (!data || data.length === 0) return normalize(MENU_ITEMS, { includeUnavailable });
     return normalize(data);
   } catch (err) {
+    // eslint-disable-next-line no-console
     if (import.meta.env.DEV) console.warn('[menuService] live fetch failed, falling back to snapshot:', err.message);
     return normalize(MENU_ITEMS, { includeUnavailable });
   }

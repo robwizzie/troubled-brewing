@@ -44,6 +44,9 @@ const SCENE = 'images/wall/immersive-scene.jpg';
      img    the PHOTOGRAPH inside it (public/images/wall/ — the shop's own
             pictures, the same ones the Gallery Wall concept hangs).
             Swap a file there and the phone wall re-hangs itself.
+     small  'left' | 'right' — hangs this one at ~72% of the column, pushed
+            to that side. A wall where every piece is the same width reads as
+            a grid; a few little ones tucked off-centre read as collected.
      Motif  fallback line drawing for the one piece with no photograph
             (Visit Us hangs as a little painted address sign) and for any
             photo that fails to load. */
@@ -52,11 +55,11 @@ const FRAME_LINKS = [
   { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, piece: { frame: 'brass-chain', ar: '4 / 3', img: 'images/wall/our-story.jpg', Motif: FoxFace } },
   { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, piece: { frame: 'oval-black', ar: '1 / 1.1', img: 'images/wall/whats-on.jpg', Motif: Balloon } },
   { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, piece: { frame: 'gold-tapestry', ar: '3 / 4', img: 'images/wall/gallery-wall.jpg', Motif: FramedScene } },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, piece: { frame: 'gold-botanical', ar: '7 / 5', img: 'images/wall/local-love.jpg', Motif: Heart } },
+  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, piece: { frame: 'gold-botanical', ar: '7 / 5', img: 'images/wall/local-love.jpg', small: 'left', Motif: Heart } },
   { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, piece: { frame: 'black-stacked', ar: '1 / 1', img: 'images/wall/troublemakers.jpg', Motif: TopHat } },
   { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, piece: { frame: 'oval-gilt', ar: '1 / 1', img: 'images/wall/reviews.jpg', Motif: Star } },
-  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, piece: { frame: 'black-mat', ar: '4 / 3.4', img: 'images/wall/flank-coffee.jpg', Motif: Bunting } },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, piece: { frame: 'black-flat', ar: '4 / 3', tint: 'chalk', Motif: MapPin } },
+  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, piece: { frame: 'black-mat', ar: '4 / 3.4', img: 'images/wall/flank-coffee.jpg', small: 'right', Motif: Bunting } },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, piece: { frame: 'black-flat', ar: '4 / 3', tint: 'chalk', small: 'left', Motif: MapPin } },
   { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, piece: { frame: 'bronze-carved', ar: '7 / 5', img: 'images/wall/our-story-so-far.jpg', Motif: OpenBook } },
   { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, piece: { frame: 'gilt-thin', ar: '3 / 4', img: 'images/wall/flank-food.jpg', Motif: Envelope } },
 ];
@@ -105,13 +108,13 @@ function KnowForm({ idSuffix, action }) {
    destination's gold line drawing, which is a legitimate small wall piece
    rather than a hole in the hang. */
 function WallPiece({ link, index }) {
-  const { frame, ar, tint, img, Motif } = link.piece;
+  const { frame, ar, tint, img, small, Motif } = link.piece;
   const [failed, setFailed] = useState(false);
   const showPhoto = Boolean(img) && !failed;
 
   return (
     <Link
-      className="ig2-mini"
+      className={`ig2-mini${small ? ` ig2-mini--small ig2-mini--pull-${small}` : ''}`}
       to={link.to}
       style={{ '--tilt': `${MINI_TILTS[index % MINI_TILTS.length]}deg` }}
     >
@@ -137,8 +140,13 @@ function WallPiece({ link, index }) {
               <Motif className="ig2-mini__motif" size={44} />
             </span>
           )}
-          <span className="gw-frame__plaque">{link.label}</span>
         </span>
+        {/* The nameplate is a SIBLING of the frame, not a child: inside it, the
+            plate covered a real share of a thumb-sized picture, and the frame
+            clips its own overflow so it could not be pushed out. Out here it
+            rides the bottom molding the way the desktop wall's labels do, and
+            the picture gets its space back. */}
+        <span className="gw-frame__plaque ig2-mini__plate">{link.label}</span>
       </span>
     </Link>
   );
@@ -297,7 +305,11 @@ export default function ImmersiveGalleryHero({ data = {} }) {
       <div className="ig2-scene">
         <div className="ig2-stage">
           {/* the page's LCP element on every screen size — never lazy, and
-              flagged high so it isn't queued behind the wall's photographs */}
+              flagged high so it isn't queued behind the wall's photographs.
+              Lowercase `fetchpriority` on purpose: the camelCase `fetchPriority`
+              prop is React 19: on React 18 (what this app runs) it warns and
+              falls back, while the lowercase attribute passes straight through
+              and lands on the element. Revisit when React is upgraded. */}
           <img
             className="ig2-scene__img"
             src={asset(SCENE)}

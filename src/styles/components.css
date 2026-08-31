@@ -417,6 +417,32 @@
 .hours-sign .hours-table tr.today th, .hours-sign .hours-table tr.today td { color: var(--color-yellow); }
 .hours-sign .hours-override { color: #f2b8a0; }
 
+/* On a phone the letterboard was a ~600px band — the tallest thing on the
+   homepage after the hero. It carries the whole WEEK (the hero chalkboard
+   only carries today), so it earns its place; it just doesn't earn that much
+   of the screen. Same sign, tighter lettering. */
+@media (max-width: 720px) {
+  .hours-sign {
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    margin-top: var(--space-3);
+  }
+  .hours-sign__label { margin-bottom: var(--space-2); letter-spacing: 0.18em; }
+  .hours-sign .hours-table { margin-top: var(--space-3) !important; }
+  .hours-sign .hours-table th,
+  .hours-sign .hours-table td {
+    padding: 4px var(--space-2);
+    font-size: var(--text-sm);
+    line-height: 1.35;
+  }
+  .hours-sign .hours-today { font-size: var(--text-sm); }
+  /* On the HOMEPAGE only, drop the sign's "open now" line: the hero chalkboard
+     three screens up already carries today's status and hours, so this was the
+     page saying it twice. Every other page (Location especially) keeps it,
+     because there it isn't a repeat. */
+  .page-home .hours-sign .hours-today { display: none; }
+  .page-home .hours-sign .hours-table { margin-top: 0 !important; }
+}
+
 /* ---- Consent banner ------------------------------------------------------- */
 .consent {
   position: fixed; inset: auto var(--space-4) var(--space-4); z-index: 1100;
