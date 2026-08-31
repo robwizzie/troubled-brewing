@@ -218,8 +218,21 @@ p { margin: 0 0 var(--space-4); }
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease); }
 .reveal.is-in { opacity: 1; transform: none; }
 
-@media (max-width: 640px) {
+@media (max-width: 720px) {
   .section { padding-block: var(--space-7); }
+  .section--tight { padding-block: var(--space-5); }
+  /* a phone has no pixels to spare on gutters — 24px each side was giving
+     cards a 342px canvas on a 390px screen */
+  .container, .container-narrow { width: min(var(--container), 100% - 2 * var(--space-4)); }
+  .section-heading { margin-bottom: var(--space-5); }
+  .section-heading::after { width: 44px; margin-top: var(--space-2); }
+  /* full-width CTAs are the phone convention and give a real thumb target */
+  .btn--lg { font-size: var(--text-base); padding: var(--space-3) var(--space-5); }
+  .card__body { padding: var(--space-4); }
+  .hero { padding-block: var(--space-8); }
+  .hero p.hero__sub { font-size: var(--text-base); }
+  /* toasts sit above the thumb rail, not under it */
+  .toast-wrap { left: var(--space-4); right: var(--space-4); bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* =============================================================================

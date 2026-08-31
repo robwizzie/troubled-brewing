@@ -1015,3 +1015,121 @@
 .form-success { background: var(--color-sage-soft); }
 .legal h2 { margin-top: var(--space-6); }
 .legal ul { padding-left: 1.3em; }
+
+/* =============================================================================
+   PHONE PASS. Layouts above are written for a wide canvas and then narrowed;
+   these are the places where narrowing alone wasn't enough and the section
+   needed a different shape on a phone. Lives at the end of the file on
+   purpose: several of these override single-class rules above, and source
+   order is what decides between equal specificities.
+   ============================================================================= */
+
+@media (max-width: 720px) {
+  /* ---- Featured drink: the specimen oval was a 300px empty circle on a
+     390px screen whenever the shop hasn't uploaded this week's photo. Sized
+     to the phone it reads as a piece on the wall again rather than a hole. */
+  .featured__media { min-height: 0; padding: var(--space-5) var(--space-4); }
+  .featured__frame { width: min(200px, 62%); }
+  .featured__body { padding: var(--space-5) var(--space-4) var(--space-6); }
+  .featured__desc { font-size: var(--text-base); }
+
+  /* ---- Signature sips: stacked full-width cards cost three screens for
+     three drinks. On a phone they become a shelf you SWIPE — the next piece
+     peeks in from the right, which is both the affordance and the reason it
+     still reads as a gallery rather than a list. Pure scroll-snap, no JS. */
+  .sigdrinks {
+    display: flex;
+    grid-template-columns: none;
+    gap: var(--space-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--space-4);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* bleed to the screen edges so a card can sit half-off and read swipeable */
+    margin-inline: calc(-1 * var(--space-4));
+    padding: 4px var(--space-4) var(--space-4);
+  }
+  .sigdrinks::-webkit-scrollbar { display: none; }
+  .sigdrink {
+    flex: 0 0 min(78%, 300px);
+    scroll-snap-align: start;
+    scroll-snap-stop: always; /* one swipe = one drink, never a fly-past */
+  }
+  .sigdrink__frame { margin: var(--space-4) var(--space-4) 0; }
+  .sigdrink__body { padding: var(--space-3) var(--space-4) var(--space-4); }
+  .sigdrinks__cta { margin-top: var(--space-4); }
+  .sigdrinks__cta .btn { width: 100%; justify-content: center; }
+
+  /* ---- The menu is the most-visited page on a phone, and it was scrolling
+     for a minute: item names at --text-lg with 1rem between every row. Tighten
+     the rhythm so a category fits on a screen or two, and let the category
+     filters scroll sideways instead of stacking into three rows of pills. */
+  .menu-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    /* without this the strip snaps a pill flush to the scrollport edge on
+       load and the first one lands half off the screen */
+    scroll-padding-inline: var(--space-4);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* bleed to the screen edges so the strip reads as scrollable */
+    margin-inline: calc(-1 * var(--space-4));
+    padding-inline: var(--space-4);
+    padding-bottom: var(--space-2);
+  }
+  .menu-tabs::-webkit-scrollbar { display: none; }
+  .menu-tab { flex: 0 0 auto; scroll-snap-align: start; }
+  .menu-diet { margin-bottom: var(--space-5); }
+  .menu-category { margin-bottom: var(--space-5); }
+  .menu-category__title { font-size: var(--text-xl); }
+  .menu-list { gap: var(--space-3); }
+  .menu-item__name { font-size: var(--text-base); }
+  .menu-item__desc { font-size: var(--text-xs); line-height: 1.45; }
+  .menu-item__img { width: 52px; height: 52px; }
+
+  /* ---- Editorial blocks: 1.2rem body copy at 40ch is a wall of text on a
+     phone; the section already stacks, it just needed to stop shouting. */
+  .intro-duo__item .prose,
+  .richtext--lead .prose { font-size: var(--text-base); }
+  .intro-duo__item + .intro-duo__item { margin-top: var(--space-6); padding-top: var(--space-6); }
+
+  /* ---- CTA band: give the button the full width a thumb expects ---- */
+  .cta-band { padding: var(--space-6) var(--space-4); }
+
+  /* ---- Newsletter: the input and button were fighting for one row ---- */
+  .newsletter-card { padding: var(--space-6) var(--space-4); }
+  .newsletter-form { flex-direction: column; }
+  .newsletter-form input { min-width: 0; width: 100%; }
+  .newsletter-form .btn { width: 100%; justify-content: center; }
+
+  /* ---- Troublemakers: a 1:1 photo in a one-up grid gave every barista a
+     full-width square — a 358px block of green with one initial in it when a
+     photo hasn't been uploaded. A person reads better as a portrait beside
+     their name anyway, so the card turns on its side. ---- */
+  .tm-card {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    align-items: start;
+  }
+  .tm-card__photo { aspect-ratio: 3 / 4; height: 100%; border-right: 1px solid var(--color-border); }
+  .tm-card__initials { font-size: 2.4rem; }
+  .tm-card .card__body { padding: var(--space-4); }
+  .tm-facts__row { padding-top: var(--space-1); }
+
+  /* ---- Gallery pieces: one big piece per screen was the whole page;
+     two up reads as a collection again ---- */
+  .pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .piece__frame { border-width: 7px; }
+  .piece__title { font-size: var(--text-base); margin: var(--space-3) 0 var(--space-1); }
+  .piece__placeholder { font-size: 2rem; }
+}
+
+@media (max-width: 420px) {
+  /* the narrowest phones keep two up — one giant frame per screen was the
+     whole page — but the moldings thin out so the picture keeps the space */
+  .pieces { gap: var(--space-3); }
+  .piece__frame { border-width: 6px; }
+}

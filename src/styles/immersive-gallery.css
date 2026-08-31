@@ -2,11 +2,12 @@
    The unbranded café scene artwork is the canvas; all branding is live HTML
    positioned over it in % of the scene, with type in cqw (container units) so
    lettering scales as part of the artwork. Under 1020px the wall re-hangs
-   itself: the scene turns into a backdrop banner and every frame link becomes
-   a mini framed picture (art cropped from the same scene file) on a nail and
-   wire, with the chalkboard + taped note keeping their prop styling. Palette
-   sampled from the artwork: olive wall, gold light, chalk #16140c, paper
-   #ece0c4.
+   itself: the scene turns into a backdrop banner, the counter (hours board +
+   taped note) comes down underneath it, and every frame link becomes a real
+   framed PHOTOGRAPH from public/images/wall/ hung on a nail and wire in two
+   masonry columns — the same moldings and brass nameplates as the desktop
+   wall. Palette sampled from the artwork: olive wall, gold light, chalk
+   #16140c, paper #ece0c4.
    ========================================================================== */
 
 .ig2-hero { position: relative; isolation: isolate; color: #f0e6cc; background: #37331e; }
@@ -248,77 +249,138 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
 }
 .ig2-know .honeypot { position: absolute; left: -9999px; }
 
-/* ------------- under 1020px: the wall re-hangs itself for phones ------------- */
+/* ============ under 1020px: the wall re-hangs itself for phones ============
+   The scene becomes a banner across the top; the counter (live hours + the
+   taped special) comes down off it and sits directly underneath, so the two
+   things a thumb actually came for are above the fold. Below that the WALL
+   CONTINUES on the same olive paint: two masonry columns of REAL framed
+   photographs from the shop, each in its own vintage molding from the shared
+   `.gw-frame__art--*` vocabulary, on a nail and wire, knocked a degree off
+   true, labelled with the same engraved brass nameplate the desktop wall
+   uses. Same wall, re-hung for a phone — not a list of buttons.
+   ========================================================================= */
 
 .ig2-mobile { display: none; }
 
 @media (max-width: 1020px) {
-  /* the scene becomes a backdrop banner focused on the wall + light */
-  .ig2-scene { aspect-ratio: auto; height: clamp(300px, 48svh, 400px); }
-  .ig2-scene__img { object-position: 32% 22%; }
+  /* ---------------------------- the banner ---------------------------- */
+  /* short enough that the hours board is reachable on the first screen,
+     tall enough to read as the room */
+  .ig2-scene { aspect-ratio: auto; height: clamp(290px, 40svh, 380px); }
+  .ig2-scene__img { object-position: 34% 26%; }
   .ig2-links, .ig2-chalk, .ig2-note, .ig2-know { display: none; }
   .ig2-stage .ig2-chalk, .ig2-stage .ig2-note { display: none; }
+  /* the busy wall was swallowing the cream lockup — pool the light in the
+     middle and darken the edges so the brand reads instantly */
+  .ig2-scene::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      radial-gradient(78% 62% at 50% 46%, rgba(14, 13, 7, .34), rgba(14, 13, 7, .58) 68%, rgba(12, 11, 6, .74) 100%),
+      linear-gradient(180deg, rgba(12, 11, 6, .38), transparent 34%);
+    pointer-events: none;
+  }
   /* the banner melts into the painted wall below — one continuous room */
   .ig2-scene::after {
     content: '';
     position: absolute;
     inset: auto 0 0 0;
-    height: 5.5rem;
-    background: linear-gradient(180deg, transparent, rgba(76, 71, 44, .55) 62%, #4c472c);
+    z-index: 2;
+    height: 4.5rem;
+    background: linear-gradient(180deg, transparent, rgba(70, 66, 40, .6) 58%, #453f27);
     pointer-events: none;
   }
 
   .ig2-brand {
     left: 50%;
-    top: 47%;
-    width: min(92%, 30rem);
-    transform: translate(-50%, -46%);
+    top: 50%;
+    width: min(88%, 26rem);
+    z-index: 3;
+    transform: translate(-50%, -50%);
     text-shadow: 0 2px 22px rgba(8, 6, 2, .9), 0 1px 6px rgba(8, 6, 2, .8);
   }
-  .ig2-brand::before { inset: -28% -20%; background: radial-gradient(closest-side, rgba(20, 19, 10, .72), rgba(20, 19, 10, .42) 58%, transparent 80%); }
-  .ig2-brand__eyebrow { font-size: .72rem; }
-  .ig2-brand__logo img { width: min(56%, 230px); }
-  .ig2-brand__descriptor { font-size: .95rem; }
+  .ig2-brand::before { inset: -30% -22%; background: radial-gradient(closest-side, rgba(20, 19, 10, .6), rgba(20, 19, 10, .3) 58%, transparent 82%); }
+  .ig2-brand__eyebrow { font-size: .64rem; letter-spacing: .26em; margin-bottom: .55em; }
+  /* size the lockup by HEIGHT here: it is taller than it is wide, and a
+     width-only rule overflowed the banner and clipped the lettering above
+     and below it */
+  .ig2-brand__logo img { width: auto; height: clamp(112px, 19svh, 178px); max-width: 78%; object-fit: contain; }
+  .ig2-brand__descriptor { font-size: .74rem; letter-spacing: .15em; margin-top: .7em; }
 
+  /* --------------------- the wall the banner hangs on --------------------- */
   /* below the banner the same olive wall keeps going, dappled by the window
      light from the scene's left side */
   .ig2-mobile {
     display: block;
-    padding: 1.9rem 1rem 2.4rem;
+    padding: 1.35rem 1rem 2.2rem;
     background:
-      radial-gradient(46rem 26rem at 10% -4%, rgba(240, 205, 120, .17), transparent 62%),
-      radial-gradient(30rem 20rem at 92% 30%, rgba(240, 205, 120, .06), transparent 65%),
-      linear-gradient(168deg, #4c472c 0%, #3d3922 55%, #2c291a 100%);
+      radial-gradient(42rem 24rem at 8% -2%, rgba(240, 205, 120, .18), transparent 62%),
+      radial-gradient(30rem 20rem at 94% 34%, rgba(240, 205, 120, .06), transparent 65%),
+      linear-gradient(168deg, #453f27 0%, #3d3922 48%, #2c291a 100%);
   }
 
-  /* ---- the re-hung wall: a salon grid of little framed crops ---- */
+  /* ---- the counter, set down under the banner ---- */
+  .ig2-mobile__counter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2.1rem;
+  }
+  /* the scene copies are hidden above; these are the phone copies — same prop
+     styling, tilted like they were set down by hand */
+  .ig2-mobile__counter .ig2-chalk,
+  .ig2-mobile__counter .ig2-note { display: block; position: static; }
+  .ig2-mobile__counter .ig2-chalk {
+    width: min(100%, 21rem);
+    padding: 1.25rem 1.2rem 1.1rem;
+    font-size: .82rem;
+    transform: rotate(-.7deg);
+  }
+  .ig2-mobile__counter .ig2-note {
+    width: min(100%, 15rem);
+    font-size: .78rem;
+    transform: rotate(1.9deg);
+  }
+  .ig2-mobile__counter .ig2-note:hover { transform: rotate(1.1deg) translateY(-.3em); }
+
+  /* ------------------------- the re-hung salon wall ------------------------- */
   .ig2-wall {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.05rem .95rem;
-    align-items: start;
-    max-width: 30rem;
+    columns: 2;
+    column-gap: 1.1rem;
+    max-width: 28rem;
     margin: 0 auto;
   }
-  /* every other picture hangs a touch lower — hand-hung, not machine-set */
-  .ig2-wall > .ig2-mini:nth-child(even) { margin-top: .85rem; }
 
   .ig2-mini {
     display: block;
+    break-inside: avoid;
+    margin-bottom: 1.15rem;
     text-decoration: none;
     transform: rotate(var(--tilt, 0deg));
     -webkit-tap-highlight-color: transparent;
     outline: none;
   }
-  .ig2-mini__hang { display: block; transition: transform var(--dur) var(--ease); }
+  /* uneven drops between pieces — a hang measured by eye, not by ruler */
+  .ig2-mini:nth-child(3n) { margin-bottom: 1.65rem; }
+  .ig2-mini:nth-child(4n) { margin-bottom: 0.85rem; }
+  .ig2-mini__hang {
+    display: block;
+    transition: transform var(--dur) var(--ease);
+    /* the drop-shadow seats rectangles and ovals alike on the wall */
+    filter: drop-shadow(0 .5rem .85rem rgba(0, 0, 0, .48));
+  }
   .ig2-mini:active .ig2-mini__hang { transform: translateY(2px) scale(.985); }
 
   /* nail + hanging wire (Λ) above each frame */
   .ig2-mini__wire {
     position: relative;
     display: block;
-    width: 54%;
-    height: .95rem;
+    width: 52%;
+    height: .72rem;
     margin: 0 auto;
     background:
       linear-gradient(to bottom left, transparent calc(50% - .7px), rgba(214, 186, 120, .5) calc(50% - .7px) calc(50% + .7px), transparent calc(50% + .7px)) left / 50.5% 100% no-repeat,
@@ -330,120 +392,118 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
     top: -.18rem;
     left: 50%;
     transform: translateX(-50%);
-    width: .46rem;
-    height: .46rem;
+    width: .44rem;
+    height: .44rem;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, #f2dda4, #b8923e 55%, #77571c);
     box-shadow: 0 1px 2px rgba(0, 0, 0, .55);
   }
 
-  /* each sign hangs in a REAL vintage molding (the shared gw-frame__art
-     recipes — all 11, no two alike). The tinted board + gold pictogram +
-     painted lettering live inside; the hang's drop-shadow seats rectangles
-     and ovals alike on the wall. */
-  .ig2-mini__hang { filter: drop-shadow(0 .55rem .8rem rgba(0, 0, 0, .5)); }
-
+  /* ---- the framed picture: the shared molding recipes, scaled for a
+          ~9rem tile so the ornament still reads at thumb size ---- */
   .ig2-mini__frame {
-    --ar: 4 / 3.2;
-    --tint: #f2e7cd; /* warm scene paper, not bright site paper */
+    --ar: 4 / 3;
     width: 100%;
-    /* faint top-light aging so the boards read as old card, not fresh print */
-    background-image: radial-gradient(130% 105% at 50% -5%, rgba(126, 96, 34, .08), transparent 62%);
+    box-shadow: inset 0 0 0 1px rgba(94, 66, 16, .55);  /* the hang owns the drop shadow */
     transition: filter var(--dur) var(--ease);
   }
-  /* frame moldings sized for ~10rem tiles (mirrors .gw-wall's small screens) */
   .ig2-mini__frame.gw-frame__art { border-width: 5px; }
-  .ig2-mini__frame.gw-frame__art--gilt-grand,
+  .ig2-mini__frame.gw-frame__art--gilt-grand { border-width: 11px; border-image-slice: 32 round; }
   .ig2-mini__frame.gw-frame__art--gold-tapestry { border-width: 9px; }
-  .ig2-mini__frame.gw-frame__art--bronze-carved,
+  .ig2-mini__frame.gw-frame__art--bronze-carved { border-width: 8px; }
   .ig2-mini__frame.gw-frame__art--black-flat { border-width: 7px; }
   .ig2-mini__frame.gw-frame__art--gilt-thin { border-width: 4px; }
   .ig2-mini__frame.gw-frame__art--brass-chain { border-width: 3px; }
-  .ig2-mini__frame.gw-frame__art--black-mat { padding: clamp(8px, 8%, 14px); }
-  .ig2-mini__frame.gw-frame__art--black-stacked { padding: clamp(6px, 6%, 12px); }
+  .ig2-mini__frame.gw-frame__art--black-mat { padding: clamp(7px, 7%, 13px); }
+  .ig2-mini__frame.gw-frame__art--black-stacked { padding: clamp(5px, 5.5%, 11px); }
   .ig2-mini__frame.gw-frame__art--oval-gilt,
   .ig2-mini__frame.gw-frame__art--oval-black { border-width: 6px; }
+  /* the photo carries a faint aged top-light so prints read as prints */
+  .ig2-mini__frame .gw-frame__img { filter: saturate(.96) contrast(1.02); }
 
-  /* board tints: chalk (the menu board), blush (Local Love), sage (Community) */
+  /* the engraved nameplate, sized down for the small pieces (the plate itself
+     keeps its own AA contrast, so it lands legibly on any photograph) */
+  .ig2-mini__frame .gw-frame__plaque {
+    bottom: 6px;
+    max-width: calc(100% - 10px);
+    padding: 3px 9px;
+    font-size: .68rem;
+    letter-spacing: .02em;
+  }
+  .ig2-mini__frame.gw-frame__art--oval-gilt .gw-frame__plaque,
+  .ig2-mini__frame.gw-frame__art--oval-black .gw-frame__plaque { bottom: 7%; max-width: 78%; padding: 3px 7px; }
+  .ig2-mini__frame .gw-frame__plaque::after { font-size: .72em; }
+
+  /* ---- the one drawn piece (a destination with no photograph yet): a
+          painted board with its gold line drawing — a real small wall piece,
+          not a gap ---- */
+  .ig2-mini__frame--drawn {
+    --tint: #f2e7cd;
+    background-image: radial-gradient(130% 105% at 50% -5%, rgba(126, 96, 34, .09), transparent 62%);
+  }
   .ig2-mini__frame--chalk {
     --tint: #17140c;
     background:
-      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .06), transparent 55%),
+      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .07), transparent 55%),
       linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
   }
-  .ig2-mini__frame--pink { --tint: #eed9ce; }
-  .ig2-mini__frame--sage { --tint: #d4dabe; }
-
-  .ig2-mini__sign {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: .45rem;
-    padding: .7rem .55rem;
-    max-width: 100%;
-    text-align: center;
+  .ig2-mini__drawn {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+    padding-bottom: 1.4rem; /* clear the nameplate */
   }
-  .gw-frame__art--oval-gilt .ig2-mini__sign,
-  .gw-frame__art--oval-black .ig2-mini__sign { max-width: 76%; gap: .4rem; }
-
   .ig2-mini__motif { display: block; color: #a8791f; }
   .ig2-mini__frame--chalk .ig2-mini__motif { color: #d9c489; }
-  .ig2-mini__label {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: .74rem;
-    line-height: 1.15;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: #33301f;
-    text-wrap: balance;
-  }
-  .ig2-mini__frame--chalk .ig2-mini__label { color: #f2e5c4; }
-  .ig2-mini__label b { font-weight: 700; color: #a8791f; display: inline-block; transition: transform var(--dur) var(--ease); }
-  .ig2-mini__frame--chalk .ig2-mini__label b { color: #d9c489; }
 
   .ig2-mini:hover .ig2-mini__frame,
   .ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.05); }
   .ig2-mini:focus-visible .ig2-mini__frame { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 3px; }
-  .ig2-mini:hover .ig2-mini__label b,
-  .ig2-mini:focus-visible .ig2-mini__label b { transform: translateX(3px); }
 
-  /* roomier screens hang three to a row */
-  @media (min-width: 640px) {
-    .ig2-wall { grid-template-columns: repeat(3, 1fr); max-width: 40rem; }
-    .ig2-wall > .ig2-mini:nth-child(even) { margin-top: 0; }
-    .ig2-wall > .ig2-mini:nth-child(3n + 2) { margin-top: .85rem; }
-  }
-
-  /* the gold fox with the chained glasses takes the last hook on the wall */
-  .ig2-mobile__fox {
+  /* the shop's own gold sculptures, tucked in among the pictures */
+  .ig2-mobile__object {
     display: block;
-    width: 72px;
-    height: auto;
-    justify-self: center;
-    align-self: center;
-    margin-top: .85rem; /* hangs low like the even column */
-    transform: rotate(-2deg);
+    break-inside: avoid;
+    width: auto;
     filter: drop-shadow(0 .55rem .9rem rgba(0, 0, 0, .55));
   }
+  .ig2-mobile__object--fox { height: 92px; margin: .3rem auto 1.5rem; transform: rotate(-2deg); }
+  .ig2-mobile__object--hare { height: 78px; margin: .3rem auto 1.5rem; transform: rotate(2.5deg); }
 
-  .ig2-mobile__boards { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 1.2rem; margin-top: 1.9rem; }
-  /* the scene copies are hidden above; these are the mobile copies — they keep
-     their prop styling, tilted like they were set down by hand */
-  .ig2-mobile__boards .ig2-chalk,
-  .ig2-mobile__boards .ig2-note { display: block; position: static; width: auto; max-width: 250px; font-size: .8rem; }
-  .ig2-mobile__boards .ig2-chalk {
-    width: min(100%, 330px); max-width: 330px;
-    padding: 1.5rem 1.35rem 1.3rem; font-size: .9rem;
-    transform: rotate(-.8deg);
+  /* roomier screens (landscape phones, tablets) gain a third column — the
+     masonry redistributes and rebalances itself, no re-splitting needed */
+  @media (min-width: 640px) {
+    .ig2-wall { columns: 3; column-gap: 1.4rem; max-width: 46rem; }
+    .ig2-mini { margin-bottom: 1.4rem; }
+    .ig2-mini__frame .gw-frame__plaque { font-size: .74rem; padding: 3px 12px; }
   }
-  .ig2-mobile__boards .ig2-note { transform: rotate(2.2deg); }
-  .ig2-mobile__boards .ig2-note:hover { transform: rotate(1.4deg) translateY(-.3em); }
-  .ig2-mobile .ig2-know { display: block; position: static; width: min(430px, 100%); margin: 1.8rem auto 0; font-size: .8rem; }
+
+  /* ---- the sign that closes the hang: the widest piece on the wall ---- */
+  .ig2-wall__closer {
+    width: min(28rem, 100%);
+    margin: 1.6rem auto 0;
+    padding: 1.15rem 1.1rem 1.2rem;
+    text-align: center;
+    border: 7px solid #b8892b;
+    border-image: linear-gradient(135deg, #f7dc94 0%, #e3b53f 32%, #a87c1c 70%, #5e4210 100%) 1;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .07), transparent 55%),
+      linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
+    box-shadow: 0 .7rem 1.2rem rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(236, 207, 133, .5);
+    transform: rotate(-.4deg);
+  }
+  .ig2-mobile__order.btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: .8rem 1.2rem; }
+  .ig2-wall__closer-note {
+    margin: .8rem 0 0;
+    font-family: var(--font-display);
+    font-size: .72rem; line-height: 1.5;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: #cfc196;
+  }
+
+  .ig2-mobile .ig2-know { display: block; position: static; width: min(28rem, 100%); margin: 1.6rem auto 0; font-size: .8rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ig2-frame, .ig2-board-overlay, .ig2-note, .ig2-frame__label b, .ig2-note__cta b,
-  .ig2-mini__hang, .ig2-mini__frame, .ig2-mini__label b { transition: none !important; }
+  .ig2-frame, .ig2-note, .ig2-frame__label b, .ig2-note__cta b,
+  .ig2-mini__hang, .ig2-mini__frame { transition: none !important; }
 }
