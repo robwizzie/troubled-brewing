@@ -531,10 +531,9 @@
 .gw-frame__poster { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: var(--space-2); text-align: center; }
 .gw-frame__glyph { font-size: clamp(1.3rem, 3.4vw, 2rem); opacity: 0.9; }
 .gw-frame__poster-label { font-family: var(--font-display); font-weight: 900; font-size: clamp(0.86rem, 1.8vw, 1.25rem); line-height: 1.08; color: var(--color-ink); }
-.gw-frame__poster-label::after { content: '↗'; margin-left: 6px; font-family: var(--font-body); font-size: 0.62em; font-weight: 700; color: var(--color-accent-text); vertical-align: 0.18em; }
 /* the label over a photo: an engraved brass nameplate pinned to the frame, like
-   a museum placard — two screw heads, brushed-brass face, letterpress text.
-   Self-contained contrast (AA inside the plaque), so any photo works under it. */
+   a museum placard — brushed-brass face, letterpress text. Self-contained
+   contrast (AA inside the plaque), so any photo works under it. */
 .gw-frame__plaque {
   /* centered via inset-0 + auto margins (NOT left:50% — that halves the
      shrink-to-fit width once text is allowed to wrap) */
@@ -547,10 +546,7 @@
   line-height: 1.15;
   padding: 4px 17px;
   border-radius: 2px;
-  background:
-    radial-gradient(circle at 7px 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
-    radial-gradient(circle at calc(100% - 7px) 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
-    linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
+  background: linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
   border: 1px solid #6e5314;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 240, 200, 0.65);
   color: #2f2306;
@@ -559,14 +555,6 @@
   text-align: center;
   text-shadow: 0 1px 0 rgba(255, 238, 190, 0.55);
 }
-.gw-frame__plaque::after {
-  content: '\00a0↗'; /* no-break space: the arrow never wraps onto its own line */
-  font-family: var(--font-body); font-size: 0.78em; font-weight: 700; color: #4a3810;
-  display: inline-block; transform: translateY(-1px);
-  transition: transform var(--dur) var(--ease);
-}
-.gw-frame:hover .gw-frame__plaque::after,
-.gw-frame:focus-visible .gw-frame__plaque::after { transform: translate(2px, -3px); }
 /* a light sweep across the brass when the frame is hovered — slow and buttery,
    trailing the frame's straighten, with a faint echo band. Off-hover the band
    FREEZES in place while fading (the 0s+delayed transform transition holds its
@@ -597,17 +585,14 @@
 .gw-frame__art--oval-gilt .gw-frame__plaque,
 .gw-frame__art--oval-black .gw-frame__plaque { bottom: 10%; max-width: 62%; padding: 3px 14px; }
 
-/* ---- Brass plate — the plaque's engraved look for NON-link labels (no ↗):
-   featured drink, signature sips, testimonial bylines. Same recipe as
-   .gw-frame__plaque so every nameplate on the site matches. ---- */
+/* ---- Brass plate — the plaque's engraved look for NON-link labels: featured
+   drink, signature sips, testimonial bylines. Same recipe as .gw-frame__plaque
+   so every nameplate on the site matches. ---- */
 .brass-plate {
   display: inline-block;
   padding: 4px 16px;
   border-radius: 2px;
-  background:
-    radial-gradient(circle at 7px 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
-    radial-gradient(circle at calc(100% - 7px) 50%, #8a6a1e 1.6px, rgba(138, 106, 30, 0) 2.5px),
-    linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
+  background: linear-gradient(180deg, #e9cd79 0%, #cfa64a 55%, #b98f33 100%);
   border: 1px solid #6e5314;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 240, 200, 0.65);
   color: #2f2306;
