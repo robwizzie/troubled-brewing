@@ -50,7 +50,7 @@ export const SECTIONS = {
     { type: 'social_proof', data: { label: 'Loved by the neighborhood' } },
     { type: 'featured_drink', data: { heading: "This Week's Trouble" } },
     { type: 'signature_drinks', data: { heading: 'Signature sips', button_label: 'See the full menu' } },
-    { type: 'hours', data: { heading: 'Today at Trouble Brewing' } },
+    { type: 'hours', data: { heading: 'This week at Trouble Brewing' } },
     { type: 'cta', data: { heading: 'Skip the line', body: "Order ahead on SpotOn and we'll have it ready.", button_label: 'Order Now', button_url: '' } },
     { type: 'intro_duo', data: {
       heading_a: 'Good coffee, real food',

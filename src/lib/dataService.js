@@ -226,6 +226,7 @@ export async function submitForm(payload) {
   if (!isSupabaseConfigured) {
     // No backend in this environment — pretend-succeed so the demo UX works,
     // and log so a developer notices during local dev.
+    // eslint-disable-next-line no-console
     if (import.meta.env.DEV) console.info('[submitForm] (no Supabase) would submit:', payload);
     return { ok: true, demo: true };
   }

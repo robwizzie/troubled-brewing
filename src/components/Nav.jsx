@@ -75,6 +75,13 @@ export default function Nav() {
   return (
     <header className="nav" ref={headerRef}>
       <div className="container nav__inner">
+        {/* Phones only (hidden ≥901px, where the bar's own Order button sits at
+            the end of the link row). Most of the shop's traffic is a phone, and
+            burying the one conversion behind a drawer tap cost it on every
+            screen — so it rides in the bar, opposite the menu toggle, with the
+            lockup centred between them. */}
+        <OrderButton className="btn btn--accent nav__cta-bar" label="Order" location="nav-bar" />
+
         <NavLink to="/" className="nav__brand" aria-label="Trouble Brewing Coffee House — home">
           <BrandImg
             src={BRAND.logoFox}
