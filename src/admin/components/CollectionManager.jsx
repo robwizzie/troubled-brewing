@@ -42,7 +42,10 @@ export default function CollectionManager({
       setItems([]);
     }
   }
-  useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [table]);
+  // `refresh` is redeclared every render, so listing it here would re-fetch
+  // in a loop; the collection only needs reloading when `table` changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { refresh(); }, [table]);
 
   /* One-shot deep link from the on-page editor: the owner clicked a SPECIFIC
      item on the canvas (a menu item, a team member…) — open that record. */

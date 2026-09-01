@@ -1,0 +1,43 @@
+name: CI
+
+# deploy.yml only runs on pushes to main, so before this workflow a broken
+# build or a crashing route was first discovered *at deploy time*. Run the same
+# checks a contributor runs locally, on every PR and on main.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push supersedes the run in flight for the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint · test · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Route smoke tests
+        run: npm test
+
+      # No VITE_* secrets here on purpose: the build must succeed without
+      # Supabase, which is also what proves the seed fallbacks still compile.
+      - name: Build
+        run: npm run build

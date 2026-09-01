@@ -20,7 +20,7 @@ export default function Hero({ data = {} }) {
         <Flourish className="hero__flourish" width={210} color={hasImage ? 'rgba(255,253,247,0.9)' : 'var(--color-yellow)'} />
         {subheading && <p className="hero__sub">{subheading}</p>}
         {cta_label && cta_url && (
-          <p style={{ marginTop: 'var(--space-5)' }}>
+          <p className="hero__cta">
             <Link className="btn btn--accent btn--lg" to={cta_url}>{cta_label}</Link>
           </p>
         )}

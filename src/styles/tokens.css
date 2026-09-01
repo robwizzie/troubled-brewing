@@ -125,6 +125,40 @@
   --frame-pink: linear-gradient(145deg, var(--color-pink), var(--color-pink-deep));
 }
 
+/* =============================================================================
+   PHONE SCALE. The scale above is tuned for a 1120px canvas; dropped onto a
+   390px one unchanged it reads as a desktop page someone zoomed into — 2.75rem
+   section titles eating three lines, 4rem of air between every band, a menu
+   that scrolls for a minute. Most of this shop's visitors are on a phone, so
+   the phone gets its own scale: the same proportions, sized for the canvas
+   it's actually on. One place to tune, and every section inherits it, because
+   sections size from these tokens rather than hard-coded rems.
+   ============================================================================= */
+@media (max-width: 720px) {
+  :root {
+    --text-lg: 1.06rem;
+    --text-xl: 1.28rem;
+    --text-2xl: 1.6rem;
+    --text-3xl: 1.95rem;
+    --text-4xl: clamp(2rem, 9vw, 2.7rem);
+
+    /* the big end of the spacing scale compresses hardest — small gaps are
+       already right on a phone, 4–6rem bands are what waste the screen */
+    --space-7: 2.1rem;
+    --space-8: 2.6rem;
+    --space-9: 3.4rem;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --text-2xl: 1.48rem;
+    --text-3xl: 1.78rem;
+    --space-8: 2.3rem;
+    --space-9: 3rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-fast: 0ms;

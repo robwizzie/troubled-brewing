@@ -51,5 +51,14 @@ HTML drawn over it, so the copy stays editable and scales with the image.
 - If the artwork is ever **re-generated with frames moved**, the link boxes in
   `src/components/sections/ImmersiveGalleryHero.jsx` (`FRAME_LINKS`) need
   re-tuning to match.
-- Under 1020px the scene renders as a backdrop banner and the frame links
-  re-form as tappable plaques, so phones and tablets get a clean layout.
+- Under 1020px the scene renders as a backdrop banner and the wall **re-hangs
+  itself below it** as a salon hang of the **photographs in this folder** —
+  every destination becomes a real framed picture with a brass nameplate. So
+  the eight photos above (plus the two side pieces) are what phone visitors
+  actually see. Only **Visit Us** has no photo; it hangs as a little painted
+  chalk sign. Drop a `location.jpg`-style photo in and wire it up in
+  `FRAME_LINKS` if you'd rather it carried a picture too.
+- The scene file is the **largest asset on the site** and every phone
+  downloads it. When you re-export the artwork, keep it around **1536px** on
+  the long edge and aim for **under ~400 KB** — the current file is ~2.4 MB,
+  which is the one real drag on mobile load time.
