@@ -4,13 +4,13 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 
 | # | Page | Route | Purpose | Default seeded sections |
 |---|---|---|---|---|
-| 1 | Home | `/` | First impression + funnel to Order | `immersive_gallery_hero` by default (or chosen concept; the hero carries the live open/closed chalkboard + the owner-editable **Today's Special** note) → `featured_drink` → `hours` strip → `cta` (Order) → La Colombe `rich_text` → community teaser → `instagram` → `announcement` (if set) → `newsletter` |
+| 1 | Home | `/` | First impression + funnel to Order | `immersive_gallery_hero` by default (or chosen concept; a real photo of the room, the live open/closed chalkboard, the owner-editable **Today's Special** note, and the salon hang of framed photographs — no generated artwork) → `featured_drink` → `hours` strip → `cta` (Order) → La Colombe `rich_text` → community teaser → `instagram` → `announcement` (if set) → `newsletter` |
 | 2 | Menu | `/menu` | Browse the menu, order | `menu_block` (category-tabbed, dietary filters) → `cta` (Order on SpotOn) |
 | 3 | About | `/about` | Tom & Cat's story, La Colombe, why local | `hero` → `rich_text` (story) → `rich_text` (La Colombe, factual) → `image`/`gallery` |
-| 4 | Events & Community | `/events` | Upcoming events, host-an-event | `hero` → `events_list` → `cta` (host an event → catering) |
-| 5 | Hours & Location | `/location` | Live hours, map, parking, contact | `hours` → `map` → `rich_text` (parking) → `cta` (call/email) |
+| 4 | Events & Community | `/events` | Upcoming events, the board, host-an-event | `hero` → `events_list` → `community_board` → `cta` (host an event → catering) → `rich_text` (loyalty) → `instagram` |
+| 5 | Hours & Location | `/location` | Find us first, then live hours, parking, contact | `hero` → `map` (**Find us**) → `hours` → `rich_text` (parking) → `cta` (call) |
 | 6 | Contact | `/contact` | General + catering inquiry forms | `rich_text` (intro) → contact form → catering form (→ `submissions`) |
-| 7 | Community | `/community` | Events calendar, community board, loyalty, customer photos | `events_list` → `community_board` → `rich_text` (loyalty, informational) → `instagram` |
+| ~~7~~ | ~~Community~~ | ~~`/community`~~ | **Retired** — folded into Events; the route redirects there | — |
 | 8 | Reviews | `/reviews` | Google rating + curated testimonials + fresh reviews | `reviews_hero` → `testimonials_wall` → `google_reviews_feed` → `review_cta` |
 | 9 | Gallery Wall | `/gallery-wall` | The real framed art, with stories | `hero` → `gallery_pieces_grid` |
 | 10 | Troublemakers | `/troublemakers` | The team, bios + fun facts | `hero` → `troublemakers_grid` |
@@ -22,7 +22,7 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 
 ## Navigation
 
-Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" grouping for Gallery Wall, Troublemakers, **Our Story So Far (Timeline)**, Neighborhood, Community, Contact. A persistent **Order Now** button (SpotOn deep link) sits in the header on every page. Footer links: all pages + Privacy, Accessibility, **social links** (Instagram, Facebook, TikTok, X, YouTube — owner-managed), newsletter. Social links also appear on the contact and community pages.
+Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" grouping for Gallery Wall, Troublemakers, **Our Story So Far (Timeline)**, Neighborhood, Contact. (**/community was retired** — its events list duplicated /events, and its board, loyalty note and Instagram strip moved there; the route stays as a redirect to /events.) A persistent **Order Now** button (SpotOn deep link) sits in the header on every page. Footer links: all pages + Privacy, Accessibility, **social links** (Instagram, Facebook, TikTok, X, YouTube — owner-managed), newsletter. Social links also appear on the contact page.
 
 ## Concept-swappable home
 

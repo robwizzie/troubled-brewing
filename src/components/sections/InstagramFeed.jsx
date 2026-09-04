@@ -58,9 +58,9 @@ export default function InstagramFeed({ data = {} }) {
     <Reveal as="section" className="section section--alt">
       <div className="container" style={{ textAlign: 'center' }}>
         <p className="eyebrow">@{handle}</p>
-        <h2>Follow the Trouble</h2>
+        <h2>{data.heading || 'Follow the Trouble'}</h2>
         <p style={{ maxWidth: '46ch', margin: '0 auto', color: 'var(--color-text-soft)' }}>
-          Latte art, new drops, events, and the occasional dog behind the counter. Come say hi on Instagram.
+          {data.body || 'Latte art, new drops, events, and the occasional dog behind the counter. Come say hi on Instagram.'}
         </p>
         <div className="ig-strip">
           {posts.length >= 1

@@ -23,6 +23,7 @@ export default function SettingsHome() {
           <li><Link to="/admin/hours">Hours</Link> <span>weekly grid + holiday closures</span></li>
           <li><Link to="/admin/quick-blocks">Quick Blocks</Link> <span>announcement banner, social links, featured drink</span></li>
           <li><Link to="/admin/google">Google Profile</Link> <span>live rating + reviews connection</span></li>
+          <li><Link to="/admin/reviews">Reviews</Link> <span>choose which Google reviews show, feature the best, add their photos</span></li>
           <li><Link to="/admin/inbox">Inbox</Link> <span>contact + catering messages</span></li>
           <li><Link to="/admin/media">Media Library</Link> <span>every photo you've uploaded</span></li>
           <li><Link to="/admin/help">Help Center</Link> <span>plain-English how-tos</span></li>

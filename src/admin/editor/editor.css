@@ -156,3 +156,53 @@
   box-shadow: var(--shadow-lg);
   outline: 1px solid rgba(0, 0, 0, 0.2);
 }
+
+/* ---- Phones & tablets ------------------------------------------------------
+   The editor was built as a desktop split view: a canvas with a 360px panel
+   docked beside it. On a phone that panel is most of the screen and the canvas
+   is a sliver, so side-by-side has to become stacked — the page you're editing
+   above, the fields for it in a sheet below, each scrolling on its own. That
+   is the whole reason an owner can now edit the site from the phone in their
+   apron pocket instead of only from the laptop in the office.
+
+   `dvh`, not `vh`: on iOS Safari the URL bar is inside `vh`, so a 100vh editor
+   put its Publish button under the browser chrome. */
+@media (max-width: 900px) {
+  .tb-editor__topbar {
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--space-3);
+  }
+  /* the preview-width toggles are desktop-only furniture: on a phone the
+     canvas IS phone width, so a "phone width" button has nothing to do */
+  .tb-editor__viewports { display: none; }
+  .tb-editor__savestate { min-width: 0; margin-left: auto; }
+  .tb-editor__actions { gap: var(--space-2); }
+
+  .tb-editor__body { flex-direction: column; }
+  .tb-editor__body > .tb-canvas { flex: 1 1 auto; min-height: 34dvh; }
+
+  /* the panel becomes a bottom sheet: full width, its own scroll, and a lip so
+     it reads as a sheet over the page rather than a second page */
+  .tb-panel {
+    width: 100%;
+    flex: 0 0 auto;
+    max-height: 58dvh;
+    border-left: 0;
+    border-top: 1px solid var(--color-border);
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
+  }
+  .tb-panel__head { border-radius: 14px 14px 0 0; padding: var(--space-2) var(--space-3); }
+  .tb-panel__body { padding: var(--space-3); overscroll-behavior: contain; }
+  .tb-panel__foot { padding: var(--space-2) var(--space-3); }
+
+  /* a phone-width canvas is already the phone: don't letterbox it */
+  .tb-canvas--mobile { padding: 0; }
+  .tb-canvas--mobile .tb-canvas__frame { width: 100%; border-radius: 0; outline: 0; box-shadow: none; }
+
+  /* thumb-sized controls — 24px icon buttons are a miss-tap on touch */
+  .tb-panel .iconbtn,
+  .tb-outline__reorder button { min-width: 34px; min-height: 34px; }
+  .tb-panel input, .tb-panel select, .tb-panel textarea { font-size: 16px; } /* iOS zooms below 16px */
+}

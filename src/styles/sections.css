@@ -87,7 +87,14 @@
 .social-proof__carousel {
   position: relative; flex: 1 1 520px; min-width: 0;
   --sp-gap: var(--space-4);
-  --sp-pad: 26px;
+  /* MUST equal the gap. A page of cards is `padL + n*card + (n-1)*gap` wide,
+     so the next card starts at `clientWidth - padR + gap` — any padding deeper
+     than the gap leaves that difference of the NEXT frame showing at the right
+     edge, which is the sliced-card-at-the-edge this layout exists to avoid.
+     (It was 26px against a 16px gap: a 10px slice of molding, every view.)
+     16px still clears the frame shadow horizontally — --shadow-frame is a 24px
+     blur with no x-offset, so it reaches ~12px each side. */
+  --sp-pad: var(--sp-gap);
 }
 .social-proof__quotes {
   list-style: none; margin: 0;
@@ -136,6 +143,16 @@
   font-family: var(--font-display); font-size: 1.7rem;
   color: var(--color-yellow-deep); opacity: 0.55;
 }
+/* A review that came with a picture hangs the picture where the quote mark
+   would be — inside the mat, keylined like a real print, so the card reads as
+   a photograph with a caption rather than a quote with a thumbnail stuck on. */
+.social-proof__quote--photo { justify-content: flex-start; }
+.social-proof__photo {
+  display: block; width: 100%; aspect-ratio: 4 / 3;
+  object-fit: cover; border-radius: 1px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(40, 30, 12, 0.18);
+}
+.social-proof__quote--photo .social-proof__text { font-size: clamp(0.84rem, 1.25vw, 0.98rem); }
 .social-proof__text {
   max-width: 34ch; font-family: var(--font-display);
   font-size: clamp(0.92rem, 1.45vw, 1.08rem); line-height: 1.45;
@@ -195,42 +212,68 @@
   }
   .social-proof__eyebrow { margin-bottom: var(--space-1); }
   .social-proof__carousel { flex-basis: 100%; }
-  .social-proof__carousel { --sp-pad: 18px; --sp-gap: var(--space-3); }
   .social-proof__quotes { padding-top: 14px; padding-bottom: 28px; }
   .social-proof__quote.gw-frame__art {
     min-height: 0; height: auto;
     padding: 20px 18px; border-width: 6px;
   }
   .social-proof__text { max-width: 30ch; font-size: 0.95rem; line-height: 1.48; }
+  .social-proof__quote--photo .social-proof__text { font-size: 0.88rem; }
   .social-proof__author .brass-plate { white-space: normal; overflow-wrap: anywhere; }
 }
 
-/* ---- Signature drinks teaser ---------------------------------------------- */
-.sigdrinks { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
-.sigdrink {
+/* ---- Products: the shared drink/food card ----------------------------------
+   ONE card design (src/components/ProductCard.jsx) drawn by both the homepage
+   "Signature sips" teaser and the Menu page's card layout, so a drink looks
+   the same wherever a visitor meets it. Each hangs in a little vintage frame
+   from the gallery-wall vocabulary with its name on a brass plate.
+   `--product-cols` is the teaser's designed row width; the menu's own grid
+   just fills the container. */
+.products { display: grid; grid-template-columns: repeat(var(--product-cols, 3), minmax(0, 1fr)); gap: var(--space-5); align-items: stretch; }
+.products--menu { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: var(--space-5); }
+.product {
   background: var(--color-surface); border: 1px solid var(--color-border);
   border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);
   display: flex; flex-direction: column;
   transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.sigdrink:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
-/* each drink hangs in its own little vintage frame (gallery frame classes set
-   per-card in SignatureDrinks.jsx), name on a brass plate */
-.sigdrink__frame {
+.product:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
+.product__frame {
   margin: var(--space-4) var(--space-4) 0;
   background: radial-gradient(120% 120% at 50% 0%, var(--color-yellow-soft), var(--color-sage-soft));
 }
-.sigdrink__body { padding: var(--space-3) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
-.sigdrink__desc { color: var(--color-text-soft); font-size: var(--text-sm); margin: 0; flex: 1; }
-.sigdrink__price { font-family: var(--font-display); font-weight: 700; color: var(--color-wood); margin: var(--space-2) 0 0; }
-.sigdrink--loading { min-height: 220px; background: var(--color-sage-soft); }
-.sigdrinks__cta { text-align: center; margin-top: var(--space-6); }
+/* The drawn stand-in until a photo exists. It FILLS the mat with the frame's
+   warm ground rather than sitting as a small glyph on white — a tiny icon
+   marooned in a big white rectangle reads as a photo that failed to load,
+   which is worse than no card at all. */
+.product__motif {
+  display: grid; place-items: center;
+  width: 100%; height: 100%;
+  background: radial-gradient(120% 120% at 50% 0%, var(--color-yellow-soft), var(--color-sage-soft));
+  box-shadow: inset 0 0 0 1px rgba(126, 96, 34, 0.14);
+}
+.product__body { padding: var(--space-3) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
+/* always present, even when a drink has no description — it's the flexible
+   element that pushes the price line to the card's bottom, so a row of cards
+   lines its prices up instead of stair-stepping them */
+.product__desc { color: var(--color-text-soft); font-size: var(--text-sm); margin: 0; flex: 1; }
+/* price and dietary badges share the card's bottom line, so cards in a row
+   finish at the same place whatever the description length */
+.product__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin: var(--space-2) 0 0; min-height: 1.2em; }
+.product__price { font-family: var(--font-display); font-weight: 700; color: var(--color-wood); }
+.product__flags { display: flex; gap: 4px; }
+.product--loading { min-height: 220px; background: var(--color-sage-soft); }
+.products__cta { text-align: center; margin-top: var(--space-6); }
+/* the optional line under a section heading (teaser subheading) */
+.section-sub { text-align: center; max-width: 52ch; margin: calc(-1 * var(--space-4)) auto var(--space-6); color: var(--color-text-soft); }
 @media (max-width: 760px) {
-  /* stacked full-width cards — the old thumbnail-row squeezed the framed art
-     to 112px and shattered the brass nameplates one word per line */
-  .sigdrinks { grid-template-columns: 1fr; gap: var(--space-4); }
-  .sigdrink__frame { --ar: 16 / 9; margin: var(--space-3) var(--space-3) 0; }
-  .sigdrink__body { padding: var(--space-3) var(--space-4) var(--space-4); }
+  /* two-up on a big phone / small tablet keeps the framed art from ballooning
+     to a full screen per drink; the 720px rule below turns it into a swipe
+     shelf on true phone widths */
+  .products { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .products--menu { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-4); }
+  .product__frame { --ar: 16 / 10; margin: var(--space-3) var(--space-3) 0; }
+  .product__body { padding: var(--space-3) var(--space-4) var(--space-4); }
 }
 
 /* ---- Featured drink ------------------------------------------------------- */
@@ -332,6 +375,84 @@
 .event-card__img, .local-card__img { width: 100%; height: 170px; object-fit: cover; }
 
 /* ---- Reviews -------------------------------------------------------------- */
+/* ---- Local Love: the walk down Station Ave -------------------------------
+   Cards in street order, with the shop's own door dropped in at its number.
+   Every field on a card is optional, so the layout has to hold up when a
+   business is nothing but a name: no logo draws a monogram tile, no address
+   drops the number badge, and the card still reads as finished. */
+/* stretch, not start: cards in a row that shrink to their own text length
+   leave the row looking half-finished, and the "Visit their site" buttons
+   stair-step. The blurb is the flexible element that absorbs the difference. */
+/* the small print under the map — parking, the lot round the back, whatever
+   people always ask */
+.map__note { max-width: 56ch; margin: var(--space-4) auto 0; text-align: center; color: var(--color-text-soft); font-size: var(--text-sm); }
+
+.neighbors { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-5); align-items: stretch; }
+.neighbor {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.neighbor:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
+.neighbor__head { display: flex; align-items: center; gap: var(--space-3); }
+.neighbor__logo { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; border-radius: var(--radius-sm); background: var(--color-paper); }
+/* a drawn monogram beats an empty logo box — and beats using a logo nobody
+   gave us permission to publish */
+.neighbor__monogram {
+  width: 56px; height: 56px; flex-shrink: 0;
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--color-green-soft);
+  border: 1px solid color-mix(in srgb, var(--color-green-deep) 30%, transparent);
+  font-family: var(--font-display); font-weight: 900; font-size: 1.15rem;
+  letter-spacing: 0.02em; color: var(--color-green-deep);
+}
+.neighbor__title { min-width: 0; }
+.neighbor__title h3 { margin: 0; font-size: var(--text-lg); line-height: 1.2; }
+.neighbor__meta { margin: 3px 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: var(--text-xs); }
+.neighbor__cat {
+  padding: 2px 8px; border-radius: var(--radius-pill);
+  background: var(--color-yellow-soft); color: var(--color-wood-deep);
+  font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.neighbor__num { color: var(--color-text-soft); letter-spacing: 0.04em; }
+.neighbor__photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: var(--radius-md); }
+.neighbor__blurb { margin: 0; color: var(--color-text-soft); font-size: var(--text-sm); line-height: 1.55; flex: 1; }
+/* the line customers actually act on, so it gets its own treatment */
+.neighbor__love {
+  margin: 0; padding: var(--space-3);
+  border-left: 3px solid var(--color-yellow-deep);
+  background: color-mix(in srgb, var(--color-yellow-soft) 55%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-display); font-size: var(--text-sm); line-height: 1.4;
+}
+.neighbor__love-label {
+  display: block; margin-bottom: 2px;
+  font-family: var(--font-body); font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-wood-deep);
+}
+.neighbor__links { margin: 0; display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.neighbor__map { font-size: var(--text-sm); font-weight: 700; color: var(--color-accent-text); text-decoration: none; }
+.neighbor__map:hover { text-decoration: underline; }
+/* the shop's own door, marked in place on the walk */
+.neighbor--us {
+  align-items: center; justify-content: center; text-align: center;
+  gap: var(--space-1);
+  border: 2px dashed var(--color-green-deep);
+  background: var(--color-green-soft);
+  box-shadow: none;
+}
+.neighbor--us:hover { transform: none; box-shadow: none; }
+.neighbor__uslabel { margin: 0; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-green-deep); }
+.neighbor__usname { margin: 0; font-family: var(--font-display); font-weight: 900; font-size: var(--text-xl); color: var(--color-ink); }
+@media (max-width: 560px) {
+  .neighbors { grid-template-columns: 1fr; gap: var(--space-4); }
+  .neighbor { padding: var(--space-4); }
+}
+
 .reviews-hero__stat { display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; justify-content: center; }
 .reviews-hero__num { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 700; }
 .reviews-hero__count { color: var(--color-text-soft); }
@@ -809,6 +930,16 @@
   .gw-hero__meta-star { display: none; }
   .gw-frame__plaque { font-size: 0.72rem; padding: 3px 12px; max-width: calc(100% - 14px); bottom: 7px; }
 }
+@media (max-width: 359px) {
+  /* Two columns on a 320px screen leave ~140px a frame — under the width an
+     ornate molding plus an engraved nameplate need before the label starts
+     wrapping a word per line. One column hangs fewer, bigger, legible pieces,
+     which is what a small wall does anyway. */
+  .gw-wall { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .gw-wall .gw-frame__art { aspect-ratio: 4 / 3; }
+  .gw-wall .gw-frame__art--oval-gilt, .gw-wall .gw-frame__art--oval-black { aspect-ratio: 1 / 1.05; }
+  .gw-frame__plaque { font-size: 0.78rem; }
+}
 
 /* ---- Concept #2: Warm Storefront (immersive photo hero) ------------------- */
 .wsh { position: relative; min-height: 84vh; display: grid; align-items: end; overflow: hidden; isolation: isolate; }
@@ -924,29 +1055,98 @@
 }
 
 /* ---- Gallery pieces ------------------------------------------------------- */
-.pieces { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-7); }
-.piece { text-align: center; }
-.piece__frame {
-  aspect-ratio: 4/5; background: var(--color-paper); border: 12px solid var(--color-frame);
-  border-radius: 3px; box-shadow: var(--shadow-frame); overflow: hidden; display: grid; place-items: center;
-  transform: rotate(var(--tilt, 0deg)); transition: transform var(--dur) var(--ease);
-}
-.piece:hover .piece__frame { transform: rotate(0); }
-.piece__frame img { width: 100%; height: 100%; object-fit: cover; }
-.piece__frame:has(.piece__placeholder) { background: var(--color-sage-soft); }
-.piece__placeholder { font-size: 3.5rem; opacity: 0.55; }
-.piece__title { margin: var(--space-4) 0 var(--space-2); }
-.piece__story { color: var(--color-text-soft); font-size: var(--text-sm); }
+/* ---- The Gallery Wall page: the real artwork, hung ------------------------
+   A masonry hang rather than a grid of equal cells, so tall portraits and wide
+   landscapes nest the way they do on the actual wall instead of being cropped
+   to a common shape. Each piece uses the shared `.gw-frame__art--*` moldings,
+   so this page and the homepage wall are visibly the same wall.
 
-/* ---- Troublemakers -------------------------------------------------------- */
-.tm-card { text-align: left; }
+   The credit block under each frame is a museum label: title, then the artist
+   (linked), then medium and date. Real people made this work; the label is
+   where the page says so. */
+.pieces { columns: 300px; column-gap: var(--space-7); }
+.piece {
+  break-inside: avoid;
+  margin: 0 0 var(--space-7);
+  text-align: center;
+}
+/* the tilt belongs to the FRAME, not the whole figure — rotating the caption
+   with it tipped the story text off true and read as a rendering bug */
+.piece__frame {
+  display: grid; place-items: center;
+  transform: rotate(var(--tilt, 0deg));
+  filter: drop-shadow(0.25rem 0.45rem 0.8rem rgba(60, 45, 20, 0.28));
+  transition: transform var(--dur) var(--ease);
+}
+.piece:hover .piece__frame { transform: rotate(0deg); }
+/* a labelled card in the frame until the piece is photographed — the wall
+   reads as hung rather than half-built */
+.piece__awaiting {
+  display: grid; place-items: center;
+  width: 100%; height: 100%;
+  background: radial-gradient(130% 105% at 50% -5%, rgba(126, 96, 34, 0.12), transparent 62%), var(--color-paper);
+  font-size: 2rem; color: var(--color-yellow-deep); opacity: 0.65;
+}
+/* the museum label */
+.piece__label { margin-top: var(--space-5); }
+.piece__title { margin: 0; font-size: var(--text-lg); line-height: 1.2; }
+.piece__artist { margin: 3px 0 0; font-size: var(--text-sm); font-weight: 700; color: var(--color-wood-deep); }
+.piece__artist a { color: inherit; text-underline-offset: 3px; }
+.piece__credits {
+  margin: 4px 0 0;
+  font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--color-text-soft);
+}
+.piece__sale {
+  display: inline-block; margin: var(--space-2) 0 0; padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-yellow-soft); color: var(--color-wood-deep);
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.piece__story { margin: var(--space-3) 0 0; color: var(--color-text-soft); font-size: var(--text-sm); line-height: 1.55; text-align: left; }
+
+/* ---- Troublemakers ---------------------------------------------------------
+   Every field on a card is optional, so the layout has to look deliberate for
+   someone who filled in only their name. */
+.tm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-5); align-items: stretch; }
+.tm-card {
+  display: flex; flex-direction: column;
+  text-align: left; overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.tm-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
 .tm-card__photo { aspect-ratio: 1/1; background: var(--color-sage); display: grid; place-items: center; }
 .tm-card__photo img { width: 100%; height: 100%; object-fit: cover; }
 .tm-card__initials { font-family: var(--font-display); font-size: 4rem; color: var(--color-on-primary); }
-.tm-facts { margin: var(--space-3) 0 0; display: grid; gap: var(--space-2); }
+.tm-card__body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
+.tm-card__name { margin: 0; font-size: var(--text-xl); line-height: 1.15; }
+.tm-card__meta { margin: 2px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.tm-card__role { font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-text); }
+.tm-card__pronouns { font-size: var(--text-xs); color: var(--color-text-soft); }
+.tm-card__since { margin: 2px 0 0; font-size: var(--text-xs); color: var(--color-text-soft); }
+/* "what should I order?" is the question these people field all day, so their
+   own answer gets the emphasis rather than sitting in with the fun facts */
+.tm-card__drink {
+  margin: var(--space-3) 0 0; padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--color-yellow-deep);
+  background: color-mix(in srgb, var(--color-yellow-soft) 55%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-display); font-size: var(--text-sm); line-height: 1.35;
+}
+.tm-card__drink-label {
+  display: block; margin-bottom: 1px;
+  font-family: var(--font-body); font-size: 0.6rem; font-weight: 800;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-wood-deep);
+}
+.tm-card__bio { margin: var(--space-3) 0 0; color: var(--color-text-soft); font-size: var(--text-sm); line-height: 1.55; flex: 1; }
+.tm-facts { margin: var(--space-4) 0 0; display: grid; gap: var(--space-2); }
 .tm-facts__row { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px dashed var(--color-border); padding-top: var(--space-2); }
 .tm-facts__row dt { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-accent); font-weight: 700; }
-.tm-facts__row dd { margin: 0; }
+.tm-facts__row dd { margin: 0; font-size: var(--text-sm); }
 
 /* ---- Newsletter ----------------------------------------------------------- */
 .newsletter-card { text-align: center; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-7); box-shadow: var(--shadow-sm); }
@@ -1018,11 +1218,16 @@
   .featured__body { padding: var(--space-5) var(--space-4) var(--space-6); }
   .featured__desc { font-size: var(--text-base); }
 
-  /* ---- Signature sips: stacked full-width cards cost three screens for
-     three drinks. On a phone they become a shelf you SWIPE — the next piece
-     peeks in from the right, which is both the affordance and the reason it
-     still reads as a gallery rather than a list. Pure scroll-snap, no JS. */
-  .sigdrinks {
+  /* ---- Products: stacked full-width cards cost a screen per drink. On a
+     phone the teaser becomes a shelf you SWIPE — the next piece peeks in from
+     the right, which is both the affordance and the reason it still reads as a
+     gallery rather than a list. Pure scroll-snap, no JS.
+
+     The MENU's card grid is deliberately left alone: a menu is something you
+     scan top-to-bottom for the thing you want, and hiding two thirds of a
+     category behind a sideways swipe is the wrong shape for that. It drops to
+     a compact two-column grid instead (rule above). */
+  .products:not(.products--menu) {
     display: flex;
     grid-template-columns: none;
     gap: var(--space-4);
@@ -1035,16 +1240,16 @@
     margin-inline: calc(-1 * var(--space-4));
     padding: 4px var(--space-4) var(--space-4);
   }
-  .sigdrinks::-webkit-scrollbar { display: none; }
-  .sigdrink {
+  .products:not(.products--menu)::-webkit-scrollbar { display: none; }
+  .products:not(.products--menu) > .product {
     flex: 0 0 min(78%, 300px);
     scroll-snap-align: start;
     scroll-snap-stop: always; /* one swipe = one drink, never a fly-past */
   }
-  .sigdrink__frame { margin: var(--space-4) var(--space-4) 0; }
-  .sigdrink__body { padding: var(--space-3) var(--space-4) var(--space-4); }
-  .sigdrinks__cta { margin-top: var(--space-4); }
-  .sigdrinks__cta .btn { width: 100%; justify-content: center; }
+  .product__frame { margin: var(--space-4) var(--space-4) 0; }
+  .product__body { padding: var(--space-3) var(--space-4) var(--space-4); }
+  .products__cta { margin-top: var(--space-4); }
+  .products__cta .btn { width: 100%; justify-content: center; }
 
   /* ---- The menu is the most-visited page on a phone, and it was scrolling
      for a minute: item names at --text-lg with 1rem between every row. Tighten
@@ -1094,19 +1299,22 @@
      full-width square — a 358px block of green with one initial in it when a
      photo hasn't been uploaded. A person reads better as a portrait beside
      their name anyway, so the card turns on its side. ---- */
+  .tm-grid { grid-template-columns: 1fr; gap: var(--space-4); }
   .tm-card {
     display: grid;
-    grid-template-columns: 104px minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: 112px minmax(0, 1fr);
+    align-items: stretch;
   }
   .tm-card__photo { aspect-ratio: 3 / 4; height: 100%; border-right: 1px solid var(--color-border); }
   .tm-card__initials { font-size: 2.4rem; }
-  .tm-card .card__body { padding: var(--space-4); }
+  .tm-card__body { padding: var(--space-4); }
   .tm-facts__row { padding-top: var(--space-1); }
 
   /* ---- Gallery pieces: one big piece per screen was the whole page;
-     two up reads as a collection again ---- */
-  .pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+     two columns reads as a collection again ---- */
+  .pieces { columns: 2; column-gap: var(--space-4); }
+  .piece { margin-bottom: var(--space-5); }
+  .piece__story { font-size: var(--text-xs); }
   .piece__frame { border-width: 7px; }
   .piece__title { font-size: var(--text-base); margin: var(--space-3) 0 var(--space-1); }
   .piece__placeholder { font-size: 2rem; }
@@ -1117,4 +1325,12 @@
      whole page — but the moldings thin out so the picture keeps the space */
   .pieces { gap: var(--space-3); }
   .piece__frame { border-width: 6px; }
+}
+
+@media (max-width: 430px) {
+  /* Two columns of framed art on a narrow phone leaves each piece too small to
+     read its museum label. One column, full size. */
+  .pieces { columns: 1; column-gap: 0; }
+  .piece { margin-bottom: var(--space-6); }
+  .piece__story { font-size: var(--text-sm); }
 }

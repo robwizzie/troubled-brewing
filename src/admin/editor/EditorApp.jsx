@@ -21,7 +21,6 @@ const PAGE_NAMES = {
   events: 'Events',
   location: 'Hours & Location',
   contact: 'Contact',
-  community: 'Community',
   reviews: 'Reviews',
   'gallery-wall': 'Gallery Wall',
   troublemakers: 'Troublemakers',
