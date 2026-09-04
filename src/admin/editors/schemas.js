@@ -4,7 +4,7 @@
    a `manager` key — the panel routes "Manage —" straight to that collection
    (see src/admin/editor/sectionMeta.js). See docs/CMS.md. */
 
-import { IMMERSIVE_WALL_PIECES } from '../../lib/wallPieces.js';
+import { WALL_PIECES } from '../../lib/wallPieces.js';
 import { MENU_CATEGORY_ORDER, MENU_CATEGORY_LABELS } from '../../lib/menuService.js';
 
 const LAYOUTS = [{ value: 'masonry', label: 'Masonry' }, { value: 'grid', label: 'Grid' }];
@@ -184,14 +184,16 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'igh_special_label', label: 'Special note title', type: 'text', hint: 'The taped note’s heading. Blank = "Today’s Special".' },
       { name: 'igh_special_text', label: 'Special note text', type: 'text', hint: 'e.g. "Honey Almond Latte". Blank hides the note.' },
       { name: 'specials_link', label: 'Special note link URL', type: 'text', hint: '/menu#specials opens the menu on the Specialty tab. Shared by every homepage look.' },
+      { name: 'igh_banner_image_url', label: 'Photo behind your name', type: 'image', preset: 'hero', hint: 'The wide shot of the shop at the very top, with your logo lettered over it. A photo of the real room works best.' },
       { name: 'igh_mailchimp_action_url', label: 'Newsletter signup URL (Mailchimp)', type: 'text', hint: 'Shows the "Stay in the Know" signup panel. Blank hides it. See docs/INTEGRATIONS.md.' },
+      { name: 'igh_wall_heading', label: 'Line above the wall', type: 'text', hint: 'The little line over the framed pictures. Blank = "Have a look around".' },
       { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
       {
         name: 'igh_pieces',
-        label: 'The frames on your wall',
+        label: 'The pictures on your wall',
         type: 'wallpieces',
-        defaults: IMMERSIVE_WALL_PIECES,
-        hint: 'Every frame on the hero — its photo, its label and where it links. These are the same frames phone visitors see hung as real pictures. Leave a box blank to keep the original.',
+        defaults: WALL_PIECES,
+        hint: 'Every framed picture on your homepage — its photo, its label, where it goes and its frame. Leave a box blank to keep the original.',
       },
     ],
   },
