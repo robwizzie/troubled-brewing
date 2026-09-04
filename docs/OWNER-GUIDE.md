@@ -42,8 +42,15 @@ Go to the **Events** page, click the events list, press **Manage events →**. T
 ### Add a Troublemaker (team member)
 Go to the **Troublemakers** page, click the team grid, press **Manage Troublemakers →**. Photo, name, role, short bio, fun facts. Mark someone inactive when they move on (keeps their record).
 
-### Add a Gallery Wall story / a local business
-Same pattern: go to the page, click the section, press the **Manage —** button in the panel.
+### Add a piece to the Gallery Wall
+Go to the **Gallery Wall** page, click the collection, press **Manage pieces →**.
+
+Fill in **Who made it** and **Link for the artist** whenever you know them — the artist's name shows under the piece and links wherever you point it. That credit is the point of that page. You can also note what it is (“Oil on canvas”), roughly when it's from, which frame it hangs in, and whether it's for sale. Everything except the title is optional.
+
+### Add a local business to Local Love
+Go to **Local Love**, click the grid, press **Manage Local Love →**.
+
+Give each one a **street address** and the page arranges itself as a walk down Station Ave, in number order, with your own door marked in the right place — you never have to sort the list. Ask them for a **logo** (most places are glad to be featured; without one we draw their initials, which looks fine), and fill in **What you send people for** — the specific thing, like “the vodka rigatoni”. That's the line customers actually act on.
 
 ### Choose which Google reviews show
 **⚙ Settings → Reviews** (or click the reviews strip on your homepage and press **Manage reviews →**). Every review Google has sent us is listed there.

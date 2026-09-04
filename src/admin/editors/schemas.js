@@ -13,17 +13,30 @@ const MENU_CATEGORIES = MENU_CATEGORY_ORDER.map((c) => ({ value: c, label: MENU_
 export const SECTION_EDITOR_SCHEMAS = {
   hero: {
     fields: [
+      { name: 'eyebrow', label: 'Little line above the title', type: 'text', hint: 'Optional. A few words in small caps, e.g. “Since 2021”.' },
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'subheading', label: 'Subheading', type: 'textarea', rows: 2 },
-      { name: 'background_image_url', label: 'Background image', type: 'image', preset: 'hero' },
-      { name: 'cta_label', label: 'Button label', type: 'text' },
-      { name: 'cta_url', label: 'Button link', type: 'text', hint: 'A page like /menu, or a full URL.' },
+      { name: 'background_image_url', label: 'Background photo', type: 'image', preset: 'hero', hint: 'Optional. Leave it blank and the banner uses the sage-and-cream pattern with the drawn cup and beans, which suits most pages.' },
+      { name: 'cta_label', label: 'Button label', type: 'text', hint: 'Leave blank for no button.' },
+      { name: 'cta_url', label: 'Button link', type: 'text', hint: 'A page like /menu, a full https:// address, or tel:+18566176638.' },
     ],
   },
   rich_text: {
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'body_markdown', label: 'Body', type: 'markdown', rows: 8, hint: 'Supports simple formatting: **bold**, *italic*, [links](https://…), and lists.' },
+      {
+        name: 'variant',
+        label: 'How it looks',
+        type: 'select',
+        placeholderOption: false,
+        options: [
+          { value: '', label: 'Plain — normal text on the page' },
+          { value: 'lead', label: 'Opening paragraph — centered and larger, with a coffee cup above' },
+          { value: 'alt', label: 'On a soft sage band — good for breaking up a long page' },
+        ],
+        hint: 'Alternating a couple of blocks onto the sage band is what keeps a long page from reading as one wall of text.',
+      },
     ],
   },
   image: {
@@ -35,8 +48,8 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   gallery: {
     fields: [
-      { name: 'images', label: 'Images', type: 'images' },
-      { name: 'layout', label: 'Layout', type: 'select', options: [{ value: 'grid', label: 'Grid' }] },
+      { name: 'heading', label: 'Heading', type: 'text', hint: 'Optional.' },
+      { name: 'images', label: 'Photos', type: 'images', hint: 'Add as many as you like. Alt text describes the photo for screen readers and helps you show up in search.' },
     ],
   },
   menu_block: {
@@ -59,8 +72,11 @@ export const SECTION_EDITOR_SCHEMAS = {
     ],
   },
   hours: {
-    note: 'Your hours live in the Hours editor. This section shows them live.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'Your opening times live in Settings → Hours, including holiday closures. This section shows them live, so you only ever change them in one place.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional. e.g. “Kitchen closes half an hour before we do.”' },
+    ],
   },
   cta: {
     fields: [
@@ -72,20 +88,34 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   events_list: {
     manager: 'events',
-    note: 'Events live in the Events manager.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'Add and edit events below. Anything with a date in the past drops off the site by itself — you never have to tidy up.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional.' },
+      { name: 'empty_message', label: 'When there’s nothing coming up', type: 'text', hint: 'Shown when the list is empty. Blank = “Nothing on the calendar right now — check back soon.”' },
+    ],
   },
   community_board: {
-    note: 'The board’s picks live in Quick Blocks.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'What’s flying off the menu and the barista’s pick. Edit the entries in Settings → Quick Blocks.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional.' },
+    ],
   },
   instagram: {
-    fields: [{ name: 'embed_handle', label: 'Instagram handle', type: 'text', hint: 'Without the @.' }],
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text', hint: 'Blank = “Follow the Trouble”.' },
+      { name: 'body', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Blank uses our default line about latte art and the dog behind the counter.' },
+      { name: 'embed_handle', label: 'Instagram handle', type: 'text', hint: 'Without the @.' },
+    ],
   },
   map: {
     fields: [
-      { name: 'address', label: 'Address', type: 'text' },
-      { name: 'embed_url', label: 'Custom map embed URL', type: 'text', hint: 'Optional — leave blank to auto-build from the address.' },
+      { name: 'heading', label: 'Heading', type: 'text', hint: 'Blank = “Find us”.' },
+      { name: 'address', label: 'Address', type: 'text', hint: 'Drives both the map and the directions button.' },
+      { name: 'button_label', label: 'Directions button', type: 'text', hint: 'Blank = “Get directions”.' },
+      { name: 'note', label: 'Note under the map', type: 'textarea', rows: 2, hint: 'Optional. The thing people always ask — parking, the lot round the back, which door to use.' },
+      { name: 'embed_url', label: 'Custom map embed URL', type: 'text', hint: 'Optional — leave blank to build the map from the address above.' },
     ],
   },
   newsletter: {
@@ -133,8 +163,11 @@ export const SECTION_EDITOR_SCHEMAS = {
     ],
   },
   reviews_hero: {
-    note: 'The rating + count come live from your Google Profile.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'The star rating and the review count come live from Google, so they’re always current.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'subheading', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional.' },
+    ],
   },
   testimonials_wall: {
     manager: 'testimonials',
@@ -281,8 +314,11 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   timeline_grid: {
     manager: 'timeline',
-    note: 'Timeline milestones live in the TB Timeline manager.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'Your milestones — opening day, anniversaries, the drink that took off. Add and edit them below.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional.' },
+    ],
   },
 };
 

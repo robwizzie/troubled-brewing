@@ -6,7 +6,7 @@ import { useDataVersion } from '../../lib/dataVersion.js';
 /* The community board: owner-edited "staff picks" / what's flying off the menu,
    from content_blocks.staff_picks. */
 export default function CommunityBoard({ data = {} }) {
-  const { heading = 'On the Community Board' } = data;
+  const { heading = 'On the Community Board', intro = '' } = data;
   const [block, setBlock] = useState(null);
   const version = useDataVersion('content_blocks');
 
@@ -22,6 +22,7 @@ export default function CommunityBoard({ data = {} }) {
     <Reveal as="section" className="section section--alt">
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
+        {intro && <p className="section-sub">{intro}</p>}
         <div className="grid grid--2">
           {items.map((it, i) => (
             <div key={i} className="card board-card">
