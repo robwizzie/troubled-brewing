@@ -246,18 +246,38 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   gallery_pieces_grid: {
     manager: 'gallery',
-    note: 'Gallery pieces live in the Gallery Wall manager.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'Every piece of art on your wall, with the artist credited and linked. Add and edit them below — a photo, who made it, and the story behind it.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional. A sentence about the wall and the people whose work is on it.' },
+    ],
   },
   troublemakers_grid: {
     manager: 'troublemakers',
-    note: 'Team members live in the Troublemakers manager.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'Your team — a photo, what they do, their go-to drink and a few fun facts. Add and edit them below.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional. A sentence introducing the crew.' },
+    ],
   },
   local_businesses_grid: {
     manager: 'neighborhood',
-    note: 'Businesses live in the Local Love manager.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    note: 'The businesses themselves live in Local Love below. Give each one a street address and the page lays them out as a walk down the avenue, with your own door marked in place.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional. A sentence about your block.' },
+      {
+        name: 'order_by',
+        label: 'Order them by',
+        type: 'select',
+        placeholderOption: false,
+        options: [
+          { value: 'street', label: 'Street number — a walk down the avenue' },
+          { value: 'manual', label: 'The order I put them in' },
+        ],
+      },
+      { name: 'show_us', label: 'Mark our own door on the walk', type: 'checkbox', hint: 'Drops a “You are here” card in at 514 Station Ave.' },
+    ],
   },
   timeline_grid: {
     manager: 'timeline',
