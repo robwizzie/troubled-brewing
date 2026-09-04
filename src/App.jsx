@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
@@ -62,7 +62,11 @@ export default function App() {
         <Route path="/events" element={<PublicShell><SitePage slug="events" /></PublicShell>} />
         <Route path="/location" element={<PublicShell><SitePage slug="location" /></PublicShell>} />
         <Route path="/contact" element={<PublicShell><ContactPage /></PublicShell>} />
-        <Route path="/community" element={<PublicShell><SitePage slug="community" showSocial /></PublicShell>} />
+        {/* /community was retired — its events list duplicated /events, and the
+            board, loyalty note and Instagram strip moved there. Kept as a
+            redirect so old links, printed cards and search results still land
+            somewhere real instead of on a 404. */}
+        <Route path="/community" element={<Navigate to="/events" replace />} />
         <Route path="/timeline" element={<PublicShell><SitePage slug="timeline" /></PublicShell>} />
         <Route path="/reviews" element={<PublicShell><SitePage slug="reviews" /></PublicShell>} />
         <Route path="/gallery-wall" element={<PublicShell><SitePage slug="gallery-wall" /></PublicShell>} />

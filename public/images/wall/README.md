@@ -40,25 +40,21 @@ Note: the **Events** frame still uses `whats-on.jpg` and **The Journey** frame
 still uses `our-story-so-far.jpg` — only the on-screen labels changed, so you do
 **not** need to rename those files.
 
-## The Immersive Gallery scene (`immersive-scene.jpg`)
-The **Immersive Gallery** homepage look uses one **UNBRANDED** scene artwork
-(the café interior with empty labeled-nowhere frames) as its canvas — all
-lettering, frame labels, the chalkboard, notes, and the signup panel are live
-HTML drawn over it, so the copy stays editable and scales with the image.
+## The homepage wall
 
-- The file here is **`immersive-scene.jpg`**, **1536×1024** (3:2). Export a
-  new one from the same composition if the artwork is refreshed.
-- If the artwork is ever **re-generated with frames moved**, the link boxes in
-  `src/components/sections/ImmersiveGalleryHero.jsx` (`FRAME_LINKS`) need
-  re-tuning to match.
-- Under 1020px the scene renders as a backdrop banner and the wall **re-hangs
-  itself below it** as a salon hang of the **photographs in this folder** —
-  every destination becomes a real framed picture with a brass nameplate. So
-  the eight photos above (plus the two side pieces) are what phone visitors
-  actually see. Only **Visit Us** has no photo; it hangs as a little painted
-  chalk sign. Drop a `location.jpg`-style photo in and wire it up in
-  `FRAME_LINKS` if you'd rather it carried a picture too.
-- The scene file is the **largest asset on the site** and every phone
-  downloads it. When you re-export the artwork, keep it around **1536px** on
-  the long edge and aim for **under ~400 KB** — the current file is ~2.4 MB,
-  which is the one real drag on mobile load time.
+The homepage hangs these same photographs. It used to be composed over a
+**generated** café scene — a made-up room whose frames held made-up artwork.
+That's gone: the room is now drawn in code, the wide shot at the very top is a
+**real photo of the shop**, and every picture on the wall is one of yours. No
+generated art anywhere on the site.
+
+- The wide shot behind your logo defaults to `our-story-so-far.jpg`. Swap it
+  from the editor (**the hero → “Photo behind your name”**) or by replacing
+  that file. Landscape, and don't worry about the middle — the lettering sits
+  over a darkened pool there by design.
+- Every frame's photo, label, link and molding is editable in the editor under
+  **“The pictures on your wall”** — on a phone or a laptop. Uploads there win
+  over the files in this folder.
+- The set of frames is fixed in `src/lib/wallPieces.js` (one per destination),
+  so you swap what's *in* them rather than how many there are. Each is keyed by
+  a stable `id`, so changing that list never re-points a photo you chose.

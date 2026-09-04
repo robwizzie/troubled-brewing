@@ -1,30 +1,34 @@
 import { useEffect, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
-import { getTestimonials } from '../../lib/dataService.js';
+import { loadReviews } from '../../lib/reviews.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 
 /* Owner-curated favorites (optional) — hand-picked quotes owners paste in
    admin; the Google feed below carries the page when this is empty. Quotes
-   can carry a photo, and a filter narrows the wall to photo reviews. */
+   can carry a photo, and a filter narrows the wall to photo reviews.
+
+   Reads through src/lib/reviews.js like every other review surface, so the
+   owner's star floor and hidden/pinned/photo overrides apply here too. */
 export default function TestimonialsWall({ data = {} }) {
   const { heading = 'A few of our favorites', layout = 'masonry' } = data;
   const [items, setItems] = useState(null);
   const [photosOnly, setPhotosOnly] = useState(false);
 
   const version = useDataVersion('testimonials');
+  const blocksVersion = useDataVersion('content_blocks');
   useEffect(() => {
     let alive = true;
-    getTestimonials().then((t) => alive && setItems(t));
+    loadReviews({ only: 'curated' }).then((r) => alive && setItems(r.reviews));
     return () => { alive = false; };
-  }, [version]);
+  }, [version, blocksVersion]);
 
   // no hand-picked favorites yet — the Google feed carries the page
   if (items && items.length === 0) return null;
 
-  const hasPhotos = (items || []).some((t) => t.image_url);
-  const visible = photosOnly ? items.filter((t) => t.image_url) : items;
+  const hasPhotos = (items || []).some((t) => t.photo);
+  const visible = photosOnly ? items.filter((t) => t.photo) : items;
 
   return (
     <Reveal as="section" className="section">
@@ -42,7 +46,7 @@ export default function TestimonialsWall({ data = {} }) {
           <div className={`testimonials testimonials--${layout}`}>
             {visible.map((t) => (
               <figure key={t.id} className="card testimonial">
-                {t.image_url && <img className="testimonial__photo" src={t.image_url} alt={`Photo from ${t.author}'s review`} loading="lazy" />}
+                {t.photo && <img className="testimonial__photo" src={t.photo} alt={`Photo from ${t.author}'s review`} loading="lazy" referrerPolicy="no-referrer" />}
                 <div className="card__body">
                   {t.rating ? <StarRating value={t.rating} /> : null}
                   <blockquote>“{t.quote}”</blockquote>

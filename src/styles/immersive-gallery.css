@@ -1,132 +1,129 @@
-/* ========================== Immersive Gallery hero ==========================
-   The unbranded café scene artwork is the canvas; all branding is live HTML
-   positioned over it in % of the scene, with type in cqw (container units) so
-   lettering scales as part of the artwork. Under 1020px the wall re-hangs
-   itself: the scene turns into a backdrop banner, the counter (hours board +
-   taped note) comes down underneath it, and every frame link becomes a real
-   framed PHOTOGRAPH from public/images/wall/ hung in two
-   masonry columns — the same moldings and brass nameplates as the desktop
-   wall. Palette sampled from the artwork: olive wall, gold light, chalk
-   #16140c, paper #ece0c4.
-   ========================================================================== */
+/* ============================ Gallery Wall hero =============================
+   The shop's room, rebuilt in CSS, hung with the shop's own photographs.
+
+   This hero used to be composed over a GENERATED café scene — a painted room
+   whose frames held generated artwork. Real artists made the pieces that hang
+   in the real room, so none of that is here any more: the olive paint, the
+   window light, the picture rail and the counter are drawn below, the room
+   itself is a photograph of the actual shop, and every picture on the wall is
+   one of theirs in a shared vintage molding. It is also ~2.4 MB lighter on
+   every phone, which was the single biggest drag on mobile load.
+
+   ONE composition at every width — the columns and the type scale, the layout
+   doesn't change — so what the owner arranges on a laptop is what a visitor
+   gets on a phone. Palette: olive wall, gold light, chalk #16140c, paper
+   #ece0c4.
+   ========================================================================= */
 
 .ig2-hero { position: relative; isolation: isolate; color: #f0e6cc; background: #37331e; }
-.ig2-hero.is-entering .ig2-stage { opacity: 0; }
-/* cover the phone wall too until the entrance timeline takes over */
-.ig2-hero.is-entering .ig2-mobile { opacity: 0; }
+.ig2-hero.is-entering .ig2-banner,
+.ig2-hero.is-entering .ig2-room { opacity: 0; }
 
-.ig2-scene {
-  container-type: inline-size;
+/* ------------------------- the room, photographed ------------------------- */
+
+.ig2-banner {
   position: relative;
-  aspect-ratio: 3 / 2; /* the artwork's native ratio — overlay % stay true */
+  height: clamp(290px, 46svh, 560px);
   overflow: hidden;
 }
-.ig2-stage { position: absolute; inset: 0; }
-.ig2-scene__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.ig2-banner__img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 40%;
+  display: block;
+}
+/* pool the light in the middle and darken the edges, or the busy room
+   swallows the cream lockup */
+.ig2-banner::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 2;
+  background:
+    radial-gradient(78% 62% at 50% 46%, rgba(14, 13, 7, .36), rgba(14, 13, 7, .6) 68%, rgba(12, 11, 6, .76) 100%),
+    linear-gradient(180deg, rgba(12, 11, 6, .4), transparent 34%);
+  pointer-events: none;
+}
+/* the photograph melts into the painted wall below — one continuous room */
+.ig2-banner::after {
+  content: '';
+  position: absolute; inset: auto 0 0 0; z-index: 2;
+  height: 5rem;
+  background: linear-gradient(180deg, transparent, rgba(70, 66, 40, .6) 58%, #453f27);
+  pointer-events: none;
+}
 
-/* ------------------------------ lettering ------------------------------ */
+/* ------------------------------- lettering ------------------------------- */
 
 .ig2-brand {
   position: absolute;
-  left: 1.6%;
-  top: 23.5%;
-  width: 16%;
+  left: 50%; top: 50%;
+  width: min(88%, 34rem);
   z-index: 3;
+  transform: translate(-50%, -50%);
   text-align: center;
-  text-shadow: 0 2px 14px rgba(10, 8, 2, .9), 0 1px 3px rgba(10, 8, 2, .85);
+  text-shadow: 0 2px 22px rgba(8, 6, 2, .9), 0 1px 6px rgba(8, 6, 2, .8);
 }
-/* soft dark pool behind the lettering — the dappled light was washing it out */
 .ig2-brand::before {
   content: '';
-  position: absolute;
-  inset: -22% -26%;
-  z-index: -1;
-  background: radial-gradient(closest-side, rgba(18, 17, 9, .74), rgba(18, 17, 9, .46) 55%, transparent 80%);
+  position: absolute; inset: -30% -22%; z-index: -1;
+  background: radial-gradient(closest-side, rgba(20, 19, 10, .6), rgba(20, 19, 10, .3) 58%, transparent 82%);
   pointer-events: none;
 }
 .ig2-brand__eyebrow {
-  margin: 0 0 .6em;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: max(8px, .95cqw);
-  text-transform: uppercase;
-  letter-spacing: .3em;
+  margin: 0 0 .55em;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(.64rem, 1.4vw, .85rem);
+  text-transform: uppercase; letter-spacing: .26em;
   color: #faf3dd;
-  text-shadow: 0 1px 3px rgba(10, 8, 2, .95), 0 2px 12px rgba(10, 8, 2, .85);
 }
 .ig2-brand__eyebrow span { color: #caa85c; letter-spacing: 0; }
 .ig2-brand__logo { margin: 0; }
+/* sized by HEIGHT: the lockup is taller than it is wide, and a width-only rule
+   overflowed the banner and clipped the lettering above and below it */
 .ig2-brand__logo img {
-  display: block;
-  width: 86%;
-  height: auto;
-  margin: 0 auto;
+  display: block; margin: 0 auto;
+  width: auto; height: clamp(112px, 22svh, 230px);
+  max-width: 78%; object-fit: contain;
   filter: drop-shadow(0 3px 14px rgba(8, 6, 2, .6));
 }
-.ig2-brand__descriptor { margin: .8em 0 0; font-family: var(--font-display); font-size: max(10px, 1.05cqw); text-transform: uppercase; letter-spacing: .18em; color: #eaddba; }
+.ig2-brand__descriptor {
+  margin: .7em 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(.74rem, 1.5vw, .95rem);
+  text-transform: uppercase; letter-spacing: .16em; color: #eaddba;
+}
 .ig2-brand__descriptor span { color: #bf9f56; font-size: .7em; vertical-align: .15em; }
 
-/* --------------------------- frame link labels --------------------------- */
-
-.ig2-links { display: contents; }
-
-.ig2-frame {
-  position: absolute;
-  z-index: 2;
-  display: block;
-  border-radius: 6px;
-  outline: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  text-decoration: none;
-  transition: none;
+/* --------------------- the painted wall the art hangs on --------------------
+   Below the photograph the same olive wall keeps going, dappled by window
+   light from the left and finished with a picture rail, so the hang reads as
+   the same room continuing rather than a section of a web page. */
+.ig2-room {
+  position: relative;
+  padding: 1.6rem 1rem 2.6rem;
+  background:
+    radial-gradient(42rem 24rem at 8% -2%, rgba(240, 205, 120, .18), transparent 62%),
+    radial-gradient(30rem 20rem at 94% 34%, rgba(240, 205, 120, .06), transparent 65%),
+    linear-gradient(168deg, #453f27 0%, #3d3922 48%, #2c291a 100%);
 }
-.ig2-frame--round { border-radius: 50%; }
-.ig2-frame:focus-visible { outline: none; }
+@media (min-width: 900px) { .ig2-room { padding: 2.4rem 2rem 3.4rem; } }
 
-/* each label is a little brass nameplate riding the frame's bottom molding —
-   it reads as a button at rest, not a caption */
-.ig2-frame__label {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, 45%);
-  white-space: nowrap;
-  padding: .34em .8em .38em;
-  border: 1px solid #6f541c;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #d3ad55, #a07a2a);
-  box-shadow: inset 0 1px 0 rgba(255, 240, 200, .55), inset 0 -1px 0 rgba(60, 40, 6, .5), 0 .35em 1em rgba(0, 0, 0, .5);
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: max(9.5px, .82cqw);
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: .13em;
-  color: #241c06;
-  text-shadow: 0 1px 0 rgba(255, 240, 200, .35);
-  transition: filter .3s ease, box-shadow .3s ease;
+/* ------------------------ the counter, set down ------------------------ */
+
+.ig2-counter {
+  display: flex; flex-wrap: wrap;
+  justify-content: center; align-items: flex-start;
+  /* the note's tape overhangs its own top edge, so a 1rem gap left the two
+     props touching — they need to read as a board and a note set down near it,
+     not one object */
+  gap: 2.2rem 1.6rem;
+  margin-bottom: 2.6rem;
 }
-.ig2-frame__label b { font-weight: 700; display: inline-block; transition: transform .3s ease; }
-.ig2-frame:hover .ig2-frame__label,
-.ig2-frame:focus-visible .ig2-frame__label {
-  filter: brightness(1.12);
-  box-shadow: inset 0 1px 0 rgba(255, 240, 200, .55), inset 0 -1px 0 rgba(60, 40, 6, .5), 0 .5em 1.4em rgba(0, 0, 0, .55), 0 0 0 2px rgba(201, 163, 79, .65);
-}
-.ig2-frame:hover .ig2-frame__label b,
-.ig2-frame:focus-visible .ig2-frame__label b { transform: translateX(3px); }
 
-/* --------------------- chalkboard, notes, signup --------------------- */
-
-/* a standing chalkboard sign on the counter, bottom-aligned with the
-   Today's Special note. Brass molding (same metal as the nameplates) so it
-   pops off the dark counter instead of sinking into it. */
+/* a standing chalkboard sign: brass molding (same metal as the nameplates) so
+   it pops off the dark wall instead of sinking into it */
 .ig2-chalk {
-  position: absolute;
-  left: 44.2%;
-  bottom: 2.8%;
-  width: 18.2%;
-  z-index: 3;
+  position: relative;
+  width: min(100%, 22rem);
   padding: 1.35em 1.45em 1.25em;
   border: .42em solid #a98232;
   outline: 1px solid rgba(236, 207, 133, .72);
@@ -141,8 +138,8 @@
     0 0 0 2px #211605,
     0 .45em 1em rgba(0, 0, 0, .5),
     0 1.5em 1.3em -1em rgba(0, 0, 0, .72);
-  transform: rotate(-.3deg);
-  font-size: max(8.5px, .86cqw);
+  transform: rotate(-.7deg);
+  font-size: clamp(.82rem, 1.1vw, .95rem);
   text-align: center;
   overflow: hidden; /* the sign's text can never escape the sign */
 }
@@ -173,32 +170,28 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
 .ig2-chalk .hours-today__dot.is-open { box-shadow: 0 0 0 .28em rgba(45, 132, 76, .18); }
 .ig2-chalk .skeleton { height: 1.4em !important; width: 10em !important; margin-inline: auto; background: rgba(240, 230, 204, .14); }
 
+/* a paper note, taped down */
 .ig2-note {
-  position: absolute;
-  left: 1.3%;
-  bottom: 4%;
-  width: 12.4%;
-  z-index: 4;
+  position: relative;
   display: block;
+  width: min(100%, 16rem);
   padding: .9em 1em 1em;
   background: #ece0c4;
   color: #33301f;
   border-radius: 2px;
   box-shadow: 0 .9em 2em rgba(0, 0, 0, .5);
-  transform: rotate(1.6deg);
+  transform: rotate(1.9deg);
   text-decoration: none;
   text-align: center;
-  font-size: max(7px, .8cqw);
+  font-size: clamp(.78rem, 1vw, .9rem);
   transition: transform .3s ease, box-shadow .3s ease;
 }
-.ig2-note:hover { transform: rotate(.7deg) translateY(-.3em); }
+.ig2-note:hover { transform: rotate(1.1deg) translateY(-.3em); }
 .ig2-note::before {
   content: '';
   position: absolute;
-  top: -.55em;
-  left: 50%;
-  width: 38%;
-  height: 1.1em;
+  top: -.55em; left: 50%;
+  width: 38%; height: 1.1em;
   transform: translateX(-50%) rotate(-2deg);
   background: rgba(228, 216, 186, .72);
   box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
@@ -209,25 +202,199 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
 .ig2-note__cta b { font-weight: 400; transition: transform .3s ease; }
 .ig2-note:hover .ig2-note__cta b { transform: translateX(3px); }
 
-.ig2-know {
+/* ---------------------------- the salon hang ---------------------------- */
+
+.ig2-wall__heading {
+  margin: 0 auto 1.4rem;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(.7rem, 1.3vw, .82rem);
+  text-transform: uppercase; letter-spacing: .28em;
+  text-align: center; color: #cbbb8d;
+}
+.ig2-wall {
+  columns: 2;
+  column-gap: 1.1rem;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+/* Below ~360px two columns leave ~150px a frame — under the width an ornate
+   molding plus an engraved nameplate need before the label wraps a word per
+   line. One column hangs bigger, legible pieces instead. */
+@media (max-width: 359px) {
+  .ig2-wall { columns: 1; max-width: 20rem; }
+}
+@media (min-width: 560px) { .ig2-wall { columns: 3; column-gap: 1.4rem; max-width: 42rem; } }
+@media (min-width: 900px) { .ig2-wall { columns: 4; column-gap: 1.7rem; max-width: 64rem; } }
+@media (min-width: 1240px) { .ig2-wall { column-gap: 2rem; max-width: 74rem; } }
+
+.ig2-mini {
+  display: block;
+  break-inside: avoid;
+  /* enough drop for the nameplate's overhang plus real wall between pieces */
+  margin-bottom: 1.85rem;
+  text-decoration: none;
+  transform: rotate(var(--tilt, 0deg));
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+/* uneven drops between pieces — a hang measured by eye, not by ruler */
+.ig2-mini:nth-child(3n) { margin-bottom: 2.4rem; }
+.ig2-mini:nth-child(4n) { margin-bottom: 1.5rem; }
+@media (min-width: 900px) {
+  .ig2-mini { margin-bottom: 2.4rem; }
+  .ig2-mini:nth-child(3n) { margin-bottom: 3.1rem; }
+  .ig2-mini:nth-child(4n) { margin-bottom: 2rem; }
+}
+/* A wall where every piece is exactly one column wide reads as a grid; one or
+   two smaller pieces read as collected over time, which is the whole point of
+   a salon hang. 84%, not the 72% this started at: at 72% a landscape piece in
+   a ~165px phone column came out barely 120px wide and its nameplate wrapped
+   onto three lines. */
+.ig2-mini--small { width: 84%; margin-inline: auto; }
+@media (max-width: 359px) { .ig2-mini--small { width: 78%; } }
+
+.ig2-mini__hang {
+  position: relative; /* the nameplate hangs off the frame's bottom edge */
+  display: block;
+  transition: transform var(--dur) var(--ease);
+  /* The light falls from the upper LEFT, so everything hung on this wall casts
+     down and to the RIGHT. A straight-down shadow is what made the pieces read
+     as cards on a background rather than objects in the room. Same offset on
+     every hung thing, or the illusion breaks. */
+  filter: drop-shadow(.3rem .5rem .8rem rgba(0, 0, 0, .5));
+}
+.ig2-mini:hover .ig2-mini__hang { transform: translateY(-2px); }
+.ig2-mini:active .ig2-mini__hang { transform: translateY(2px) scale(.985); }
+
+/* the framed picture: the shared molding recipes, scaled so the ornament still
+   reads at the sizes this wall actually hangs at */
+.ig2-mini__frame {
+  --ar: 4 / 3;
+  width: 100%;
+  box-shadow: inset 0 0 0 1px rgba(94, 66, 16, .55);  /* the hang owns the drop shadow */
+  transition: filter var(--dur) var(--ease);
+}
+.ig2-mini__frame.gw-frame__art { border-width: 5px; }
+.ig2-mini__frame.gw-frame__art--gilt-grand { border-width: 11px; border-image-slice: 32 round; }
+.ig2-mini__frame.gw-frame__art--gold-tapestry { border-width: 9px; }
+.ig2-mini__frame.gw-frame__art--bronze-carved { border-width: 8px; }
+.ig2-mini__frame.gw-frame__art--black-flat { border-width: 7px; }
+.ig2-mini__frame.gw-frame__art--gilt-thin { border-width: 4px; }
+.ig2-mini__frame.gw-frame__art--brass-chain { border-width: 3px; }
+.ig2-mini__frame.gw-frame__art--black-mat { padding: clamp(7px, 7%, 13px); }
+.ig2-mini__frame.gw-frame__art--black-stacked { padding: clamp(5px, 5.5%, 11px); }
+.ig2-mini__frame.gw-frame__art--oval-gilt,
+.ig2-mini__frame.gw-frame__art--oval-black { border-width: 6px; }
+/* wider columns can carry heavier moldings without the ornament crowding the art */
+@media (min-width: 900px) {
+  .ig2-mini__frame.gw-frame__art { border-width: 7px; }
+  .ig2-mini__frame.gw-frame__art--gilt-grand { border-width: 15px; }
+  .ig2-mini__frame.gw-frame__art--gold-tapestry { border-width: 12px; }
+  .ig2-mini__frame.gw-frame__art--bronze-carved { border-width: 11px; }
+  .ig2-mini__frame.gw-frame__art--black-flat { border-width: 9px; }
+  .ig2-mini__frame.gw-frame__art--gilt-thin { border-width: 5px; }
+  .ig2-mini__frame.gw-frame__art--brass-chain { border-width: 4px; }
+  .ig2-mini__frame.gw-frame__art--oval-gilt,
+  .ig2-mini__frame.gw-frame__art--oval-black { border-width: 8px; }
+}
+/* the photo carries a faint aged top-light so prints read as prints */
+.ig2-mini__frame .gw-frame__img { filter: saturate(.96) contrast(1.02); }
+
+/* The engraved nameplate straddles the frame's bottom molding — half on the
+   wood, half on the wall — instead of sitting on the picture, where at these
+   sizes it covered a real share of it (and the frame clips its own overflow,
+   so it could not be pushed out). */
+.ig2-mini__plate.gw-frame__plaque {
   position: absolute;
-  right: 3%;
-  bottom: 3.2%;
-  width: 24%;
-  z-index: 4;
+  left: 50%; bottom: 0;
+  transform: translate(-50%, 42%);
+  max-width: 92%;
+  padding: 3px 10px;
+  font-size: .68rem;
+  letter-spacing: .02em;
+}
+@media (min-width: 560px) { .ig2-mini__plate.gw-frame__plaque { font-size: .74rem; padding: 3px 12px; } }
+@media (min-width: 900px) { .ig2-mini__plate.gw-frame__plaque { font-size: .8rem; padding: 4px 14px; } }
+
+/* ---- the drawn stand-in (a destination with no photograph yet): a painted
+        board with its gold line drawing and hand lettering — a real small wall
+        piece, not a gap ---- */
+.ig2-mini__frame--drawn {
+  --tint: #f2e7cd;
+  background-image: radial-gradient(130% 105% at 50% -5%, rgba(126, 96, 34, .09), transparent 62%);
+}
+.ig2-mini__frame--chalk {
+  --tint: #17140c;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .07), transparent 55%),
+    linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
+}
+.ig2-mini__drawn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .45em;
+  width: 100%; height: 100%; padding: .6em;
+}
+.ig2-mini__motif { display: block; color: #a8791f; }
+.ig2-mini__frame--chalk .ig2-mini__motif { color: #d9c489; }
+/* the lettering that turns a board into a sign */
+.ig2-mini__caption {
+  display: grid; gap: .1em;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: .72rem; line-height: 1.2; letter-spacing: .04em;
+  text-align: center; text-wrap: balance;
+  color: #7e6022;
+}
+.ig2-mini__frame--chalk .ig2-mini__caption { color: #e6d5a2; text-shadow: 0 1px 0 rgba(0, 0, 0, .5); }
+
+.ig2-mini:hover .ig2-mini__frame,
+.ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.05); }
+.ig2-mini:focus-visible .ig2-mini__frame { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 3px; }
+
+/* the shop's own gold sculptures, tucked in among the pictures */
+.ig2-wall__object {
+  display: block;
+  break-inside: avoid;
+  width: auto;
+  filter: drop-shadow(.3rem .55rem .9rem rgba(0, 0, 0, .55));
+}
+.ig2-wall__object--fox { height: 92px; margin: .3rem auto 1.5rem; transform: rotate(-2deg); }
+.ig2-wall__object--hare { height: 78px; margin: .3rem auto 1.5rem; transform: rotate(2.5deg); }
+@media (min-width: 900px) {
+  .ig2-wall__object--fox { height: 128px; margin: .5rem auto 2.2rem; }
+  .ig2-wall__object--hare { height: 108px; margin: .5rem auto 2.2rem; }
+}
+
+/* ------------------------------ the closer ------------------------------ */
+
+.ig2-wall__closer {
+  width: min(28rem, 100%);
+  margin: .6rem auto 0;
+  text-align: center;
+}
+.ig2-order.btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: .8rem 1.2rem; }
+.ig2-wall__closer-note {
+  margin: .7rem 0 0;
+  font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
+  color: #b9ac83;
+}
+
+/* -------------------------------- signup -------------------------------- */
+
+.ig2-know {
+  width: min(28rem, 100%);
+  margin: 1.8rem auto 0;
   padding: 1em 1.1em 1.1em;
   background: rgba(23, 22, 14, .95);
   border: 1px solid rgba(224, 190, 106, .28);
   border-radius: 2px;
   box-shadow: 0 1.2em 2.6em rgba(0, 0, 0, .55);
-  font-size: max(8px, .85cqw);
+  font-size: .85rem;
 }
 .ig2-know__title { margin: 0 0 .3em; font-family: var(--font-display); font-size: 1em; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #ecd9a4; }
 .ig2-know__body { margin: 0 0 .8em; font-size: .92em; line-height: 1.5; color: #c9bd9c; }
 .ig2-know__row { display: flex; gap: .5em; }
 .ig2-know__row input[type='email'] {
-  flex: 1;
-  min-width: 0;
+  flex: 1; min-width: 0;
   padding: .55em .7em;
   background: #23271e;
   border: 1px solid rgba(224, 190, 106, .45);
@@ -243,268 +410,12 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   border-radius: 2px;
   background: linear-gradient(180deg, #dab65d, #b88c35);
   color: #211806;
-  font-size: 1.05em;
-  font-weight: 800;
+  font-size: 1.05em; font-weight: 800;
   cursor: pointer;
 }
 .ig2-know .honeypot { position: absolute; left: -9999px; }
 
-/* ============ under 1020px: the wall re-hangs itself for phones ============
-   The scene becomes a banner across the top; the counter (live hours + the
-   taped special) comes down off it and sits directly underneath, so the two
-   things a thumb actually came for are above the fold. Below that the WALL
-   CONTINUES on the same olive paint: two masonry columns of REAL framed
-   photographs from the shop, each in its own vintage molding from the shared
-   `.gw-frame__art--*` vocabulary, knocked a degree off
-   true, labelled with the same engraved brass nameplate the desktop wall
-   uses. Same wall, re-hung for a phone — not a list of buttons.
-   ========================================================================= */
-
-.ig2-mobile { display: none; }
-
-@media (max-width: 1020px) {
-  /* ---------------------------- the banner ---------------------------- */
-  /* short enough that the hours board is reachable on the first screen,
-     tall enough to read as the room */
-  .ig2-scene { aspect-ratio: auto; height: clamp(290px, 40svh, 380px); }
-  .ig2-scene__img { object-position: 34% 26%; }
-  .ig2-links, .ig2-chalk, .ig2-note, .ig2-know { display: none; }
-  .ig2-stage .ig2-chalk, .ig2-stage .ig2-note { display: none; }
-  /* the busy wall was swallowing the cream lockup — pool the light in the
-     middle and darken the edges so the brand reads instantly */
-  .ig2-scene::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background:
-      radial-gradient(78% 62% at 50% 46%, rgba(14, 13, 7, .34), rgba(14, 13, 7, .58) 68%, rgba(12, 11, 6, .74) 100%),
-      linear-gradient(180deg, rgba(12, 11, 6, .38), transparent 34%);
-    pointer-events: none;
-  }
-  /* the banner melts into the painted wall below — one continuous room */
-  .ig2-scene::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0 0;
-    z-index: 2;
-    height: 4.5rem;
-    background: linear-gradient(180deg, transparent, rgba(70, 66, 40, .6) 58%, #453f27);
-    pointer-events: none;
-  }
-
-  .ig2-brand {
-    left: 50%;
-    top: 50%;
-    width: min(88%, 26rem);
-    z-index: 3;
-    transform: translate(-50%, -50%);
-    text-shadow: 0 2px 22px rgba(8, 6, 2, .9), 0 1px 6px rgba(8, 6, 2, .8);
-  }
-  .ig2-brand::before { inset: -30% -22%; background: radial-gradient(closest-side, rgba(20, 19, 10, .6), rgba(20, 19, 10, .3) 58%, transparent 82%); }
-  .ig2-brand__eyebrow { font-size: .64rem; letter-spacing: .26em; margin-bottom: .55em; }
-  /* size the lockup by HEIGHT here: it is taller than it is wide, and a
-     width-only rule overflowed the banner and clipped the lettering above
-     and below it */
-  .ig2-brand__logo img { width: auto; height: clamp(112px, 19svh, 178px); max-width: 78%; object-fit: contain; }
-  .ig2-brand__descriptor { font-size: .74rem; letter-spacing: .15em; margin-top: .7em; }
-
-  /* --------------------- the wall the banner hangs on --------------------- */
-  /* below the banner the same olive wall keeps going, dappled by the window
-     light from the scene's left side */
-  .ig2-mobile {
-    display: block;
-    padding: 1.35rem 1rem 2.2rem;
-    background:
-      radial-gradient(42rem 24rem at 8% -2%, rgba(240, 205, 120, .18), transparent 62%),
-      radial-gradient(30rem 20rem at 94% 34%, rgba(240, 205, 120, .06), transparent 65%),
-      linear-gradient(168deg, #453f27 0%, #3d3922 48%, #2c291a 100%);
-  }
-
-  /* ---- the counter, set down under the banner ---- */
-  .ig2-mobile__counter {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    /* the note's tape overhangs its own top edge, so a 1rem gap left the two
-       props touching — they need to read as a board and a note set down near
-       it, not one object */
-    gap: 2.2rem 1.6rem;
-    margin-bottom: 2.4rem;
-  }
-  /* the scene copies are hidden above; these are the phone copies — same prop
-     styling, tilted like they were set down by hand */
-  .ig2-mobile__counter .ig2-chalk,
-  .ig2-mobile__counter .ig2-note { display: block; position: static; }
-  .ig2-mobile__counter .ig2-chalk {
-    width: min(100%, 21rem);
-    padding: 1.25rem 1.2rem 1.1rem;
-    font-size: .82rem;
-    transform: rotate(-.7deg);
-  }
-  .ig2-mobile__counter .ig2-note {
-    width: min(100%, 15rem);
-    font-size: .78rem;
-    transform: rotate(1.9deg);
-  }
-  .ig2-mobile__counter .ig2-note:hover { transform: rotate(1.1deg) translateY(-.3em); }
-
-  /* ------------------------- the re-hung salon wall ------------------------- */
-  .ig2-wall {
-    columns: 2;
-    column-gap: 1.1rem;
-    max-width: 28rem;
-    margin: 0 auto;
-  }
-  @media (min-width: 560px) {
-    .ig2-wall { column-gap: 1.4rem; max-width: 34rem; }
-  }
-
-  .ig2-mini {
-    display: block;
-    break-inside: avoid;
-    /* enough drop for the nameplate's overhang plus real wall between pieces */
-    margin-bottom: 1.85rem;
-    text-decoration: none;
-    transform: rotate(var(--tilt, 0deg));
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-  }
-  /* uneven drops between pieces — a hang measured by eye, not by ruler */
-  .ig2-mini:nth-child(3n) { margin-bottom: 2.4rem; }
-  .ig2-mini:nth-child(4n) { margin-bottom: 1.5rem; }
-
-  /* A wall where every piece is exactly one column wide reads as a grid. A
-     few little ones, pushed off-centre, read as collected over time — which
-     is the whole point of a salon hang. */
-  .ig2-mini--small { width: 72%; }
-  .ig2-mini--pull-left { margin-right: auto; }
-  .ig2-mini--pull-right { margin-left: auto; }
-  .ig2-mini__hang {
-    position: relative; /* the nameplate hangs off the frame's bottom edge */
-    display: block;
-    transition: transform var(--dur) var(--ease);
-    /* The light in the banner falls from the upper LEFT, so everything hung on
-       this wall casts down and to the RIGHT. A straight-down shadow is what
-       made the pieces read as cards on a background rather than objects in
-       the room. Same offset on every hung thing, or the illusion breaks. */
-    filter: drop-shadow(.3rem .5rem .8rem rgba(0, 0, 0, .5));
-  }
-  .ig2-mini:active .ig2-mini__hang { transform: translateY(2px) scale(.985); }
-
-  /* ---- the framed picture: the shared molding recipes, scaled for a
-          ~9rem tile so the ornament still reads at thumb size ---- */
-  .ig2-mini__frame {
-    --ar: 4 / 3;
-    width: 100%;
-    box-shadow: inset 0 0 0 1px rgba(94, 66, 16, .55);  /* the hang owns the drop shadow */
-    transition: filter var(--dur) var(--ease);
-  }
-  .ig2-mini__frame.gw-frame__art { border-width: 5px; }
-  .ig2-mini__frame.gw-frame__art--gilt-grand { border-width: 11px; border-image-slice: 32 round; }
-  .ig2-mini__frame.gw-frame__art--gold-tapestry { border-width: 9px; }
-  .ig2-mini__frame.gw-frame__art--bronze-carved { border-width: 8px; }
-  .ig2-mini__frame.gw-frame__art--black-flat { border-width: 7px; }
-  .ig2-mini__frame.gw-frame__art--gilt-thin { border-width: 4px; }
-  .ig2-mini__frame.gw-frame__art--brass-chain { border-width: 3px; }
-  .ig2-mini__frame.gw-frame__art--black-mat { padding: clamp(7px, 7%, 13px); }
-  .ig2-mini__frame.gw-frame__art--black-stacked { padding: clamp(5px, 5.5%, 11px); }
-  .ig2-mini__frame.gw-frame__art--oval-gilt,
-  .ig2-mini__frame.gw-frame__art--oval-black { border-width: 6px; }
-  /* the photo carries a faint aged top-light so prints read as prints */
-  .ig2-mini__frame .gw-frame__img { filter: saturate(.96) contrast(1.02); }
-
-  /* The engraved nameplate straddles the frame's bottom molding — half on the
-     wood, half on the wall — instead of sitting on the picture. At desktop
-     size a plate inside the frame costs nothing; at thumb size it was covering
-     a real share of the photograph. */
-  .ig2-mini__plate.gw-frame__plaque {
-    /* centered by the base rule's inset-0 + auto margins — NOT left:50%, which
-       caps the shrink-to-fit width at half the frame and wrapped two-word
-       labels ("Local Love") onto two lines. Only the vertical overhang is
-       ours; the horizontal centering stays where the base rule left it. */
-    bottom: 0;
-    transform: translateY(44%);
-    z-index: 2;
-    max-width: 96%;
-    padding: 3px 10px;
-    font-size: .68rem;
-    letter-spacing: .02em;
-  }
-
-  /* ---- the one drawn piece (a destination with no photograph yet): a
-          painted board with its gold line drawing — a real small wall piece,
-          not a gap ---- */
-  .ig2-mini__frame--drawn {
-    --tint: #f2e7cd;
-    background-image: radial-gradient(130% 105% at 50% -5%, rgba(126, 96, 34, .09), transparent 62%);
-  }
-  .ig2-mini__frame--chalk {
-    --tint: #17140c;
-    background:
-      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .07), transparent 55%),
-      linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
-  }
-  .ig2-mini__drawn {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; height: 100%;
-  }
-  .ig2-mini__motif { display: block; color: #a8791f; }
-  .ig2-mini__frame--chalk .ig2-mini__motif { color: #d9c489; }
-
-  .ig2-mini:hover .ig2-mini__frame,
-  .ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.05); }
-  .ig2-mini:focus-visible .ig2-mini__frame { outline: 2px solid rgba(201, 163, 79, .85); outline-offset: 3px; }
-
-  /* the shop's own gold sculptures, tucked in among the pictures */
-  .ig2-mobile__object {
-    display: block;
-    break-inside: avoid;
-    width: auto;
-    filter: drop-shadow(.3rem .55rem .9rem rgba(0, 0, 0, .55));
-  }
-  .ig2-mobile__object--fox { height: 92px; margin: .3rem auto 1.5rem; transform: rotate(-2deg); }
-  .ig2-mobile__object--hare { height: 78px; margin: .3rem auto 1.5rem; transform: rotate(2.5deg); }
-
-  /* Roomier screens gain a third column — the masonry redistributes itself, no
-     re-splitting needed. Held back to 820px rather than 640: at tablet-portrait
-     widths three columns balance noticeably worse (the tall portraits are
-     unbreakable, so one column runs ~30% short), while two columns there just
-     give every piece more room. */
-  @media (min-width: 820px) {
-    .ig2-wall { columns: 3; column-gap: 1.4rem; max-width: 46rem; }
-    .ig2-mini { margin-bottom: 2.1rem; }
-    .ig2-mini__plate.gw-frame__plaque { font-size: .74rem; padding: 3px 12px; }
-  }
-
-  /* ---- the sign that closes the hang: the widest piece on the wall ---- */
-  .ig2-wall__closer {
-    width: min(28rem, 100%);
-    margin: 1.6rem auto 0;
-    padding: 1.15rem 1.1rem 1.2rem;
-    text-align: center;
-    border: 7px solid #b8892b;
-    border-image: linear-gradient(135deg, #f7dc94 0%, #e3b53f 32%, #a87c1c 70%, #5e4210 100%) 1;
-    background:
-      radial-gradient(120% 90% at 50% 0%, rgba(255, 239, 188, .07), transparent 55%),
-      linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
-    box-shadow: .3rem .7rem 1.2rem rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(236, 207, 133, .5);
-    transform: rotate(-.4deg);
-  }
-  .ig2-mobile__order.btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: .8rem 1.2rem; }
-  .ig2-wall__closer-note {
-    margin: .8rem 0 0;
-    font-family: var(--font-display);
-    font-size: .72rem; line-height: 1.5;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: #cfc196;
-  }
-
-  .ig2-mobile .ig2-know { display: block; position: static; width: min(28rem, 100%); margin: 1.6rem auto 0; font-size: .8rem; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .ig2-frame, .ig2-note, .ig2-frame__label b, .ig2-note__cta b,
+  .ig2-note { transition: none !important; }
   .ig2-mini__hang, .ig2-mini__frame { transition: none !important; }
 }

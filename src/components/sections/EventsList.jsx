@@ -11,7 +11,11 @@ function fmtDate(iso) {
 }
 
 export default function EventsList({ data = {} }) {
-  const { heading = 'Upcoming Events' } = data;
+  const {
+    heading = 'Upcoming Events',
+    intro = '',
+    empty_message: emptyMessage = "Nothing on the calendar right now — but there's always something brewing. Check back soon!",
+  } = data;
   const [events, setEvents] = useState(null);
 
   const version = useDataVersion('events');
@@ -25,12 +29,11 @@ export default function EventsList({ data = {} }) {
     <Reveal as="section" className="section">
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
+        {intro && <p className="section-sub">{intro}</p>}
         {events === null ? (
           <SkeletonCards count={3} height={160} />
         ) : events.length === 0 ? (
-          <p style={{ textAlign: 'center', color: 'var(--color-text-soft)' }}>
-            No events on the calendar right now — but there's always something brewing. Check back soon!
-          </p>
+          <p style={{ textAlign: 'center', color: 'var(--color-text-soft)' }}>{emptyMessage}</p>
         ) : (
           <div className="grid grid--3">
             {events.map((ev) => (

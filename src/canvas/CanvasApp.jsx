@@ -322,7 +322,6 @@ export default function CanvasApp() {
               <Route path="/events" element={<Shell><SitePage slug="events" /></Shell>} />
               <Route path="/location" element={<Shell><SitePage slug="location" /></Shell>} />
               <Route path="/contact" element={<Shell><ContactPage /></Shell>} />
-              <Route path="/community" element={<Shell><SitePage slug="community" showSocial /></Shell>} />
               <Route path="/timeline" element={<Shell><SitePage slug="timeline" /></Shell>} />
               <Route path="/reviews" element={<Shell><SitePage slug="reviews" /></Shell>} />
               <Route path="/gallery-wall" element={<Shell><SitePage slug="gallery-wall" /></Shell>} />

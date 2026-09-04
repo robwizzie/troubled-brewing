@@ -9,6 +9,7 @@ import SettingsHome from './SettingsHome.jsx';
 import MenuManager from './managers/MenuManager.jsx';
 import EventsManager from './managers/EventsManager.jsx';
 import TestimonialsManager from './managers/TestimonialsManager.jsx';
+import ReviewsManager from './managers/ReviewsManager.jsx';
 import GalleryManager from './managers/GalleryManager.jsx';
 import TroublemakersManager from './managers/TroublemakersManager.jsx';
 import LocalBusinessManager from './managers/LocalBusinessManager.jsx';
@@ -44,6 +45,7 @@ export default function AdminApp() {
             <Route path="menu" element={<MenuManager />} />
             <Route path="events" element={<EventsManager />} />
             <Route path="testimonials" element={<TestimonialsManager />} />
+            <Route path="reviews" element={<ReviewsManager />} />
             <Route path="gallery" element={<GalleryManager />} />
             <Route path="troublemakers" element={<TroublemakersManager />} />
             <Route path="neighborhood" element={<LocalBusinessManager />} />

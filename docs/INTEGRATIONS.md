@@ -68,6 +68,43 @@ delete from testimonials; -- placeholder quotes; owners add real favorites in /a
 alter table testimonials add column if not exists image_url text default ''; -- review photos
 ```
 
+Project seeded before the **Local Love / Gallery Wall / Troublemakers pages grew their extra fields**? Add the columns once (all idempotent):
+
+```sql
+-- Gallery Wall: proper artist credits, so the people who made the work are named
+alter table gallery_pieces  add column if not exists artist text;
+alter table gallery_pieces  add column if not exists artist_url text;
+alter table gallery_pieces  add column if not exists medium text;
+alter table gallery_pieces  add column if not exists year_label text;
+alter table gallery_pieces  add column if not exists frame_style text;
+alter table gallery_pieces  add column if not exists for_sale boolean default false;
+
+-- Troublemakers
+alter table team_members    add column if not exists pronouns text;
+alter table team_members    add column if not exists drink text;
+alter table team_members    add column if not exists started_label text;
+
+-- Local Love
+alter table local_businesses add column if not exists logo_url text;
+alter table local_businesses add column if not exists address text;
+alter table local_businesses add column if not exists we_love text;
+```
+
+Project seeded before the **/community page was retired** and **Find Us moved above Hours**? Those are stored `sections` rows, so the seed change alone won't move them — either drag them in the editor (Edit your site → the page → ▲▼) or run once:
+
+```sql
+-- Find us above the hours on the Location page
+update sections set display_order = 0 where page_slug = 'location' and type = 'map';
+update sections set display_order = 1 where page_slug = 'location' and type = 'hours';
+
+-- Retire /community, keeping its board on the Events page
+insert into sections (page_slug, type, display_order, data)
+  select 'events', 'community_board', 2, '{"heading": "On the Community Board"}'
+  where not exists (select 1 from sections where page_slug = 'events' and type = 'community_board');
+delete from sections where page_slug = 'community';
+delete from pages where slug = 'community';
+```
+
 Project seeded before **Immersive Gallery became the default homepage look**? Flip the stored choice once — click it in `/admin` → Quick Blocks → Homepage look, run Actions → **"Set homepage look"**, or:
 
 ```sql
@@ -87,9 +124,11 @@ Owners upload large phone photos, so the uploader (`src/admin/lib/uploadImage.js
 
 ## Google Places (reviews + hours/location)
 
-- A Supabase Edge Function `google-profile` calls Places **Place Details (v1)** server-side (key never exposed), caches `rating`, `review_count`, up to 5 reviews, address, geo, phone, the `weekdayDescriptions` display strings (`weekday_hours`) **and the structured `regularOpeningHours.periods` (`weekday_periods`)** into the `google_profile` table. Runs daily (cron, added by hand in Dashboard → Database → Cron via `net.http_post` with an `Authorization: Bearer <anon key>` header) + on-demand from the admin "Refresh now".
+- A Supabase Edge Function `google-profile` calls Places **Place Details (v1)** server-side (key never exposed), caches `rating`, `review_count`, reviews, address, geo, phone, the `weekdayDescriptions` display strings (`weekday_hours`) **and the structured `regularOpeningHours.periods` (`weekday_periods`)** into the `google_profile` table. Runs daily (cron, added by hand in Dashboard → Database → Cron via `net.http_post` with an `Authorization: Bearer <anon key>` header) + on-demand from the admin "Refresh now".
+- **Growing the review library.** Places returns at most **5** "most relevant" reviews per call — a hard API cap; the complete set needs owner OAuth via the Business Profile API. Since that top-5 rotates, each refresh **merges** new reviews into `google_profile.reviews` instead of overwriting, so the cache converges on the full set over days. Identity is the Places review id (`name`) with an author+text fallback for rows cached before that field existed; a re-fetched review replaces its cached copy (the relative time and the avatar URL both go stale). Cached newest-first on the absolute `publishTime`, capped at 500.
+- **Review photos are not available from any Places tier** — the API returns review text, rating, author and avatar, never the pictures attached to a review. Owners add them by hand in **admin → Reviews**, stored in `content_blocks.review_settings.photos`.
 - **Hours contract (implemented):** once `weekday_periods` is cached, the site's open/closed pill and weekly table run off **Google** (`googleWeekly()` in `src/lib/hours.js` converts periods — venue-local times — into the manual table's shape). The admin `hours` grid is the **fallback** when Google data is absent, and owner `hours_overrides` (holidays) **always** apply on top of either source. The Hours editor shows a note when Google is live.
-- The homepage quote frames also prefer real cached Google reviews (rating ≥4, tidy length), topped up by curated testimonials; the Reviews page feed reads the same cache.
+- **What actually shows** is decided once, in `src/lib/reviews.js`, for every review surface (homepage strip, reviews feed, testimonials wall) — the star floor (4★ by default), anything the owners hid, the photos they attached, and the sort (pinned → featured → has a photo → newest). See docs/CMS.md §Reviews. Owners drive all of it from **admin → Reviews**.
 - Need from client: Google **Place ID** (or business name+address to look it up) and a Google Cloud project + Places API key (free $200/mo credit easily covers a single shop). Set the Place ID in `/admin` → Google Profile, deploy, click **Refresh now** — rating, reviews, and live hours all light up at once.
 
 ## Instagram (last 4 posts)
