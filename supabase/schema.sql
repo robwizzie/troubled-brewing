@@ -147,7 +147,7 @@ create table if not exists google_profile (
   place_id text,
   rating numeric(2,1),
   review_count int,
-  reviews jsonb default '[]',              -- [{author, rating, text, time, profile_photo}]
+  reviews jsonb default '[]',              -- [{review_id, author, author_url, rating, text, time, published_at, review_url, profile_photo}], newest first
   formatted_address text,
   formatted_phone text,
   weekday_hours jsonb default '[]',        -- Google weekdayDescriptions (display strings)

@@ -357,6 +357,13 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
     max-width: 28rem;
     margin: 0 auto;
   }
+  /* Below ~360px two columns leave ~150px per frame, which is under the width
+     an ornate molding + a brass nameplate need to read as anything but noise.
+     One column at that size hangs bigger, legible pieces instead. */
+  @media (max-width: 359px) {
+    .ig2-wall { columns: 1; max-width: 20rem; }
+    .ig2-mini--small { width: 78%; }
+  }
   @media (min-width: 560px) {
     .ig2-wall { column-gap: 1.4rem; max-width: 34rem; }
   }
@@ -375,12 +382,14 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
   .ig2-mini:nth-child(3n) { margin-bottom: 2.4rem; }
   .ig2-mini:nth-child(4n) { margin-bottom: 1.5rem; }
 
-  /* A wall where every piece is exactly one column wide reads as a grid. A
-     few little ones, pushed off-centre, read as collected over time — which
-     is the whole point of a salon hang. */
-  .ig2-mini--small { width: 72%; }
-  .ig2-mini--pull-left { margin-right: auto; }
-  .ig2-mini--pull-right { margin-left: auto; }
+  /* A wall where every piece is exactly one column wide reads as a grid; one
+     or two smaller pieces read as collected over time, which is the whole
+     point of a salon hang. 84%, not the 72% this started at: at 72% a
+     landscape piece in a ~165px phone column came out barely 120px wide, its
+     nameplate wrapped onto three lines, and the "little one tucked in" effect
+     turned into "that frame didn't load". Centred rather than pushed to one
+     side, which at this width just looked like a layout bug. */
+  .ig2-mini--small { width: 84%; margin-inline: auto; }
   .ig2-mini__hang {
     position: relative; /* the nameplate hangs off the frame's bottom edge */
     display: block;

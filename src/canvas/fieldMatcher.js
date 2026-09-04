@@ -39,7 +39,7 @@ function elementImageUrl(el) {
   return m ? m[1] : '';
 }
 
-const isStringField = (f) => !['image', 'images', 'frames', 'funfacts', 'checkbox', 'select', 'number', 'price', 'date'].includes(f.type || 'text');
+const isStringField = (f) => !['image', 'images', 'frames', 'wallpieces', 'funfacts', 'checkbox', 'select', 'number', 'price', 'date'].includes(f.type || 'text');
 
 /** Match ONE element against the fields/data. Returns { field, index } or null. */
 function matchElement(el, fields, data) {
@@ -55,6 +55,18 @@ function matchElement(el, fields, data) {
       }
       if (f.type === 'images' && Array.isArray(v)) {
         const i = v.findIndex((im) => urlMatches(url, im?.url));
+        if (i !== -1) return { field: f.name, index: i };
+      }
+      /* wallpieces rows are OVERRIDES, so a photo the owner hasn't replaced
+         isn't in `data` at all — match the built-in defaults too, or clicking
+         an untouched frame on the canvas would open the panel at the top
+         instead of on that frame. */
+      if (f.type === 'wallpieces') {
+        const rows = Array.isArray(v) ? v : [];
+        const i = (f.defaults || []).findIndex((base, idx) => {
+          const override = rows[idx]?.img;
+          return urlMatches(url, override && override !== '-' ? override : base.img);
+        });
         if (i !== -1) return { field: f.name, index: i };
       }
     }

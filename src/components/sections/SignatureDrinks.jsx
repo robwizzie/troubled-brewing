@@ -1,40 +1,31 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Reveal from '../Reveal.jsx';
-import { CoffeeCup, Beans, Hare } from '../Motifs.jsx';
-import { asset } from '../../lib/config.js';
-import { getMenu } from '../../lib/menuService.js';
+import ProductCard from '../ProductCard.jsx';
+import { getMenu, pickProducts, MENU_CATEGORY_LABELS } from '../../lib/menuService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 
-/* A teaser of a few signature drinks to pull people toward the full menu.
-   Pulls live from the menu (menuService). `data.items` can name specific drinks;
-   otherwise it features the first few "specialty" drinks. Each drink hangs in
-   its own little vintage frame (no two alike, like the wall) with the name on a
-   brass plate. Photo resolution order: the menu item's image_url, then the
-   drop-in file public/images/drinks/<name-slug>.jpg, then a varied motif. */
+/* A teaser of a few products to pull people toward the full menu. Everything
+   it shows is the LIVE menu (menuService) — the same rows the Menu page reads
+   and the same ProductCard it draws them with, so the landing page and the
+   menu can never disagree about a drink's name, price, description or photo.
 
-const FRAME_STYLES = ['gilt-thin', 'black-flat', 'bronze-carved'];
-const MOTIFS = [
-  (props) => <CoffeeCup {...props} />,
-  (props) => <Beans {...props} />,
-  (props) => <Hare {...props} />,
-];
-
-const slugify = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
-function DrinkArt({ drink, index }) {
-  const [srcIdx, setSrcIdx] = useState(0);
-  const sources = [drink.image_url, asset(`images/drinks/${slugify(drink.name)}.jpg`)].filter(Boolean);
-  const src = sources[srcIdx];
-  if (!src) {
-    const Motif = MOTIFS[index % MOTIFS.length];
-    return <Motif size={54} color="var(--color-yellow-deep)" />;
-  }
-  return <img className="gw-frame__img" src={src} alt={drink.name} loading="lazy" onError={() => setSrcIdx((i) => i + 1)} />;
-}
-
+   The owner picks the drinks by name, or leaves it blank and the section
+   features whatever is strongest in a category (Specialty by default). Photos
+   resolve through ProductCard's chain: the item's own image, then the drop-in
+   file, then a drawn motif — so this looks right today and looks like
+   photography the moment SpotOn (or Menu Manager) has pictures. */
 export default function SignatureDrinks({ data = {} }) {
-  const { heading = 'Signature sips', items, button_label = 'See the full menu' } = data;
+  const {
+    heading = 'Signature sips',
+    subheading = '',
+    category = 'specialty',
+    count = 3,
+    items,
+    button_label: buttonLabel = 'See the full menu',
+    button_url: buttonUrl = '/menu',
+  } = data;
+  const howMany = Math.max(1, Math.min(8, Number(count) || 3));
   const [drinks, setDrinks] = useState(null);
   const version = useDataVersion('menu_items');
 
@@ -42,48 +33,35 @@ export default function SignatureDrinks({ data = {} }) {
     let alive = true;
     getMenu().then((all) => {
       if (!alive) return;
-      let picks;
-      if (Array.isArray(items) && items.length) {
-        picks = items.map((name) => all.find((m) => m.name === name)).filter(Boolean);
-      } else {
-        // the SpotOn-synced menu is broad — lead with the specialty drinks
-        // that have something to say (a description or a price)
-        const specialty = all.filter((m) => m.category === 'specialty');
-        const presentable = specialty.filter((m) => (m.description || '').trim() || m.price != null);
-        picks = presentable.length >= 3 ? presentable : specialty;
-      }
-      setDrinks(picks.slice(0, 3));
+      setDrinks(pickProducts(all, { names: items, category, count: howMany }));
     });
     return () => { alive = false; };
-  }, [items, version]);
+  }, [items, category, howMany, version]);
 
   if (drinks && drinks.length === 0) return null;
+
+  const isInternal = buttonUrl.startsWith('/');
+  // 3-up is the designed row; a bigger count wraps into a tidy auto grid
+  const cols = Math.min(howMany, 3);
 
   return (
     <Reveal as="section" className="section section--alt">
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
-        <div className="sigdrinks">
-          {(drinks || Array.from({ length: 3 })).map((d, i) => (
-            <article key={d?.id || i} className={`sigdrink ${d ? '' : 'sigdrink--loading'}`}>
-              {d && (
-                <span className={`gw-frame__art gw-frame__art--${FRAME_STYLES[i % FRAME_STYLES.length]} sigdrink__frame`} style={{ '--ar': '16 / 10', '--tint': 'var(--color-paper)' }}>
-                  <DrinkArt drink={d} index={i} />
-                  <h3 className="brass-plate brass-plate--pin">{d.name}</h3>
-                </span>
-              )}
-              {d && (
-                <div className="sigdrink__body">
-                  <p className="sigdrink__desc">{d.description}</p>
-                  {d.price != null && <p className="sigdrink__price">${Number(d.price).toFixed(2)}</p>}
-                </div>
-              )}
-            </article>
-          ))}
+        {subheading && <p className="section-sub">{subheading}</p>}
+        <div className="products" style={{ '--product-cols': cols }}>
+          {(drinks || Array.from({ length: howMany })).map((d, i) =>
+            d ? <ProductCard key={d.id || i} item={d} index={i} /> : <div key={i} className="product product--loading" />
+          )}
         </div>
-        <p className="sigdrinks__cta">
-          <Link className="btn btn--ghost btn--lg" to="/menu">{button_label}</Link>
+        <p className="products__cta">
+          {isInternal ? (
+            <Link className="btn btn--ghost btn--lg" to={buttonUrl}>{buttonLabel}</Link>
+          ) : (
+            <a className="btn btn--ghost btn--lg" href={buttonUrl} target="_blank" rel="noopener noreferrer">{buttonLabel}</a>
+          )}
         </p>
+        <p className="sr-only">Featured from our {MENU_CATEGORY_LABELS[category] || category} menu.</p>
       </div>
     </Reveal>
   );

@@ -136,6 +136,16 @@
   font-family: var(--font-display); font-size: 1.7rem;
   color: var(--color-yellow-deep); opacity: 0.55;
 }
+/* A review that came with a picture hangs the picture where the quote mark
+   would be — inside the mat, keylined like a real print, so the card reads as
+   a photograph with a caption rather than a quote with a thumbnail stuck on. */
+.social-proof__quote--photo { justify-content: flex-start; }
+.social-proof__photo {
+  display: block; width: 100%; aspect-ratio: 4 / 3;
+  object-fit: cover; border-radius: 1px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(40, 30, 12, 0.18);
+}
+.social-proof__quote--photo .social-proof__text { font-size: clamp(0.84rem, 1.25vw, 0.98rem); }
 .social-proof__text {
   max-width: 34ch; font-family: var(--font-display);
   font-size: clamp(0.92rem, 1.45vw, 1.08rem); line-height: 1.45;
@@ -202,35 +212,51 @@
     padding: 20px 18px; border-width: 6px;
   }
   .social-proof__text { max-width: 30ch; font-size: 0.95rem; line-height: 1.48; }
+  .social-proof__quote--photo .social-proof__text { font-size: 0.88rem; }
   .social-proof__author .brass-plate { white-space: normal; overflow-wrap: anywhere; }
 }
 
-/* ---- Signature drinks teaser ---------------------------------------------- */
-.sigdrinks { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
-.sigdrink {
+/* ---- Products: the shared drink/food card ----------------------------------
+   ONE card design (src/components/ProductCard.jsx) drawn by both the homepage
+   "Signature sips" teaser and the Menu page's card layout, so a drink looks
+   the same wherever a visitor meets it. Each hangs in a little vintage frame
+   from the gallery-wall vocabulary with its name on a brass plate.
+   `--product-cols` is the teaser's designed row width; the menu's own grid
+   just fills the container. */
+.products { display: grid; grid-template-columns: repeat(var(--product-cols, 3), minmax(0, 1fr)); gap: var(--space-5); align-items: stretch; }
+.products--menu { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: var(--space-5); }
+.product {
   background: var(--color-surface); border: 1px solid var(--color-border);
   border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);
   display: flex; flex-direction: column;
   transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.sigdrink:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
-/* each drink hangs in its own little vintage frame (gallery frame classes set
-   per-card in SignatureDrinks.jsx), name on a brass plate */
-.sigdrink__frame {
+.product:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
+.product__frame {
   margin: var(--space-4) var(--space-4) 0;
   background: radial-gradient(120% 120% at 50% 0%, var(--color-yellow-soft), var(--color-sage-soft));
 }
-.sigdrink__body { padding: var(--space-3) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
-.sigdrink__desc { color: var(--color-text-soft); font-size: var(--text-sm); margin: 0; flex: 1; }
-.sigdrink__price { font-family: var(--font-display); font-weight: 700; color: var(--color-wood); margin: var(--space-2) 0 0; }
-.sigdrink--loading { min-height: 220px; background: var(--color-sage-soft); }
-.sigdrinks__cta { text-align: center; margin-top: var(--space-6); }
+/* the drawn stand-in until a photo exists — centred in the mat, never a hole */
+.product__motif { display: grid; place-items: center; }
+.product__body { padding: var(--space-3) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
+.product__desc { color: var(--color-text-soft); font-size: var(--text-sm); margin: 0; flex: 1; }
+/* price and dietary badges share the card's bottom line, so cards in a row
+   finish at the same place whatever the description length */
+.product__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin: var(--space-2) 0 0; min-height: 1.2em; }
+.product__price { font-family: var(--font-display); font-weight: 700; color: var(--color-wood); }
+.product__flags { display: flex; gap: 4px; }
+.product--loading { min-height: 220px; background: var(--color-sage-soft); }
+.products__cta { text-align: center; margin-top: var(--space-6); }
+/* the optional line under a section heading (teaser subheading) */
+.section-sub { text-align: center; max-width: 52ch; margin: calc(-1 * var(--space-4)) auto var(--space-6); color: var(--color-text-soft); }
 @media (max-width: 760px) {
-  /* stacked full-width cards — the old thumbnail-row squeezed the framed art
-     to 112px and shattered the brass nameplates one word per line */
-  .sigdrinks { grid-template-columns: 1fr; gap: var(--space-4); }
-  .sigdrink__frame { --ar: 16 / 9; margin: var(--space-3) var(--space-3) 0; }
-  .sigdrink__body { padding: var(--space-3) var(--space-4) var(--space-4); }
+  /* two-up on a big phone / small tablet keeps the framed art from ballooning
+     to a full screen per drink; the 720px rule below turns it into a swipe
+     shelf on true phone widths */
+  .products { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .products--menu { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-4); }
+  .product__frame { --ar: 16 / 10; margin: var(--space-3) var(--space-3) 0; }
+  .product__body { padding: var(--space-3) var(--space-4) var(--space-4); }
 }
 
 /* ---- Featured drink ------------------------------------------------------- */
@@ -809,6 +835,16 @@
   .gw-hero__meta-star { display: none; }
   .gw-frame__plaque { font-size: 0.72rem; padding: 3px 12px; max-width: calc(100% - 14px); bottom: 7px; }
 }
+@media (max-width: 359px) {
+  /* Two columns on a 320px screen leave ~140px a frame — under the width an
+     ornate molding plus an engraved nameplate need before the label starts
+     wrapping a word per line. One column hangs fewer, bigger, legible pieces,
+     which is what a small wall does anyway. */
+  .gw-wall { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .gw-wall .gw-frame__art { aspect-ratio: 4 / 3; }
+  .gw-wall .gw-frame__art--oval-gilt, .gw-wall .gw-frame__art--oval-black { aspect-ratio: 1 / 1.05; }
+  .gw-frame__plaque { font-size: 0.78rem; }
+}
 
 /* ---- Concept #2: Warm Storefront (immersive photo hero) ------------------- */
 .wsh { position: relative; min-height: 84vh; display: grid; align-items: end; overflow: hidden; isolation: isolate; }
@@ -1018,11 +1054,16 @@
   .featured__body { padding: var(--space-5) var(--space-4) var(--space-6); }
   .featured__desc { font-size: var(--text-base); }
 
-  /* ---- Signature sips: stacked full-width cards cost three screens for
-     three drinks. On a phone they become a shelf you SWIPE — the next piece
-     peeks in from the right, which is both the affordance and the reason it
-     still reads as a gallery rather than a list. Pure scroll-snap, no JS. */
-  .sigdrinks {
+  /* ---- Products: stacked full-width cards cost a screen per drink. On a
+     phone the teaser becomes a shelf you SWIPE — the next piece peeks in from
+     the right, which is both the affordance and the reason it still reads as a
+     gallery rather than a list. Pure scroll-snap, no JS.
+
+     The MENU's card grid is deliberately left alone: a menu is something you
+     scan top-to-bottom for the thing you want, and hiding two thirds of a
+     category behind a sideways swipe is the wrong shape for that. It drops to
+     a compact two-column grid instead (rule above). */
+  .products:not(.products--menu) {
     display: flex;
     grid-template-columns: none;
     gap: var(--space-4);
@@ -1035,16 +1076,16 @@
     margin-inline: calc(-1 * var(--space-4));
     padding: 4px var(--space-4) var(--space-4);
   }
-  .sigdrinks::-webkit-scrollbar { display: none; }
-  .sigdrink {
+  .products:not(.products--menu)::-webkit-scrollbar { display: none; }
+  .products:not(.products--menu) > .product {
     flex: 0 0 min(78%, 300px);
     scroll-snap-align: start;
     scroll-snap-stop: always; /* one swipe = one drink, never a fly-past */
   }
-  .sigdrink__frame { margin: var(--space-4) var(--space-4) 0; }
-  .sigdrink__body { padding: var(--space-3) var(--space-4) var(--space-4); }
-  .sigdrinks__cta { margin-top: var(--space-4); }
-  .sigdrinks__cta .btn { width: 100%; justify-content: center; }
+  .product__frame { margin: var(--space-4) var(--space-4) 0; }
+  .product__body { padding: var(--space-3) var(--space-4) var(--space-4); }
+  .products__cta { margin-top: var(--space-4); }
+  .products__cta .btn { width: 100%; justify-content: center; }
 
   /* ---- The menu is the most-visited page on a phone, and it was scrolling
      for a minute: item names at --text-lg with 1rem between every row. Tighten

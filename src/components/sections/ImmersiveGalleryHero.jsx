@@ -4,6 +4,7 @@ import HoursToday from '../HoursToday.jsx';
 import OrderButton from '../OrderButton.jsx';
 import { asset } from '../../lib/config.js';
 import { track } from '../../lib/analytics.js';
+import { mergeWallPieces } from '../../lib/wallPieces.js';
 import {
   CoffeeCup, FoxFace, Balloon, FramedScene, Heart, TopHat, Star, Bunting,
   MapPin, OpenBook, Envelope,
@@ -30,39 +31,16 @@ import {
 
 const SCENE = 'images/wall/immersive-scene.jpg';
 
-/* Frame hotspots: % boxes of the 1536×1024 artwork. Every destination in the
-   navbar (primary + More) hangs somewhere on the wall. Boxes are tuned to hug
-   each frame's molding — the label renders as a brass nameplate centered on
-   the frame's bottom edge, so box centers/bottoms must be exact.
-
-   `piece` is the destination's PHONE incarnation — a real framed picture on
-   the re-hung wall:
-     frame  a vintage molding from the shared vocabulary (frameStyles.js /
-            `.gw-frame__art--*`) — all 11 recipes used once, no two alike
-     ar     the piece's shape, so the hang mixes portraits, landscapes,
-            squares and ovals like a wall collected over years
-     img    the PHOTOGRAPH inside it (public/images/wall/ — the shop's own
-            pictures, the same ones the Gallery Wall concept hangs).
-            Swap a file there and the phone wall re-hangs itself.
-     small  'left' | 'right' — hangs this one at ~72% of the column, pushed
-            to that side. A wall where every piece is the same width reads as
-            a grid; a few little ones tucked off-centre read as collected.
-     Motif  fallback line drawing for the one piece with no photograph
-            (Visit Us hangs as a little painted address sign) and for any
-            photo that fails to load. */
-const FRAME_LINKS = [
-  { label: 'Menu', to: '/menu', x: 18.4, y: 9.0, w: 19.9, h: 17.1, piece: { frame: 'gilt-grand', ar: '4 / 5', img: 'images/wall/order-menu.jpg', Motif: CoffeeCup } },
-  { label: 'About Us', to: '/about', x: 39.7, y: 6.6, w: 17.6, h: 17.8, piece: { frame: 'brass-chain', ar: '4 / 3', img: 'images/wall/our-story.jpg', Motif: FoxFace } },
-  { label: 'Events', to: '/events', x: 59.2, y: 5.9, w: 10.0, h: 19.3, round: true, piece: { frame: 'oval-black', ar: '1 / 1.1', img: 'images/wall/whats-on.jpg', Motif: Balloon } },
-  { label: 'Gallery Wall', to: '/gallery-wall', x: 20.7, y: 30.3, w: 16.4, h: 33.7, piece: { frame: 'gold-tapestry', ar: '3 / 4', img: 'images/wall/gallery-wall.jpg', Motif: FramedScene } },
-  { label: 'Local Love', to: '/neighborhood', x: 39.3, y: 33.7, w: 7.0, h: 16.3, piece: { frame: 'gold-botanical', ar: '7 / 5', img: 'images/wall/local-love.jpg', small: 'left', Motif: Heart } },
-  { label: 'Troublemakers', to: '/troublemakers', x: 54.6, y: 27.6, w: 7.3, h: 14.4, piece: { frame: 'black-stacked', ar: '1 / 1', img: 'images/wall/troublemakers.jpg', Motif: TopHat } },
-  { label: 'Reviews', to: '/reviews', x: 70.3, y: 20.8, w: 9.0, h: 13.6, piece: { frame: 'oval-gilt', ar: '1 / 1', img: 'images/wall/reviews.jpg', Motif: Star } },
-  { label: 'Community', to: '/community', x: 39.7, y: 54.4, w: 10.7, h: 17.9, piece: { frame: 'black-mat', ar: '4 / 3.4', img: 'images/wall/flank-coffee.jpg', small: 'right', Motif: Bunting } },
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, piece: { frame: 'black-flat', ar: '4 / 3', tint: 'chalk', small: 'left', Motif: MapPin } },
-  { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, piece: { frame: 'bronze-carved', ar: '7 / 5', img: 'images/wall/our-story-so-far.jpg', Motif: OpenBook } },
-  { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, piece: { frame: 'gilt-thin', ar: '3 / 4', img: 'images/wall/flank-food.jpg', Motif: Envelope } },
-];
+/* The wall itself — every destination that hangs on it, desktop hotspot
+   geometry and phone framing alike — is data in src/lib/wallPieces.js, and the
+   owner's per-piece overrides (label, link, photo, molding) merge onto it from
+   the hero's `igh_pieces`. Only the drawn stand-ins stay here: they're
+   components, so they can't live in a plain data module. */
+const MOTIFS = {
+  cup: CoffeeCup, fox: FoxFace, balloon: Balloon, scene: FramedScene,
+  heart: Heart, hat: TopHat, star: Star, bunting: Bunting,
+  pin: MapPin, book: OpenBook, envelope: Envelope,
+};
 
 /* The two gold sculptures from the real wall, hung among the pictures. Each
    is keyed to the piece it hangs UNDER, so the masonry carries them into
@@ -107,22 +85,23 @@ function KnowForm({ idSuffix, action }) {
    missing (or fails), the piece falls back to a painted board with the
    destination's gold line drawing, which is a legitimate small wall piece
    rather than a hole in the hang. */
-function WallPiece({ link, index }) {
-  const { frame, ar, tint, img, small, Motif } = link.piece;
+function WallPiece({ piece, index }) {
+  const { label, to, frame, ar, tint, img, small, motif } = piece;
   const [failed, setFailed] = useState(false);
   const showPhoto = Boolean(img) && !failed;
+  const Motif = MOTIFS[motif] || CoffeeCup;
 
   return (
     <Link
-      className={`ig2-mini${small ? ` ig2-mini--small ig2-mini--pull-${small}` : ''}`}
-      to={link.to}
+      className={`ig2-mini${small ? ' ig2-mini--small' : ''}`}
+      to={to}
       style={{ '--tilt': `${MINI_TILTS[index % MINI_TILTS.length]}deg` }}
     >
       {/* inner hanger so the entrance tween never fights the resting tilt */}
       <span className="ig2-mini__hang">
         <span
           className={`gw-frame__art ig2-mini__frame gw-frame__art--${frame}${
-            tint ? ` ig2-mini__frame--${tint}` : ''
+            tint && !showPhoto ? ` ig2-mini__frame--${tint}` : ''
           }${showPhoto ? '' : ' ig2-mini__frame--drawn'}`}
           style={{ '--ar': ar }}
         >
@@ -146,7 +125,7 @@ function WallPiece({ link, index }) {
             clips its own overflow so it could not be pushed out. Out here it
             rides the bottom molding the way the desktop wall's labels do, and
             the picture gets its space back. */}
-        <span className="gw-frame__plaque ig2-mini__plate">{link.label}</span>
+        <span className="gw-frame__plaque ig2-mini__plate">{label}</span>
       </span>
     </Link>
   );
@@ -168,8 +147,13 @@ export default function ImmersiveGalleryHero({ data = {} }) {
     igh_special_label: specialsLabel = "Today's Special",
     igh_special_text: specialText = 'Honey Almond Latte',
     igh_mailchimp_action_url: mailchimpUrl,
+    igh_pieces: pieceOverrides,
     specials_link: specialsLink = '/menu#specials',
   } = data;
+
+  // the wall the owner actually configured (built-in geometry + their labels,
+  // links, photos and moldings)
+  const pieces = mergeWallPieces(pieceOverrides);
 
   useLayoutEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -321,7 +305,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
           {brand}
 
           <nav className="ig2-links" aria-label="Explore Trouble Brewing">
-            {FRAME_LINKS.map((f) => (
+            {pieces.map((f) => (
               <Link
                 key={f.to}
                 className={`ig2-frame${f.round ? ' ig2-frame--round' : ''}`}
@@ -361,11 +345,11 @@ export default function ImmersiveGalleryHero({ data = {} }) {
             simply gains a column on a tablet. Column-major fill means the
             visual order and the tab order are the same order. */}
         <nav className="ig2-wall" aria-label="Explore Trouble Brewing">
-          {FRAME_LINKS.map((link, i) => {
+          {pieces.map((piece, i) => {
             const object = WALL_OBJECTS.find((o) => o.after === i);
             return (
-              <Fragment key={link.to}>
-                <WallPiece link={link} index={i} />
+              <Fragment key={piece.to}>
+                <WallPiece piece={piece} index={i} />
                 {object && (
                   <img
                     className={`ig2-mobile__object ig2-mobile__object--${object.mod}`}

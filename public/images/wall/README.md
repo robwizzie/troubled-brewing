@@ -49,15 +49,25 @@ HTML drawn over it, so the copy stays editable and scales with the image.
 - The file here is **`immersive-scene.jpg`**, **1536×1024** (3:2). Export a
   new one from the same composition if the artwork is refreshed.
 - If the artwork is ever **re-generated with frames moved**, the link boxes in
-  `src/components/sections/ImmersiveGalleryHero.jsx` (`FRAME_LINKS`) need
-  re-tuning to match.
+  `src/lib/wallPieces.js` (`IMMERSIVE_WALL_PIECES` — the `x/y/w/h` percentages)
+  need re-tuning to match.
 - Under 1020px the scene renders as a backdrop banner and the wall **re-hangs
   itself below it** as a salon hang of the **photographs in this folder** —
   every destination becomes a real framed picture with a brass nameplate. So
   the eight photos above (plus the two side pieces) are what phone visitors
-  actually see. Only **Visit Us** has no photo; it hangs as a little painted
-  chalk sign. Drop a `location.jpg`-style photo in and wire it up in
-  `FRAME_LINKS` if you'd rather it carried a picture too.
+  actually see.
+- The one frame still waiting on a photo is **Visit Us**. Save a storefront /
+  “find us” shot here as **`location.jpg`** (landscape, subject centred) and it
+  hangs like the rest — no code change. Until that file exists it falls back to
+  a little painted chalk address sign, which is a real wall piece rather than a
+  hole in the hang.
+- **You don't need this folder at all** if you'd rather work in the admin: open
+  **✏️ Edit your site → the hero → “The frames on your wall”** and every frame's
+  photo, label, link and molding is editable there, on a phone or a laptop.
+  Uploads made there win over the files here. The frames themselves are fixed —
+  each one is pinned to a painted frame in the scene artwork
+  (`src/lib/wallPieces.js`) — so you swap what's *in* them, not how many there
+  are.
 - The scene file is the **largest asset on the site** and every phone
   downloads it. When you re-export the artwork, keep it around **1536px** on
   the long edge and aim for **under ~400 KB** — the current file is ~2.4 MB,
