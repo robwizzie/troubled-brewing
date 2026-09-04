@@ -8,19 +8,19 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 
 | `type` | `data` shape (jsonb) | Backed by | Renderer |
 |---|---|---|---|
-| `hero` | `{ heading, subheading, background_image_url, cta_label, cta_url }` | data | `Hero.jsx` |
-| `rich_text` | `{ heading, body_markdown }` | data | `RichText.jsx` |
+| `hero` | `{ eyebrow, heading, subheading, background_image_url, cta_label, cta_url }` — `cta_url` renders as a router link for `/paths`, a real anchor for `https://` and `tel:` | data | `Hero.jsx` |
+| `rich_text` | `{ heading, body_markdown, variant: ''\|'lead'\|'alt' }` — `lead` is the centered opening paragraph with the cup motif, `alt` sits on a sage band | data | `RichText.jsx` |
 | `image` | `{ image_url, alt, caption }` | data | `ImageBlock.jsx` |
-| `gallery` | `{ images: [{url, alt}], layout }` | data | `Gallery.jsx` |
+| `gallery` | `{ heading, images: [{url, alt}] }` | data | `Gallery.jsx` |
 | `menu_block` | `{ heading, categories: [..], layout: 'auto'\|'cards'\|'list' }` — `auto` (default) draws photo cards as soon as any item has an `image_url`, the classic price list until then; `cards` uses the shared `ProductCard`, the same card the homepage drinks teaser draws | `menu_items` | `MenuBlock.jsx` |
-| `hours` | `{ heading }` | `hours`+`hours_overrides`/Google | `HoursSection.jsx` |
+| `hours` | `{ heading, intro }` | `hours`+`hours_overrides`/Google | `HoursSection.jsx` |
 | `cta` | `{ heading, body, button_label, button_url }` | data | `CTA.jsx` |
-| `events_list` | `{ heading }` | `events` | `EventsList.jsx` |
-| `community_board` | `{ heading }` | `content_blocks` | `CommunityBoard.jsx` |
-| `instagram` | `{ embed_handle }` | data | `InstagramFeed.jsx` |
-| `map` | `{ address, embed_url }` | data | `MapSection.jsx` |
+| `events_list` | `{ heading, intro, empty_message }` | `events` | `EventsList.jsx` |
+| `community_board` | `{ heading, intro }` | `content_blocks.staff_picks` | `CommunityBoard.jsx` |
+| `instagram` | `{ heading, body, embed_handle }` | `instagram_feed` + data | `InstagramFeed.jsx` |
+| `map` | `{ heading, address, button_label, note, embed_url }` | data | `MapSection.jsx` |
 | `newsletter` | `{ heading, body, mailchimp_action_url }` | data | `Newsletter.jsx` |
-| `reviews_hero` | `{ heading }` | `google_profile` | `ReviewsHero.jsx` |
+| `reviews_hero` | `{ heading, subheading }` | `google_profile` | `ReviewsHero.jsx` |
 | `testimonials_wall` | `{ heading, layout }` | `testimonials` (via `lib/reviews.js`) | `TestimonialsWall.jsx` |
 | `google_reviews_feed` | `{ heading, count }` — `count` is the page size; the rest sit behind "Show more" | `google_profile` (via `lib/reviews.js`) | `GoogleReviewsFeed.jsx` |
 | `review_cta` | `{ heading, body, button_label }` | `google_profile.maps_url` | `ReviewCTA.jsx` |
@@ -29,10 +29,10 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `warm_storefront_hero` | `{ wsh_eyebrow, wsh_title, wsh_sub, background_image_url }` | data | `WarmStorefrontHero.jsx` |
 | `cozy_editorial_hero` | `{ ceh_eyebrow, ceh_title, ceh_lead, ceh_signature, ceh_main_image_url, ceh_inset_image_url }` | data | `CozyEditorialHero.jsx` |
 | `modern_coffee_hero` | `{ mch_eyebrow, mch_word, mch_brand, mch_lead, mch_drink_image_url }` | data | `ModernCoffeeHero.jsx` |
-| `gallery_pieces_grid` | `{ heading }` | `gallery_pieces` | `GalleryPiecesGrid.jsx` |
-| `troublemakers_grid` | `{ heading }` | `team_members` | `TroublemakersGrid.jsx` |
-| `local_businesses_grid`| `{ heading }` | `local_businesses` | `LocalBusinessesGrid.jsx` |
-| `timeline_grid` | `{ heading }` | `timeline_events` | `TimelineGrid.jsx` |
+| `gallery_pieces_grid` | `{ heading, intro }` — each piece hangs in a real molding with a museum label: title, **artist** (linked via `artist_url`), medium and date | `gallery_pieces` | `GalleryPiecesGrid.jsx` |
+| `troublemakers_grid` | `{ heading, intro }` | `team_members` | `TroublemakersGrid.jsx` |
+| `local_businesses_grid`| `{ heading, intro, order_by: 'street'\|'manual', show_us }` — `street` orders by the leading number in each `address`, laying the page out as a walk down the avenue with the shop's own door marked in place | `local_businesses` | `LocalBusinessesGrid.jsx` |
+| `timeline_grid` | `{ heading, intro }` | `timeline_events` | `TimelineGrid.jsx` |
 | `featured_drink` | `{ heading }` | `content_blocks.featured_drink` | `FeaturedDrink.jsx` |
 | `announcement` | `{}` | `content_blocks.announcement_banner` | `AnnouncementBanner.jsx` |
 
@@ -65,6 +65,14 @@ The owner's rules live in the `review_settings` content block, keyed by `reviewK
 ```
 
 Edited in **admin → Reviews** (`src/admin/managers/ReviewsManager.jsx`), reachable both from the sidebar and from the homepage reviews strip / reviews feed in the editor. `SocialProof`, `GoogleReviewsFeed` and `TestimonialsWall` all read through `loadReviews()` — no surface re-implements "a good review".
+
+### The three collection pages
+
+`gallery_pieces`, `team_members` and `local_businesses` all render "a photo, a name and some words", but each one carries the fields its subject actually needs, and every one of them is optional — a card holds its shape when only the name is filled in.
+
+- **Gallery Wall.** Real people made the work in that room, so `artist` / `artist_url` / `medium` / `year_label` are columns rather than something crammed into the story text, and the artist's name links wherever they want people sent. `frame_style` picks a molding from `frameStyles.js`; left blank, the page cycles the moldings so an unset wall still reads as collected. An unphotographed piece shows a warm blank in its frame, not a placeholder glyph on grey.
+- **Troublemakers.** `pronouns` (asked for, never assumed), `started_label`, and `drink` — their go-to order, given its own emphasis on the card because it answers the question these people field all day. `fun_facts` stays an open key/value map, so owners can invent their own.
+- **Local Love.** `address` drives both the directions link and the walk-down-the-street ordering; `logo_url` is an upload slot rather than anything fetched, with a drawn monogram standing in; `we_love` is the specific thing they send people for, which is the line customers act on.
 
 ### Products: one card, two pages
 

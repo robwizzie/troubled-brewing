@@ -6,7 +6,7 @@ import StarRating from '../StarRating.jsx';
 /* Live Google rating + review count from the cached google_profile row
    (refreshed daily by the Edge Function). See docs/INTEGRATIONS.md §Google Places. */
 export default function ReviewsHero({ data = {} }) {
-  const { heading = 'What the neighborhood says' } = data;
+  const { heading = 'What the neighborhood says', subheading = '' } = data;
   const [profile, setProfile] = useState(null);
 
   const version = useDataVersion('google_profile');
@@ -20,6 +20,7 @@ export default function ReviewsHero({ data = {} }) {
     <section className="hero">
       <div className="container">
         <h1>{heading}</h1>
+        {subheading && <p className="hero__sub">{subheading}</p>}
         {profile && (
           <div className="reviews-hero__stat">
             <StarRating value={profile.rating || 0} size={28} />

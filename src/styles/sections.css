@@ -383,6 +383,10 @@
 /* stretch, not start: cards in a row that shrink to their own text length
    leave the row looking half-finished, and the "Visit their site" buttons
    stair-step. The blurb is the flexible element that absorbs the difference. */
+/* the small print under the map — parking, the lot round the back, whatever
+   people always ask */
+.map__note { max-width: 56ch; margin: var(--space-4) auto 0; text-align: center; color: var(--color-text-soft); font-size: var(--text-sm); }
+
 .neighbors { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-5); align-items: stretch; }
 .neighbor {
   display: flex; flex-direction: column; gap: var(--space-3);

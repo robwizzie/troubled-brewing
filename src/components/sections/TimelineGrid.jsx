@@ -7,7 +7,7 @@ import { SkeletonCards } from '../Skeleton.jsx';
 /* The TB Timeline: a vertical, scrollable run of milestones with playful markers
    and vintage frames. Owner-managed via the timeline_events table. */
 export default function TimelineGrid({ data = {} }) {
-  const { heading = 'The Trouble Brewing timeline' } = data;
+  const { heading = 'The Trouble Brewing timeline', intro = '' } = data;
   const [events, setEvents] = useState(null);
 
   const version = useDataVersion('timeline_events');
@@ -21,6 +21,7 @@ export default function TimelineGrid({ data = {} }) {
     <Reveal as="section" className="section">
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
+        {intro && <p className="section-sub">{intro}</p>}
         {events === null ? (
           <SkeletonCards count={3} height={140} />
         ) : events.length === 0 ? (
