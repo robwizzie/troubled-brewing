@@ -86,7 +86,7 @@ function KnowForm({ idSuffix, action }) {
    destination's gold line drawing, which is a legitimate small wall piece
    rather than a hole in the hang. */
 function WallPiece({ piece, index }) {
-  const { label, to, frame, ar, tint, img, small, motif } = piece;
+  const { label, to, frame, ar, tint, img, small, motif, caption } = piece;
   const [failed, setFailed] = useState(false);
   const showPhoto = Boolean(img) && !failed;
   const Motif = MOTIFS[motif] || CoffeeCup;
@@ -115,8 +115,17 @@ function WallPiece({ piece, index }) {
               onError={() => setFailed(true)}
             />
           ) : (
+            /* Hand-lettered sign, not an empty board: the glyph alone read as
+               a photograph that failed to load. With a line of lettering under
+               it, it reads as a painted sign — which is a legitimate thing to
+               hang on a wall. */
             <span className="ig2-mini__drawn" aria-hidden="true">
-              <Motif className="ig2-mini__motif" size={44} />
+              <Motif className="ig2-mini__motif" size={52} />
+              {caption && (
+                <span className="ig2-mini__caption">
+                  {caption.split('\n').map((line) => <span key={line}>{line}</span>)}
+                </span>
+              )}
             </span>
           )}
         </span>

@@ -456,11 +456,21 @@ a.ig2-chalk__note:hover span:first-child, a.ig2-chalk__note:focus-visible span:f
       linear-gradient(172deg, #100d08, #17140c 58%, #0b0905);
   }
   .ig2-mini__drawn {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .45em;
+    width: 100%; height: 100%; padding: .6em;
   }
   .ig2-mini__motif { display: block; color: #a8791f; }
   .ig2-mini__frame--chalk .ig2-mini__motif { color: #d9c489; }
+  /* the lettering that turns a board into a sign */
+  .ig2-mini__caption {
+    display: grid; gap: .1em;
+    font-family: var(--font-display); font-weight: 700;
+    font-size: .72rem; line-height: 1.2; letter-spacing: .04em;
+    text-align: center; text-wrap: balance;
+    color: #7e6022;
+  }
+  .ig2-mini__frame--chalk .ig2-mini__caption { color: #e6d5a2; text-shadow: 0 1px 0 rgba(0, 0, 0, .5); }
 
   .ig2-mini:hover .ig2-mini__frame,
   .ig2-mini:focus-visible .ig2-mini__frame { filter: brightness(1.05); }

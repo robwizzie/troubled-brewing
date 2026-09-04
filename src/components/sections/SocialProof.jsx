@@ -32,8 +32,13 @@ const AUTOPLAY_MS = 6500;
 // (Safari < 17 has no scrollend event)
 const SCROLL_SETTLE_MS = 700;
 
-// Card counts per view, chosen off the CAROUSEL's width (not the viewport) —
-// it shares a row with the rating block, so viewport media queries would lie.
+/* Card counts per view, chosen off the CAROUSEL's width (not the viewport) —
+   it shares a row with the rating block, so viewport media queries would lie.
+   Inside the site's normal `.container`, the widest this strip gets is ~836px,
+   so a desktop shows TWO large, comfortably readable framed quotes; the 3-up
+   step is there for a wider layout, not something the homepage reaches. Three
+   across at 836px would be ~215px of text per card, which puts most of every
+   review behind "Read more". */
 function perViewFor(width) {
   if (width >= 880) return 3;
   if (width >= 520) return 2;
