@@ -185,26 +185,42 @@ on conflict (id) do nothing;
 -- -----------------------------------------------------------------------------
 -- Gallery pieces (placeholder — owner adds the real wall + stories)
 -- -----------------------------------------------------------------------------
-insert into gallery_pieces (title, story, display_order) values
-('The Ornate Gold One', 'Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it''s the unofficial centerpiece of the wall.', 0),
-('Tiny Oval Mystery', 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', 1);
+-- Starter rows that teach the shape of a good entry; owners replace them with
+-- the real pieces off the wall. `artist` is the point of this page, so it is
+-- the field the story below nudges them toward filling in.
+insert into gallery_pieces (title, story, year_label, frame_style, display_order) values
+('The Ornate Gold One', 'Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it''s the unofficial centerpiece of the wall. (Owner: if you know who made it, add them — the credit is the best part of this page.)', 'Found, undated', 'gilt-grand', 0),
+('Tiny Oval Mystery', 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', '', 'oval-gilt', 1);
 
 -- -----------------------------------------------------------------------------
 -- Team members ("Troublemakers") — placeholder so the page renders
 -- -----------------------------------------------------------------------------
+-- Starter rows the owners replace with the real team. Fun facts are seeded
+-- EMPTY rather than as em-dashes: the page hides a blank fact, so an unfilled
+-- card looks finished instead of carrying five rows of punctuation.
 insert into team_members (name, role, bio, fun_facts, display_order, active) values
-('Katie', 'General Manager', 'Keeps the whole operation running and somehow still remembers your usual.', '{"favorite_local_food": "—", "favorite_movie": "—", "favorite_book": "—", "favorite_show": "—", "favorite_artist": "—"}', 0, true),
-('A Troublemaker', 'Barista', 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', '{"favorite_local_food": "—", "favorite_movie": "—", "favorite_book": "—", "favorite_show": "—", "favorite_artist": "—"}', 1, true);
+('Katie', 'General Manager', 'Keeps the whole operation running and somehow still remembers your usual.', '{"favorite_local_food": "", "favorite_movie": "", "favorite_book": "", "favorite_show": "", "favorite_artist": ""}', 0, true),
+('A Troublemaker', 'Barista', 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', '{"favorite_local_food": "", "favorite_movie": "", "favorite_book": "", "favorite_show": "", "favorite_artist": ""}', 1, true);
 
 -- -----------------------------------------------------------------------------
 -- Local businesses (placeholder Haddon Heights neighbors — confirm with client)
 -- -----------------------------------------------------------------------------
 -- Client-named starting entries (confirm exact names, categories, and URLs).
 -- Fully owner-editable in the Local Love manager.
-insert into local_businesses (name, category, blurb, url, display_order) values
-('Anthony''s', 'restaurant', 'A neighborhood favorite we love to send people to. (Owner: confirm details + add a link.)', '', 0),
-('Ralph''s', 'restaurant', 'Good food, good people, right around the corner. (Owner: confirm details + add a link.)', '', 1),
-('Lula''s', 'cafe', 'One of the local spots that makes Haddon Heights special. (Owner: confirm details + add a link.)', '', 2);
+-- Real Station Ave businesses, checked against their own sites, the borough
+-- directory and local press. The page orders them by street number, so Trouble
+-- Brewing's own door at 514 falls between Anthony's and Lula's on its own.
+-- `we_love` is left blank on purpose: only the owners know what they actually
+-- send people there for.
+insert into local_businesses (name, category, address, blurb, url, display_order) values
+('Anthony''s Creative Italian Cuisine', 'restaurant', '512 Station Ave', 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', 'https://www.anthonysonstation.com/', 0),
+('Lula''s Empanadas', 'restaurant', '516 Station Ave', 'Contemporary Dominican empanadas from a takeout window, named after the owner''s mother. Up to eighteen flavors, and a couple of picnic tables out front.', 'https://www.facebook.com/lulasempanadas/', 1),
+('Ralph''s Pizza', 'restaurant', '520 Station Ave', 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town.', 'https://ralphspizzahaddonheights.com/', 2),
+('South Jersey Special', 'retail', '531 Station Ave', 'A gift shop of South Jersey makers — cards, prints, jewelry and small-batch things, most of it funny, all of it local.', 'https://southjerseyspecial.com/', 3),
+('Jane''s Tea House', 'cafe', '602 Station Ave', 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', 'https://janesteahouse.com/', 4),
+('Cabana Water Ice Co.', 'other', '603 Station Ave', 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', '', 5),
+('April Robin Florist & Gift', 'retail', '620 Station Ave', 'The florist at the top of the avenue — where the flowers on our counter usually come from.', 'https://www.aprilrobinflorist.com/', 6),
+('John''s Friendly Market', 'other', '622 Station Ave', 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', '', 7);
 
 -- -----------------------------------------------------------------------------
 -- TB Timeline milestones (placeholder — owner adds the real history)

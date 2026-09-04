@@ -68,6 +68,28 @@ delete from testimonials; -- placeholder quotes; owners add real favorites in /a
 alter table testimonials add column if not exists image_url text default ''; -- review photos
 ```
 
+Project seeded before the **Local Love / Gallery Wall / Troublemakers pages grew their extra fields**? Add the columns once (all idempotent):
+
+```sql
+-- Gallery Wall: proper artist credits, so the people who made the work are named
+alter table gallery_pieces  add column if not exists artist text;
+alter table gallery_pieces  add column if not exists artist_url text;
+alter table gallery_pieces  add column if not exists medium text;
+alter table gallery_pieces  add column if not exists year_label text;
+alter table gallery_pieces  add column if not exists frame_style text;
+alter table gallery_pieces  add column if not exists for_sale boolean default false;
+
+-- Troublemakers
+alter table team_members    add column if not exists pronouns text;
+alter table team_members    add column if not exists drink text;
+alter table team_members    add column if not exists started_label text;
+
+-- Local Love
+alter table local_businesses add column if not exists logo_url text;
+alter table local_businesses add column if not exists address text;
+alter table local_businesses add column if not exists we_love text;
+```
+
 Project seeded before the **/community page was retired** and **Find Us moved above Hours**? Those are stored `sections` rows, so the seed change alone won't move them — either drag them in the editor (Edit your site → the page → ▲▼) or run once:
 
 ```sql

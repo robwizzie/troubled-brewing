@@ -102,15 +102,15 @@ export const SECTIONS = {
   ],
   'gallery-wall': [
     { type: 'hero', data: { heading: 'The Gallery Wall', subheading: 'Every frame has a story. Some are even true.', background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'gallery_pieces_grid', data: { heading: 'The collection' } },
+    { type: 'gallery_pieces_grid', data: { heading: 'The collection', intro: 'Real work by real people, most of it found locally. Where we know who made a piece, their name links to them.' } },
   ],
   troublemakers: [
     { type: 'hero', data: { heading: 'The Troublemakers', subheading: 'The people behind your coffee.', background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'troublemakers_grid', data: { heading: 'Meet the team' } },
+    { type: 'troublemakers_grid', data: { heading: 'Meet the team', intro: 'The people who will know your order by the third visit.' } },
   ],
   neighborhood: [
     { type: 'hero', data: { heading: 'Local Love', subheading: "The Haddon Heights spots we can't get enough of.", background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'local_businesses_grid', data: { heading: 'Our neighbors' } },
+    { type: 'local_businesses_grid', data: { heading: 'Our neighbors', intro: 'Everyone on this list is a few doors from our own. Station Ave only works because all of it works.', order_by: 'street', show_us: true } },
     { type: 'cta', data: { heading: 'Know a great local spot?', body: "Tell us who we're missing.", button_label: 'Send a suggestion', button_url: '/contact' } },
   ],
   timeline: [
@@ -170,20 +170,38 @@ export const TESTIMONIALS = [
   { id: 't-3', author: 'Priya K.', source: '', rating: 5, quote: 'The cranberry walnut chicken salad panini ruined every other panini for me. Cozy, friendly, local — go.', featured: false, display_order: 2 },
 ];
 
+/* Starter rows that teach the shape of a good entry — the owners replace them
+   with the real pieces off the wall. Note `artist`: the whole point of this
+   page is the work and the people who made it, so the field is filled in here
+   as a prompt rather than left blank. */
 export const GALLERY_PIECES = [
-  { id: 'g-1', title: 'The Ornate Gold One', story: "Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it's the unofficial centerpiece of the wall.", image_url: '', display_order: 0 },
-  { id: 'g-2', title: 'Tiny Oval Mystery', story: 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', image_url: '', display_order: 1 },
+  { id: 'g-1', title: 'The Ornate Gold One', artist: '', artist_url: '', medium: '', year_label: 'Found, undated', frame_style: 'gilt-grand', for_sale: false, story: "Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it's the unofficial centerpiece of the wall. (Owner: if you know who made it, add them above — the credit is the best part of this page.)", image_url: '', display_order: 0 },
+  { id: 'g-2', title: 'Tiny Oval Mystery', artist: '', artist_url: '', medium: '', year_label: '', frame_style: 'oval-gilt', for_sale: false, story: 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', image_url: '', display_order: 1 },
 ];
 
+/* Starter rows the owners replace with the real team. Note `drink`: "what
+   should I order?" is the question these people field all day, and their own
+   answer is the most useful thing on the card. */
 export const TEAM_MEMBERS = [
-  { id: 'tm-1', name: 'Katie', role: 'General Manager', bio: 'Keeps the whole operation running and somehow still remembers your usual.', photo_url: '', fun_facts: { favorite_local_food: '—', favorite_movie: '—', favorite_book: '—', favorite_show: '—', favorite_artist: '—' }, display_order: 0, active: true },
-  { id: 'tm-2', name: 'A Troublemaker', role: 'Barista', bio: 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', photo_url: '', fun_facts: { favorite_local_food: '—', favorite_movie: '—', favorite_book: '—', favorite_show: '—', favorite_artist: '—' }, display_order: 1, active: true },
+  { id: 'tm-1', name: 'Katie', role: 'General Manager', pronouns: '', drink: '', started_label: '', bio: 'Keeps the whole operation running and somehow still remembers your usual.', photo_url: '', fun_facts: { favorite_local_food: '', favorite_movie: '', favorite_book: '', favorite_show: '', favorite_artist: '' }, display_order: 0, active: true },
+  { id: 'tm-2', name: 'A Troublemaker', role: 'Barista', pronouns: '', drink: '', started_label: '', bio: 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', photo_url: '', fun_facts: { favorite_local_food: '', favorite_movie: '', favorite_book: '', favorite_show: '', favorite_artist: '' }, display_order: 1, active: true },
 ];
 
+/* Real Haddon Heights businesses, checked against their own sites, the borough
+   business directory and local press (Sept 2026). Ordered by street number,
+   which is how the page lays them out — Trouble Brewing's own door at 514 sits
+   between Anthony's and Lula's, which is a nicer fact than any copy we could
+   write. Owners edit all of it in admin → Local Love; `we_love` is theirs to
+   fill in, since only they know what they actually send people for. */
 export const LOCAL_BUSINESSES = [
-  { id: 'lb-1', name: "Anthony's", category: 'restaurant', blurb: 'A neighborhood favorite we love to send people to. (Owner: confirm details + add a link.)', url: '', photo_url: '', display_order: 0 },
-  { id: 'lb-2', name: "Ralph's", category: 'restaurant', blurb: 'Good food, good people, right around the corner. (Owner: confirm details + add a link.)', url: '', photo_url: '', display_order: 1 },
-  { id: 'lb-3', name: "Lula's", category: 'cafe', blurb: 'One of the local spots that makes Haddon Heights special. (Owner: confirm details + add a link.)', url: '', photo_url: '', display_order: 2 },
+  { id: 'lb-1', name: "Anthony's Creative Italian Cuisine", category: 'restaurant', address: '512 Station Ave', url: 'https://www.anthonysonstation.com/', logo_url: '', photo_url: '', blurb: 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', we_love: '', display_order: 0 },
+  { id: 'lb-2', name: "Lula's Empanadas", category: 'restaurant', address: '516 Station Ave', url: 'https://www.facebook.com/lulasempanadas/', logo_url: '', photo_url: '', blurb: 'Contemporary Dominican empanadas from a takeout window, named after the owner\u2019s mother. Up to eighteen flavors, and a couple of picnic tables out front.', we_love: '', display_order: 1 },
+  { id: 'lb-3', name: "Ralph's Pizza", category: 'restaurant', address: '520 Station Ave', url: 'https://ralphspizzahaddonheights.com/', logo_url: '', photo_url: '', blurb: 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town.', we_love: '', display_order: 2 },
+  { id: 'lb-4', name: 'South Jersey Special', category: 'retail', address: '531 Station Ave', url: 'https://southjerseyspecial.com/', logo_url: '', photo_url: '', blurb: 'A gift shop of South Jersey makers \u2014 cards, prints, jewelry and small-batch things, most of it funny, all of it local.', we_love: '', display_order: 3 },
+  { id: 'lb-5', name: "Jane's Tea House", category: 'cafe', address: '602 Station Ave', url: 'https://janesteahouse.com/', logo_url: '', photo_url: '', blurb: 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', we_love: '', display_order: 4 },
+  { id: 'lb-6', name: 'Cabana Water Ice Co.', category: 'other', address: '603 Station Ave', url: '', logo_url: '', photo_url: '', blurb: 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', we_love: '', display_order: 5 },
+  { id: 'lb-7', name: 'April Robin Florist & Gift', category: 'retail', address: '620 Station Ave', url: 'https://www.aprilrobinflorist.com/', logo_url: '', photo_url: '', blurb: 'The florist at the top of the avenue \u2014 where the flowers on our counter usually come from.', we_love: '', display_order: 6 },
+  { id: 'lb-8', name: "John's Friendly Market", category: 'other', address: '622 Station Ave', url: '', logo_url: '', photo_url: '', blurb: 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', we_love: '', display_order: 7 },
 ];
 
 export const TIMELINE_EVENTS = [
