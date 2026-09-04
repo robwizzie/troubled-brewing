@@ -160,7 +160,11 @@ insert into content_blocks (key, data) values
 ('staff_picks', '{"items": [{"label": "Flying off the menu", "value": "Cranberry Walnut Chicken Salad Panini"}, {"label": "Barista''s pick", "value": "Banana Split Coffee"}]}'),
 ('loyalty_copy', '{"body_markdown": "Ask a Troublemaker about loyalty perks. Full program details coming soon."}'),
 ('announcement_banner', '{"enabled": false, "message": ""}'),
-('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "", "tiktok": "", "x": "", "youtube": ""}')
+('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "", "tiktok": "", "x": "", "youtube": ""}'),
+-- Which Google reviews the site shows + the owner's per-review overrides
+-- (hidden / pinned / attached photo), keyed by author+text. See src/lib/reviews.js
+-- and admin -> Reviews. 4 stars is the default floor: only the good ones.
+('review_settings', '{"min_rating": 4, "hidden": {}, "pinned": {}, "photos": {}}')
 on conflict (key) do nothing;
 
 -- -----------------------------------------------------------------------------

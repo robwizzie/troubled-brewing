@@ -198,6 +198,26 @@
 .dash-todo__icon { font-size: 1.2rem; }
 .dash-allset { background: var(--color-green-soft); border-radius: var(--radius-md); padding: var(--space-4); }
 
+/* ---- Reviews control room -------------------------------------------------- */
+.rv-filters { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4); }
+.rv-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3); }
+.rv-row {
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-bg); padding: var(--space-3);
+  display: grid; gap: var(--space-2);
+}
+/* a review that isn't on the site reads as set aside, not deleted */
+.rv-row.is-off { opacity: 0.58; background: repeating-linear-gradient(135deg, transparent 0 9px, rgba(0,0,0,0.025) 9px 18px); }
+.rv-row__head { display: flex; align-items: center; gap: var(--space-3); }
+.rv-row__avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.rv-row__who { display: grid; min-width: 0; }
+.rv-row__meta { font-size: var(--text-xs); color: var(--color-ink-soft); }
+.rv-row__stars { color: var(--color-yellow-deep); letter-spacing: 0.06em; }
+.rv-row__text { margin: 0; font-size: var(--text-sm); line-height: 1.5; }
+.rv-row__photo { width: 100%; max-width: 220px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); }
+.rv-row__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.rv-row__photofield { border-top: 1px dashed var(--color-border); padding-top: var(--space-2); }
+
 /* ---- Responsive ----------------------------------------------------------- */
 @media (max-width: 820px) {
   .admin__burger { display: block; }

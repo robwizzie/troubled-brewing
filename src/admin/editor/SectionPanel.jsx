@@ -121,19 +121,24 @@ export default function SectionPanel({ section, effectiveType, focusTarget, onCh
           <button className="iconbtn" aria-label="Close" onClick={onClose}>✕</button>
         </div>
         <div className="tb-panel__body">
-          {/* key: a click on a different item re-arms the one-shot auto-open */}
-          <CollectionManager
-            key={autoLabel || 'manager'}
-            {...manager}
-            embedded
-            onChanged={onCollectionChanged}
-            autoOpenLabel={autoLabel}
-          />
+          {manager.component ? (
+            <manager.component embedded onChanged={onCollectionChanged} />
+          ) : (
+            /* key: a click on a different item re-arms the one-shot auto-open */
+            <CollectionManager
+              key={autoLabel || 'manager'}
+              {...manager}
+              embedded
+              onChanged={onCollectionChanged}
+              autoOpenLabel={autoLabel}
+            />
+          )}
         </div>
         <div className="tb-panel__foot">
           <p className="tb-panel__hint">
-            Changes here go live when you publish each item — the page behind
-            updates as you go.
+            {manager.component
+              ? 'Changes here go live right away — the page behind updates as you go.'
+              : 'Changes here go live when you publish each item — the page behind updates as you go.'}
           </p>
         </div>
       </aside>

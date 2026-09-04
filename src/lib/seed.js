@@ -47,9 +47,9 @@ export const SECTIONS = {
       { label: 'The Journey', link: '/timeline', frame_style: 'bronze-carved', image_url: asset('images/wall/our-story-so-far.jpg') },
       { label: 'Our Story', link: '/about', frame_style: 'brass-chain', image_url: asset('images/wall/our-story.jpg') },
     ] } },
-    { type: 'social_proof', data: { label: 'Loved by the neighborhood' } },
+    { type: 'social_proof', data: { label: 'Loved by the neighborhood', count: 6 } },
     { type: 'featured_drink', data: { heading: "This Week's Trouble" } },
-    { type: 'signature_drinks', data: { heading: 'Signature sips', button_label: 'See the full menu' } },
+    { type: 'signature_drinks', data: { heading: 'Signature sips', category: 'specialty', count: 3, button_label: 'See the full menu', button_url: '/menu' } },
     { type: 'hours', data: { heading: 'This week at Trouble Brewing' } },
     { type: 'cta', data: { heading: 'Skip the line', body: "Order ahead on SpotOn and we'll have it ready.", button_label: 'Order Now', button_url: '' } },
     { type: 'intro_duo', data: {
@@ -62,7 +62,7 @@ export const SECTIONS = {
     { type: 'newsletter', data: { heading: 'Stay in the loop', body: 'New drinks, events, and the occasional bit of Trouble — straight to your inbox.', mailchimp_action_url: '' } },
   ],
   menu: [
-    { type: 'menu_block', data: { heading: 'The Menu', categories: ['espresso', 'specialty', 'food', 'pastry', 'seasonal'] } },
+    { type: 'menu_block', data: { heading: 'The Menu', categories: ['espresso', 'specialty', 'food', 'pastry', 'seasonal'], layout: 'auto' } },
     { type: 'cta', data: { heading: 'Ready to order?', body: 'Order ahead on SpotOn for pickup.', button_label: 'Order on SpotOn', button_url: '' } },
   ],
   about: [
@@ -96,7 +96,7 @@ export const SECTIONS = {
   reviews: [
     { type: 'reviews_hero', data: { heading: 'What the neighborhood says' } },
     { type: 'testimonials_wall', data: { heading: 'A few of our favorites', layout: 'masonry' } },
-    { type: 'google_reviews_feed', data: { heading: 'Fresh from Google', count: 5 } },
+    { type: 'google_reviews_feed', data: { heading: 'Fresh from Google', count: 9 } },
     { type: 'review_cta', data: { heading: 'Been in lately?', body: "We'd love to hear about it.", button_label: 'Leave a review on Google' } },
   ],
   'gallery-wall': [
@@ -143,6 +143,9 @@ export const CONTENT_BLOCKS = {
   staff_picks: { items: [ { label: 'Flying off the menu', value: 'Cranberry Walnut Chicken Salad Panini' }, { label: "Barista's pick", value: 'Banana Split Coffee' } ] },
   loyalty_copy: { body_markdown: 'Ask a Troublemaker about loyalty perks. Full program details coming soon.' },
   announcement_banner: { enabled: false, message: '' },
+  /* Which Google reviews the site shows + the owner's per-review overrides.
+     See src/lib/reviews.js — 4★ is the default floor ("only the good ones"). */
+  review_settings: { min_rating: 4, hidden: {}, pinned: {}, photos: {} },
   social_links: { instagram: 'https://instagram.com/troublebrewingcoffee', facebook: '', tiktok: '', x: '', youtube: '' },
 };
 

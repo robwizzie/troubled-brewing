@@ -5,7 +5,14 @@
 // Places returns AT MOST 5 "most relevant" reviews per call (hard API cap —
 // the full set needs owner OAuth via the Business Profile API). Because that
 // top-5 rotates, each refresh MERGES new reviews into the cached list instead
-// of overwriting it, so the library grows over time (newest fetch first).
+// of overwriting it, so the library grows over time toward the full set.
+//
+// The cache is the site's review library, so it keeps everything a card might
+// want to show: the stable Places review id, the absolute publish time (the
+// site sorts newest-first on it — "2 weeks ago" drifts and can't be sorted),
+// the reviewer's avatar, and a link to the review on Maps. Note Places does
+// NOT return review PHOTOS at any tier; owners attach those by hand in
+// admin → Reviews (stored in the review_settings content block).
 //
 // The Places key is BILLABLE and must stay server-side — it lives here as a
 // function secret and never reaches the browser.
@@ -60,18 +67,32 @@ Deno.serve(async (req) => {
     if (!g.ok) throw new Error(`Places ${g.status}: ${await g.text()}`);
     const p = await g.json();
 
-    const fresh = (p.reviews || []).slice(0, 5).map((r: Record<string, any>) => ({
+    const fresh = (p.reviews || []).map((r: Record<string, any>) => ({
+      review_id: r.name || '',                       // stable across refreshes
       author: r.authorAttribution?.displayName || 'Google user',
+      author_url: r.authorAttribution?.uri || '',
       rating: r.rating,
       text: r.text?.text || r.originalText?.text || '',
-      time: r.relativePublishTimeDescription || '',
+      time: r.relativePublishTimeDescription || '',  // display only
+      published_at: r.publishTime || '',             // absolute — what we sort on
+      review_url: r.googleMapsUri || '',
       profile_photo: r.authorAttribution?.photoUri || '',
     }));
-    // merge into the cached library — key on author+text ("2 weeks ago" keeps
-    // shifting, so `time` can't identify a review). Fresh fetch leads; cap 48.
-    const key = (r: Record<string, any>) => `${r.author}|${String(r.text || '').slice(0, 40)}`;
+
+    // Merge into the cached library. Identity is the Places review id when we
+    // have one; older cached rows predate it, so fall back to author+text
+    // ("2 weeks ago" keeps shifting, so `time` can never identify a review).
+    // A re-fetched review REPLACES its cached copy — the text is the same but
+    // the relative time and the reviewer's avatar URL both go stale.
+    const key = (r: Record<string, any>) =>
+      r.review_id || `${r.author}|${String(r.text || '').slice(0, 40)}`;
     const seen = new Set(fresh.map(key));
-    const reviews = [...fresh, ...prev.filter((r) => !seen.has(key(r)))].slice(0, 48);
+    const merged = [...fresh, ...prev.filter((r) => !seen.has(key(r)))];
+    // Newest first, undated (pre-publish_time) rows last, keeping their order.
+    merged.sort((a, b) => String(b.published_at || '').localeCompare(String(a.published_at || '')));
+    // 5 new reviews a day at most, so 500 is years of library — big enough
+    // that the site never drops a real review, small enough for one jsonb row.
+    const reviews = merged.slice(0, 500);
 
     const row = {
       id: 1,

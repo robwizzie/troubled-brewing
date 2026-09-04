@@ -4,7 +4,11 @@
    a `manager` key — the panel routes "Manage —" straight to that collection
    (see src/admin/editor/sectionMeta.js). See docs/CMS.md. */
 
+import { IMMERSIVE_WALL_PIECES } from '../../lib/wallPieces.js';
+import { MENU_CATEGORY_ORDER, MENU_CATEGORY_LABELS } from '../../lib/menuService.js';
+
 const LAYOUTS = [{ value: 'masonry', label: 'Masonry' }, { value: 'grid', label: 'Grid' }];
+const MENU_CATEGORIES = MENU_CATEGORY_ORDER.map((c) => ({ value: c, label: MENU_CATEGORY_LABELS[c] || c }));
 
 export const SECTION_EDITOR_SCHEMAS = {
   hero: {
@@ -38,7 +42,21 @@ export const SECTION_EDITOR_SCHEMAS = {
   menu_block: {
     manager: 'menu',
     note: 'Your menu items live in the Menu manager. This section just shows them with the heading below.',
-    fields: [{ name: 'heading', label: 'Heading', type: 'text' }],
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      {
+        name: 'layout',
+        label: 'How items look',
+        type: 'select',
+        placeholderOption: false,
+        options: [
+          { value: 'auto', label: 'Automatic — photo cards once items have photos' },
+          { value: 'cards', label: 'Photo cards (same as the homepage)' },
+          { value: 'list', label: 'Classic price list' },
+        ],
+        hint: 'Photo cards are the same card the homepage drinks teaser uses, so a drink looks identical in both places.',
+      },
+    ],
   },
   hours: {
     note: 'Your hours live in the Hours editor. This section shows them live.',
@@ -95,16 +113,24 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   signature_drinks: {
     manager: 'menu',
-    note: 'Drinks come live from your Menu. Leave items blank to auto-feature your specialty drinks.',
+    note: 'These come live from your Menu — same names, prices, descriptions and photos as the Menu page. Name the drinks you want, or leave it blank and we feature the strongest ones in a category.',
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'subheading', label: 'Line under the heading', type: 'text', hint: 'Optional.' },
+      { name: 'items', label: 'Drinks to feature', type: 'tags', hint: 'Exact menu names, comma separated — e.g. Banana Split Coffee, Iced Chai Latte. Blank = pick automatically.' },
+      { name: 'category', label: 'Or feature from', type: 'select', placeholderOption: false, options: MENU_CATEGORIES, hint: 'Used when you leave the list above blank.' },
+      { name: 'count', label: 'How many to show', type: 'number', min: 1, hint: '3 fits the row on a desktop; more wrap onto a second row.' },
       { name: 'button_label', label: 'Button label', type: 'text' },
+      { name: 'button_url', label: 'Button link', type: 'text', hint: 'A page like /menu, or a full URL.' },
     ],
   },
   social_proof: {
-    manager: 'testimonials',
-    note: 'Rating comes from your Google Profile; quotes from the Testimonials manager (featured first).',
-    fields: [{ name: 'label', label: 'Label', type: 'text' }],
+    manager: 'reviews',
+    note: 'The rating comes from your Google Profile. The quotes are your real Google reviews — featured ones first, then the ones with photos. Manage which ones show below.',
+    fields: [
+      { name: 'label', label: 'Label', type: 'text' },
+      { name: 'count', label: 'How many reviews in the slideshow', type: 'number', min: 3 },
+    ],
   },
   reviews_hero: {
     note: 'The rating + count come live from your Google Profile.',
@@ -112,17 +138,18 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   testimonials_wall: {
     manager: 'testimonials',
-    note: 'Testimonials live in the Testimonials manager.',
+    note: 'Your hand-picked favorites. Pick them from your real Google reviews in admin \u2192 Reviews, or write one in here.',
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'layout', label: 'Layout', type: 'select', options: LAYOUTS },
     ],
   },
   google_reviews_feed: {
-    note: 'Pulled live from your cached Google reviews.',
+    manager: 'reviews',
+    note: 'Your real Google reviews. Which ones appear — the star minimum, anything you\u2019ve hidden, the photos you\u2019ve attached — is managed below.',
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
-      { name: 'count', label: 'How many to show', type: 'number' },
+      { name: 'count', label: 'How many to show at a time', type: 'number', min: 3, hint: 'The rest appear behind a \u201cShow more\u201d button.' },
     ],
   },
   review_cta: {
@@ -159,6 +186,13 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'specials_link', label: 'Special note link URL', type: 'text', hint: '/menu#specials opens the menu on the Specialty tab. Shared by every homepage look.' },
       { name: 'igh_mailchimp_action_url', label: 'Newsletter signup URL (Mailchimp)', type: 'text', hint: 'Shows the "Stay in the Know" signup panel. Blank hides it. See docs/INTEGRATIONS.md.' },
       { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+      {
+        name: 'igh_pieces',
+        label: 'The frames on your wall',
+        type: 'wallpieces',
+        defaults: IMMERSIVE_WALL_PIECES,
+        hint: 'Every frame on the hero — its photo, its label and where it links. These are the same frames phone visitors see hung as real pictures. Leave a box blank to keep the original.',
+      },
     ],
   },
   /* Concept heroes use namespaced keys (wsh_/ceh_/mch_) so all four looks can
