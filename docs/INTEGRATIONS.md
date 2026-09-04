@@ -68,6 +68,21 @@ delete from testimonials; -- placeholder quotes; owners add real favorites in /a
 alter table testimonials add column if not exists image_url text default ''; -- review photos
 ```
 
+Project seeded before the **/community page was retired** and **Find Us moved above Hours**? Those are stored `sections` rows, so the seed change alone won't move them — either drag them in the editor (Edit your site → the page → ▲▼) or run once:
+
+```sql
+-- Find us above the hours on the Location page
+update sections set display_order = 0 where page_slug = 'location' and type = 'map';
+update sections set display_order = 1 where page_slug = 'location' and type = 'hours';
+
+-- Retire /community, keeping its board on the Events page
+insert into sections (page_slug, type, display_order, data)
+  select 'events', 'community_board', 2, '{"heading": "On the Community Board"}'
+  where not exists (select 1 from sections where page_slug = 'events' and type = 'community_board');
+delete from sections where page_slug = 'community';
+delete from pages where slug = 'community';
+```
+
 Project seeded before **Immersive Gallery became the default homepage look**? Flip the stored choice once — click it in `/admin` → Quick Blocks → Homepage look, run Actions → **"Set homepage look"**, or:
 
 ```sql

@@ -16,7 +16,6 @@ insert into pages (slug, title, meta_description) values
   ('events',        'Events & Community — Trouble Brewing Coffee House',  'Upcoming events at Trouble Brewing Coffee House. Host your own gathering in our Haddon Heights space.'),
   ('location',      'Hours & Location — Trouble Brewing Coffee House',    'Visit Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ. Hours, parking, and directions.'),
   ('contact',       'Contact & Catering — Trouble Brewing Coffee House',  'Get in touch with Trouble Brewing Coffee House or send a catering inquiry.'),
-  ('community',     'Community — Trouble Brewing Coffee House',           'Events, our community board, loyalty, and customer photos from Trouble Brewing Coffee House in Haddon Heights, NJ.'),
   ('reviews',       'Reviews — Trouble Brewing Coffee House',            'See what the neighborhood says about Trouble Brewing Coffee House. Read our Google reviews and leave your own.'),
   ('gallery-wall',  'The Gallery Wall — Trouble Brewing Coffee House',    'The stories behind the framed art on our wall. A little bit of Trouble Brewing history, one frame at a time.'),
   ('troublemakers', 'The Troublemakers — Trouble Brewing Coffee House',   'Meet the Troublemakers — the team behind your coffee at Trouble Brewing Coffee House in Haddon Heights, NJ.'),
@@ -73,25 +72,23 @@ insert into sections (page_slug, type, display_order, data) values
 insert into sections (page_slug, type, display_order, data) values
 ('events', 'hero', 0, '{"heading": "Events & Community", "subheading": "There''s always something brewing.", "background_image_url": "", "cta_label": "Host an event", "cta_url": "/contact"}'),
 ('events', 'events_list', 1, '{"heading": "Upcoming at Trouble Brewing"}'),
-('events', 'cta', 2, '{"heading": "Want to host something?", "body": "Showers, meetings, small parties — our space is yours. Tell us what you''re planning.", "button_label": "Start a catering inquiry", "button_url": "/contact"}');
+('events', 'community_board', 2, '{"heading": "On the Community Board"}'),
+('events', 'cta', 3, '{"heading": "Want to host something?", "body": "Showers, meetings, small parties — our space is yours. Tell us what you''re planning.", "button_label": "Start a catering inquiry", "button_url": "/contact"}'),
+('events', 'rich_text', 4, '{"heading": "Loyalty", "body_markdown": "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you''re in. *(Full program details coming soon.)*"}'),
+('events', 'instagram', 5, '{"embed_handle": "troublebrewingcoffee"}');
 
 -- LOCATION ----------------------------------------------------------
+-- Find us BEFORE the hours: someone opening this page on a phone is usually
+-- trying to get here, and the map is what they came for.
 insert into sections (page_slug, type, display_order, data) values
-('location', 'hours', 0, '{"heading": "Hours"}'),
-('location', 'map', 1, '{"address": "514 Station Ave, Haddon Heights, NJ 08035", "embed_url": ""}'),
+('location', 'map', 0, '{"address": "514 Station Ave, Haddon Heights, NJ 08035", "embed_url": ""}'),
+('location', 'hours', 1, '{"heading": "Hours"}'),
 ('location', 'rich_text', 2, '{"heading": "Parking", "body_markdown": "Street parking is available out front, plus a **lot behind the coffee house**. Enter from White Horse Pike or Atlantic Ave."}'),
 ('location', 'cta', 3, '{"heading": "Come say hi", "body": "Questions? Give us a call.", "button_label": "Call (856) 617-6638", "button_url": "tel:+18566176638"}');
 
 -- CONTACT -----------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
 ('contact', 'rich_text', 0, '{"heading": "Get in touch", "body_markdown": "Questions, ideas, or planning something? Use the form below for general questions, or the catering form for events. We read every message."}');
-
--- COMMUNITY ---------------------------------------------------------
-insert into sections (page_slug, type, display_order, data) values
-('community', 'events_list', 0, '{"heading": "What''s coming up"}'),
-('community', 'community_board', 1, '{"heading": "On the Community Board"}'),
-('community', 'rich_text', 2, '{"heading": "Loyalty", "body_markdown": "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you''re in. *(Full program details coming soon.)*"}'),
-('community', 'instagram', 3, '{"embed_handle": "troublebrewingcoffee"}');
 
 -- REVIEWS -----------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values

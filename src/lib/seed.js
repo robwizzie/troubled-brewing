@@ -25,7 +25,6 @@ export const PAGES = {
   events: { slug: 'events', title: 'Events & Community — Trouble Brewing Coffee House', meta_description: 'Upcoming events at Trouble Brewing Coffee House. Host your own gathering in our Haddon Heights space.' },
   location: { slug: 'location', title: 'Hours & Location — Trouble Brewing Coffee House', meta_description: 'Visit Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ. Hours, parking, and directions.' },
   contact: { slug: 'contact', title: 'Contact & Catering — Trouble Brewing Coffee House', meta_description: 'Get in touch with Trouble Brewing Coffee House or send a catering inquiry.' },
-  community: { slug: 'community', title: 'Community — Trouble Brewing Coffee House', meta_description: 'Events, our community board, loyalty, and customer photos from Trouble Brewing Coffee House in Haddon Heights, NJ.' },
   reviews: { slug: 'reviews', title: 'Reviews — Trouble Brewing Coffee House', meta_description: 'See what the neighborhood says about Trouble Brewing Coffee House. Read our Google reviews and leave your own.' },
   'gallery-wall': { slug: 'gallery-wall', title: 'The Gallery Wall — Trouble Brewing Coffee House', meta_description: 'The stories behind the framed art on our wall. A little bit of Trouble Brewing history, one frame at a time.' },
   troublemakers: { slug: 'troublemakers', title: 'The Troublemakers — Trouble Brewing Coffee House', meta_description: 'Meet the Troublemakers — the team behind your coffee at Trouble Brewing Coffee House in Haddon Heights, NJ.' },
@@ -71,27 +70,29 @@ export const SECTIONS = {
     { type: 'rich_text', data: { variant: 'alt', heading: "What's in the cup", body_markdown: "Great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. We pour **La Colombe** beans and pull every shot with care, then build everything from a classic cappuccino to our specialty drinks on top of it." } },
     { type: 'rich_text', data: { heading: 'Why local matters', body_markdown: 'Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for.' } },
   ],
+  /* The old /community page is folded in here: its events list was a duplicate
+     of this one, and the board, the loyalty note and the Instagram strip are
+     the rest of "community" — they belong on the page people already visit. */
   events: [
     { type: 'hero', data: { heading: 'Events & Community', subheading: "There's always something brewing.", background_image_url: '', cta_label: 'Host an event', cta_url: '/contact' } },
     { type: 'events_list', data: { heading: 'Upcoming at Trouble Brewing' } },
+    { type: 'community_board', data: { heading: 'On the Community Board' } },
     { type: 'cta', data: { heading: 'Want to host something?', body: "Showers, meetings, small parties — our space is yours. Tell us what you're planning.", button_label: 'Start a catering inquiry', button_url: '/contact' } },
+    { type: 'rich_text', data: { heading: 'Loyalty', body_markdown: "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you're in. *(Full program details coming soon.)*" } },
+    { type: 'instagram', data: { embed_handle: 'troublebrewingcoffee' } },
   ],
+  /* Find us BEFORE the hours: someone opening this page on a phone is usually
+     standing somewhere trying to get here, and the map is the thing they came
+     for. The hours sit right under it, where they read as "…and it's open". */
   location: [
     { type: 'hero', data: { heading: 'Hours & Location', subheading: 'Find us on Station Ave. Pull up a chair and stay a while.', background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'hours', data: { heading: "When we're open" } },
     { type: 'map', data: { address: '514 Station Ave, Haddon Heights, NJ 08035', embed_url: '' } },
+    { type: 'hours', data: { heading: "When we're open" } },
     { type: 'rich_text', data: { heading: 'Parking', body_markdown: 'Street parking is available out front, plus a **lot behind the coffee house**. Enter from White Horse Pike or Atlantic Ave.' } },
     { type: 'cta', data: { heading: 'Come say hi', body: 'Questions? Give us a call.', button_label: 'Call (856) 617-6638', button_url: 'tel:+18566176638' } },
   ],
   contact: [
     { type: 'hero', data: { heading: 'Get in touch', subheading: 'Questions, ideas, or planning something? Use the forms below. We read every message.', background_image_url: '', cta_label: '', cta_url: '' } },
-  ],
-  community: [
-    { type: 'hero', data: { heading: 'Community', subheading: "Events, the board, and a little neighborhood love. There's always something brewing.", background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'events_list', data: { heading: "What's coming up" } },
-    { type: 'community_board', data: { heading: 'On the Community Board' } },
-    { type: 'rich_text', data: { heading: 'Loyalty', body_markdown: "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you're in. *(Full program details coming soon.)*" } },
-    { type: 'instagram', data: { embed_handle: 'troublebrewingcoffee' } },
   ],
   reviews: [
     { type: 'reviews_hero', data: { heading: 'What the neighborhood says' } },

@@ -16,8 +16,8 @@ export const CONCEPT_TO_TYPE = {
 export const HERO_TYPES = new Set(Object.values(CONCEPT_TO_TYPE));
 
 export const CONCEPTS = [
-  { value: 'immersive_gallery', label: 'Immersive Gallery', desc: 'Cinematic photo of the shop wall — framed links, chalkboard hours, taped specials note (lead concept).' },
-  { value: 'gallery_wall', label: 'Gallery Wall', desc: 'Interactive wall of framed products.' },
+  { value: 'immersive_gallery', label: 'The Gallery Wall', desc: 'Your room: a wide photo of the shop with your logo over it, the live hours board, today\u2019s special, and every page hung as a real framed picture (lead concept).' },
+  { value: 'gallery_wall', label: 'Salon Hang', desc: 'A welcome sign on the sage wall, surrounded by framed links.' },
   { value: 'warm_storefront', label: 'Warm Storefront', desc: 'Big photo of the space + hours + Order.' },
   { value: 'cozy_editorial', label: 'Cozy Editorial', desc: 'Magazine-style story layout.' },
   { value: 'modern_coffee', label: 'Modern Coffee', desc: 'Bold, dark, oversized type with a hero drink shot.' },

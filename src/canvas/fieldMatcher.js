@@ -63,8 +63,8 @@ function matchElement(el, fields, data) {
          instead of on that frame. */
       if (f.type === 'wallpieces') {
         const rows = Array.isArray(v) ? v : [];
-        const i = (f.defaults || []).findIndex((base, idx) => {
-          const override = rows[idx]?.img;
+        const i = (f.defaults || []).findIndex((base) => {
+          const override = rows.find((r) => r && r.id === base.id)?.img;
           return urlMatches(url, override && override !== '-' ? override : base.img);
         });
         if (i !== -1) return { field: f.name, index: i };
