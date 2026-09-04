@@ -13,7 +13,11 @@
      phone    a real framed photograph on the re-hung salon wall — `frame` is a
               molding from the shared vocabulary (frameStyles.js /
               `.gw-frame__art--*`), `ar` its shape, `img` the photograph, and
-              `motif` the drawn stand-in used until the photo exists.
+              `motif` + `caption` the hand-lettered sign shown until the photo
+              exists. The caption matters: a board with only a small glyph on
+              it reads as a frame that failed to load, while the same board
+              with a line of lettering reads as a painted sign — a real piece
+              on the wall.
 
    What the OWNER controls — the label, where it links, the photograph and the
    molding — is overridable per piece from the editor (`igh_pieces`), merged
@@ -35,7 +39,7 @@ export const IMMERSIVE_WALL_PIECES = [
      as public/images/wall/location.jpg and it hangs like the rest. Until then
      it falls back to the painted chalk address sign, which is a real wall
      piece rather than a hole in the hang. */
-  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, frame: 'black-flat', ar: '4 / 3', img: 'images/wall/location.jpg', tint: 'chalk', motif: 'pin' },
+  { label: 'Visit Us', to: '/location', x: 52.1, y: 57.8, w: 6.0, h: 13.0, frame: 'black-flat', ar: '4 / 3', img: 'images/wall/location.jpg', tint: 'chalk', motif: 'pin', caption: '514 Station Ave\nHaddon Heights' },
   { label: 'Our Story', to: '/timeline', x: 65.4, y: 45.1, w: 10.2, h: 25.0, frame: 'bronze-carved', ar: '7 / 5', img: 'images/wall/our-story-so-far.jpg', motif: 'book' },
   { label: 'Contact', to: '/contact', x: 77.9, y: 50.8, w: 4.2, h: 14.0, frame: 'gilt-thin', ar: '3 / 4', img: 'images/wall/flank-food.jpg', motif: 'envelope' },
 ];

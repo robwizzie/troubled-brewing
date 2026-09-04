@@ -87,7 +87,14 @@
 .social-proof__carousel {
   position: relative; flex: 1 1 520px; min-width: 0;
   --sp-gap: var(--space-4);
-  --sp-pad: 26px;
+  /* MUST equal the gap. A page of cards is `padL + n*card + (n-1)*gap` wide,
+     so the next card starts at `clientWidth - padR + gap` — any padding deeper
+     than the gap leaves that difference of the NEXT frame showing at the right
+     edge, which is the sliced-card-at-the-edge this layout exists to avoid.
+     (It was 26px against a 16px gap: a 10px slice of molding, every view.)
+     16px still clears the frame shadow horizontally — --shadow-frame is a 24px
+     blur with no x-offset, so it reaches ~12px each side. */
+  --sp-pad: var(--sp-gap);
 }
 .social-proof__quotes {
   list-style: none; margin: 0;
@@ -205,7 +212,6 @@
   }
   .social-proof__eyebrow { margin-bottom: var(--space-1); }
   .social-proof__carousel { flex-basis: 100%; }
-  .social-proof__carousel { --sp-pad: 18px; --sp-gap: var(--space-3); }
   .social-proof__quotes { padding-top: 14px; padding-bottom: 28px; }
   .social-proof__quote.gw-frame__art {
     min-height: 0; height: auto;
@@ -236,9 +242,20 @@
   margin: var(--space-4) var(--space-4) 0;
   background: radial-gradient(120% 120% at 50% 0%, var(--color-yellow-soft), var(--color-sage-soft));
 }
-/* the drawn stand-in until a photo exists — centred in the mat, never a hole */
-.product__motif { display: grid; place-items: center; }
+/* The drawn stand-in until a photo exists. It FILLS the mat with the frame's
+   warm ground rather than sitting as a small glyph on white — a tiny icon
+   marooned in a big white rectangle reads as a photo that failed to load,
+   which is worse than no card at all. */
+.product__motif {
+  display: grid; place-items: center;
+  width: 100%; height: 100%;
+  background: radial-gradient(120% 120% at 50% 0%, var(--color-yellow-soft), var(--color-sage-soft));
+  box-shadow: inset 0 0 0 1px rgba(126, 96, 34, 0.14);
+}
 .product__body { padding: var(--space-3) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
+/* always present, even when a drink has no description — it's the flexible
+   element that pushes the price line to the card's bottom, so a row of cards
+   lines its prices up instead of stair-stepping them */
 .product__desc { color: var(--color-text-soft); font-size: var(--text-sm); margin: 0; flex: 1; }
 /* price and dietary badges share the card's bottom line, so cards in a row
    finish at the same place whatever the description length */

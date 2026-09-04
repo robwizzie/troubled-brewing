@@ -58,7 +58,9 @@ export default function ProductCard({ item, index = 0, eager = false }) {
         <h3 className="brass-plate brass-plate--pin">{item.name}</h3>
       </span>
       <div className="product__body">
-        {item.description && <p className="product__desc">{item.description}</p>}
+        {/* rendered even when empty — see .product__desc, it's what bottom-aligns
+            the price line across a row of cards */}
+        <p className="product__desc">{item.description || ''}</p>
         <p className="product__foot">
           {item.price != null && <span className="product__price">${Number(item.price).toFixed(2)}</span>}
           {flags.length > 0 && (
