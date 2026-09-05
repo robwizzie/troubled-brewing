@@ -8,8 +8,14 @@ Website **and** a Squarespace-style self-editing CMS for Trouble Brewing Coffee 
 npm install
 cp .env.example .env     # fill in Supabase + SpotOn values (optional for a local demo)
 npm run dev              # runs from bundled seed content even without Supabase
+npm run lint             # eslint, warnings included (--max-warnings 0)
+npm test                 # route smoke tests (vitest + jsdom)
 npm run build            # production build → dist/
 ```
+
+`lint`, `test` and `build` are exactly what CI runs on every pull request
+(`.github/workflows/ci.yml`), with no Supabase env — which is also what keeps
+the seed fallbacks honest.
 
 The site works **immediately** from bundled seed content (`src/lib/seed.js`) — no Supabase required to demo or deploy. Connect Supabase to unlock the live, owner-editable CMS at `/admin`.
 

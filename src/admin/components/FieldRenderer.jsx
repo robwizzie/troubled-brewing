@@ -1,5 +1,6 @@
 import ImageField from './ImageField.jsx';
 import { Hint } from './ui.jsx';
+import { asset } from '../../lib/config.js';
 import { FRAME_STYLE_OPTIONS, normalizeFrameStyle } from '../../lib/frameStyles.js';
 
 /* THE schema-driven field renderer — the union of SectionEditor's old `Input`
@@ -50,6 +51,76 @@ export function FramesEditor({ value = [], onChange }) {
         </div>
       ))}
       <button type="button" className="btn btn--ghost btn--sm" onClick={add}>+ Add frame</button>
+    </div>
+  );
+}
+
+/* The homepage wall, one row per framed picture.
+
+   The set of pictures is fixed (src/lib/wallPieces.js) — there is nothing to
+   add, remove or reorder here. What the owner owns is what's IN each frame:
+   its label, where it goes, its photograph and its molding. Every field is an
+   override with the built-in showing through as the placeholder, so a blank
+   row is not an empty frame — it's the original, and "Reset" puts it back.
+
+   Rows carry the piece's `id`, not just its position: matching by position
+   meant that adding or removing a piece silently re-pointed every photograph
+   the owner had chosen after it.
+
+   Clearing the photo is a real choice, not an empty field: it writes the '-'
+   sentinel, which hangs that piece as its drawn stand-in. (mergeWallPieces
+   reads it back the same way.) */
+export function WallPiecesEditor({ value, defaults = [], onChange }) {
+  const rows = Array.isArray(value) ? value : [];
+  const at = (id) => rows.find((r) => r && r.id === id) || {};
+
+  // always write a full set of id-keyed rows, so a later default reshuffle
+  // can't drift the owner's choices onto the wrong frames
+  const write = (id, changes) =>
+    onChange(defaults.map((d) => ({ id: d.id, ...at(d.id), ...(d.id === id ? changes : {}) })));
+
+  return (
+    <div className="frames-editor">
+      {defaults.map((base) => {
+        const row = at(base.id);
+        const overridden = Boolean(row.label || row.to || row.img || row.frame);
+        const photo = row.img === '-' ? '' : (row.img || asset(base.img));
+        return (
+          <div key={base.id} className="frames-editor__row card">
+            <div className="card__body">
+              <div className="frames-editor__head">
+                <strong>{row.label || base.label}</strong>
+                {overridden && (
+                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => write(base.id, { label: '', to: '', img: '', frame: '' })}>
+                    Reset
+                  </button>
+                )}
+              </div>
+              <ImageField
+                label="Photo"
+                value={photo}
+                preset="card"
+                folder="wall"
+                onChange={(url) => write(base.id, { img: url || '-' })}
+              />
+              <div className="field">
+                <label>Label</label>
+                <input value={row.label || ''} placeholder={base.label} onChange={(e) => write(base.id, { label: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Links to</label>
+                <input value={row.to || ''} placeholder={base.to} onChange={(e) => write(base.id, { to: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Frame style</label>
+                <select value={normalizeFrameStyle(row.frame || base.frame)} onChange={(e) => write(base.id, { frame: e.target.value })}>
+                  {FRAME_STYLE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -152,6 +223,8 @@ function Control({ field, value, onChange, folder }) {
       return <ImagesEditor value={value} onChange={onChange} />;
     case 'frames':
       return <FramesEditor value={value} onChange={onChange} />;
+    case 'wallpieces':
+      return <WallPiecesEditor value={value} defaults={field.defaults || []} onChange={onChange} />;
     case 'funfacts':
       return <FunFactsEditor value={value} onChange={onChange} />;
     default:

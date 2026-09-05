@@ -14,7 +14,9 @@ export default function Inbox() {
     if (error) { toast('Could not load inbox', 'error'); setItems([]); return; }
     setItems(data || []);
   }
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  // load-once on mount: `load` is a new identity every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, []);
 
   const filtered = useMemo(() => {
     if (!items) return [];

@@ -1,32 +1,31 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import CollectionManager from '../components/CollectionManager.jsx';
-import { createRecord, listAll } from '../lib/adminData.js';
-import { getGoogleProfile, reviewKey } from '../../lib/dataService.js';
+import { createRecord } from '../lib/adminData.js';
+import { loadReviews } from '../../lib/reviews.js';
+import { bump } from '../../lib/dataVersion.js';
 import { useToast, Hint } from '../components/ui.jsx';
 
-/* One-click import from the cached Google review library: pick a review,
-   it becomes a curated testimonial (then attach the review's photo by hand —
-   Google's APIs don't expose per-review images, so owners add them).
-   Already-imported reviews are hidden — matched by author+text against the
-   testimonials table, so it survives reloads (not just this session). */
+/* One-click import from the cached Google review library: pick a review, it
+   becomes a curated testimonial you can re-word and feature.
+
+   The list comes from loadReviews({ only: 'google' }), which is the same
+   selection the public site uses — so it honors the owner's star minimum and
+   anything they hid, and reviews already imported are gone from it (they
+   dedupe onto their testimonial). No second definition of "a good review". */
 function GoogleImport({ onAdded }) {
   const [reviews, setReviews] = useState(null);
   const [added, setAdded] = useState(() => new Set());
   const toast = useToast();
 
   useEffect(() => {
-    Promise.all([getGoogleProfile(), listAll('testimonials').catch(() => [])]).then(([p, t]) => {
-      const imported = new Set((t || []).map((x) => reviewKey(x.author, x.quote)));
-      setReviews(
-        (p?.reviews || []).filter(
-          (r) => (r.rating ?? 5) >= 4 && r.text && !imported.has(reviewKey(r.author, r.text)),
-        ),
-      );
-    });
+    let alive = true;
+    loadReviews({ only: 'google' }).then((r) => alive && setReviews(r.reviews.filter((x) => x.quote)));
+    return () => { alive = false; };
   }, []);
 
   if (!reviews || reviews.length === 0) return null;
-  const remaining = reviews.filter((r) => !added.has(reviewKey(r.author, r.text)));
+  const remaining = reviews.filter((r) => !added.has(r.key));
   if (remaining.length === 0) return null;
 
   async function add(r) {
@@ -35,10 +34,12 @@ function GoogleImport({ onAdded }) {
         author: r.author,
         source: 'Google',
         rating: Math.min(5, Math.round(r.rating || 5)),
-        quote: r.text,
+        quote: r.quote,
+        image_url: r.photo || '',
         featured: false,
       });
-      setAdded((s) => new Set(s).add(reviewKey(r.author, r.text)));
+      setAdded((s) => new Set(s).add(r.key));
+      bump('testimonials');
       toast('Added to testimonials');
       onAdded();
     } catch (e) {
@@ -50,17 +51,18 @@ function GoogleImport({ onAdded }) {
     <section className="admin-import">
       <h2 className="admin-import__title">From your Google reviews</h2>
       <Hint>
-        The 4★+ reviews cached from Google. Click <strong>Add</strong> to hand-pick one as a
-        testimonial — then edit it to attach the review’s photo (if it has one on Google) and
-        it joins the “with photos” wall.
+        Your real Google reviews, filtered exactly the way the site filters them. Click
+        <strong> Add</strong> to hand-pick one as a testimonial you can re-word and feature.
+        To change the star minimum, hide a review, or attach its photo, use{' '}
+        <Link to="/admin/reviews">Reviews</Link>.
       </Hint>
       <ul className="admin-import__list">
-        {remaining.map((r, i) => (
-          <li key={i} className="admin-import__row">
+        {remaining.map((r) => (
+          <li key={r.id} className="admin-import__row">
             <div className="admin-import__meta">
               <strong>{r.author}</strong>
               <span className="admin-import__stars">{'★'.repeat(Math.min(5, Math.round(r.rating || 5)))}</span>
-              <p className="admin-import__text">{r.text}</p>
+              <p className="admin-import__text">{r.quote}</p>
             </div>
             <button type="button" className="btn btn--sm" onClick={() => add(r)}>+ Add</button>
           </li>
@@ -83,7 +85,7 @@ export const TESTIMONIALS_COLLECTION = {
     { name: 'author', label: 'Name', type: 'text', required: true, hint: "First name + last initial, e.g. 'Sarah M.'" },
     { name: 'source', label: 'Source', type: 'text', hint: "Usually 'Google'." },
     { name: 'rating', label: 'Stars (1–5)', type: 'number', min: 1 },
-    { name: 'image_url', label: 'Photo (optional)', type: 'image', preset: 'card', hint: 'If the review has a photo on Google, add it here — photo reviews get their own filter on the site.' },
+    { name: 'image_url', label: 'Photo (optional)', type: 'image', preset: 'card', hint: 'Save the photo from the review on Google and upload it here — Google’s API never sends review photos. Photo reviews lead the homepage strip and get their own filter on the site.' },
     { name: 'featured', label: 'Feature this one', type: 'checkbox', hint: 'Featured testimonials show first.' },
   ],
 };

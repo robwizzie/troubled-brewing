@@ -8,7 +8,7 @@ A plain-English, printable reference for Tom, Cat & Katie. This mirrors the in-a
 2. Enter your email and password (each of you has your own login).
 3. You'll land **right on your website, in editing mode**. That's the whole trick: what you see is your real site, and you edit it by clicking on it.
 
-> 💡 You can do all of this from an iPad behind the counter.
+> 💡 You can do all of this from an iPad behind the counter — **or from your phone**. On a small screen the editor stacks instead of splitting: your page on top, the fields for whatever you tapped in a panel underneath it. Tap a section, scroll the panel, type, press **Publish**. Same site, same buttons.
 
 ## The one idea that runs everything
 
@@ -19,7 +19,7 @@ A plain-English, printable reference for Tom, Cat & Katie. This mirrors the in-a
 - **It saves by itself.** Everything you type is saved automatically as a **private draft** — only you can see it. Close the tab, come back tomorrow, it's still there.
 - **Nothing goes live until you press Publish.** The **Publish** button (top right) shows how many changes are waiting. Press it when you're happy.
 - **You can undo.** Select a section and open **History & restore** — pick an earlier version and click Restore. (Restoring is itself undoable.)
-- **Check the phone view.** The 📱 button in the top bar shows the honest phone layout. 🖥 goes back to desktop.
+- **Check the phone view.** The 📱 button in the top bar shows the honest phone layout. 🖥 goes back to desktop. (On a phone the buttons are hidden — you're already looking at the phone layout.)
 
 ## Common tasks
 
@@ -42,11 +42,29 @@ Go to the **Events** page, click the events list, press **Manage events →**. T
 ### Add a Troublemaker (team member)
 Go to the **Troublemakers** page, click the team grid, press **Manage Troublemakers →**. Photo, name, role, short bio, fun facts. Mark someone inactive when they move on (keeps their record).
 
-### Add a Gallery Wall story / a local business
-Same pattern: go to the page, click the section, press the **Manage —** button in the panel.
+### Add a piece to the Gallery Wall
+Go to the **Gallery Wall** page, click the collection, press **Manage pieces →**.
 
-### Add or feature a review
-Go to the **Reviews** page, click the testimonials wall, press **Manage testimonials →**. Paste the quote, the reviewer's first name, stars, and mark your favorites **Featured**. Your live Google rating appears automatically.
+Fill in **Who made it** and **Link for the artist** whenever you know them — the artist's name shows under the piece and links wherever you point it. That credit is the point of that page. You can also note what it is (“Oil on canvas”), roughly when it's from, which frame it hangs in, and whether it's for sale. Everything except the title is optional.
+
+### Add a local business to Local Love
+Go to **Local Love**, click the grid, press **Manage Local Love →**.
+
+Give each one a **street address** and the page arranges itself as a walk down Station Ave, in number order, with your own door marked in the right place — you never have to sort the list. Ask them for a **logo** (most places are glad to be featured; without one we draw their initials, which looks fine), and fill in **What you send people for** — the specific thing, like “the vodka rigatoni”. That's the line customers actually act on.
+
+### Choose which Google reviews show
+**⚙ Settings → Reviews** (or click the reviews strip on your homepage and press **Manage reviews →**). Every review Google has sent us is listed there.
+
+- **Minimum stars** is the big one: set it to *4★ and up* and nothing below that appears anywhere on the site. That's the whole "only show the good ones" switch.
+- **🚫 Hide** takes one review off the site without changing the star minimum.
+- **☆ Feature** puts a review first, everywhere it appears.
+- **📷 Add photo** — Google doesn't let us fetch the pictures people attach to reviews, so save the photo from the review on Google and upload it here. Reviews with a photo lead the homepage strip and get their own **With photos** filter on the Reviews page.
+- **+ Favorite** copies a review into your hand-picked wall on the Reviews page, where you can edit its wording.
+
+New reviews arrive on their own — Google gives us five at a time, so the list fills out over the following days. Your live rating appears automatically.
+
+### Write your own featured quote
+Go to the **Reviews** page, click the testimonials wall, press **Manage testimonials →**. Paste the quote, the reviewer's first name, stars, and mark your favorites **Featured**.
 
 ### Rearrange, hide, or remove sections
 With nothing selected, the right panel lists every section on the page in order: ▲▼ to reorder, 👁 to hide/show, 🗑 to remove, **+ Add a section** at the bottom. These apply right away; hidden sections stay ghosted in the editor so you can bring them back.
@@ -59,6 +77,15 @@ With the **Gallery Wall** look active, click the hero → **Specials link text**
 
 ### Pick a frame style for a homepage frame
 Click the hero (Gallery Wall look) → each frame has a **Frame style** menu with vintage looks matched to your real wall. Like the shop wall, it looks best when no two frames share a style.
+
+### Change a photo or label on the homepage wall (Immersive Gallery look)
+Click the hero, then scroll the panel to **The frames on your wall**. Every frame is listed — swap its photo, rename its label, point it somewhere else, or change its molding. Leave a box blank to keep the original, or press **Reset**. These are the same frames phone visitors see hung as real framed pictures, so one change fixes both.
+
+### Change the drinks shown on the homepage
+Click the **Signature sips** row on the homepage. Either name the drinks you want (exactly as they're spelled on your menu), or leave that blank and choose a category to feature from and how many to show. They come live from your Menu, so the price, description and photo always match the Menu page — change it once, it changes in both places.
+
+### Add a photo to a drink
+**Manage menu →** the item → **Photo**. That single upload shows on the Menu page *and* in the homepage drinks row. Once any item has a photo, the Menu page switches itself from the classic price list to photo cards — the same cards the homepage uses.
 
 ### Read messages from customers
 **⚙ Settings → Inbox** — contact and catering submissions land here. Filter by type, mark read/unread. (An unread count shows on the Inbox link.)

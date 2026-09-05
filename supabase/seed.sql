@@ -16,7 +16,6 @@ insert into pages (slug, title, meta_description) values
   ('events',        'Events & Community — Trouble Brewing Coffee House',  'Upcoming events at Trouble Brewing Coffee House. Host your own gathering in our Haddon Heights space.'),
   ('location',      'Hours & Location — Trouble Brewing Coffee House',    'Visit Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ. Hours, parking, and directions.'),
   ('contact',       'Contact & Catering — Trouble Brewing Coffee House',  'Get in touch with Trouble Brewing Coffee House or send a catering inquiry.'),
-  ('community',     'Community — Trouble Brewing Coffee House',           'Events, our community board, loyalty, and customer photos from Trouble Brewing Coffee House in Haddon Heights, NJ.'),
   ('reviews',       'Reviews — Trouble Brewing Coffee House',            'See what the neighborhood says about Trouble Brewing Coffee House. Read our Google reviews and leave your own.'),
   ('gallery-wall',  'The Gallery Wall — Trouble Brewing Coffee House',    'The stories behind the framed art on our wall. A little bit of Trouble Brewing history, one frame at a time.'),
   ('troublemakers', 'The Troublemakers — Trouble Brewing Coffee House',   'Meet the Troublemakers — the team behind your coffee at Trouble Brewing Coffee House in Haddon Heights, NJ.'),
@@ -73,25 +72,23 @@ insert into sections (page_slug, type, display_order, data) values
 insert into sections (page_slug, type, display_order, data) values
 ('events', 'hero', 0, '{"heading": "Events & Community", "subheading": "There''s always something brewing.", "background_image_url": "", "cta_label": "Host an event", "cta_url": "/contact"}'),
 ('events', 'events_list', 1, '{"heading": "Upcoming at Trouble Brewing"}'),
-('events', 'cta', 2, '{"heading": "Want to host something?", "body": "Showers, meetings, small parties — our space is yours. Tell us what you''re planning.", "button_label": "Start a catering inquiry", "button_url": "/contact"}');
+('events', 'community_board', 2, '{"heading": "On the Community Board"}'),
+('events', 'cta', 3, '{"heading": "Want to host something?", "body": "Showers, meetings, small parties — our space is yours. Tell us what you''re planning.", "button_label": "Start a catering inquiry", "button_url": "/contact"}'),
+('events', 'rich_text', 4, '{"heading": "Loyalty", "body_markdown": "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you''re in. *(Full program details coming soon.)*"}'),
+('events', 'instagram', 5, '{"embed_handle": "troublebrewingcoffee"}');
 
 -- LOCATION ----------------------------------------------------------
+-- Find us BEFORE the hours: someone opening this page on a phone is usually
+-- trying to get here, and the map is what they came for.
 insert into sections (page_slug, type, display_order, data) values
-('location', 'hours', 0, '{"heading": "Hours"}'),
-('location', 'map', 1, '{"address": "514 Station Ave, Haddon Heights, NJ 08035", "embed_url": ""}'),
+('location', 'map', 0, '{"address": "514 Station Ave, Haddon Heights, NJ 08035", "embed_url": ""}'),
+('location', 'hours', 1, '{"heading": "Hours"}'),
 ('location', 'rich_text', 2, '{"heading": "Parking", "body_markdown": "Street parking is available out front, plus a **lot behind the coffee house**. Enter from White Horse Pike or Atlantic Ave."}'),
 ('location', 'cta', 3, '{"heading": "Come say hi", "body": "Questions? Give us a call.", "button_label": "Call (856) 617-6638", "button_url": "tel:+18566176638"}');
 
 -- CONTACT -----------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
 ('contact', 'rich_text', 0, '{"heading": "Get in touch", "body_markdown": "Questions, ideas, or planning something? Use the form below for general questions, or the catering form for events. We read every message."}');
-
--- COMMUNITY ---------------------------------------------------------
-insert into sections (page_slug, type, display_order, data) values
-('community', 'events_list', 0, '{"heading": "What''s coming up"}'),
-('community', 'community_board', 1, '{"heading": "On the Community Board"}'),
-('community', 'rich_text', 2, '{"heading": "Loyalty", "body_markdown": "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you''re in. *(Full program details coming soon.)*"}'),
-('community', 'instagram', 3, '{"embed_handle": "troublebrewingcoffee"}');
 
 -- REVIEWS -----------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
@@ -160,7 +157,11 @@ insert into content_blocks (key, data) values
 ('staff_picks', '{"items": [{"label": "Flying off the menu", "value": "Cranberry Walnut Chicken Salad Panini"}, {"label": "Barista''s pick", "value": "Banana Split Coffee"}]}'),
 ('loyalty_copy', '{"body_markdown": "Ask a Troublemaker about loyalty perks. Full program details coming soon."}'),
 ('announcement_banner', '{"enabled": false, "message": ""}'),
-('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "", "tiktok": "", "x": "", "youtube": ""}')
+('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "", "tiktok": "", "x": "", "youtube": ""}'),
+-- Which Google reviews the site shows + the owner's per-review overrides
+-- (hidden / pinned / attached photo), keyed by author+text. See src/lib/reviews.js
+-- and admin -> Reviews. 4 stars is the default floor: only the good ones.
+('review_settings', '{"min_rating": 4, "hidden": {}, "pinned": {}, "photos": {}}')
 on conflict (key) do nothing;
 
 -- -----------------------------------------------------------------------------
@@ -184,26 +185,42 @@ on conflict (id) do nothing;
 -- -----------------------------------------------------------------------------
 -- Gallery pieces (placeholder — owner adds the real wall + stories)
 -- -----------------------------------------------------------------------------
-insert into gallery_pieces (title, story, display_order) values
-('The Ornate Gold One', 'Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it''s the unofficial centerpiece of the wall.', 0),
-('Tiny Oval Mystery', 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', 1);
+-- Starter rows that teach the shape of a good entry; owners replace them with
+-- the real pieces off the wall. `artist` is the point of this page, so it is
+-- the field the story below nudges them toward filling in.
+insert into gallery_pieces (title, story, year_label, frame_style, display_order) values
+('The Ornate Gold One', 'Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it''s the unofficial centerpiece of the wall. (Owner: if you know who made it, add them — the credit is the best part of this page.)', 'Found, undated', 'gilt-grand', 0),
+('Tiny Oval Mystery', 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', '', 'oval-gilt', 1);
 
 -- -----------------------------------------------------------------------------
 -- Team members ("Troublemakers") — placeholder so the page renders
 -- -----------------------------------------------------------------------------
+-- Starter rows the owners replace with the real team. Fun facts are seeded
+-- EMPTY rather than as em-dashes: the page hides a blank fact, so an unfilled
+-- card looks finished instead of carrying five rows of punctuation.
 insert into team_members (name, role, bio, fun_facts, display_order, active) values
-('Katie', 'General Manager', 'Keeps the whole operation running and somehow still remembers your usual.', '{"favorite_local_food": "—", "favorite_movie": "—", "favorite_book": "—", "favorite_show": "—", "favorite_artist": "—"}', 0, true),
-('A Troublemaker', 'Barista', 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', '{"favorite_local_food": "—", "favorite_movie": "—", "favorite_book": "—", "favorite_show": "—", "favorite_artist": "—"}', 1, true);
+('Katie', 'General Manager', 'Keeps the whole operation running and somehow still remembers your usual.', '{"favorite_local_food": "", "favorite_movie": "", "favorite_book": "", "favorite_show": "", "favorite_artist": ""}', 0, true),
+('A Troublemaker', 'Barista', 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', '{"favorite_local_food": "", "favorite_movie": "", "favorite_book": "", "favorite_show": "", "favorite_artist": ""}', 1, true);
 
 -- -----------------------------------------------------------------------------
 -- Local businesses (placeholder Haddon Heights neighbors — confirm with client)
 -- -----------------------------------------------------------------------------
 -- Client-named starting entries (confirm exact names, categories, and URLs).
 -- Fully owner-editable in the Local Love manager.
-insert into local_businesses (name, category, blurb, url, display_order) values
-('Anthony''s', 'restaurant', 'A neighborhood favorite we love to send people to. (Owner: confirm details + add a link.)', '', 0),
-('Ralph''s', 'restaurant', 'Good food, good people, right around the corner. (Owner: confirm details + add a link.)', '', 1),
-('Lula''s', 'cafe', 'One of the local spots that makes Haddon Heights special. (Owner: confirm details + add a link.)', '', 2);
+-- Real Station Ave businesses, checked against their own sites, the borough
+-- directory and local press. The page orders them by street number, so Trouble
+-- Brewing's own door at 514 falls between Anthony's and Lula's on its own.
+-- `we_love` is left blank on purpose: only the owners know what they actually
+-- send people there for.
+insert into local_businesses (name, category, address, blurb, url, display_order) values
+('Anthony''s Creative Italian Cuisine', 'restaurant', '512 Station Ave', 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', 'https://www.anthonysonstation.com/', 0),
+('Lula''s Empanadas', 'restaurant', '516 Station Ave', 'Contemporary Dominican empanadas from a takeout window, named after the owner''s mother. Up to eighteen flavors, and a couple of picnic tables out front.', 'https://www.facebook.com/lulasempanadas/', 1),
+('Ralph''s Pizza', 'restaurant', '520 Station Ave', 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town.', 'https://ralphspizzahaddonheights.com/', 2),
+('South Jersey Special', 'retail', '531 Station Ave', 'A gift shop of South Jersey makers — cards, prints, jewelry and small-batch things, most of it funny, all of it local.', 'https://southjerseyspecial.com/', 3),
+('Jane''s Tea House', 'cafe', '602 Station Ave', 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', 'https://janesteahouse.com/', 4),
+('Cabana Water Ice Co.', 'other', '603 Station Ave', 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', '', 5),
+('April Robin Florist & Gift', 'retail', '620 Station Ave', 'The florist at the top of the avenue — where the flowers on our counter usually come from.', 'https://www.aprilrobinflorist.com/', 6),
+('John''s Friendly Market', 'other', '622 Station Ave', 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', '', 7);
 
 -- -----------------------------------------------------------------------------
 -- TB Timeline milestones (placeholder — owner adds the real history)

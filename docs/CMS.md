@@ -8,31 +8,31 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 
 | `type` | `data` shape (jsonb) | Backed by | Renderer |
 |---|---|---|---|
-| `hero` | `{ heading, subheading, background_image_url, cta_label, cta_url }` | data | `Hero.jsx` |
-| `rich_text` | `{ heading, body_markdown }` | data | `RichText.jsx` |
+| `hero` | `{ eyebrow, heading, subheading, background_image_url, cta_label, cta_url }` — `cta_url` renders as a router link for `/paths`, a real anchor for `https://` and `tel:` | data | `Hero.jsx` |
+| `rich_text` | `{ heading, body_markdown, variant: ''\|'lead'\|'alt' }` — `lead` is the centered opening paragraph with the cup motif, `alt` sits on a sage band | data | `RichText.jsx` |
 | `image` | `{ image_url, alt, caption }` | data | `ImageBlock.jsx` |
-| `gallery` | `{ images: [{url, alt}], layout }` | data | `Gallery.jsx` |
-| `menu_block` | `{ heading, categories: [..] }` | `menu_items` | `MenuBlock.jsx` |
-| `hours` | `{ heading }` | `hours`+`hours_overrides`/Google | `HoursSection.jsx` |
+| `gallery` | `{ heading, images: [{url, alt}] }` | data | `Gallery.jsx` |
+| `menu_block` | `{ heading, categories: [..], layout: 'auto'\|'cards'\|'list' }` — `auto` (default) draws photo cards as soon as any item has an `image_url`, the classic price list until then; `cards` uses the shared `ProductCard`, the same card the homepage drinks teaser draws | `menu_items` | `MenuBlock.jsx` |
+| `hours` | `{ heading, intro }` | `hours`+`hours_overrides`/Google | `HoursSection.jsx` |
 | `cta` | `{ heading, body, button_label, button_url }` | data | `CTA.jsx` |
-| `events_list` | `{ heading }` | `events` | `EventsList.jsx` |
-| `community_board` | `{ heading }` | `content_blocks` | `CommunityBoard.jsx` |
-| `instagram` | `{ embed_handle }` | data | `InstagramFeed.jsx` |
-| `map` | `{ address, embed_url }` | data | `MapSection.jsx` |
+| `events_list` | `{ heading, intro, empty_message }` | `events` | `EventsList.jsx` |
+| `community_board` | `{ heading, intro }` | `content_blocks.staff_picks` | `CommunityBoard.jsx` |
+| `instagram` | `{ heading, body, embed_handle }` | `instagram_feed` + data | `InstagramFeed.jsx` |
+| `map` | `{ heading, address, button_label, note, embed_url }` | data | `MapSection.jsx` |
 | `newsletter` | `{ heading, body, mailchimp_action_url }` | data | `Newsletter.jsx` |
-| `reviews_hero` | `{ heading }` | `google_profile` | `ReviewsHero.jsx` |
-| `testimonials_wall` | `{ heading, layout }` | `testimonials` | `TestimonialsWall.jsx` |
-| `google_reviews_feed` | `{ heading, count }` | `google_profile` | `GoogleReviewsFeed.jsx` |
+| `reviews_hero` | `{ heading, subheading }` | `google_profile` | `ReviewsHero.jsx` |
+| `testimonials_wall` | `{ heading, layout }` | `testimonials` (via `lib/reviews.js`) | `TestimonialsWall.jsx` |
+| `google_reviews_feed` | `{ heading, count }` — `count` is the page size; the rest sit behind "Show more" | `google_profile` (via `lib/reviews.js`) | `GoogleReviewsFeed.jsx` |
 | `review_cta` | `{ heading, body, button_label }` | `google_profile.maps_url` | `ReviewCTA.jsx` |
 | `gallery_wall_hero` | `{ heading, subheading, specials_label, specials_link, frames: [{ image_url, label, link, frame_style }] }` | data | `GalleryWallHero.jsx` |
-| `immersive_gallery_hero` | `{ igh_eyebrow, igh_descriptor, igh_menu_label, igh_hours_label, igh_address, igh_special_label, igh_special_text, igh_mailchimp_action_url }` — the unbranded scene artwork (`images/wall/immersive-scene.jpg`) is the canvas; branding, frame-link labels (one per navbar destination), chalkboard hours, notes, and signup are live HTML over it (≥1020px); below that the wall re-hangs itself: each link becomes a mini framed picture whose art is that frame's crop out of the same scene file (nail + wire + brass nameplate), then the gold fox, chalkboard, note, and signup | data | `ImmersiveGalleryHero.jsx` |
+| `immersive_gallery_hero` | `{ igh_eyebrow, igh_descriptor, igh_menu_label, igh_hours_label, igh_address, igh_special_label, igh_special_text, igh_wall_heading, igh_real_art, igh_mailchimp_action_url, igh_pieces: [{ id, label, to, img, frame }] }` — the café-scene artwork is the canvas; branding, frame labels, chalkboard hours, the taped note and the signup are live HTML over it (≥1020px). **The shop's own photographs hang in the scene's frames**, each filling that frame's measured picture window and covering the painted picture; `igh_real_art: false` shows the room as painted. Below 1020px the wall re-hangs itself as a salon hang of the same photographs. `igh_pieces` are per-picture overrides matched **by `id`** onto `src/lib/wallPieces.js` | data | `ImmersiveGalleryHero.jsx` |
 | `warm_storefront_hero` | `{ wsh_eyebrow, wsh_title, wsh_sub, background_image_url }` | data | `WarmStorefrontHero.jsx` |
 | `cozy_editorial_hero` | `{ ceh_eyebrow, ceh_title, ceh_lead, ceh_signature, ceh_main_image_url, ceh_inset_image_url }` | data | `CozyEditorialHero.jsx` |
 | `modern_coffee_hero` | `{ mch_eyebrow, mch_word, mch_brand, mch_lead, mch_drink_image_url }` | data | `ModernCoffeeHero.jsx` |
-| `gallery_pieces_grid` | `{ heading }` | `gallery_pieces` | `GalleryPiecesGrid.jsx` |
-| `troublemakers_grid` | `{ heading }` | `team_members` | `TroublemakersGrid.jsx` |
-| `local_businesses_grid`| `{ heading }` | `local_businesses` | `LocalBusinessesGrid.jsx` |
-| `timeline_grid` | `{ heading }` | `timeline_events` | `TimelineGrid.jsx` |
+| `gallery_pieces_grid` | `{ heading, intro }` — each piece hangs in a real molding with a museum label: title, **artist** (linked via `artist_url`), medium and date | `gallery_pieces` | `GalleryPiecesGrid.jsx` |
+| `troublemakers_grid` | `{ heading, intro }` | `team_members` | `TroublemakersGrid.jsx` |
+| `local_businesses_grid`| `{ heading, intro, order_by: 'street'\|'manual', show_us }` — `street` orders by the leading number in each `address`, laying the page out as a walk down the avenue with the shop's own door marked in place | `local_businesses` | `LocalBusinessesGrid.jsx` |
+| `timeline_grid` | `{ heading, intro }` | `timeline_events` | `TimelineGrid.jsx` |
 | `featured_drink` | `{ heading }` | `content_blocks.featured_drink` | `FeaturedDrink.jsx` |
 | `announcement` | `{}` | `content_blocks.announcement_banner` | `AnnouncementBanner.jsx` |
 
@@ -47,9 +47,49 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 
 `menu_items`, `events`, `hours`, `hours_overrides`, `testimonials`, `google_profile`, `gallery_pieces`, `team_members`, `local_businesses`, `timeline_events`, `content_blocks`, `submissions`, `revisions`. Full DDL in `supabase/schema.sql`; shapes summarized in the build plan §4.1, §5.5, §5.6.
 
-> **Section editors are schema-driven.** Rather than one editor file per type, the on-page editor's `SectionPanel` renders forms from declarative schemas in `src/admin/editors/schemas.js` via the shared `FieldRenderer` (field types: text, textarea, markdown, image, select, number, price, date, checkbox, tags, `frames`, `images`, `funfacts`). Adding a type = add a renderer + a schema entry. Collection-backed types (`menu_block`, `timeline_grid`, …) carry a `manager` key so the panel shows a "Manage —" button that embeds the right collection manager in place (`src/admin/editor/sectionMeta.js`).
+> **Section editors are schema-driven.** Rather than one editor file per type, the on-page editor's `SectionPanel` renders forms from declarative schemas in `src/admin/editors/schemas.js` via the shared `FieldRenderer` (field types: text, textarea, markdown, image, select, number, price, date, checkbox, tags, `frames`, `wallpieces`, `images`, `funfacts`). Adding a type = add a renderer + a schema entry. Collection-backed types (`menu_block`, `timeline_grid`, …) carry a `manager` key so the panel shows a "Manage —" button that embeds the right collection manager in place (`src/admin/editor/sectionMeta.js`). A manager entry is normally a `CollectionManager` config (a table + fields); it may instead be `{ title, component }`, which the panel renders as-is — that's how `social_proof` / `google_reviews_feed` reach the Reviews control room, which edits a cached library plus a settings block rather than a row-per-item collection.
 
-> **`content_blocks` keys:** `homepage_concept`, `featured_drink`, `staff_picks`, `loyalty_copy`, `announcement_banner`, `social_links` (Instagram/Facebook/TikTok/X/YouTube URLs — surfaced in footer + contact/community).
+> **`content_blocks` keys:** `homepage_concept`, `featured_drink`, `staff_picks`, `loyalty_copy`, `announcement_banner`, `social_links` (Instagram/Facebook/TikTok/X/YouTube URLs — surfaced in footer + contact/community), `review_settings`.
+
+### Reviews: one selection rule, every surface
+
+`src/lib/reviews.js` is the single place that decides which reviews the site shows and in what order. `loadReviews({ only, minLength })` merges the two sources into one shape — the cached Google library (`google_profile.reviews`) and hand-picked `testimonials` — dedupes them by author+text (a review imported as a testimonial disappears from the Google side, so a quote never hangs twice on one page), applies the owner's rules, and sorts: pinned → featured → carries a photo → newest.
+
+The owner's rules live in the `review_settings` content block, keyed by `reviewKey(author, text)` so they survive Google reshuffling which five reviews it returns each refresh:
+
+```jsonc
+{ "min_rating": 4,          // the star floor — nothing below it shows anywhere
+  "hidden":  { "<key>": true },   // never show this one
+  "pinned":  { "<key>": true },   // show it first, everywhere
+  "photos":  { "<key>": "https://…" } } // Places returns no review photos; owners attach them
+```
+
+Edited in **admin → Reviews** (`src/admin/managers/ReviewsManager.jsx`), reachable both from the sidebar and from the homepage reviews strip / reviews feed in the editor. `SocialProof`, `GoogleReviewsFeed` and `TestimonialsWall` all read through `loadReviews()` — no surface re-implements "a good review".
+
+### The three collection pages
+
+`gallery_pieces`, `team_members` and `local_businesses` all render "a photo, a name and some words", but each one carries the fields its subject actually needs, and every one of them is optional — a card holds its shape when only the name is filled in.
+
+- **Gallery Wall.** Real people made the work in that room, so `artist` / `artist_url` / `medium` / `year_label` are columns rather than something crammed into the story text, and the artist's name links wherever they want people sent. `frame_style` picks a molding from `frameStyles.js`; left blank, the page cycles the moldings so an unset wall still reads as collected. An unphotographed piece shows a warm blank in its frame, not a placeholder glyph on grey.
+- **Troublemakers.** `pronouns` (asked for, never assumed), `started_label`, and `drink` — their go-to order, given its own emphasis on the card because it answers the question these people field all day. `fun_facts` stays an open key/value map, so owners can invent their own.
+- **Local Love.** `address` drives both the directions link and the walk-down-the-street ordering; `logo_url` is an upload slot rather than anything fetched, with a drawn monogram standing in; `we_love` is the specific thing they send people for, which is the line customers act on.
+
+### Products: one card, two pages
+
+`src/components/ProductCard.jsx` is the single product card, drawn by both the homepage `signature_drinks` teaser and `menu_block`'s card layout, so a drink looks the same wherever a visitor meets it. Photos resolve through `src/lib/productImage.js` — the item's `image_url`, then the drop-in file `public/images/drinks/<name-slug>.jpg`, then a drawn motif — and `src/lib/menuService.js` owns the selection helpers (`pickProducts`, `hasProductPhotos`) both sections share. Everything comes from the live `menu_items` rows, so the landing page and the Menu page can never disagree about a price, description or picture.
+
+### The homepage wall
+
+`src/lib/wallPieces.js` holds the wall as data: one entry per destination, carrying both places it hangs.
+
+- **On the scene** — `x/y/w/h` are % boxes over the 1536×1024 artwork, tuned so the brass nameplate lands on the frame's bottom edge, plus `art: [top, right, bottom, left]`, the **picture window** inside that box. The window is measured per frame off the artwork: the boxes hug the OUTSIDE of each molding and several carry a little wall at one edge for the plate, so a shared inset put photos over the moldings on half the wall. The photo element also needs explicit `width`/`height` — an absolutely positioned replaced element with `width: auto` resolves to its INTRINSIC size and ignores over-constrained insets, which rendered every photo at full pixel size anchored to its frame's top-left corner.
+- **On a phone** — `frame` (a molding), `ar` (its shape) and `small` (hangs at 84% of the column).
+
+Shared by both: `img`, and the drawn stand-in (`motif` + hand-lettered `caption`) shown until that photograph exists. The label, link, photo and molding are owner-editable via the hero's `igh_pieces`, merged by `mergeWallPieces()`.
+
+Rows merge **by `id`, not by position**: matching by index meant that adding or removing a piece silently re-pointed every photograph the owner had chosen after it. A blank field means "use the built-in", so a half-filled row keeps whatever it didn't set; the sentinel `'-'` in `img` means "hang this one as its drawn stand-in".
+
+`WALL_OBJECTS` hangs the shop's gold fox-head and brass hare among the pictures, keyed to the piece they follow so the masonry carries them into different columns.
 
 > **`frame_style` values** (gallery wall hero): `gilt-grand`, `gilt-thin`, `gold-botanical`, `gold-tapestry`, `bronze-carved`, `brass-chain`, `black-flat`, `black-mat`, `black-stacked`, `oval-gilt`, `oval-black` — one vintage molding recipe each, defined in `src/lib/frameStyles.js` (friendly labels for the admin select) + `src/styles/sections.css`. Legacy values from before the revamp (`gold`, `ornate`, `black`, `wood`, `green`, `pink`, `oval-*`) auto-map onto the new set via `normalizeFrameStyle()`, so rows saved earlier keep rendering. The hero's `specials_link` defaults to `/menu#specials`; `MenuBlock` maps that hash to the Specialty tab (any exact category key works too, e.g. `#seasonal`).
 
@@ -64,6 +104,7 @@ The sidebar layout survives as a slim **Settings** area for everything that isn'
 | **Hours Editor** | `hours` weekly grid + `hours_overrides` holidays |
 | **Quick Blocks** | `content_blocks`: featured drink, staff picks, announcement banner, social links |
 | **Google Profile Settings** | Place ID + GBP review URL + "refresh now" |
+| **Reviews** (`/admin/reviews`) | every cached Google review: the star floor, hide/feature per review, attach a review photo, promote one to a hand-picked favorite. Writes `content_blocks.review_settings`; also embeddable in the editor panel from the homepage reviews strip |
 | **Inbox** | `submissions` — read/unread, filter by type (unread badge in the nav) |
 | **Media Library** | browse/delete Storage images |
 | **Help Center** (`/admin/help`) | plain-English guides, walkthrough video |
@@ -79,3 +120,5 @@ The sidebar layout survives as a slim **Settings** area for everything that isn'
 ## Admin UX requirements
 
 iPad-friendly (owners may use one behind the counter), plain-English labels, confirmation modals on delete, contextual "?" hints on non-obvious fields, toast confirmation per save.
+
+**Phone-friendly too.** Under 900px the editor stops being a split view and stacks: the canvas on top, the panel as a bottom sheet (≤58dvh, its own scroll, `overscroll-behavior: contain`) — see the responsive block at the end of `src/admin/editor/editor.css`. The preview-width toggles hide (a phone canvas is already phone width), controls get 34px touch targets, and panel inputs are 16px so iOS doesn't zoom the page on focus. Heights use `dvh`, not `vh`, or iOS Safari's URL bar hides the Publish button.

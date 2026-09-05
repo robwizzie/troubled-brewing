@@ -39,6 +39,7 @@ function normalize(items, { includeUnavailable = false } = {}) {
 
 export async function getMenu({ includeUnavailable = false } = {}) {
   if (!isSupabaseConfigured) {
+    // eslint-disable-next-line no-console
     if (import.meta.env.DEV) console.info(FALLBACK_NOTE);
     return normalize(MENU_ITEMS, { includeUnavailable });
   }
@@ -50,6 +51,7 @@ export async function getMenu({ includeUnavailable = false } = {}) {
     if (!data || data.length === 0) return normalize(MENU_ITEMS, { includeUnavailable });
     return normalize(data);
   } catch (err) {
+    // eslint-disable-next-line no-console
     if (import.meta.env.DEV) console.warn('[menuService] live fetch failed, falling back to snapshot:', err.message);
     return normalize(MENU_ITEMS, { includeUnavailable });
   }
@@ -65,6 +67,39 @@ export const MENU_CATEGORY_LABELS = {
   pastry: 'Pastries',
   seasonal: 'Seasonal',
 };
+
+/* Dietary tag → the short badge shown on a card or a menu row. Lives here so
+   the menu page and the homepage product cards label a vegan drink the same. */
+export const DIETARY_LABELS = { 'gluten-free': 'GF', vegan: 'VG', vegetarian: 'V', 'dairy-free': 'DF' };
+
+/** True once anything on the menu carries a photo — what the 'auto' menu
+    layout keys off, so the page flips to photo cards the day SpotOn (or the
+    owner) starts giving items pictures, with nothing to change here. */
+export const hasProductPhotos = (items) => (items || []).some((i) => i.image_url);
+
+/**
+ * The products a teaser should feature.
+ *
+ * Named picks win and keep the owner's order. Otherwise we lead with a
+ * category (specialty by default) and prefer items that have something to
+ * show — a photo first, then a description or a price — because a card with a
+ * bare name and nothing else is a worse advert than no card. If that category
+ * is too thin, the rest of the menu (same rules) tops it up, so the row is
+ * never short of the count the owner asked for.
+ */
+export function pickProducts(all, { names, category = 'specialty', count = 3 } = {}) {
+  if (Array.isArray(names) && names.length) {
+    return names.map((n) => all.find((m) => m.name === n)).filter(Boolean).slice(0, count);
+  }
+  const worth = (m) => (m.image_url ? 2 : 0) + ((m.description || '').trim() || m.price != null ? 1 : 0);
+  const rank = (list) => [...list].sort((a, b) => worth(b) - worth(a));
+  const inCat = all.filter((m) => m.category === category);
+  const picks = rank(inCat).filter((m) => worth(m) > 0);
+  const pool = picks.length >= count ? picks : [...picks, ...inCat.filter((m) => !picks.includes(m))];
+  if (pool.length >= count) return pool.slice(0, count);
+  const rest = rank(all.filter((m) => m.category !== category)).filter((m) => worth(m) > 0);
+  return [...pool, ...rest].slice(0, count);
+}
 
 export function groupByCategory(items, only = MENU_CATEGORY_ORDER) {
   const groups = {};

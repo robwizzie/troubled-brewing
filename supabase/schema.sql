@@ -147,7 +147,7 @@ create table if not exists google_profile (
   place_id text,
   rating numeric(2,1),
   review_count int,
-  reviews jsonb default '[]',              -- [{author, rating, text, time, profile_photo}]
+  reviews jsonb default '[]',              -- [{review_id, author, author_url, rating, text, time, published_at, review_url, profile_photo}], newest first
   formatted_address text,
   formatted_phone text,
   weekday_hours jsonb default '[]',        -- Google weekdayDescriptions (display strings)
@@ -195,11 +195,20 @@ create table if not exists private_secrets (
 -- =============================================================================
 -- Whimsical signature pages: gallery pieces, team, local businesses
 -- =============================================================================
+-- Real artwork hanging in the shop. Real people made these pieces, so the
+-- credit fields are first-class, not an afterthought: artist, medium, and a
+-- link to wherever that artist wants people sent.
 create table if not exists gallery_pieces (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   image_url text,
   story text,                              -- the fun backstory
+  artist text,                             -- who made it
+  artist_url text,                         -- their site / Instagram / shop
+  medium text,                             -- 'Oil on canvas', 'Screen print', 'Photograph'
+  year_label text,                         -- flexible: '1970s', '2023', 'Found, undated'
+  frame_style text,                        -- a molding from src/lib/frameStyles.js
+  for_sale boolean default false,
   display_order int default 0,
   status text not null default 'published',
   draft_data jsonb,
@@ -212,6 +221,9 @@ create table if not exists team_members (
   role text,
   bio text,
   photo_url text,
+  pronouns text,                           -- shown under the name when set
+  drink text,                              -- their go-to order — the most-asked question behind a counter
+  started_label text,                      -- 'Since day one', 'Joined 2024' — flexible, not a date
   fun_facts jsonb default '{}',            -- { favorite_local_food, favorite_movie, favorite_book, favorite_show, favorite_artist, ... } extensible
   display_order int default 0,
   active boolean default true,
@@ -227,6 +239,9 @@ create table if not exists local_businesses (
   blurb text,
   url text,
   photo_url text,
+  logo_url text,                           -- their logo, if they've shared one
+  address text,                            -- '512 Station Ave' — drives the map link + the walk-the-block ordering
+  we_love text,                            -- 'Get the vodka rigatoni' — what we send people there for
   display_order int default 0,
   status text not null default 'published',
   draft_data jsonb,

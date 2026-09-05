@@ -117,17 +117,41 @@
 
 /* fox creeping into the mobile drawer (hidden on desktop) */
 .nav__drawer-fox { display: none; }
+/* the phone bar's Order button — the drawer's CTA covers desktop */
+.nav__cta-bar { display: none; }
 /* desktop: the CTA+fox wrapper dissolves so the bar layout is untouched */
 .nav__cta-row { display: contents; }
 
 @media (max-width: 900px) {
-  /* a fuller bar on phones: the lockup was reading small on big screens */
-  :root { --header-h: 96px; }
-  .nav__inner { justify-content: center; position: relative; }
-  .nav__logo { height: 76px; }
-  .nav__toggle { display: inline-flex; position: absolute; right: var(--space-4); top: 50%; transform: translateY(-50%); margin: 0; width: 52px; height: 52px; }
-  .nav__toggle:active { transform: translate(1px, 1px) translateY(-50%); }
-  .nav__burger { width: 25px; height: 16px; }
+  /* A phone bar is sticky on every screen of every page, so every pixel it
+     takes is a pixel of content nobody sees. 96px was ~15% of a phone
+     viewport, permanently. 68px still carries the full lockup and now also
+     carries Order — the bar earns its height instead of just filling it.
+     Layout: Order | lockup | menu, so the badge stays centred. */
+  :root { --header-h: 68px; }
+  .nav__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-2);
+    position: relative;
+    padding-inline: 0;
+  }
+  .nav__cta-bar {
+    display: inline-flex;
+    white-space: nowrap;
+    justify-self: start;
+    margin: 0;
+    padding: 8px 14px;
+    font-size: 0.86rem;
+    border: 2px solid var(--color-black);
+    box-shadow: 2px 2px 0 var(--color-yellow-deep);
+  }
+  .nav__cta-bar:hover { box-shadow: 3px 3px 0 var(--color-yellow-deep); transform: translate(-1px, -1px); }
+  .nav__cta-bar:active { box-shadow: 0 0 0 var(--color-yellow-deep); transform: translate(2px, 2px) scale(0.97); }
+  .nav__brand { justify-self: center; } /* height: see .nav__logo below */
+  .nav__toggle { display: inline-flex; justify-self: end; margin: 0; width: 46px; height: 46px; }
+  .nav__burger { width: 22px; height: 15px; }
 
   /* Drawer opens directly BENEATH the bar. --drawer-top is set by Nav.jsx from
      the header's real bottom (so the announcement banner can't be covered).
@@ -266,9 +290,12 @@
   .nav__menu { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 /* narrowest phones: pin the secondary links to the floor size so labels like
-   "Our Story So Far" stay on one line */
+   "Our Story So Far" stay on one line, and let the bar shed a few more px */
 @media (max-width: 374px) {
   .nav__menu .nav__link { font-size: 0.92rem; padding-inline: var(--space-1); }
+  :root { --header-h: 62px; }
+  .nav__cta-bar { padding: 7px 11px; font-size: 0.8rem; }
+  .nav__toggle { width: 42px; height: 42px; }
 }
 @keyframes nav-drawer-in {
   from { opacity: 0; }
@@ -342,6 +369,10 @@
 /* fox-badge logo — bigger; white-bg drops cleanly via multiply on the cream nav */
 .nav__logo { height: 96px; width: auto; display: block; mix-blend-mode: multiply; transition: transform var(--dur) var(--ease); }
 .nav__brand:hover .nav__logo { transform: rotate(-3deg) scale(1.04); }
+/* the phone bar's sizes live HERE, after the desktop height above — the
+   breakpoint block further up loses to it on source order alone */
+@media (max-width: 900px) { .nav__logo { height: 54px; } }
+@media (max-width: 374px) { .nav__logo { height: 46px; } }
 
 /* ---- Hours widget --------------------------------------------------------- */
 .hours-today {
@@ -385,6 +416,32 @@
 .hours-sign .hours-table tr.today { background: rgba(227, 181, 63, 0.14); }
 .hours-sign .hours-table tr.today th, .hours-sign .hours-table tr.today td { color: var(--color-yellow); }
 .hours-sign .hours-override { color: #f2b8a0; }
+
+/* On a phone the letterboard was a ~600px band — the tallest thing on the
+   homepage after the hero. It carries the whole WEEK (the hero chalkboard
+   only carries today), so it earns its place; it just doesn't earn that much
+   of the screen. Same sign, tighter lettering. */
+@media (max-width: 720px) {
+  .hours-sign {
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    margin-top: var(--space-3);
+  }
+  .hours-sign__label { margin-bottom: var(--space-2); letter-spacing: 0.18em; }
+  .hours-sign .hours-table { margin-top: var(--space-3) !important; }
+  .hours-sign .hours-table th,
+  .hours-sign .hours-table td {
+    padding: 4px var(--space-2);
+    font-size: var(--text-sm);
+    line-height: 1.35;
+  }
+  .hours-sign .hours-today { font-size: var(--text-sm); }
+  /* On the HOMEPAGE only, drop the sign's "open now" line: the hero chalkboard
+     three screens up already carries today's status and hours, so this was the
+     page saying it twice. Every other page (Location especially) keeps it,
+     because there it isn't a repeat. */
+  .page-home .hours-sign .hours-today { display: none; }
+  .page-home .hours-sign .hours-table { margin-top: 0 !important; }
+}
 
 /* ---- Consent banner ------------------------------------------------------- */
 .consent {

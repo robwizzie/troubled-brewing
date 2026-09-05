@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
@@ -19,12 +19,19 @@ import NotFound from './pages/NotFound.jsx';
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'));
 
 function PublicShell({ children }) {
+  // `page-<slug>` on <main> lets CSS scope a rule to one page without every
+  // section having to learn which page it is on (e.g. the homepage suppresses
+  // the weekly sign's "open now" line, which its hero already carries).
+  // Derived from the route here so routes don't each have to pass it.
+  const { pathname } = useLocation();
+  const slug = pathname.replace(/^\/+|\/+$/g, '').replace(/[^a-zA-Z0-9-]/g, '-') || 'home';
+
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
       <AnnouncementBanner />
       <Nav />
-      <main id="main">{children}</main>
+      <main id="main" className={`page page-${slug}`}>{children}</main>
       <Footer />
       <ConsentBanner />
     </>
@@ -55,7 +62,11 @@ export default function App() {
         <Route path="/events" element={<PublicShell><SitePage slug="events" /></PublicShell>} />
         <Route path="/location" element={<PublicShell><SitePage slug="location" /></PublicShell>} />
         <Route path="/contact" element={<PublicShell><ContactPage /></PublicShell>} />
-        <Route path="/community" element={<PublicShell><SitePage slug="community" showSocial /></PublicShell>} />
+        {/* /community was retired — its events list duplicated /events, and the
+            board, loyalty note and Instagram strip moved there. Kept as a
+            redirect so old links, printed cards and search results still land
+            somewhere real instead of on a 404. */}
+        <Route path="/community" element={<Navigate to="/events" replace />} />
         <Route path="/timeline" element={<PublicShell><SitePage slug="timeline" /></PublicShell>} />
         <Route path="/reviews" element={<PublicShell><SitePage slug="reviews" /></PublicShell>} />
         <Route path="/gallery-wall" element={<PublicShell><SitePage slug="gallery-wall" /></PublicShell>} />
