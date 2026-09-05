@@ -27,7 +27,9 @@ export default function HoursEditor() {
     setOverrides(o || []);
     setGoogleLive(Array.isArray(g?.weekday_periods) && g.weekday_periods.length > 0);
   }
-  useEffect(() => { load().catch(() => toast('Could not load hours', 'error')); /* eslint-disable-next-line */ }, []);
+  // load-once on mount: `load` and `toast` are new identities every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load().catch(() => toast('Could not load hours', 'error')); }, []);
 
   function setDay(d, key, val) {
     setHours((hrs) => hrs.map((r) => (r.day_of_week === d ? { ...r, [key]: val } : r)));

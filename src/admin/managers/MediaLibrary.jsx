@@ -14,7 +14,9 @@ export default function MediaLibrary() {
     try { setMedia(await listMedia('uploads')); }
     catch (e) { toast(e.message || 'Could not load media', 'error'); setMedia([]); }
   }
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  // load-once on mount: `load` is a new identity every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, []);
 
   async function onUpload(e) {
     const file = e.target.files?.[0];

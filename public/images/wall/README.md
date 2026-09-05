@@ -41,15 +41,33 @@ still uses `our-story-so-far.jpg` — only the on-screen labels changed, so you 
 **not** need to rename those files.
 
 ## The Immersive Gallery scene (`immersive-scene.jpg`)
-The **Immersive Gallery** homepage look uses one **UNBRANDED** scene artwork
-(the café interior with empty labeled-nowhere frames) as its canvas — all
-lettering, frame labels, the chalkboard, notes, and the signup panel are live
-HTML drawn over it, so the copy stays editable and scales with the image.
 
-- The file here is **`immersive-scene.jpg`**, **1536×1024** (3:2). Export a
-  new one from the same composition if the artwork is refreshed.
-- If the artwork is ever **re-generated with frames moved**, the link boxes in
-  `src/components/sections/ImmersiveGalleryHero.jsx` (`FRAME_LINKS`) need
-  re-tuning to match.
-- Under 1020px the scene renders as a backdrop banner and the frame links
-  re-form as tappable plaques, so phones and tablets get a clean layout.
+The homepage uses one **café scene** as its canvas — all lettering, frame
+labels, the chalkboard, notes and the signup panel are live HTML drawn over it,
+so the copy stays editable and scales with the image.
+
+**The pictures in its frames are yours.** The scene was drawn with placeholder
+artwork in the frames; the site hangs your own photographs over them, one frame
+at a time as you add them. The eight photos listed above are what's in there
+now, and every one of them is editable in the admin under **Edit your site →
+the hero → "The pictures on your wall"** — swap the photo, rename the label,
+point it somewhere else, or change its frame. Uploads there win over the files
+in this folder.
+
+- The file here is **`immersive-scene.jpg`**, **1536×1024** (3:2). Export a new
+  one from the same composition if the artwork is refreshed.
+- If the scene is ever **re-generated with the frames moved**, both the hotspot
+  boxes and the measured picture windows in `src/lib/wallPieces.js`
+  (`x/y/w/h` and `art`) need re-measuring to match.
+- The frame still waiting on a photo is **Visit Us**. Save a storefront /
+  "find us" shot here as **`location.jpg`** (landscape, subject centred) and it
+  hangs like the rest. Until then it shows the scene's own painted picture on
+  desktop, and a little chalk address sign on a phone.
+- Under 1020px the scene becomes a backdrop banner and the wall **re-hangs
+  itself below it** as a salon hang of these same photographs — every
+  destination a real framed picture with a brass nameplate. So these files are
+  what phone visitors actually see.
+- The scene file is the **largest asset on the site** and every phone downloads
+  it. When you re-export the artwork, keep it around **1536px** on the long edge
+  and aim for **under ~400 KB** — the current file is ~2.4 MB, which is the one
+  real drag on mobile load time.

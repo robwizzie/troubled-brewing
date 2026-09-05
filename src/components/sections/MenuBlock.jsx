@@ -3,11 +3,13 @@ import { useLocation } from 'react-router-dom';
 import Reveal from '../Reveal.jsx';
 import OrderButton from '../OrderButton.jsx';
 import { SkeletonCards } from '../Skeleton.jsx';
-import { getMenu, groupByCategory, MENU_CATEGORY_LABELS, MENU_CATEGORY_ORDER } from '../../lib/menuService.js';
+import ProductCard from '../ProductCard.jsx';
+import {
+  getMenu, groupByCategory, hasProductPhotos,
+  DIETARY_LABELS, MENU_CATEGORY_LABELS, MENU_CATEGORY_ORDER,
+} from '../../lib/menuService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 import { track } from '../../lib/analytics.js';
-
-const DIETARY_LABELS = { 'gluten-free': 'GF', vegan: 'VG', vegetarian: 'V', 'dairy-free': 'DF' };
 
 /* URL-hash → category tab: /menu#specials lands on the Specialty tab (the
    homepage "Current Drink Specials" link), and any exact category key works
@@ -21,9 +23,20 @@ function catFromHash(hash, allowed) {
 }
 
 /* Category-tabbed menu with dietary filters. Reads through menuService.getMenu()
-   (single swap-point for a future SpotOn sync). */
+   (single swap-point for a future SpotOn sync).
+
+   Two ways to draw an item, and the SAME ProductCard the homepage teaser uses
+   for the card one, so a drink featured on the landing page and the same drink
+   here are visibly the same product:
+
+     list   the classic price list — name, leader dots, price. Right when the
+            menu is words only, and the fastest thing to scan on a phone.
+     cards  photo cards in vintage frames. Right once items have pictures.
+     auto   (default) cards as soon as ANY item carries a photo, list until
+            then — so the menu upgrades itself the day the shop's SpotOn menu
+            gets photography, with nothing for the owner to switch on. */
 export default function MenuBlock({ data = {} }) {
-  const { heading = 'The Menu', categories } = data;
+  const { heading = 'The Menu', categories, layout = 'auto' } = data;
   const allowedCats = useMemo(() => (categories?.length ? categories : MENU_CATEGORY_ORDER), [categories]);
   const [items, setItems] = useState(null);
   const [activeCat, setActiveCat] = useState(() => catFromHash(window.location.hash, categories?.length ? categories : MENU_CATEGORY_ORDER) ?? 'all');
@@ -74,6 +87,7 @@ export default function MenuBlock({ data = {} }) {
   }, [items, diet]);
 
   const groups = groupByCategory(filtered, allowedCats);
+  const asCards = layout === 'cards' || (layout === 'auto' && hasProductPhotos(items));
   const visibleCats = activeCat === 'all' ? Object.keys(groups) : [activeCat].filter((c) => groups[c]);
 
   function toggleDiet(flag) {
@@ -129,26 +143,32 @@ export default function MenuBlock({ data = {} }) {
           visibleCats.map((cat) => (
             <div key={cat} className="menu-category">
               <h3 className="menu-category__title">{MENU_CATEGORY_LABELS[cat] || cat}</h3>
-              <ul className="menu-list">
-                {groups[cat].map((item) => (
-                  <li key={item.id} className="menu-item">
-                    {item.image_url && <img className="menu-item__img" src={item.image_url} alt="" loading="lazy" />}
-                    <div className="menu-item__main">
-                      <div className="menu-item__head">
-                        <span className="menu-item__name">
-                          {item.name}
-                          {(item.dietary_flags || []).map((f) => (
-                            <span key={f} className="menu-item__flag" title={f}>{DIETARY_LABELS[f] || f}</span>
-                          ))}
-                        </span>
-                        <span className="menu-item__dots" aria-hidden="true" />
-                        {item.price != null && <span className="menu-item__price">${Number(item.price).toFixed(2)}</span>}
+              {asCards ? (
+                <div className="products products--menu">
+                  {groups[cat].map((item, i) => <ProductCard key={item.id} item={item} index={i} />)}
+                </div>
+              ) : (
+                <ul className="menu-list">
+                  {groups[cat].map((item) => (
+                    <li key={item.id} className="menu-item">
+                      {item.image_url && <img className="menu-item__img" src={item.image_url} alt="" loading="lazy" />}
+                      <div className="menu-item__main">
+                        <div className="menu-item__head">
+                          <span className="menu-item__name">
+                            {item.name}
+                            {(item.dietary_flags || []).map((f) => (
+                              <span key={f} className="menu-item__flag" title={f}>{DIETARY_LABELS[f] || f}</span>
+                            ))}
+                          </span>
+                          <span className="menu-item__dots" aria-hidden="true" />
+                          {item.price != null && <span className="menu-item__price">${Number(item.price).toFixed(2)}</span>}
+                        </div>
+                        {item.description && <p className="menu-item__desc">{item.description}</p>}
                       </div>
-                      {item.description && <p className="menu-item__desc">{item.description}</p>}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))
         )}

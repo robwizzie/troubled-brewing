@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, Hint } from '../components/ui.jsx';
 
@@ -18,7 +19,9 @@ export default function GoogleProfileSettings() {
     setPlaceId(data?.place_id || '');
     setMapsUrl(data?.maps_url || '');
   }
-  useEffect(() => { load().catch(() => toast('Could not load profile', 'error')); /* eslint-disable-next-line */ }, []);
+  // load-once on mount: `load` and `toast` are new identities every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load().catch(() => toast('Could not load profile', 'error')); }, []);
 
   async function saveSettings() {
     try {
@@ -77,7 +80,13 @@ export default function GoogleProfileSettings() {
           <li><span>Address</span><strong>{profile.formatted_address || '—'}</strong></li>
           <li><span>Last refreshed</span><strong>{profile.fetched_at ? new Date(profile.fetched_at).toLocaleString() : '—'}</strong></li>
         </ul>
-        <p className="field__hint">Google returns its 5 most relevant reviews per refresh (an API cap); each refresh adds unseen ones to the site’s library, so it grows over time. Only 4★+ are shown. Hand-picked <a href="/admin/testimonials">Testimonials</a> are optional and appear above the Google feed.</p>
+        <p className="field__hint">
+          Google returns its 5 most relevant reviews per refresh (an API cap); each refresh adds
+          unseen ones to the site’s library, so it grows over time. Choose which of them show —
+          the star minimum, hiding one, featuring one, attaching its photo — in{' '}
+          <Link to="/admin/reviews">Reviews</Link>. Hand-picked{' '}
+          <Link to="/admin/testimonials">quotes</Link> are optional and appear above the Google feed.
+        </p>
       </section>
     </div>
   );
