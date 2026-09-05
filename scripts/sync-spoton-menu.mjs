@@ -15,13 +15,16 @@
      2. Detect the menu STRUCTURALLY — any objects with a name and an array of
         {name, price}-looking children count as categories — so a SpotOn
         frontend redesign doesn't silently break us as long as the data flows.
-     3. Map SpotOn categories onto the site's buckets (espresso / specialty /
+     3. Sized drinks keep their pricing behind a per-item detail fetch, so the
+        rendered pass also OPENS those item cards and harvests the payloads —
+        each drink gets its smallest-size price, and photos come along.
+     4. Map SpotOn categories onto the site's buckets (espresso / specialty /
         food / pastry / seasonal) and merge into Supabase `menu_items`:
           - names, prices, categories, availability, order → SpotOn wins
-          - owner-written descriptions, photos, dietary tags → owners win
-            (SpotOn descriptions only fill EMPTY ones; flags only on inserts)
+          - owner-written descriptions + photos, dietary tags → owners win
+            (SpotOn text/photos only fill EMPTY fields; flags only on inserts)
           - items that left SpotOn are hidden (available=false), never deleted
-     4. Write src/data/spoton-menu.json — the bundled fallback menu — so the
+     5. Write src/data/spoton-menu.json — the bundled fallback menu — so the
         no-Supabase build tracks SpotOn too (the workflow commits it).
 
    Run by .github/workflows/spoton-menu-sync.yml (daily + manual). Env:
@@ -194,6 +197,11 @@ function balancedString(str, i) {
 /* ----------------------------- menu detection ------------------------------ */
 
 const NAME_KEYS = ['name', 'title', 'displayName', 'display_name', 'itemName', 'label'];
+const IMAGE_KEYS = [
+  'imageUrl', 'image_url', 'imageUri', 'image_uri', 'image', 'photoUrl', 'photo_url',
+  'photo', 'thumbnailUrl', 'thumbnail_url', 'thumbnail', 'img', 'picture',
+];
+const NESTED_IMAGE_KEYS = [...IMAGE_KEYS, 'url', 'src', 'original', 'large', 'medium'];
 const PRICE_KEYS = [
   'price', 'basePrice', 'base_price', 'priceCents', 'price_cents', 'priceInCents',
   'unitPrice', 'unit_price', 'defaultPrice', 'default_price', 'displayPrice',
@@ -248,6 +256,51 @@ function isItem(o) {
   if (!o || typeof o !== 'object' || Array.isArray(o)) return false;
   if (!strFrom(o, NAME_KEYS)) return false;
   return PRICE_KEYS.some((k) => o[k] != null && asPriceNumber(o[k], /cents/i.test(k)) != null);
+}
+
+/** An item's photo URL, wherever SpotOn nests it. Top level only trusts
+    image-named keys; inside one of those, url/src/size variants count too. */
+function imageOf(o, nested = false) {
+  if (!o || typeof o !== 'object') return null;
+  for (const k of nested ? NESTED_IMAGE_KEYS : IMAGE_KEYS) {
+    const v = o[k];
+    if (typeof v === 'string' && /^https?:\/\//i.test(v.trim())) return v.trim();
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      const found = imageOf(v, true);
+      if (found) return found;
+    }
+  }
+  for (const k of ['images', 'photos', 'media']) {
+    const arr = o[k];
+    if (Array.isArray(arr) && arr.length) {
+      const first = arr[0];
+      if (typeof first === 'string' && /^https?:\/\//i.test(first.trim())) return first.trim();
+      if (first && typeof first === 'object') {
+        const found = imageOf(first, true);
+        if (found) return found;
+      }
+    }
+  }
+  return null;
+}
+
+/** Depth-first hunt for the object whose name matches — used to pull an item's
+    detail payload (sizes, photo) out of a click-triggered response. */
+function findByName(root, name) {
+  const want = norm(name);
+  const seen = new Set();
+  let hit = null;
+  (function walk(node, depth) {
+    if (hit || !node || typeof node !== 'object' || depth > 25 || seen.has(node)) return;
+    seen.add(node);
+    if (Array.isArray(node)) {
+      for (const c of node) walk(c, depth + 1);
+      return;
+    }
+    if (norm(strFrom(node, NAME_KEYS) || '') === want) { hit = node; return; }
+    for (const v of Object.values(node)) walk(v, depth + 1);
+  })(root, 0);
+  return hit;
 }
 
 /* Sized drinks (Hot Latte, Cold Brew, …) carry no item-level price — SpotOn
@@ -363,7 +416,50 @@ async function fetchStatic(url) {
   return res.text();
 }
 
-async function fetchRendered(url) {
+/** Open each named item's card and harvest the detail payload the app fetches
+    for it — that's where SpotOn keeps per-size pricing (and often the photo).
+    Modals get Escape'd; full navigations get goBack()'d. Best-effort per item. */
+async function clickForDetails(page, netBlobs, wantedNames) {
+  const priceByName = new Map();
+  const imageByName = new Map();
+  let opened = 0;
+  for (const name of wantedNames.slice(0, 40)) {
+    const start = netBlobs.length;
+    const beforeUrl = page.url();
+    try {
+      const target = page.getByText(name, { exact: true }).first();
+      await target.scrollIntoViewIfNeeded({ timeout: 2500 });
+      await target.click({ timeout: 2500 });
+    } catch {
+      continue;
+    }
+    opened++;
+    await page.waitForTimeout(1300);
+    for (const blob of netBlobs.slice(start).map((b) => tryParse(b.text)).filter(Boolean)) {
+      const scope = findByName(blob, name) || blob;
+      const key = norm(name);
+      if (!priceByName.has(key)) {
+        const p = priceOf(scope) ?? sizeMinPrice(scope);
+        if (p != null) priceByName.set(key, p);
+      }
+      if (!imageByName.has(key)) {
+        const img = imageOf(scope);
+        if (img) imageByName.set(key, img);
+      }
+    }
+    if (page.url() !== beforeUrl) {
+      await page.goBack({ waitUntil: 'domcontentloaded' }).catch(() => {});
+      await page.waitForTimeout(700);
+    } else {
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(250);
+    }
+  }
+  console.log(`detail pass: opened ${opened}/${wantedNames.length} cards → ${priceByName.size} prices, ${imageByName.size} photos`);
+  return { priceByName, imageByName };
+}
+
+async function fetchRendered(url, wantedNames = []) {
   let chromium;
   try {
     ({ chromium } = await import('playwright-core'));
@@ -401,7 +497,17 @@ async function fetchRendered(url) {
     }
     const html = await page.content();
     const bodyText = await page.evaluate(() => document.body.innerText).catch(() => '');
-    return { html, netBlobs, bodyText };
+    // menu detection must only see the page's own payloads — the detail pass
+    // below adds modifier/option payloads that would leak junk "items"
+    const menuBlobs = netBlobs.slice();
+    let details = null;
+    if (wantedNames.length) {
+      details = await clickForDetails(page, netBlobs, wantedNames).catch((e) => {
+        console.warn(`detail pass failed: ${e.message}`);
+        return null;
+      });
+    }
+    return { html, netBlobs: menuBlobs, bodyText, details };
   } finally {
     await browser.close().catch(() => {});
   }
@@ -445,6 +551,8 @@ function planMerge(existing, scraped) {
       if ((row.available !== false) !== s.available) patch.available = s.available;
       if ((row.display_order ?? -1) !== order) patch.display_order = order;
       if ((!row.description || !String(row.description).trim()) && s.description) patch.description = s.description;
+      // SpotOn photos only fill in where the owner hasn't uploaded one
+      if (!row.image_url && s.image) patch.image_url = s.image;
       if (Object.keys(patch).length) ops.update.push({ id: row.id, name: row.name, patch });
     } else {
       ops.insert.push({
@@ -453,6 +561,7 @@ function planMerge(existing, scraped) {
         price: s.price,
         category: s.category,
         dietary_flags: inferFlags(`${s.name} ${s.description || ''}`),
+        image_url: s.image || null,
         available: s.available,
         display_order: order,
         status: 'published',
@@ -489,6 +598,7 @@ async function writeSnapshot(rows, scraped, categories) {
       category: r.category,
       spoton_category: spotonCatByName.get(norm(r.name)) ?? null,
       dietary_flags: r.dietary_flags || [],
+      image_url: r.image_url || null,
       available: r.available !== false,
       display_order: r.display_order ?? 0,
     }));
@@ -534,11 +644,18 @@ async function main() {
 
   let rendered = null;
   const count = cats.reduce((n, c) => n + c.items.length, 0);
-  if (count < MIN_ITEMS || pricedShare(cats) < 0.75) {
+  if (count < MIN_ITEMS || pricedShare(cats) < 0.9) {
+    // sized drinks keep their prices behind a per-item detail fetch — open
+    // those cards in the browser and harvest the payloads
+    const wanted = cats
+      .flatMap((c) => c.items)
+      .filter((i) => priceOf(i) == null && sizeMinPrice(i) == null)
+      .map((i) => strFrom(i, NAME_KEYS))
+      .filter(Boolean);
     console.log(count < MIN_ITEMS
       ? 'menu not in static HTML — rendering with headless Chrome…'
-      : `only ${Math.round(pricedShare(cats) * 100)}% of items carry prices — trying a rendered pass for size pricing…`);
-    rendered = await fetchRendered(ORDER_URL);
+      : `${Math.round(pricedShare(cats) * 100)}% of items carry prices — rendering to fetch ${wanted.length} item detail(s)…`);
+    rendered = await fetchRendered(ORDER_URL, wanted);
     if (rendered) {
       const netParsed = rendered.netBlobs.map((b) => tryParse(b.text)).filter(Boolean);
       console.log(`rendered fetch: ${rendered.netBlobs.length} JSON response(s) captured`);
@@ -548,6 +665,7 @@ async function main() {
       if (mergedCount >= count && pricedShare(merged) >= pricedShare(cats)) cats = merged;
     }
   }
+  const details = rendered?.details || null;
 
   const total = cats.reduce((n, c) => n + c.items.length, 0);
   if (total < MIN_ITEMS) {
@@ -570,10 +688,14 @@ async function main() {
     for (const raw of c.items) {
       const name = strFrom(raw, NAME_KEYS);
       if (!name) continue;
+      // modifier rows dress like items ("w/ [Tuscan Butter]", "* [Gridled]") —
+      // real menu names start with a letter/number and don't bracket-tag
+      if (!/^[a-z0-9"'¡!]/i.test(name) || /\[.+\]/.test(name)) continue;
       scraped.push({
         name,
         description: (strFrom(raw, DESC_KEYS, 800) || '').trim(),
-        price: priceOf(raw) ?? sizeMinPrice(raw),
+        price: priceOf(raw) ?? sizeMinPrice(raw) ?? details?.priceByName.get(norm(name)) ?? null,
+        image: imageOf(raw) ?? details?.imageByName.get(norm(name)) ?? null,
         category: bucketFor(c.category, name),
         spoton_category: c.category,
         available: availOf(raw),
@@ -581,7 +703,8 @@ async function main() {
     }
   }
   const sized = scraped.filter((s) => s.price != null).length;
-  console.log(`${sized}/${scraped.length} items carry a price (sized drinks show their smallest size when SpotOn nests it)`);
+  const pictured = scraped.filter((s) => s.image).length;
+  console.log(`${sized}/${scraped.length} items carry a price (sized drinks show their smallest size), ${pictured} carry a photo`);
   console.log('\ndetected menu:');
   for (const c of categories) console.log(`  ${c.spoton} → ${c.site} (${c.items} items)`);
 
