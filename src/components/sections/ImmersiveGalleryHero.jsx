@@ -18,13 +18,12 @@ import {
    the Stay-in-the-Know signup. Overlay geometry is % of the scene and type is
    sized in cqw, so everything scales as one piece of art.
 
-   THE ARTWORK IN THE FRAMES IS THE SHOP'S OWN. The scene ships with painted
-   pictures in its frames; those are a placeholder, not the point. Each frame's
-   hotspot box was tuned to hug its molding, so the shop's real photograph
-   drops straight into it and covers the painted one — the room stays, the art
-   becomes theirs, and it happens frame by frame as photos arrive. Owners can
-   turn that off (`igh_real_art`) to see the room as painted. Real artists made
-   the pieces hanging in the real shop, and this is how they get onto the page.
+   The pictures inside the scene's frames belong to the SCENE — the site draws
+   nothing over them. An earlier pass hung the shop's photographs inside each
+   painted frame; the artwork in the room is edited in the artwork itself now,
+   so what the owner exports is exactly what ships. `igh_scene_image_url` swaps
+   the room from the editor, so a re-cut scene is an upload rather than a
+   commit.
 
    Under 1020px the wall RE-HANGS ITSELF for phones — not as a menu of plaques,
    but as a real salon hang: the scene becomes a banner and every destination
@@ -69,40 +68,6 @@ function KnowForm({ idSuffix, action }) {
         <button type="submit" aria-label="Subscribe">→</button>
       </div>
     </form>
-  );
-}
-
-/* One frame on the scene: the hotspot, the shop's photograph hung inside it,
-   and the brass nameplate riding its bottom molding.
-
-   The photograph fills the piece's measured picture window (`art`), not the
-   hotspot box — the box hugs the OUTSIDE of the molding and several carry a
-   little wall at one edge to give the nameplate room, so a photo filling it
-   would sit on the frame rather than in it. A photo that fails to load simply
-   isn't rendered, and the scene's painted picture shows through rather than
-   leaving a hole. */
-function SceneFrame({ piece, showArt }) {
-  const [failed, setFailed] = useState(false);
-  const art = showArt && piece.img && !failed;
-  const [t, r, b, l] = piece.art || [5, 5, 5, 5];
-  return (
-    <Link
-      className={`ig2-frame${piece.round ? ' ig2-frame--round' : ''}`}
-      to={piece.to}
-      style={{ ...box(piece), '--art-t': `${t}%`, '--art-r': `${r}%`, '--art-b': `${b}%`, '--art-l': `${l}%` }}
-    >
-      {art && (
-        <img
-          className="ig2-frame__art"
-          src={asset(piece.img)}
-          alt=""
-          loading="eager"
-          decoding="async"
-          onError={() => setFailed(true)}
-        />
-      )}
-      <span className="ig2-frame__label">{piece.label}&nbsp;<b aria-hidden="true">→</b></span>
-    </Link>
   );
 }
 
@@ -181,7 +146,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
     igh_special_text: specialText = 'Honey Almond Latte',
     igh_mailchimp_action_url: mailchimpUrl,
     igh_wall_heading: wallHeading = 'Have a look around',
-    igh_real_art: realArt = true,
+    igh_scene_image_url: sceneImage,
     igh_pieces: pieceOverrides,
     specials_link: specialsLink = '/menu#specials',
   } = data;
@@ -189,6 +154,9 @@ export default function ImmersiveGalleryHero({ data = {} }) {
   // the wall the owner actually configured (built-in geometry + their labels,
   // links, photographs and moldings)
   const pieces = mergeWallPieces(pieceOverrides);
+  // the room itself — swappable, so a re-cut scene can be uploaded in the
+  // editor instead of committed to the repo
+  const scene = sceneImage || asset(SCENE);
 
   useLayoutEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -331,7 +299,7 @@ export default function ImmersiveGalleryHero({ data = {} }) {
               and lands on the element. Revisit when React is upgraded. */}
           <img
             className="ig2-scene__img"
-            src={asset(SCENE)}
+            src={scene}
             alt="The Trouble Brewing gallery wall over the coffee counter"
             fetchpriority="high"
             decoding="async"
@@ -340,7 +308,16 @@ export default function ImmersiveGalleryHero({ data = {} }) {
           {brand}
 
           <nav className="ig2-links" aria-label="Explore Trouble Brewing">
-            {pieces.map((f) => <SceneFrame key={f.id} piece={f} showArt={realArt !== false} />)}
+            {pieces.map((f) => (
+              <Link
+                key={f.id}
+                className={`ig2-frame${f.round ? ' ig2-frame--round' : ''}`}
+                to={f.to}
+                style={box(f)}
+              >
+                <span className="ig2-frame__label">{f.label}&nbsp;<b aria-hidden="true">→</b></span>
+              </Link>
+            ))}
             {/* the artwork's own painted menu board gets a silent hotspot */}
             <Link className="ig2-frame" to="/menu" style={box({ x: 80.3, y: 33.0, w: 5.1, h: 11.1 })} aria-label="Menu — coffee, pastries, sandwiches" />
           </nav>

@@ -84,39 +84,6 @@
 .ig2-frame--round { border-radius: 50%; }
 .ig2-frame:focus-visible { outline: none; }
 
-/* THE SHOP'S OWN ARTWORK, hung in the scene's frames.
-
-   The scene ships with painted pictures in its frames. Those are a
-   placeholder: real artists made the work hanging in the real shop, and this
-   is how it gets onto the page — each hotspot box was measured to hug its
-   molding, so the shop's photograph drops straight in and covers what was
-   painted there, one frame at a time as photos arrive.
-
-   The inset pulls the photo INSIDE the molding — the boxes were measured to
-   the outside of it, so an image filling the box edge-to-edge would sit on the
-   frame rather than in it; a hair more on the round one, where the corners cut
-   deepest. `cover` because the shop's photos aren't cut to the scene's aspect
-   ratios, and at this size on screen a centre crop always reads. The inner
-   line is the glass-and-rebate shadow that keeps a flat photo from looking
-   pasted on. */
-.ig2-frame__art {
-  position: absolute;
-  /* Width and height are set EXPLICITLY, not left to `inset` alone: an
-     absolutely positioned replaced element with auto width resolves to its
-     INTRINSIC size and ignores the over-constrained insets, so every photo
-     rendered at full pixel size anchored to its frame's top-left corner and
-     spilled across the wall. The four `--art-*` values are the piece's picture
-     window, measured off the artwork frame by frame (src/lib/wallPieces.js);
-     a single shared inset put photos over the moldings on half the wall. */
-  top: var(--art-t, 5%);
-  left: var(--art-l, 5%);
-  width: calc(100% - var(--art-l, 5%) - var(--art-r, 5%));
-  height: calc(100% - var(--art-t, 5%) - var(--art-b, 5%));
-  object-fit: cover;
-  box-shadow: inset 0 0 0 1px rgba(24, 18, 6, .45), 0 0 .5em rgba(0, 0, 0, .35);
-}
-.ig2-frame--round .ig2-frame__art { border-radius: 50%; }
-
 /* each label is a little brass nameplate riding the frame's bottom molding —
    it reads as a button at rest, not a caption */
 .ig2-frame__label {
