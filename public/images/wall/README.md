@@ -42,32 +42,23 @@ still uses `our-story-so-far.jpg` — only the on-screen labels changed, so you 
 
 ## The Immersive Gallery scene (`immersive-scene.jpg`)
 
-The homepage uses one **café scene** as its canvas — all lettering, frame
-labels, the chalkboard, notes and the signup panel are live HTML drawn over it,
-so the copy stays editable and scales with the image.
+The homepage uses one **café scene** as its canvas. The lettering, the frame
+labels, the chalkboard, the taped note and the signup panel are live HTML drawn
+over it, so that copy stays editable and scales with the image — but **the
+pictures inside the frames are part of the image itself**. Nothing is drawn
+over them. To change what hangs in the room, edit the artwork and re-export it.
 
-**The pictures in its frames are yours.** The scene was drawn with placeholder
-artwork in the frames; the site hangs your own photographs over them, one frame
-at a time as you add them. The eight photos listed above are what's in there
-now, and every one of them is editable in the admin under **Edit your site →
-the hero → "The pictures on your wall"** — swap the photo, rename the label,
-point it somewhere else, or change its frame. Uploads there win over the files
-in this folder.
-
-- The file here is **`immersive-scene.jpg`**, **1536×1024** (3:2). Export a new
-  one from the same composition if the artwork is refreshed.
-- If the scene is ever **re-generated with the frames moved**, both the hotspot
-  boxes and the measured picture windows in `src/lib/wallPieces.js`
-  (`x/y/w/h` and `art`) need re-measuring to match.
-- The frame still waiting on a photo is **Visit Us**. Save a storefront /
-  "find us" shot here as **`location.jpg`** (landscape, subject centred) and it
-  hangs like the rest. Until then it shows the scene's own painted picture on
-  desktop, and a little chalk address sign on a phone.
+- The file here is **`immersive-scene.jpg`**, **1536×1024** (3:2). Keep that
+  size and ratio when you re-export, or the labels drift off their frames.
+- You don't have to commit a new one: **Edit your site → the hero → "Header
+  image"** uploads a replacement, which wins over this file.
+- If the scene is ever re-cut with the **frames in different places**, the
+  hotspot boxes in `src/lib/wallPieces.js` (`x/y/w/h`) need re-tuning to match.
 - Under 1020px the scene becomes a backdrop banner and the wall **re-hangs
-  itself below it** as a salon hang of these same photographs — every
-  destination a real framed picture with a brass nameplate. So these files are
-  what phone visitors actually see.
+  itself below it** as a salon hang of the photographs listed above — every
+  destination a real framed picture with a brass nameplate. So those files are
+  what phone visitors actually see, and **`location.jpg`** is the one still
+  missing (Visit Us falls back to a chalk address sign until you add it).
 - The scene file is the **largest asset on the site** and every phone downloads
-  it. When you re-export the artwork, keep it around **1536px** on the long edge
-  and aim for **under ~400 KB** — the current file is ~2.4 MB, which is the one
-  real drag on mobile load time.
+  it. When you re-export, aim for **under ~400 KB** — the current file is
+  ~2.4 MB, which is the one real drag on mobile load time.
