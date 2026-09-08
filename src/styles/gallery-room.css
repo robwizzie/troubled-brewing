@@ -1,0 +1,411 @@
+/* =============================================================================
+   THE GALLERY WALL ROOM  (.gwr — src/components/sections/GalleryWallRoom.jsx)
+
+   The shop's photograph of its own wall, hung as a room you walk around in.
+   Everything below serves one move: the photograph and its hotspots are a
+   single transformed layer, and choosing a piece pans and magnifies that layer
+   while a spotlight closes around the frame.
+
+   Two rules keep it honest at any zoom:
+     • only `.gwr__art` is transformed — every hotspot is its child, so nothing
+       can drift off its frame;
+     • anything that must stay a readable SIZE (the nameplate, the spotlight's
+       gold ring) divides by `--gwr-scale`, which the component sets alongside
+       the transform.
+   ========================================================================== */
+
+.gwr__head { margin-bottom: var(--space-5); }
+
+/* ---- the room ------------------------------------------------------------ */
+
+/* The photograph is very nearly square, so at full container width the room
+   would stand a thousand pixels tall. The width is capped by what a screen's
+   HEIGHT can show at once — never by setting a height, which would break the
+   ratio the pan math depends on, but by shrinking the width until the ratio
+   puts the whole room on screen. The checklist underneath shares that width,
+   so the two read as one hang rather than a picture with a page-wide list
+   loose beneath it. The card is positioned against `.gwr__room`, so it can
+   hang inside the room on a wide screen and drop below it on a phone without
+   moving in the markup. */
+.gwr__body {
+  width: min(100%, calc(var(--gwr-ratio, 1) * min(74vh, 780px)));
+  margin-inline: auto;
+}
+
+.gwr__room { position: relative; }
+
+.gwr__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--gwr-ratio, 1);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  /* the colour the wall itself becomes under the spotlight's shadow, so a
+     zoom that pans past the edge of the photograph shows no seam */
+  background: #262619;
+  box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255, 253, 247, 0.08);
+  isolation: isolate;
+  /* the room is a picture of a room: no scrollbars, no rubber-banding */
+  touch-action: manipulation;
+}
+
+/* The photograph plus every hotspot, as one transformed plane. Width 100% of
+   the stage makes translate percentages resolve against the photograph's own
+   box, which is what makes the pan math in galleryWall.js pixel-free. */
+.gwr__art {
+  position: absolute;
+  inset: 0 0 auto 0;
+  width: 100%;
+  transform-origin: 0 0;
+  will-change: transform;
+  transition: transform 900ms cubic-bezier(0.22, 0.9, 0.24, 1);
+}
+
+.gwr__photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* a hair of warmth as the room magnifies, so a soft enlargement reads as
+     candlelight rather than a stretched JPEG */
+  transition: filter var(--dur-slow) var(--ease);
+}
+.gwr--open .gwr__photo { filter: saturate(1.06) contrast(1.04); }
+
+/* ---- a piece on the wall ------------------------------------------------- */
+
+.gwr__spot {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 3px;
+  cursor: zoom-in;
+  -webkit-tap-highlight-color: transparent;
+}
+.gwr__spot--oval { border-radius: 50%; }
+
+/* the hover ring is drawn INSIDE the box so it hugs the molding rather than
+   spilling onto the neighbouring frame */
+.gwr__spot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 0 rgba(247, 220, 140, 0);
+  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 243, 205, 0.26), rgba(255, 243, 205, 0) 62%);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.gwr__spot:hover::after,
+.gwr__spot:focus-visible::after {
+  opacity: 1;
+  box-shadow: inset 0 0 0 2px rgba(247, 220, 140, 0.95);
+}
+.gwr__spot:focus-visible { outline: none; }
+.gwr--open .gwr__spot { cursor: default; }
+
+/* The engraved nameplate, same brass as the rest of the site's frames. It
+   counter-scales so a label reads the same at 1× and at 3×. */
+.gwr__plate {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(var(--plate-x, -50%), var(--plate-y, 130%)) scale(calc(1 / var(--gwr-scale, 1)));
+  transform-origin: var(--plate-ox, 50%) var(--plate-oy, 0%);
+  padding: 0.28em 0.7em;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f3dc9f, #d8b662 58%, #b58a2e);
+  color: #2a2114;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease);
+}
+/* hung low on the wall: the plate goes above the frame instead of off the
+   bottom of the stage */
+.gwr__plate--above { top: 0; bottom: auto; --plate-y: -130%; --plate-oy: 100%; }
+/* hung near the right-hand edge: the plate hangs back from the frame's right
+   corner rather than off the side */
+.gwr__plate--right { left: auto; right: 0; --plate-x: 0%; --plate-ox: 100%; }
+
+.gwr__spot:hover .gwr__plate,
+.gwr__spot:focus-visible .gwr__plate { opacity: 1; }
+.gwr--open .gwr__plate { opacity: 0 !important; }
+
+/* Touch has no hover, so the wall shows where its pieces are: a small brass
+   stud on each frame, breathing gently. */
+@media (hover: none) {
+  .gwr__spot::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background: rgba(250, 235, 190, 0.92);
+    box-shadow: 0 0 0 3px rgba(40, 32, 20, 0.35), 0 0 10px rgba(255, 236, 178, 0.7);
+    animation: gwr-stud 3.4s ease-in-out infinite;
+  }
+  .gwr--open .gwr__spot::before { opacity: 0; }
+}
+@keyframes gwr-stud {
+  0%, 100% { transform: scale(1); opacity: 0.75; }
+  50% { transform: scale(1.28); opacity: 1; }
+}
+
+/* ---- the spotlight ------------------------------------------------------- */
+
+/* One box on the chosen frame whose shadow swallows the rest of the room. It
+   rides inside the art layer, so it tracks the frame through the whole move —
+   and its ring divides by the scale to stay a hairline. */
+.gwr__spotlight {
+  position: absolute;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow:
+    0 0 0 calc(2px / var(--gwr-scale, 1)) rgba(247, 220, 140, 0.85),
+    0 0 calc(30px / var(--gwr-scale, 1)) calc(6px / var(--gwr-scale, 1)) rgba(255, 226, 160, 0.28),
+    0 0 0 100vmax rgba(16, 13, 10, 0.82);
+  animation: gwr-lightup var(--dur-slow) var(--ease) both;
+}
+.gwr__spotlight--oval { border-radius: 50%; }
+@keyframes gwr-lightup {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---- back to the wall ---------------------------------------------------- */
+
+.gwr__dismiss {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: zoom-out;
+}
+.gwr__dismiss:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -4px; }
+
+/* ---- the standing invitation --------------------------------------------- */
+
+.gwr__hint {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-4);
+  transform: translateX(-50%);
+  z-index: 3;
+  margin: 0;
+  padding: 0.5em 1.1em;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 17, 13, 0.72);
+  backdrop-filter: blur(6px);
+  color: #f6efdf;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* ---- the card ------------------------------------------------------------ */
+
+.gwr-card {
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: linear-gradient(180deg, var(--color-paper), var(--color-cream));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(43, 36, 26, 0.14);
+  padding: var(--space-4);
+  /* the card holds its shape; only its body scrolls, so the buttons never get
+     pushed off the bottom of a long story */
+  overflow: hidden;
+  animation: gwr-card-in var(--dur-slow) var(--ease) both;
+}
+
+/* wide: a plate hung inside the room, on its right-hand third */
+@media (min-width: 860px) {
+  .gwr-card {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    bottom: var(--space-4);
+    width: min(360px, 42%);
+  }
+}
+/* Narrow: the card leaves the room and sits under it in the page. A sheet over
+   the bottom half of a square stage would leave a strip too short to magnify a
+   portrait into — dropping the card out gives the piece the whole stage, which
+   is the difference between a phone zooming in and a phone pretending to. */
+@media (max-width: 859px) {
+  .gwr-card { margin-top: var(--space-3); }
+}
+
+@keyframes gwr-card-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gwr-card__media {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+}
+.gwr-card__photo,
+.gwr-card__crop {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 190px;
+  border-radius: 3px;
+  background-color: #2a2419;
+  box-shadow: var(--shadow-frame), 0 0 0 4px #1d1913, 0 0 0 6px rgba(214, 180, 106, 0.75);
+}
+.gwr-card__crop {
+  /* sized by aspect-ratio + max-height: the box lands near the piece's real
+     pixel footprint in the source, which is the size it stays sharp at */
+  height: 140px;
+  background-repeat: no-repeat;
+}
+@media (max-width: 859px) {
+  .gwr-card__photo, .gwr-card__crop { max-height: 128px; }
+  .gwr-card__crop { height: 128px; }
+}
+
+.gwr-card__body { flex: 1 1 auto; min-height: 0; overflow: auto; }
+
+.gwr-card__eyebrow {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-text);
+}
+.gwr-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.15;
+}
+.gwr-card__artist {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+.gwr-card__artist a { color: var(--color-pink-deep); }
+.gwr-card__credits {
+  margin: 2px 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-soft);
+}
+.gwr-card__blurb { margin: var(--space-3) 0 0; }
+.gwr-card__story { margin: var(--space-3) 0 0; }
+.gwr-card__untold {
+  margin: var(--space-3) 0 0;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--color-accent);
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-soft);
+}
+.gwr-card__sale {
+  margin: var(--space-3) 0 0;
+  font-weight: 600;
+  color: var(--color-pink-deep);
+}
+
+.gwr-card__nav {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+.gwr-card__step,
+.gwr-card__back {
+  font-family: var(--font-body);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.gwr-card__step {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+.gwr-card__back {
+  flex: 1 1 auto;
+  padding: 0.6em 1em;
+  font-weight: 600;
+  background: var(--color-accent);
+  border-color: var(--color-yellow-deep);
+  color: var(--color-on-accent);
+}
+.gwr-card__step:hover { background: var(--color-surface-alt); }
+.gwr-card__back:hover { background: var(--color-accent-hover); }
+
+/* ---- the index ----------------------------------------------------------- */
+
+/* The same collection as prose, under the room. It is the accessible path
+   through the wall, and it reads as a gallery checklist rather than an
+   apology for one. */
+.gwr__index {
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1) var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+}
+.gwr__index-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+  font-size: var(--text-sm);
+}
+.gwr__index-link {
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+}
+.gwr__index-link:hover,
+.gwr__index-link.is-open { border-bottom-color: var(--color-accent); }
+.gwr__index-artist { color: var(--color-text-soft); }
+.gwr__index-artist::before { content: '— '; }
+
+/* ---- reduced motion ------------------------------------------------------ */
+
+/* The global rule in tokens.css already flattens transitions; these are the
+   two effects that exist only to move, so they stop existing. */
+@media (prefers-reduced-motion: reduce) {
+  .gwr__art { transition: none; }
+  .gwr__spot::before { animation: none; }
+}

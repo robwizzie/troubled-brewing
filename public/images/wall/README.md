@@ -9,7 +9,7 @@ tasteful labelled "poster" — nothing ever looks broken.
 |---|---|---|
 | `order-menu.jpg` | **Order / Menu** — tall portrait, grand carved gold | A signature **iced drink** shot — the pink→red ombre refresher in the branded *Trouble Brewing* glass, or the Banana-Split iced coffee (DRINKS). Vertical. |
 | `troublemakers.jpg` | **The Troublemakers** — square, black + white mat (with a layered second frame) | A **barista at work** — the latte-art pour / steaming milk at the espresso bar (DRINKS). Centered. |
-| `gallery-wall.jpg` | **The Gallery Wall** — tall portrait, woven gold tapestry | A **portrait shot of the real green gallery wall** of frames (INTERIOR). Vertical. |
+| `gallery-wall.jpg` | **The Gallery Wall** — tall portrait, woven gold tapestry | A **portrait shot of the real green gallery wall** of frames (INTERIOR). Vertical. ⚠️ **Don't swap this one casually** — see the note at the bottom. |
 | `whats-on.jpg` | **Events** — tall **oval**, black Victorian | The **cookie dipped into the latte** in the yellow cup (DRINKS). Subject centered. |
 | `our-story-so-far.jpg` | **The Journey** — wide landscape, antique carved bronze | A **wide interior** — the room with tin ceiling + plants, or the storefront / floor logo (INTERIOR). Horizontal. |
 | `local-love.jpg` | **Local Love** — wide landscape, gold + cream mat (was an oval — a rectangle shows MORE of this photo, so no re-crop needed) | **Two people toasting** with the dark branded mugs (DRINKS). Subjects centered. |
@@ -62,3 +62,24 @@ over them. To change what hangs in the room, edit the artwork and re-export it.
 - The scene file is the **largest asset on the site** and every phone downloads
   it. When you re-export, aim for **under ~400 KB** — the current file is
   ~2.4 MB, which is the one real drag on mobile load time.
+
+## ⚠️ `gallery-wall.jpg` is doing a second job
+
+That file isn't only the picture inside a frame on the homepage — it's the
+**canvas of the whole `/gallery-wall` page**. Every piece hanging in that
+photograph has a clickable box measured over it, and picking one zooms the
+photo into that frame and tells you about it.
+
+The boxes are percentages of **this exact file** (934×1400), listed in
+`src/lib/galleryWall.js`. So:
+
+- **Replacing it with a different photo of the wall breaks the hotspots** —
+  they'll still be there, just over the wrong pictures. The same is true of
+  the "The wall photo" upload on that page's editor panel, which says so.
+- Re-cropping, rotating, or re-shooting the wall means the boxes need
+  re-measuring in code. Ask for that when you send the new photo.
+- Straight re-exports at the **same crop and the same 934×1400 shape** are
+  fine — a sharper or lighter version of the same framing changes nothing.
+
+If you'd rather the page just showed a different wall with no clickable
+frames, that's a small change too — say the word.

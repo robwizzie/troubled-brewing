@@ -277,6 +277,23 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
     ],
   },
+  gallery_wall_room: {
+    manager: 'gallery',
+    note: 'The photograph of your actual wall, with every frame in it clickable. Pieces you add below can be pinned to a frame in the photo — pick “Where it hangs on the wall photo” on a piece and its artist, story and photo show up when a visitor opens that frame.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2 },
+      { name: 'hint', label: 'Nudge on the photo', type: 'text', hint: 'The little line that floats over the wall until someone opens a piece. Blank = “Pick something off the wall”.' },
+      {
+        name: 'image_url',
+        label: 'The wall photo',
+        type: 'image',
+        preset: 'hero',
+        folder: 'wall',
+        hint: 'Careful: the clickable frames are measured against the photo we ship (public/images/wall/gallery-wall.jpg). A different picture of the wall will still show, but the hotspots will be in the wrong places until they are re-measured in code. Blank uses ours.',
+      },
+    ],
+  },
   gallery_pieces_grid: {
     manager: 'gallery',
     note: 'Every piece of art on your wall, with the artist credited and linked. Add and edit them below — a photo, who made it, and the story behind it.',
