@@ -1,5 +1,6 @@
 import CollectionManager from '../components/CollectionManager.jsx';
 import { FRAME_STYLE_OPTIONS } from '../../lib/frameStyles.js';
+import { WALL_SPOT_OPTIONS } from '../../lib/galleryWall.js';
 
 /* Exported so the on-page editor can embed this collection in its panel. */
 export const GALLERY_COLLECTION = {
@@ -8,7 +9,7 @@ export const GALLERY_COLLECTION = {
   singular: 'piece',
   labelKey: 'title',
   defaultItem: { for_sale: false },
-  summary: (p) => [p.artist && `by ${p.artist}`, p.medium, p.for_sale ? 'for sale' : null].filter(Boolean).join(' · '),
+  summary: (p) => [p.artist && `by ${p.artist}`, p.medium, p.wall_spot ? 'pinned to the wall photo' : null, p.for_sale ? 'for sale' : null].filter(Boolean).join(' · '),
   fields: [
     { name: 'title', label: 'What the piece is called', type: 'text', required: true, hint: 'Its real title if it has one, or a name you use for it — “The Ornate Gold One” is a perfectly good title.' },
     { name: 'image_url', label: 'Photo of the piece', type: 'image', preset: 'card', folder: 'gallery', hint: 'Shoot it straight on in daylight if you can. It gets hung in a frame on the page, so photograph the artwork rather than the wall around it.' },
@@ -30,6 +31,13 @@ export const GALLERY_COLLECTION = {
       hint: 'Pick the molding closest to the real one. Leave it blank and we choose a different frame for each piece so the wall doesn’t look uniform.',
     },
     { name: 'for_sale', label: 'This one is for sale', type: 'checkbox', hint: 'Adds a line inviting people to ask about it.' },
+    {
+      name: 'wall_spot',
+      label: 'Where it hangs on the wall photo',
+      type: 'select',
+      options: WALL_SPOT_OPTIONS,
+      hint: 'Optional, and the best thing on this form: pick the frame in the Gallery Wall photo that this piece actually is, and everything above shows up when a visitor opens that frame. The names are how we describe each frame — “The Rubber Ducks”, “The Gold Fox” — so pick the one that matches. Leave it blank if the piece isn’t in the photo.',
+    },
   ],
 };
 

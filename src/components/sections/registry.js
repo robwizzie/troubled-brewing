@@ -26,6 +26,7 @@ import ImmersiveGalleryHero from './ImmersiveGalleryHero.jsx';
 import WarmStorefrontHero from './WarmStorefrontHero.jsx';
 import CozyEditorialHero from './CozyEditorialHero.jsx';
 import ModernCoffeeHero from './ModernCoffeeHero.jsx';
+import GalleryWallRoom from './GalleryWallRoom.jsx';
 import GalleryPiecesGrid from './GalleryPiecesGrid.jsx';
 import TroublemakersGrid from './TroublemakersGrid.jsx';
 import LocalBusinessesGrid from './LocalBusinessesGrid.jsx';
@@ -58,6 +59,7 @@ export const SECTION_RENDERERS = {
   warm_storefront_hero: WarmStorefrontHero,
   cozy_editorial_hero: CozyEditorialHero,
   modern_coffee_hero: ModernCoffeeHero,
+  gallery_wall_room: GalleryWallRoom,
   gallery_pieces_grid: GalleryPiecesGrid,
   troublemakers_grid: TroublemakersGrid,
   local_businesses_grid: LocalBusinessesGrid,
@@ -90,6 +92,7 @@ export const ADDABLE_SECTION_TYPES = [
   'testimonials_wall',
   'google_reviews_feed',
   'review_cta',
+  'gallery_wall_room',
   'gallery_pieces_grid',
   'troublemakers_grid',
   'local_businesses_grid',
@@ -122,6 +125,7 @@ export const SECTION_LABELS = {
   warm_storefront_hero: 'Warm storefront hero',
   cozy_editorial_hero: 'Cozy editorial hero',
   modern_coffee_hero: 'Modern coffee hero',
+  gallery_wall_room: 'Gallery Wall room (explorable photo)',
   gallery_pieces_grid: 'Gallery pieces',
   troublemakers_grid: 'Troublemakers',
   local_businesses_grid: 'Local businesses',

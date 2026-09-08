@@ -47,6 +47,8 @@ Go to the **Gallery Wall** page, click the collection, press **Manage pieces →
 
 Fill in **Who made it** and **Link for the artist** whenever you know them — the artist's name shows under the piece and links wherever you point it. That credit is the point of that page. You can also note what it is (“Oil on canvas”), roughly when it's from, which frame it hangs in, and whether it's for sale. Everything except the title is optional.
 
+**Put a piece on the wall photo.** The top of that page is a photograph of your actual wall, and every frame in it can be clicked — a visitor picks one, the photo zooms into it, and a card comes up with whatever you've written. The last field on each piece, **Where it hangs on the wall photo**, is what connects the two: choose the frame in the photo that this piece really is (“The Rubber Ducks”, “The Gold Fox”, “Fox on a Bicycle”…) and your artist, credits, story and photo appear when someone opens it. Until you do, that frame just describes itself and says the story isn't written down yet — which is true, and better than making one up. Leave it blank for anything not in the photo.
+
 ### Add a local business to Local Love
 Go to **Local Love**, click the grid, press **Manage Local Love →**.
 
