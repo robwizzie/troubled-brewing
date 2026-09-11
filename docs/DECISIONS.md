@@ -4,6 +4,13 @@ Short record of meaningful decisions and *why*, so settled choices aren't re-lit
 
 ---
 
+**2026-09 — The Gallery Wall page opens ON the wall, not on a grid of it.**
+The page's job is the art in the room, and a masonry grid of cropped thumbnails is a picture of a filing cabinet, not of that room. The new `gallery_wall_room` section hangs the shop's own photograph of the wall and lays a hotspot over each of the nineteen pieces in it; picking one pans and magnifies the photograph toward that frame under a spotlight and raises a card with the credits and the story (arrows walk the wall). The seeded `hero` above it is gone — a photograph of the room is a better opener than a band of type over one, and the room carries its own heading. `gallery_pieces_grid` stays underneath as the catalogue, and a `gallery_pieces` row reaches the wall by claiming a frame with its new `wall_spot` column, so the credits live in one place instead of two.
+
+Three consequences worth knowing. **The geometry is welded to `public/images/wall/gallery-wall.jpg`** (934×1400): boxes in `src/lib/galleryWall.js` are percentages of that file, so a re-shot wall needs re-measuring — the same deal `wallPieces.js` already makes with the homepage scene, and the editor's image field says so. **The zoom is capped** at 3.4×, because the source is 934px wide and a thumb-sized frame blown up past that stops being a photograph; the card's close-up carries the real detail instead. **The pan is clamped vertically but not horizontally** — holding the top edge stops a piece near the ceiling opening a strip of bare stage above the picture rail, while a piece at the right-hand edge can only reach the middle by panning past the edge of the photograph, and by then the room is in shadow, so the overrun reads as the wall running out.
+
+Default copy for the nineteen pieces **describes what is visibly in each frame and nothing more** — no invented artists, no invented provenance. Where a piece has no story yet the card says so and points at the counter, which is honest and sounds like the shop.
+
 **2026-06 — Supabase, not static JSON-in-repo.**
 The owner self-editing requirement is the whole project. Static JSON would force non-technical owners to commit to git to change the menu — unacceptable. Supabase gives a real login-and-edit experience while the public site stays fully static (reads via the RLS-gated anon key). Trade-off: a third-party dependency, mitigated by the bundled `seed.js` fallback.
 

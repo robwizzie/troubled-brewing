@@ -208,6 +208,7 @@ create table if not exists gallery_pieces (
   medium text,                             -- 'Oil on canvas', 'Screen print', 'Photograph'
   year_label text,                         -- flexible: '1970s', '2023', 'Found, undated'
   frame_style text,                        -- a molding from src/lib/frameStyles.js
+  wall_spot text,                          -- pins this piece to a frame in the wall photo (src/lib/galleryWall.js ids)
   for_sale boolean default false,
   display_order int default 0,
   status text not null default 'published',
@@ -295,6 +296,11 @@ alter table testimonials     enable row level security;
 alter table instagram_feed   enable row level security;
 alter table private_secrets  enable row level security;   -- intentionally NO policies (service-role only)
 revoke all on table private_secrets from anon, authenticated; -- belt-and-braces: a future stray policy still can't expose it
+-- Added after the first deploys: pins a catalogued piece to one of the frames
+-- in the Gallery Wall photograph, so opening that frame on /gallery-wall shows
+-- the artist, credits and story. Safe to re-run.
+alter table gallery_pieces add column if not exists wall_spot text;
+
 alter table gallery_pieces   enable row level security;
 alter table team_members     enable row level security;
 alter table local_businesses enable row level security;

@@ -99,8 +99,8 @@ insert into sections (page_slug, type, display_order, data) values
 
 -- GALLERY WALL ------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
-('gallery-wall', 'hero', 0, '{"heading": "The Gallery Wall", "subheading": "Every frame has a story. Some are even true.", "background_image_url": "", "cta_label": "", "cta_url": ""}'),
-('gallery-wall', 'gallery_pieces_grid', 1, '{"heading": "The collection"}');
+('gallery-wall', 'gallery_wall_room', 0, '{"heading": "The Gallery Wall", "intro": "Every frame on this wall arrived some other way — found, gifted, or made by somebody who drinks here. Have a proper look at any of them.", "hint": "Pick something off the wall", "image_url": ""}'),
+('gallery-wall', 'gallery_pieces_grid', 1, '{"heading": "The collection, close up"}');
 
 -- TROUBLEMAKERS -----------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
