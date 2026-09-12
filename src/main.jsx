@@ -7,6 +7,7 @@ import './styles/global.css';
 import './styles/components.css';
 import './styles/sections.css';
 import './styles/immersive-gallery.css';
+import './styles/gallery-room.css';
 
 // React Router must know the deploy subpath so links resolve under it.
 // Vite sets import.meta.env.BASE_URL from `base` (e.g. "/troubled-brewing/").

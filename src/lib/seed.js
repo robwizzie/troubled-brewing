@@ -100,9 +100,14 @@ export const SECTIONS = {
     { type: 'google_reviews_feed', data: { heading: 'Fresh from Google', count: 9 } },
     { type: 'review_cta', data: { heading: 'Been in lately?', body: "We'd love to hear about it.", button_label: 'Leave a review on Google' } },
   ],
+  /* The page opens ON the wall itself — the shop's own photograph, with every
+     frame in it clickable (see GalleryWallRoom.jsx). No hero banner above it:
+     a picture of the room is a better opener than a band of type over it, and
+     the room carries its own heading. The grid underneath is the same
+     collection as a catalogue, for the pieces photographed on their own. */
   'gallery-wall': [
-    { type: 'hero', data: { heading: 'The Gallery Wall', subheading: 'Every frame has a story. Some are even true.', background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'gallery_pieces_grid', data: { heading: 'The collection', intro: 'Real work by real people, most of it found locally. Where we know who made a piece, their name links to them.' } },
+    { type: 'gallery_wall_room', data: { heading: 'The Gallery Wall', intro: 'Every frame on this wall arrived some other way — found, gifted, or made by somebody who drinks here. Have a proper look at any of them.', hint: 'Pick something off the wall', image_url: '' } },
+    { type: 'gallery_pieces_grid', data: { heading: 'The collection, close up', intro: 'The same wall, photographed piece by piece. Where we know who made something, their name links to them.' } },
   ],
   troublemakers: [
     { type: 'hero', data: { heading: 'The Troublemakers', subheading: 'The people behind your coffee.', background_image_url: '', cta_label: '', cta_url: '' } },
@@ -175,8 +180,8 @@ export const TESTIMONIALS = [
    page is the work and the people who made it, so the field is filled in here
    as a prompt rather than left blank. */
 export const GALLERY_PIECES = [
-  { id: 'g-1', title: 'The Ornate Gold One', artist: '', artist_url: '', medium: '', year_label: 'Found, undated', frame_style: 'gilt-grand', for_sale: false, story: "Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it's the unofficial centerpiece of the wall. (Owner: if you know who made it, add them above — the credit is the best part of this page.)", image_url: '', display_order: 0 },
-  { id: 'g-2', title: 'Tiny Oval Mystery', artist: '', artist_url: '', medium: '', year_label: '', frame_style: 'oval-gilt', for_sale: false, story: 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', image_url: '', display_order: 1 },
+  { id: 'g-1', title: 'The Ornate Gold One', artist: '', artist_url: '', medium: '', year_label: 'Found, undated', frame_style: 'gilt-grand', wall_spot: '', for_sale: false, story: "Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it's the unofficial centerpiece of the wall. (Owner: if you know who made it, add them above — the credit is the best part of this page.)", image_url: '', display_order: 0 },
+  { id: 'g-2', title: 'Tiny Oval Mystery', artist: '', artist_url: '', medium: '', year_label: '', frame_style: 'oval-gilt', wall_spot: '', for_sale: false, story: 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', image_url: '', display_order: 1 },
 ];
 
 /* Starter rows the owners replace with the real team. Note `drink`: "what

@@ -12,7 +12,7 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 | 6 | Contact | `/contact` | General + catering inquiry forms | `rich_text` (intro) → contact form → catering form (→ `submissions`) |
 | ~~7~~ | ~~Community~~ | ~~`/community`~~ | **Retired** — folded into Events; the route redirects there | — |
 | 8 | Reviews | `/reviews` | Google rating + curated testimonials + fresh reviews | `reviews_hero` → `testimonials_wall` → `google_reviews_feed` → `review_cta` |
-| 9 | Gallery Wall | `/gallery-wall` | The real framed art, with stories | `hero` → `gallery_pieces_grid` |
+| 9 | Gallery Wall | `/gallery-wall` | The real framed art, with stories | `gallery_wall_room` (the shop's photograph of the wall, every frame in it clickable — choosing one pans and magnifies the photo under a spotlight and raises a card with the credits and story) → `gallery_pieces_grid` (the same collection as a catalogue) |
 | 10 | Troublemakers | `/troublemakers` | The team, bios + fun facts | `hero` → `troublemakers_grid` |
 | 11 | Neighborhood / Local Love | `/neighborhood` | Local businesses they support (community + SEO) | `hero` → `local_businesses_grid` → `cta` |
 | 12 | TB Timeline | `/timeline` | Scrollable timeline of TB milestones (opening day, anniversaries, launches) | `hero` → `timeline_grid` |
