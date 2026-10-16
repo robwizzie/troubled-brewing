@@ -5,6 +5,7 @@ import { getPage, getSections, getContentBlock } from '../lib/dataService.js';
 import SectionRenderer from '../components/SectionRenderer.jsx';
 import SEO from '../components/SEO.jsx';
 import Ticker from '../components/Ticker.jsx';
+import ConceptSwitcher from '../components/ConceptSwitcher.jsx';
 import { localBusinessJsonLd } from '../lib/jsonld.js';
 import * as seed from '../lib/seed.js';
 
@@ -30,9 +31,11 @@ export default function Home() {
   const [sections, setSections] = useState(null);
   // Preview override: visit /?concept=warm_storefront or ?concept=cozy_editorial
   // to see a concept without changing the saved choice (admin → Quick Blocks).
-  const previewConcept = new URLSearchParams(window.location.search).get('concept');
+  const previewConcept = params.get('concept');
   const isPreview = !!CONCEPT_TO_TYPE[previewConcept];
   const [concept, setConcept] = useState(isPreview ? previewConcept : DEFAULT_CONCEPT);
+  // the switcher bar re-points ?concept= in place, so follow the URL
+  useEffect(() => { if (isPreview) setConcept(previewConcept); }, [isPreview, previewConcept]);
 
   useEffect(() => {
     if (canvas) return undefined;
@@ -97,6 +100,7 @@ export default function Home() {
       {rest.map((s) => (
         <SectionRenderer key={s.id} section={s} />
       ))}
+      {isPreview && !canvas && <ConceptSwitcher current={effConcept} />}
     </>
   );
 }

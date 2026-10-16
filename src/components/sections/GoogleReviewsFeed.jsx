@@ -27,8 +27,9 @@ export default function GoogleReviewsFeed({ data = {} }) {
     let alive = true;
     // Google only: the hand-picked favorites already have their own wall
     // above, and a review imported as a testimonial is dropped from this side
-    // by loadReviews so a quote never hangs twice on one page.
-    loadReviews({ only: 'google' }).then((r) => alive && setReviews(r.reviews));
+    // by loadReviews so a quote never hangs twice on one page. Star-only
+    // reviews (no words) have nothing to pin up, so they're left off.
+    loadReviews({ only: 'google', minLength: 12 }).then((r) => alive && setReviews(r.reviews));
     return () => { alive = false; };
   }, [profileVersion, testimonialsVersion, blocksVersion]);
 
@@ -56,7 +57,7 @@ export default function GoogleReviewsFeed({ data = {} }) {
               {r.photo && <img className="testimonial__photo" src={r.photo} alt={`Photo from ${r.author}'s review`} loading="lazy" referrerPolicy="no-referrer" />}
               <div className="card__body">
                 <div className="testimonial__head">
-                  {r.avatar && <img className="testimonial__avatar" src={r.avatar} alt="" loading="lazy" referrerPolicy="no-referrer" />}
+                  <span className="social-proof__portrait" aria-hidden="true">{r.avatar ? <img src={r.avatar} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span>{r.author.slice(0, 1)}</span>}</span>
                   <div>
                     <strong>{r.author}</strong>
                     {r.rating ? <StarRating value={r.rating} size={14} /> : null}
