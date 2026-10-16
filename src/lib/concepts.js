@@ -16,6 +16,7 @@ export const CONCEPT_TO_TYPE = {
   scrapbook: 'scrapbook_hero',
   wall_tour: 'wall_tour_hero',
   pastry_case: 'pastry_case_hero',
+  step_inside: 'step_inside_hero',
 };
 
 export const HERO_TYPES = new Set(Object.values(CONCEPT_TO_TYPE));
@@ -29,6 +30,7 @@ export const CONCEPTS = [
   { value: 'tagged_wall', label: 'Tagged Wall', desc: 'Your real gallery-wall photo, with a paper luggage tag tied to the frames \u2014 each tag is a page of the site.' },
   { value: 'closer_look', label: 'Closer Look', desc: 'Your real gallery-wall photo under a brass magnifying glass, with a museum label telling visitors what they\u2019re looking at.' },
   { value: 'scrapbook', label: 'Scrapbook', desc: 'Your real wall photo taped into a scrapbook with hand-written notes, surrounded by snapshots of the shop that link around the site.' },
+  { value: 'step_inside', label: 'Step Inside', desc: 'A scroll walk along your real wall: each frame opens a chapter with live menu prices, your real rating and reviews, your story and your neighbours. The room\u2019s lights follow your opening hours.' },
   { value: 'wall_tour', label: 'Wall Tour', desc: 'Your real wall in a gilt frame under a spotlight, gliding from piece to piece like a museum tour after hours.' },
   { value: 'pastry_case', label: 'Pastry Case', desc: 'Your real counter photo with a chalkboard of today\u2019s drinks and bakes, pulled live from your SpotOn menu with real prices.' },
 ];

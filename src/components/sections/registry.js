@@ -32,6 +32,7 @@ import CloserLookHero from './CloserLookHero.jsx';
 import ScrapbookHero from './ScrapbookHero.jsx';
 import WallTourHero from './WallTourHero.jsx';
 import PastryCaseHero from './PastryCaseHero.jsx';
+import StepInsideHero from './StepInsideHero.jsx';
 import GalleryPiecesGrid from './GalleryPiecesGrid.jsx';
 import TroublemakersGrid from './TroublemakersGrid.jsx';
 import LocalBusinessesGrid from './LocalBusinessesGrid.jsx';
@@ -69,6 +70,7 @@ export const SECTION_RENDERERS = {
   scrapbook_hero: ScrapbookHero,
   wall_tour_hero: WallTourHero,
   pastry_case_hero: PastryCaseHero,
+  step_inside_hero: StepInsideHero,
   gallery_wall_room: GalleryWallRoom,
   gallery_pieces_grid: GalleryPiecesGrid,
   troublemakers_grid: TroublemakersGrid,
@@ -140,6 +142,7 @@ export const SECTION_LABELS = {
   scrapbook_hero: 'Scrapbook hero (real wall photo)',
   wall_tour_hero: 'Wall Tour hero (real wall photo)',
   pastry_case_hero: 'Pastry Case hero (real counter photo)',
+  step_inside_hero: 'Step Inside (scroll walk along the real wall)',
   gallery_wall_room: 'Gallery Wall room (explorable photo)',
   gallery_pieces_grid: 'Gallery pieces',
   troublemakers_grid: 'Troublemakers',
