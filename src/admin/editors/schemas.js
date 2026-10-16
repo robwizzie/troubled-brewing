@@ -317,6 +317,16 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
     ],
   },
+  step_inside_hero: {
+    note: 'Scroll down the homepage and the photo walks along your wall, one frame per chapter. The drinks, rating and review come from your live menu and Google; the lights follow your hours.',
+    fields: [
+      { name: 'sih_title', label: 'Heading', type: 'text', hint: 'Blank = "Step inside".' },
+      { name: 'sih_sub', label: 'Subheading', type: 'textarea', rows: 3 },
+      { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
+      { name: 'sih_photo_url', label: 'The wall photo', type: 'image', preset: 'hero', folder: 'wall', hint: 'Careful: each chapter zooms to a frame measured in the photo we ship. Blank uses ours.' },
+      { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+    ],
+  },
   wall_tour_hero: {
     fields: [
       { name: 'wth_eyebrow', label: 'Eyebrow line', type: 'text', hint: 'The little gold line above the heading.' },

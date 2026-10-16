@@ -514,3 +514,120 @@
 @media (prefers-reduced-motion: reduce) {
   .wth__art { transition: none; }
 }
+
+/* =============================================================================
+   6 · STEP INSIDE — a scroll walk along the real wall, lit by the shop's hours
+   ========================================================================== */
+.sih {
+  --sih-ink: #fffaf0;
+  position: relative;
+  /* one screen of scrolling per chapter; the stage stays put meanwhile */
+  height: calc(var(--chapters, 7) * 80svh + 20svh);
+  background: #1d1d15;
+}
+.sih__sticky { position: sticky; top: var(--nav-h, 0px); height: calc(100svh - var(--nav-h, 0px)); }
+.sih__stage { position: relative; height: 100%; overflow: hidden; isolation: isolate; }
+.sih__blur { /* the rest of the wall, out of focus, filling any letterbox */
+  position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px);
+  object-fit: cover; filter: blur(28px) saturate(1.1) brightness(0.62); transform: scale(1.05);
+}
+.sih__photo {
+  position: absolute; left: 0; top: 0; max-width: none; height: auto;
+  transform-origin: 0 0; will-change: transform;
+  transition: transform 1.25s cubic-bezier(0.5, 0, 0.18, 1), filter 1.2s ease;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+.sih__shade { /* reading light for the card side + the edges of the room */
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(18, 16, 10, 0.78) 0%, rgba(18, 16, 10, 0.45) 30%, rgba(18, 16, 10, 0) 52%),
+    radial-gradient(120% 90% at 65% 50%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+  transition: background 1.2s ease;
+}
+
+/* after hours: the lights go down */
+.sih.is-dark .sih__photo { filter: brightness(0.5) saturate(0.75) sepia(0.15); }
+.sih.is-dark .sih__blur { filter: blur(28px) saturate(0.8) brightness(0.32); }
+
+/* the neon sign in the corner of the room */
+.sih__neon {
+  position: absolute; z-index: 3; right: clamp(16px, 4vw, 48px); top: clamp(14px, 3vw, 30px);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 0.35em 0.8em 0.45em; border-radius: 14px;
+  border: 2px solid rgba(255, 120, 170, 0.35);
+  background: rgba(20, 10, 16, 0.55); backdrop-filter: blur(4px);
+}
+.sih__neon-word { font-family: var(--font-hand); font-weight: 700; font-size: clamp(1.9rem, 3.4vw, 2.8rem); line-height: 1; letter-spacing: 0.02em; }
+.sih__neon.is-on .sih__neon-word {
+  color: #ffe3ef;
+  text-shadow: 0 0 4px #fff, 0 0 10px #ff5fa2, 0 0 22px #ff2d87, 0 0 44px #ff2d87;
+  animation: sih-hum 4.5s infinite;
+}
+.sih__neon.is-on { border-color: rgba(255, 140, 190, 0.8); box-shadow: 0 0 18px rgba(255, 45, 135, 0.45), inset 0 0 14px rgba(255, 45, 135, 0.35); }
+.sih__neon.is-off .sih__neon-word { color: #6d5a62; text-shadow: none; }
+.sih__neon-sub { font: 600 0.72rem/1.2 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: #f1d9a0; }
+@keyframes sih-hum { 0%, 92%, 100% { opacity: 1; } 93% { opacity: 0.55; } 94% { opacity: 1; } 96% { opacity: 0.7; } }
+
+/* the chapter cards */
+.sih__cards { position: absolute; z-index: 2; left: max(16px, 6vw); top: 50%; transform: translateY(-50%); width: min(440px, 38vw); }
+.sih__card {
+  position: absolute; left: 0; top: 50%; width: 100%;
+  transform: translateY(calc(-50% + 18px)); opacity: 0; visibility: hidden;
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.6s;
+  color: var(--sih-ink);
+}
+.sih__card.is-on { opacity: 1; visibility: visible; transform: translateY(-50%); transition-delay: 0.35s, 0.35s, 0s; }
+.sih__logo { width: min(200px, 56%); display: block; margin-bottom: var(--space-4); filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.5)); }
+.sih__title { font-family: var(--font-display); font-weight: 900; font-size: clamp(2.8rem, 6vw, 5.2rem); line-height: 0.95; margin: 0 0 var(--space-3); color: #fffaf0; text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+.sih__sub { font-size: var(--text-lg); line-height: 1.55; margin: 0 0 var(--space-5); color: #efe6d0; max-width: 34ch; }
+.sih__kicker { font-family: var(--font-hand); font-size: 1.8rem; color: var(--color-yellow); margin: 0 0 4px; transform: rotate(-2deg); transform-origin: left; }
+.sih__h { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.9rem, 3.4vw, 2.9rem); line-height: 1.05; margin: 0 0 var(--space-4); color: #fffaf0; text-wrap: balance; }
+.sih__h--num { display: flex; align-items: center; gap: 14px; font-size: clamp(2.6rem, 5vw, 4rem); margin-bottom: 0; }
+.sih__meta { margin: 4px 0 var(--space-4); color: #e3d7bb; font-size: var(--text-sm); }
+.sih__p { font-size: 1.08rem; line-height: 1.6; color: #efe6d0; margin: 0 0 var(--space-5); max-width: 38ch; }
+.sih__menu { list-style: none; margin: 0 0 var(--space-5); padding: 1rem 1.2rem; background: rgba(20, 22, 16, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 6px; font-family: var(--font-hand); font-size: 1.45rem; }
+.sih__menu li { display: flex; align-items: baseline; gap: 0.4em; line-height: 1.4; }
+.sih__dots { flex: 1; border-bottom: 2px dotted rgba(255, 250, 240, 0.35); transform: translateY(-0.25em); min-width: 1em; }
+.sih__quote { margin: 0 0 var(--space-5); padding: 1rem 1.2rem; background: #fffdf6; color: var(--color-ink); border-radius: 3px; transform: rotate(-1deg); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35); }
+.sih__quote blockquote { margin: 0 0 10px; font-family: var(--font-display); font-size: 1.05rem; line-height: 1.5; }
+.sih__quote figcaption { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: var(--text-sm); }
+.sih__quote img { width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 0 0 2px var(--color-yellow); }
+.sih__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.sih__ghost { background: rgba(255, 250, 240, 0.1); color: #fffaf0; border-color: rgba(255, 250, 240, 0.55); backdrop-filter: blur(6px); }
+.sih__ghost:hover { background: rgba(255, 250, 240, 0.2); color: #fff; border-color: #fff; }
+
+/* chapter rail */
+.sih__rail { position: absolute; z-index: 3; right: clamp(16px, 2.5vw, 34px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; }
+.sih__rail button { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 2px 0; border: 0; background: none; cursor: pointer; color: rgba(255, 250, 240, 0.7); font: 600 0.78rem/1 var(--font-body); }
+.sih__rail button::after { content: ''; width: 10px; height: 10px; border-radius: 50%; border: 2px solid rgba(255, 250, 240, 0.8); transition: background 0.2s, transform 0.2s; }
+.sih__rail button span { opacity: 0; transform: translateX(6px); transition: opacity 0.2s, transform 0.2s; }
+.sih__rail:hover button span, .sih__rail button.is-on span, .sih__rail button:focus-visible span { opacity: 1; transform: none; }
+.sih__rail button.is-on { color: #fffaf0; }
+.sih__rail button.is-on::after { background: var(--color-yellow); border-color: var(--color-yellow); transform: scale(1.25); }
+.sih__rail button:focus-visible { outline: none; }
+.sih__rail button:focus-visible::after { box-shadow: 0 0 0 3px var(--color-pink); }
+.sih__scroll { position: absolute; z-index: 2; left: 50%; bottom: 18px; transform: translateX(-50%); margin: 0; font-family: var(--font-hand); font-size: 1.4rem; color: #fffaf0; animation: sih-bob 1.8s ease-in-out infinite; }
+.sih__scroll::after { content: '↓'; display: block; text-align: center; font-family: var(--font-body); }
+@keyframes sih-bob { 50% { transform: translate(-50%, 6px); } }
+
+@media (max-width: 759px) {
+  .sih__shade { background: linear-gradient(0deg, rgba(18, 16, 10, 0.92) 0%, rgba(18, 16, 10, 0.7) 38%, rgba(18, 16, 10, 0) 62%); }
+  .sih__cards { left: 16px; right: 16px; width: auto; top: auto; bottom: 22px; transform: none; }
+  .sih__card { top: auto; bottom: 0; transform: translateY(18px); }
+  .sih__card.is-on { transform: none; }
+  .sih__rail { top: 50%; right: 10px; gap: 10px; }
+  .sih__rail button span { display: none; }
+  .sih__title { font-size: 2.9rem; }
+  .sih__h { font-size: 1.75rem; margin-bottom: var(--space-3); }
+  .sih__p, .sih__sub { font-size: 1rem; margin-bottom: var(--space-4); }
+  .sih__menu { font-size: 1.25rem; padding: 0.7rem 0.9rem; margin-bottom: var(--space-4); }
+  .sih__logo { width: 150px; margin-bottom: var(--space-3); }
+  .sih__neon { top: 12px; right: 12px; }
+  .sih__neon-word { font-size: 1.7rem; }
+  .sih__scroll { display: none; }
+  .sih__quote blockquote { font-size: 0.95rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sih__photo, .sih__card { transition: none; }
+  .sih__neon.is-on .sih__neon-word, .sih__scroll { animation: none; }
+}
