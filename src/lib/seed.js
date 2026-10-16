@@ -15,6 +15,7 @@ export const SITE = {
   phone: '(856) 617-6638',
   phoneHref: 'tel:+18566176638',
   instagram: 'troublebrewingcoffee',
+  facebook: 'tbcoffeehouse',
   email: 'hello@troublebrewingcoffeehouse.com',
 };
 
@@ -53,7 +54,7 @@ export const SECTIONS = {
     { type: 'cta', data: { heading: 'Skip the line', body: "Order ahead on SpotOn and we'll have it ready.", button_label: 'Order Now', button_url: '' } },
     { type: 'intro_duo', data: {
       heading_a: 'Good coffee, real food',
-      body_a: 'We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options.',
+      body_a: 'We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options. Breakfast is served all day.',
       heading_b: 'More than a coffee shop',
       body_b: 'Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That\'s the good kind of Trouble.',
     } },
@@ -66,8 +67,8 @@ export const SECTIONS = {
   ],
   about: [
     { type: 'hero', data: { heading: 'Our Story', subheading: 'From spreadsheets to steamed milk.', background_image_url: '', cta_label: 'See the Menu', cta_url: '/menu' } },
-    { type: 'rich_text', data: { variant: 'lead', heading: 'Two bankers walk into a coffee shop', body_markdown: 'Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Trouble Brewing is the result: a warm, art-filled room in the heart of Haddon Heights where the coffee is serious and the vibe is not.' } },
-    { type: 'rich_text', data: { variant: 'alt', heading: "What's in the cup", body_markdown: "Great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. We pour **La Colombe** beans and pull every shot with care, then build everything from a classic cappuccino to our specialty drinks on top of it." } },
+    { type: 'rich_text', data: { variant: 'lead', heading: 'Two bankers walk into a coffee shop', body_markdown: 'Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Haddon Heights residents themselves, they opened Trouble Brewing at 514 Station Ave on **Friday the 13th of October, 2017** — about as on-brand an opening day as a shop called Trouble could ask for. It\'s been a warm, art-filled room where the coffee is serious and the vibe is not ever since.' } },
+    { type: 'rich_text', data: { variant: 'alt', heading: "What's in the cup", body_markdown: "Great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. We pour **La Colombe** beans and steep **Metolius** teas, pull every shot with care, and build everything from a classic cappuccino to the season's specialty lattes on top of it." } },
     { type: 'rich_text', data: { heading: 'Why local matters', body_markdown: 'Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for.' } },
   ],
   /* The old /community page is folded in here: its events list was a duplicate
@@ -152,44 +153,85 @@ export const CONTENT_BLOCKS = {
   /* Which Google reviews the site shows + the owner's per-review overrides.
      See src/lib/reviews.js — 4★ is the default floor ("only the good ones"). */
   review_settings: { min_rating: 4, hidden: {}, pinned: {}, photos: {} },
-  social_links: { instagram: 'https://instagram.com/troublebrewingcoffee', facebook: '', tiktok: '', x: '', youtube: '' },
+  social_links: { instagram: 'https://instagram.com/troublebrewingcoffee', facebook: 'https://www.facebook.com/tbcoffeehouse', tiktok: 'https://www.tiktok.com/@troublebrewingcoffee', x: '', youtube: '' },
 };
 
+/* The shop's real Google profile, as last cached by the google-profile Edge
+   Function (backups/2026-10-12.json). Live data replaces it as soon as
+   Supabase answers; this is what the site shows without it. */
 export const GOOGLE_PROFILE = {
   id: 1,
-  rating: 4.9,
-  review_count: 0,
-  reviews: [],
+  place_id: 'ChIJaRXwqCHMxokR3omz5QWgCws',
+  rating: 4.6,
+  review_count: 298,
+  reviews: [
+  {
+    "text": "Definitely one of my favorite coffee shops that I have come across. I love that they collaborate with other local businesses. I’m a big fan of their Milky Way iced coffee, and their breakfast sandwiches are delicious. I love hanging out inside or outside. Their staff are fantastic. I love chatting with them every time I go in.",
+    "time": "a month ago",
+    "author": "Heather Roth",
+    "rating": 5,
+    "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjWju8uFG9DxuWcjfYDxqRwb_ekPbUOYniQo8fx8GJDUKkfT-7vh=s128-c0x00000000-cc-rp-mo-ba4"
+  },
+  {
+    "text": "My son and I stopped in to have a hot chia and cold latte with breakfast sandwiches and pastries. Great service, drinks and food great. Beautiful town. Been there before. Bonus--it's dog friendly 🦮. Definitely will be back.",
+    "time": "3 months ago",
+    "author": "Leticia Vega",
+    "rating": 5,
+    "profile_photo": "https://lh3.googleusercontent.com/a/ACg8ocK2stLWFX1KLwwrysxqUDDVKWLZQ9mR7VR_aAi5xVpzJj5Djg=s128-c0x00000000-cc-rp-mo-ba3"
+  },
+  {
+    "text": "Good coffee for a good price. Blueberry scone was very good massive Blueberrys barista Tyler was friendly and fast would visit again when on a trip from California",
+    "time": "2 months ago",
+    "author": "Cory Mathews",
+    "rating": 5,
+    "profile_photo": "https://lh3.googleusercontent.com/a/ACg8ocLsBTv178G6N999q-4pMrmMszxX735ztNc7AFj57o4CZsKy7Mw=s128-c0x00000000-cc-rp-mo-ba5"
+  },
+  {
+    "text": "Coffee was great but they messed up my breakfast order. No bacon in my bagel. Just egg and cheese. My other order pork roll egg and cheese on a jalepeno cheddar bagel was very skimp. I spent $24 with tip for a skimp breakfast. I would recommend the coffee only.",
+    "time": "6 months ago",
+    "author": "Erika Lorraine",
+    "rating": 3,
+    "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjXaqSU_eTtsUqSFzSx1SCHPOy-vJEjhp7V6aZLzb7VEvbPaV52h=s128-c0x00000000-cc-rp-mo-ba3"
+  },
+  {
+    "text": "While browsing for coffee shops in the area, this one caught my eye. It did not disappoint! This shop is cozy, clearly loved by locals, and has plenty of seating without feeling overcrowded. Chosen decor includes foxes and mushrooms and adds the right touch of whimsy 🍄\nI'm not out this way often but I'll definitely stop again the next time I am!",
+    "time": "a month ago",
+    "author": "Hazel Stjernelys",
+    "rating": 5,
+    "profile_photo": "https://lh3.googleusercontent.com/a/ACg8ocJ96fr6hk3y_fKoXrQgKDGMazMNX3TsuHOYDeItFGLXpQBoa2Y=s128-c0x00000000-cc-rp-mo-ba3"
+  }
+],
   formatted_address: '514 Station Ave, Haddon Heights, NJ 08035',
   formatted_phone: '(856) 617-6638',
-  weekday_hours: [],
+  weekday_hours: ["Monday: 7:30 AM – 7:00 PM", "Tuesday: 7:30 AM – 7:00 PM", "Wednesday: 7:30 AM – 7:00 PM", "Thursday: 7:30 AM – 7:00 PM", "Friday: 7:30 AM – 5:00 PM", "Saturday: 7:30 AM – 5:00 PM", "Sunday: 8:00 AM – 3:00 PM"],
   weekday_periods: [],
-  maps_url: 'https://www.google.com/maps/search/?api=1&query=Trouble+Brewing+Coffee+House+Haddon+Heights',
+  lat: 39.882783599999996,
+  lng: -75.057658,
+  maps_url: 'https://maps.google.com/?cid=795905706350053854',
 };
 
 export const INSTAGRAM_FEED = { id: 1, handle: 'troublebrewingcoffee', posts: [] };
 
+/* Real Google reviews the owners picked as favorites (the live testimonials
+   table). Nothing here is written by us. */
 export const TESTIMONIALS = [
-  { id: 't-1', author: 'Sarah M.', source: '', rating: 5, quote: 'The Banana Split Coffee is unreal and the team always remembers my order. My favorite spot in Haddon Heights.', featured: true, display_order: 0 },
-  { id: 't-2', author: 'Dave R.', source: '', rating: 5, quote: 'Real La Colombe coffee, fresh paninis, and a room you actually want to hang out in. This is what a coffee shop should be.', featured: true, display_order: 1 },
-  { id: 't-3', author: 'Priya K.', source: '', rating: 5, quote: 'The cranberry walnut chicken salad panini ruined every other panini for me. Cozy, friendly, local — go.', featured: false, display_order: 2 },
+  {"id": "t-1", "author": "Hazel Stjernelys", "source": "Google", "rating": 5, "quote": "While browsing for coffee shops in the area, this one caught my eye. It did not disappoint! This shop is cozy, clearly loved by locals, and has plenty of seating without feeling overcrowded. Chosen decor includes foxes and mushrooms and adds the right touch of whimsy 🍄\nI'm not out this way often but I'll definitely stop again the next time I am!", "image_url": "", "featured": true, "display_order": 0},
+  {"id": "t-2", "author": "Cory Mathews", "source": "Google", "rating": 5, "quote": "Good coffee for a good price. Blueberry scone was very good massive Blueberrys barista Tyler was friendly and fast would visit again when on a trip from California", "image_url": "", "featured": false, "display_order": 1},
+  {"id": "t-3", "author": "Leticia Vega", "source": "Google", "rating": 5, "quote": "My son and I stopped in to have a hot chia and cold latte with breakfast sandwiches and pastries. Great service, drinks and food great. Beautiful town. Been there before. Bonus--it's dog friendly 🦮. Definitely will be back.", "image_url": "", "featured": false, "display_order": 2},
+  {"id": "t-4", "author": "Heather Roth", "source": "Google", "rating": 5, "quote": "Definitely one of my favorite coffee shops that I have come across. I love that they collaborate with other local businesses. I’m a big fan of their Milky Way iced coffee, and their breakfast sandwiches are delicious. I love hanging out inside or outside. Their staff are fantastic. I love chatting with them every time I go in.", "image_url": "", "featured": true, "display_order": 3},
 ];
 
-/* Starter rows that teach the shape of a good entry — the owners replace them
-   with the real pieces off the wall. Note `artist`: the whole point of this
-   page is the work and the people who made it, so the field is filled in here
-   as a prompt rather than left blank. */
-export const GALLERY_PIECES = [
-  { id: 'g-1', title: 'The Ornate Gold One', artist: '', artist_url: '', medium: '', year_label: 'Found, undated', frame_style: 'gilt-grand', wall_spot: '', for_sale: false, story: "Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it's the unofficial centerpiece of the wall. (Owner: if you know who made it, add them above — the credit is the best part of this page.)", image_url: '', display_order: 0 },
-  { id: 'g-2', title: 'Tiny Oval Mystery', artist: '', artist_url: '', medium: '', year_label: '', frame_style: 'oval-gilt', wall_spot: '', for_sale: false, story: 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', image_url: '', display_order: 1 },
-];
+/* The catalogued pieces from the wall (title, artist, story, photo). Empty
+   until the owners write them up — the Gallery Wall page describes every piece
+   in its photograph honestly in the meantime (src/lib/galleryWall.js), which is
+   better than the invented backstories that used to sit here. */
+export const GALLERY_PIECES = [];
 
 /* Starter rows the owners replace with the real team. Note `drink`: "what
    should I order?" is the question these people field all day, and their own
    answer is the most useful thing on the card. */
 export const TEAM_MEMBERS = [
   { id: 'tm-1', name: 'Katie', role: 'General Manager', pronouns: '', drink: '', started_label: '', bio: 'Keeps the whole operation running and somehow still remembers your usual.', photo_url: '', fun_facts: { favorite_local_food: '', favorite_movie: '', favorite_book: '', favorite_show: '', favorite_artist: '' }, display_order: 0, active: true },
-  { id: 'tm-2', name: 'A Troublemaker', role: 'Barista', pronouns: '', drink: '', started_label: '', bio: 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', photo_url: '', fun_facts: { favorite_local_food: '', favorite_movie: '', favorite_book: '', favorite_show: '', favorite_artist: '' }, display_order: 1, active: true },
 ];
 
 /* Real Haddon Heights businesses, checked against their own sites, the borough
@@ -200,19 +242,24 @@ export const TEAM_MEMBERS = [
    fill in, since only they know what they actually send people for. */
 export const LOCAL_BUSINESSES = [
   { id: 'lb-1', name: "Anthony's Creative Italian Cuisine", category: 'restaurant', address: '512 Station Ave', url: 'https://www.anthonysonstation.com/', logo_url: '', photo_url: '', blurb: 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', we_love: '', display_order: 0 },
-  { id: 'lb-2', name: "Lula's Empanadas", category: 'restaurant', address: '516 Station Ave', url: 'https://www.facebook.com/lulasempanadas/', logo_url: '', photo_url: '', blurb: 'Contemporary Dominican empanadas from a takeout window, named after the owner\u2019s mother. Up to eighteen flavors, and a couple of picnic tables out front.', we_love: '', display_order: 1 },
-  { id: 'lb-3', name: "Ralph's Pizza", category: 'restaurant', address: '520 Station Ave', url: 'https://ralphspizzahaddonheights.com/', logo_url: '', photo_url: '', blurb: 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town.', we_love: '', display_order: 2 },
-  { id: 'lb-4', name: 'South Jersey Special', category: 'retail', address: '531 Station Ave', url: 'https://southjerseyspecial.com/', logo_url: '', photo_url: '', blurb: 'A gift shop of South Jersey makers \u2014 cards, prints, jewelry and small-batch things, most of it funny, all of it local.', we_love: '', display_order: 3 },
+  { id: 'lb-2', name: "Lula's Empanadas", category: 'restaurant', address: '516 Station Ave', url: 'https://www.facebook.com/lulasempanadas/', logo_url: '', photo_url: '', blurb: 'Contemporary Dominican empanadas from Yaslyn Lora, named after her mother \u2014 up to eighteen flavors, now from a proper Station Ave storefront. They chipped in prizes for our ninth-birthday raffle.', we_love: '', display_order: 1 },
+  { id: 'lb-3', name: "Ralph's Pizza", category: 'restaurant', address: '520 Station Ave', url: 'https://ralphspizzahaddonheights.com/', logo_url: '', photo_url: '', blurb: 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town. They donated to our ninth-birthday raffle, too.', we_love: '', display_order: 2 },
+  { id: 'lb-4', name: 'South Jersey Special', category: 'retail', address: '531 Station Ave', url: 'https://southjerseyspecial.com/', logo_url: '', photo_url: '', blurb: 'Amy Murphy\u2019s gift shop of South Jersey makers \u2014 cards, prints, jewelry and small-batch things, most of it funny, all of it local. Another of our birthday-raffle donors.', we_love: '', display_order: 3 },
   { id: 'lb-5', name: "Jane's Tea House", category: 'cafe', address: '602 Station Ave', url: 'https://janesteahouse.com/', logo_url: '', photo_url: '', blurb: 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', we_love: '', display_order: 4 },
   { id: 'lb-6', name: 'Cabana Water Ice Co.', category: 'other', address: '603 Station Ave', url: '', logo_url: '', photo_url: '', blurb: 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', we_love: '', display_order: 5 },
   { id: 'lb-7', name: 'April Robin Florist & Gift', category: 'retail', address: '620 Station Ave', url: 'https://www.aprilrobinflorist.com/', logo_url: '', photo_url: '', blurb: 'The florist at the top of the avenue \u2014 where the flowers on our counter usually come from.', we_love: '', display_order: 6 },
   { id: 'lb-8', name: "John's Friendly Market", category: 'other', address: '622 Station Ave', url: '', logo_url: '', photo_url: '', blurb: 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', we_love: '', display_order: 7 },
 ];
 
+/* Real milestones only, each one checkable: the opening date from the shop's
+   own posts (a 9th birthday on Oct 13, 2026) and New Jersey Isn't Boring's
+   2019 write-up ("opened on Friday the 13th in 2017"); the birthday raffle
+   and lattes from the shop's Instagram; the review from The Retrospect. */
 export const TIMELINE_EVENTS = [
-  { id: 'tl-1', date_label: 'Day One', sort_date: '2021-01-01', title: 'Trouble Brewing opens its doors', description: 'Tom & Cat trade spreadsheets for steamed milk and open Trouble Brewing Coffee House in Haddon Heights. (Owner: update with the real date + story.)', image_url: '', display_order: 0 },
-  { id: 'tl-2', date_label: 'Year One', sort_date: '2022-01-01', title: 'Our first anniversary', description: 'One year of regulars, La Colombe, and good Trouble. Thank you, Haddon Heights.', image_url: '', display_order: 1 },
-  { id: 'tl-3', date_label: 'A new signature', sort_date: '2023-01-01', title: 'The Banana Split Coffee is born', description: 'Our now-signature, dessert-inspired drink joins the menu and quickly becomes a favorite.', image_url: '', display_order: 2 },
+  { id: 'tl-1', date_label: 'Friday the 13th · Oct 2017', sort_date: '2017-10-13', title: 'Trouble opens on Station Ave', description: 'Tom and Cat, Haddon Heights locals, open Trouble Brewing Coffee House at 514 Station Ave — on Friday the 13th, naturally. La Colombe in the grinder, breakfast all day.', image_url: '', display_order: 0 },
+  { id: 'tl-2', date_label: 'December 2019', sort_date: '2019-12-07', title: 'The internet finds out', description: 'New Jersey Isn\u2019t Boring writes Trouble up as one of the best spots around to work from a coffee shop — comfy seats, free WiFi, a shelf of books and drinks sized Trouble and Big Trouble.', image_url: '', display_order: 1 },
+  { id: 'tl-3', date_label: 'October 2026', sort_date: '2026-10-13', title: 'Nine years of Trouble', description: 'A birthday raffle with prizes from our Station Ave neighbors — Lula\u2019s Empanadas, Ralph\u2019s Pizza, South Jersey Special and Doc\u2019s Unique Boutique — and two birthday lattes: The Max (a dirt-cake iced latte) and The Ruby (cake batter, strawberry cold foam, sprinkles).', image_url: '', display_order: 2 },
+  { id: 'tl-4', date_label: 'October 2026', sort_date: '2026-10-14', title: 'A Quick Bites review', description: 'The Retrospect stops in for its Quick Bites column and comes away talking about the cappuccino, the pumpkin spice frozen coffee and the French toast muffin — "a group favorite."', image_url: '', display_order: 3 },
 ];
 
 export const EVENTS = [];

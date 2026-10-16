@@ -147,7 +147,8 @@ create table if not exists google_profile (
   place_id text,
   rating numeric(2,1),
   review_count int,
-  reviews jsonb default '[]',              -- [{review_id, author, author_url, rating, text, time, published_at, review_url, profile_photo}], newest first
+  reviews jsonb default '[]',              -- [{review_id, author, author_url, rating, text, time, published_at, review_url, profile_photo, photos[]}], newest first
+  photos jsonb default '[]',               -- customer photos from Places [{url, author, author_url}], newest first
   formatted_address text,
   formatted_phone text,
   weekday_hours jsonb default '[]',        -- Google weekdayDescriptions (display strings)
@@ -300,6 +301,25 @@ revoke all on table private_secrets from anon, authenticated; -- belt-and-braces
 -- in the Gallery Wall photograph, so opening that frame on /gallery-wall shows
 -- the artist, credits and story. Safe to re-run.
 alter table gallery_pieces add column if not exists wall_spot text;
+
+-- Columns the tables above gained after the live project was first set up.
+-- `create table if not exists` never touches an existing table, so a project
+-- created from an older copy of this file is missing them (the 2026-10-12
+-- backup shows exactly these gone) — and every admin save that sends one
+-- fails. Re-running this file adds them. Safe to re-run.
+alter table gallery_pieces   add column if not exists artist text;
+alter table gallery_pieces   add column if not exists artist_url text;
+alter table gallery_pieces   add column if not exists medium text;
+alter table gallery_pieces   add column if not exists year_label text;
+alter table gallery_pieces   add column if not exists frame_style text;
+alter table gallery_pieces   add column if not exists for_sale boolean default false;
+alter table team_members     add column if not exists pronouns text;
+alter table team_members     add column if not exists drink text;
+alter table team_members     add column if not exists started_label text;
+alter table local_businesses add column if not exists logo_url text;
+alter table local_businesses add column if not exists address text;
+alter table local_businesses add column if not exists we_love text;
+alter table google_profile   add column if not exists photos jsonb default '[]';
 
 alter table gallery_pieces   enable row level security;
 alter table team_members     enable row level security;

@@ -103,7 +103,7 @@
   scroll-padding-inline: var(--sp-pad); /* snap flush with the strip's padded edge */
   /* A horizontal scroller clips paint at its own box. This gutter is at least
      as deep as --shadow-frame, so no molding shadow is sliced at an edge. */
-  padding: 16px var(--sp-pad) 30px;
+  padding: 22px var(--sp-pad) 30px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
@@ -112,16 +112,19 @@
 .social-proof__quotes:focus-visible {
   outline: 2px solid var(--color-yellow-deep); outline-offset: 2px; border-radius: 4px;
 }
-/* each quote hangs like a little framed note from the wall (black molding +
-   wide mat via the gallery frame classes, set on the <li> in SocialProof.jsx).
-   The compound selector outranks .gw-frame__art's aspect-ratio: content sets
-   the height here, not the wall's 3/4 portrait default. */
-.social-proof__quote.gw-frame__art {
-  aspect-ratio: auto;
-  min-height: 260px;
-  height: auto;
-  padding: clamp(18px, 4%, 26px);
-  border-width: 7px;
+/* each review is a cream note pinned to the wall with a strip of washi tape,
+   the reviewer's own Google picture hung in a small gold oval at its head.
+   Notes alternate a hair off true, like they were put up by hand. */
+.social-proof__quote {
+  position: relative;
+  display: flex; flex-direction: column;
+  min-height: 270px;
+  padding: 26px clamp(18px, 5%, 28px) 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 40%),
+    #fffdf6;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(40, 30, 12, 0.12), 0 10px 22px rgba(40, 44, 25, 0.18);
   /* exactly --per-view cards across the visible strip, gaps included — the
      whole point: no half-card hanging off the edge */
   flex: 0 0 calc((100% - (var(--per-view, 1) - 1) * var(--sp-gap)) / var(--per-view, 1));
@@ -129,34 +132,55 @@
   scroll-snap-stop: always; /* a hard swipe advances one card, never flies past */
   text-align: center;
 }
-/* the note's interior: mark / quote / (read more) / brass byline as one
-   column with even air, so the plate never crowds the mat's keyline */
+.social-proof__tape {
+  position: absolute; top: -9px; left: 50%; width: 84px; height: 20px; margin-left: -42px;
+  background: repeating-linear-gradient(45deg, rgba(227, 181, 63, 0.62) 0 6px, rgba(240, 205, 110, 0.62) 6px 12px);
+  transform: rotate(-3deg);
+}
+.social-proof__quote:nth-child(3n + 2) .social-proof__tape { background: rgba(233, 143, 176, 0.55); transform: rotate(2deg); }
+.social-proof__quote:nth-child(3n) .social-proof__tape { background: rgba(126, 140, 84, 0.45); transform: rotate(-1deg); }
+/* the note's interior: who / quote / (read more) / source as one column */
 .social-proof__quote > div {
-  width: 100%;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: var(--space-2); padding: var(--space-1) 0;
+  width: 100%; flex: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--space-3);
 }
-.social-proof__quote:nth-child(odd) { transform: rotate(-0.25deg); }
-.social-proof__quote:nth-child(even) { transform: rotate(0.3deg); }
-.social-proof__mark {
-  display: block; line-height: 0.55;
-  font-family: var(--font-display); font-size: 1.7rem;
-  color: var(--color-yellow-deep); opacity: 0.55;
+.social-proof__who { display: flex; align-items: center; gap: 12px; text-align: left; }
+.social-proof__who-text { display: flex; flex-direction: column; gap: 3px; }
+.social-proof__who-text strong { font-family: var(--font-display); font-size: 1.02rem; line-height: 1.1; }
+.social-proof__portrait {
+  flex: 0 0 auto; width: 50px; height: 58px; border-radius: 50%;
+  padding: 3px; display: grid; place-items: center; overflow: hidden;
+  background: linear-gradient(145deg, #f6dc84, var(--color-yellow-deep) 55%, #f2cf6b);
+  box-shadow: 0 2px 5px rgba(40, 30, 12, 0.3);
 }
-/* A review that came with a picture hangs the picture where the quote mark
-   would be — inside the mat, keylined like a real print, so the card reads as
-   a photograph with a caption rather than a quote with a thumbnail stuck on. */
-.social-proof__quote--photo { justify-content: flex-start; }
+.social-proof__portrait img, .social-proof__portrait span {
+  width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: grid; place-items: center;
+  background: var(--color-green-soft); color: var(--color-green-deep);
+  font: 700 1.3rem/1 var(--font-display);
+  box-shadow: inset 0 0 0 1.5px rgba(80, 56, 10, 0.5);
+}
+/* A review that came with a picture: in the carousel the photo is pinned to
+   the note's corner as a little taped snapshot, so a photo card stays the
+   same size as its neighbours instead of stretching the whole row. */
 .social-proof__photo {
-  display: block; width: 100%; aspect-ratio: 4 / 3;
-  object-fit: cover; border-radius: 1px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(40, 30, 12, 0.18);
+  position: absolute; top: -14px; right: -10px; z-index: 2;
+  width: clamp(92px, 26%, 128px); aspect-ratio: 1;
+  object-fit: cover;
+  border: 5px solid #fff; border-bottom-width: 16px;
+  box-shadow: 0 6px 14px rgba(40, 30, 12, 0.28);
+  transform: rotate(6deg);
 }
-.social-proof__quote--photo .social-proof__text { font-size: clamp(0.84rem, 1.25vw, 0.98rem); }
+.social-proof__quote--photo { padding-top: 30px; }
+.social-proof__quote--photo .social-proof__who { align-self: flex-start; margin-right: 26%; }
+.social-proof__quote--photo .social-proof__text { margin-top: 4px; }
+.social-proof__quote:nth-child(odd) { transform: rotate(-0.5deg); }
+.social-proof__quote:nth-child(even) { transform: rotate(0.6deg); }
+.social-proof__quote--photo .social-proof__text { font-size: clamp(0.88rem, 1.25vw, 0.98rem); }
 .social-proof__text {
-  max-width: 34ch; font-family: var(--font-display);
-  font-size: clamp(0.92rem, 1.45vw, 1.08rem); line-height: 1.45;
-  margin: 0; color: var(--color-text); text-wrap: balance; overflow-wrap: anywhere;
+  max-width: 36ch; font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.45vw, 1.08rem); line-height: 1.5;
+  margin: 0; color: var(--color-text); text-wrap: pretty; overflow-wrap: anywhere;
 }
 .social-proof__more {
   appearance: none; border: 0; padding: 2px 0 3px;
@@ -166,8 +190,9 @@
   text-underline-offset: 4px;
 }
 .social-proof__more:hover { color: var(--color-pink-deep); text-decoration-thickness: 2px; }
-.social-proof__author { margin: var(--space-1) 0 0; }
-.social-proof__author .brass-plate { max-width: 100%; font-size: 0.68rem; padding: 3px 12px; line-height: 1.25; }
+.social-proof__author { margin: auto 0 0; font-size: var(--text-xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-soft); }
+.social-proof__author a { color: inherit; text-decoration: none; }
+.social-proof__author a:hover { color: var(--color-pink-deep); text-decoration: underline; }
 /* one control bar under the strip, identical on touch and mouse. The chevrons
    used to overlay the strip edges, which parked a brass disc on the frame
    molding and over the neighbouring card's text — on framed art that reads as
@@ -213,13 +238,9 @@
   .social-proof__eyebrow { margin-bottom: var(--space-1); }
   .social-proof__carousel { flex-basis: 100%; }
   .social-proof__quotes { padding-top: 14px; padding-bottom: 28px; }
-  .social-proof__quote.gw-frame__art {
-    min-height: 0; height: auto;
-    padding: 20px 18px; border-width: 6px;
-  }
-  .social-proof__text { max-width: 30ch; font-size: 0.95rem; line-height: 1.48; }
-  .social-proof__quote--photo .social-proof__text { font-size: 0.88rem; }
-  .social-proof__author .brass-plate { white-space: normal; overflow-wrap: anywhere; }
+  .social-proof__quote { min-height: 0; padding: 24px 18px 18px; }
+  .social-proof__text { max-width: 30ch; font-size: 0.98rem; line-height: 1.5; }
+  .social-proof__quote--photo .social-proof__text { font-size: 0.9rem; }
 }
 
 /* ---- Products: the shared drink/food card ----------------------------------
@@ -476,6 +497,55 @@
 .testimonial__source { color: var(--color-text-soft); font-size: var(--text-sm); font-weight: 400; }
 .testimonial__head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2); }
 .testimonial__avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.testimonial__head strong { font-family: var(--font-display); font-size: 1.05rem; display: block; }
+.testimonial__head .social-proof__portrait { width: 46px; height: 54px; }
+/* review cards on /reviews: the same taped paper notes as the homepage strip */
+.testimonials .testimonial.card {
+  position: relative; overflow: visible;
+  /* inline-block keeps each note in ONE masonry column — a block card lets
+     its tape (drawn just above it) fragment onto the foot of the column before */
+  display: inline-block; width: 100%; margin-top: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 40%), #fffdf6;
+  border: 0; border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(40, 30, 12, 0.12), 0 10px 22px rgba(40, 44, 25, 0.14);
+}
+.testimonials .testimonial.card::before {
+  content: ''; position: absolute; top: -9px; left: 50%; width: 80px; height: 20px; margin-left: -40px; z-index: 1;
+  background: repeating-linear-gradient(45deg, rgba(227, 181, 63, 0.62) 0 6px, rgba(240, 205, 110, 0.62) 6px 12px);
+  transform: rotate(-3deg);
+}
+.testimonials .testimonial.card:nth-child(3n + 2)::before { background: rgba(233, 143, 176, 0.55); transform: rotate(2deg); }
+.testimonials .testimonial.card:nth-child(3n)::before { background: rgba(126, 140, 84, 0.45); }
+.testimonials .testimonial.card:nth-child(odd) { transform: rotate(-0.4deg); }
+.testimonials .testimonial.card:nth-child(even) { transform: rotate(0.5deg); }
+.testimonials .testimonial .testimonial__photo { box-shadow: 0 0 0 6px #fff; margin: 6px 6px 0; width: calc(100% - 12px); }
+.testimonial__source a { color: inherit; }
+.social-proof__count { font-size: var(--text-xs); color: var(--color-green-deep); font-weight: 600; }
+.guest-photos { margin-top: var(--space-6); text-align: center; }
+.guest-photos__heading { font-family: var(--font-hand); font-size: 1.6rem; color: var(--color-pink-deep); margin: 0 0 var(--space-4); transform: rotate(-1.5deg); }
+.guest-photos__list {
+  list-style: none; margin: 0 auto; padding: 0;
+  /* exactly one row of n snapshots — never a lone orphan on a second line */
+  display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 176px));
+  justify-content: center; gap: clamp(10px, 1.6vw, 22px);
+}
+.guest-photos__list li {
+  background: #fffdf6; padding: 6px 6px 0; min-width: 0;
+  box-shadow: 0 6px 14px rgba(40, 30, 12, 0.18); transform: rotate(var(--tilt));
+  transition: transform 0.25s ease;
+}
+.guest-photos__list li:hover { transform: rotate(0) scale(1.06); z-index: 1; }
+.guest-photos__list img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+.guest-photos__list span { display: block; font-family: var(--font-hand); font-size: 1.05rem; padding: 4px 0 6px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 560px) {
+  /* a swipeable row on phones instead of a tall stack */
+  .guest-photos__list {
+    display: flex; overflow-x: auto; padding: 10px 6px 18px; scroll-snap-type: x mandatory;
+    scrollbar-width: none; margin-inline: calc(-1 * var(--space-5)); padding-inline: var(--space-5);
+  }
+  .guest-photos__list::-webkit-scrollbar { display: none; }
+  .guest-photos__list li { flex: 0 0 44%; scroll-snap-align: start; }
+}
 
 /* ---- Gallery Wall hero (signature) ---------------------------------------
    Sits on the shop's sage-green WALL with framed "art" mounted on it, echoing
@@ -1334,3 +1404,7 @@
   .piece { margin-bottom: var(--space-6); }
   .piece__story { font-size: var(--text-sm); }
 }
+
+/* two or four favorites hang as a centred pair of columns rather than
+   leaving the third column of the masonry standing empty */
+.testimonials--masonry.testimonials--pairs { columns: 2 300px; max-width: 840px; margin-inline: auto; }
