@@ -631,3 +631,20 @@
   .sih__photo, .sih__card { transition: none; }
   .sih__neon.is-on .sih__neon-word, .sih__scroll { animation: none; }
 }
+
+/* Step Inside — frames are doors: the one under the pointer lights up with a
+   tag saying where it leads (tap/click walks into it, src/lib/framePortal.js) */
+.sih__stage.is-pointing { cursor: zoom-in; }
+.sih__door {
+  position: absolute; z-index: 1; pointer-events: none; border-radius: 3px;
+  box-shadow: 0 0 0 2px rgba(255, 233, 170, 0.95), 0 0 24px 4px rgba(255, 214, 120, 0.55);
+  animation: sih-door 0.25s ease-out both;
+}
+.sih__door-tag {
+  position: absolute; left: 50%; top: 100%; transform: translate(-50%, 8px) rotate(-2deg);
+  white-space: nowrap; padding: 0.25em 0.7em; border-radius: 3px;
+  background: var(--kraft); color: var(--color-ink);
+  font: 700 1.15rem/1.1 var(--font-hand);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+@keyframes sih-door { from { opacity: 0; transform: scale(1.04); } }

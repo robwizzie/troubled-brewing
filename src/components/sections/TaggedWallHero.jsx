@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import HoursToday from '../HoursToday.jsx';
 import RealWallPhoto from '../RealWallPhoto.jsx';
 import { stagePoint } from '../../lib/realWall.js';
+import { openFrame } from '../../lib/framePortal.js';
 import { WALL_ART } from '../../lib/galleryWall.js';
 
 /* "Tagged Wall" landing concept — the shop's REAL photograph of its gallery
@@ -69,6 +71,14 @@ export default function TaggedWallHero({ data = {} }) {
     twh_menu_label: menuLabel = 'See the menu',
   } = data;
   const tags = parseTags(tagsSrc || DEFAULT_TAGS);
+  const wall = useRef(null);
+  const navigate = useNavigate();
+  // a tag on the site walks into its frame on the way (src/lib/framePortal.js)
+  const walkIn = (e, t) => {
+    if (!t.to.startsWith('/') || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    openFrame(wall.current?.querySelector('.rwp__img'), t.spot, navigate, t.to);
+  };
 
   return (
     <section className="twh">
@@ -86,14 +96,14 @@ export default function TaggedWallHero({ data = {} }) {
           <p className="twh__hint" aria-hidden="true">{hint}</p>
         </div>
 
-        <div className="twh__wall">
+        <div className="twh__wall" ref={wall}>
           <RealWallPhoto src={photo} className="twh__photo">
             <nav className="twh__tags" aria-label="Find your way around the wall">
               {tags.map((t, i) => {
                 const [fx, fy] = PIN[t.spot] || [0.5, 0.95];
                 return (
                   <span key={`${t.spot}-${i}`} className="twh__tag-hang" style={{ ...stagePoint(t.art, fx, fy), '--sway': `${SWAY[i % SWAY.length]}deg`, '--delay': `${i * -0.7}s`, '--drop': `${0.25 + i * 0.12}s` }}>
-                    <TagLink to={t.to} className="twh__tag" aria-label={`${t.label} — the tag on ${t.art.title}`}>
+                    <TagLink to={t.to} onClick={(e) => walkIn(e, t)} className="twh__tag" aria-label={`${t.label} — the tag on ${t.art.title}`}>
                       <span className="twh__tag-hole" aria-hidden="true" />
                       <span className="twh__tag-label">{t.label}</span>
                     </TagLink>
