@@ -3,14 +3,17 @@ import { asset } from '../lib/config.js';
 import { useShopStatus } from '../lib/useShopStatus.js';
 import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
 
-/* The gold fox — the real gilded fox head from the gallery wall, in his
-   spectacles — keeps you company in the corner of every page. He turns to
-   look at your cursor (or wherever your finger last touched), and when you
-   tap him he says something true: the shop's real hours, or a nudge toward
-   something on the wall. On special days (the shop's October 13 birthday,
-   any Friday the 13th, Halloween…) he speaks up by himself, once a day.
+/* The Trouble Brewing fox — the dapper top-hatted fox from the logo, cup in
+   hand (public/images/brand/fox-sipping.png, cut from logo-fox.png without
+   the wordmark) — keeps you company in the corner of every page, leaning on
+   his scroll. He turns to face your cursor (or wherever your finger last
+   touched) and leans toward it; every so often he takes a sip and a curl of
+   steam rises from the cup. Tap him and he says something true: the shop's
+   real hours, or a nudge toward something on the wall. On special days (the
+   October 13 birthday, any Friday the 13th, Halloween…) he speaks up by
+   himself, once a day.
 
-   The head-turn is CSS custom properties written straight from a
+   Facing + leaning are CSS custom properties written straight from a
    requestAnimationFrame — no React re-render per mouse move. Reduced motion:
    he holds still and only talks when tapped. The × sends him away for the
    rest of the visit. */
@@ -54,13 +57,13 @@ export default function FoxGuide() {
     const paint = () => {
       const r = el.getBoundingClientRect();
       const cx = r.left + r.width / 2;
-      const cy = r.top + r.height * 0.4; // his eyes, not his chain
+      const cy = r.top + r.height * 0.4;
       const dx = Math.max(-1, Math.min(1, (px - cx) / (window.innerWidth * 0.6)));
       const dy = Math.max(-1, Math.min(1, (py - cy) / (window.innerHeight * 0.6)));
-      el.style.setProperty('--ry', `${dx * 28}deg`);
-      el.style.setProperty('--rx', `${-dy * 18}deg`);
-      el.style.setProperty('--rz', `${dx * 6}deg`);
-      el.style.setProperty('--glint', `${50 + dx * 30}%`);
+      // the drawing faces left (snout toward his cup); turn him round to
+      // face the pointer whenever it is on his right
+      el.style.setProperty('--face', px > cx ? -1 : 1);
+      el.style.setProperty('--lean', `${Math.abs(dx) * 5 - dy * 3}deg`);
     };
     const onMove = (e) => {
       px = e.clientX; py = e.clientY;
@@ -98,8 +101,12 @@ export default function FoxGuide() {
         </p>
       )}
       <button type="button" ref={fox} className="fox-guide__fox" onClick={talk} aria-label={line ? 'Close what the fox said' : 'Ask the fox something'}>
-        <img src={asset('images/brand/fox-head.webp')} alt="" width="338" height="520" />
-        <span className="fox-guide__glint" aria-hidden="true" />
+        <span className="fox-guide__card">
+          <span className="fox-guide__figure">
+            <img src={asset('images/brand/fox-sipping.png')} alt="" width="266" height="148" />
+            <span className="fox-guide__steam" aria-hidden="true"><i /><i /><i /></span>
+          </span>
+        </span>
       </button>
     </div>
   );
