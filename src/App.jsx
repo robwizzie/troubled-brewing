@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer.jsx';
+import FoxGuide from './components/FoxGuide.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import AnnouncementBanner from './components/AnnouncementBanner.jsx';
 import ConsentBanner from './components/ConsentBanner.jsx';
@@ -33,6 +34,7 @@ function PublicShell({ children }) {
       <Nav />
       <main id="main" className={`page page-${slug}`}>{children}</main>
       <Footer />
+      <FoxGuide />
       <ConsentBanner />
     </>
   );

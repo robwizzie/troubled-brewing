@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
+import GuestPhotos from '../GuestPhotos.jsx';
 import { loadReviews } from '../../lib/reviews.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 
@@ -49,8 +50,10 @@ const prefersReducedMotion = () =>
 
 export default function SocialProof({ data = {} }) {
   const { label = 'Loved by the neighborhood', count = 6 } = data;
-  const [rating, setRating] = useState(4.9);
+  const [rating, setRating] = useState(null);
   const [mapsUrl, setMapsUrl] = useState('');
+  const [total, setTotal] = useState(0);
+  const [photos, setPhotos] = useState([]);
   const [quotes, setQuotes] = useState([]);
   const [perView, setPerView] = useState(1);
   const [page, setPage] = useState(0);
@@ -77,6 +80,8 @@ export default function SocialProof({ data = {} }) {
       if (!alive) return;
       setRating(r.rating);
       setMapsUrl(r.mapsUrl);
+      setTotal(r.count);
+      setPhotos(r.photos);
       setQuotes(r.reviews.slice(0, Math.max(3, Number(count) || 6)));
     });
     return () => { alive = false; };
@@ -207,9 +212,10 @@ export default function SocialProof({ data = {} }) {
         <div className="social-proof">
           <div className="social-proof__rating">
             <span className="social-proof__eyebrow">Community reviews</span>
-            <span className="social-proof__num">{rating.toFixed(1)}</span>
-            <StarRating value={rating} size={20} />
+            <span className="social-proof__num">{rating != null ? Number(rating).toFixed(1) : '—'}</span>
+            <StarRating value={rating || 0} size={20} />
             <span className="social-proof__label">{label}</span>
+            {total > 0 && <span className="social-proof__count">{total} Google reviews</span>}
             <Link className="social-proof__link" to="/reviews">Read the reviews</Link>
           </div>
           <div
@@ -243,18 +249,20 @@ export default function SocialProof({ data = {} }) {
                   ? q.quote
                   : `${q.quote.slice(0, limit).trimEnd().replace(/\s+\S*$/, '')}…`;
                 return (
-                  /* each quote hangs like a small framed note — black molding, wide
-                     mat (gallery frame classes), the byline engraved on brass */
+                  /* each review is a note pinned to the wall: the reviewer's own
+                     Google picture in a little gold oval at the top (a portrait
+                     on the gallery wall), their photo of the visit when they
+                     posted one, then the words and a brass byline */
                   <li
                     key={q.id}
-                    className={`gw-frame__art gw-frame__art--black-mat social-proof__quote${q.photo ? ' social-proof__quote--photo' : ''}`}
-                    style={{ '--tint': 'var(--color-paper)' }}
+                    className={`social-proof__quote${q.photo ? ' social-proof__quote--photo' : ''}`}
                     role="group"
                     aria-roledescription="review"
                     aria-label={`Review ${i + 1} of ${quotes.length}`}
                   >
+                    <span className="social-proof__tape" aria-hidden="true" />
                     <div>
-                      {q.photo ? (
+                      {q.photo && (
                         <img
                           className="social-proof__photo"
                           src={q.photo}
@@ -262,10 +270,21 @@ export default function SocialProof({ data = {} }) {
                           loading="lazy"
                           referrerPolicy="no-referrer"
                         />
-                      ) : (
-                        <span className="social-proof__mark" aria-hidden="true">❝</span>
                       )}
-                      <p className="social-proof__text">{shown}</p>
+                      <div className="social-proof__who">
+                        <span className="social-proof__portrait" aria-hidden="true">
+                          {q.avatar ? (
+                            <img src={q.avatar} alt="" loading="lazy" referrerPolicy="no-referrer" />
+                          ) : (
+                            <span>{q.author.slice(0, 1)}</span>
+                          )}
+                        </span>
+                        <span className="social-proof__who-text">
+                          <strong>{q.author}</strong>
+                          <StarRating value={q.rating || 5} size={14} />
+                        </span>
+                      </div>
+                      <p className="social-proof__text">“{shown}”</p>
                       {isLong && (
                         <button
                           type="button"
@@ -280,7 +299,13 @@ export default function SocialProof({ data = {} }) {
                           {open ? 'Show less' : 'Read more'}
                         </button>
                       )}
-                      <p className="social-proof__author"><span className="brass-plate">{q.author}{q.source ? ` · ${q.source}` : ''}</span></p>
+                      <p className="social-proof__author">
+                        {q.url ? (
+                          <a href={q.url} target="_blank" rel="noopener noreferrer">{q.source || 'Google'}{q.time ? ` · ${q.time}` : ''}</a>
+                        ) : (
+                          <span>{q.source || 'Google'}{q.time ? ` · ${q.time}` : ''}</span>
+                        )}
+                      </p>
                     </div>
                   </li>
                 );
@@ -328,6 +353,7 @@ export default function SocialProof({ data = {} }) {
             )}
           </div>
         </div>
+        <GuestPhotos photos={photos} max={6} heading="Straight from our guests’ cameras" className="guest-photos--home" />
         {mapsUrl && (
           <p className="sr-only">
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer">See all reviews on Google</a>

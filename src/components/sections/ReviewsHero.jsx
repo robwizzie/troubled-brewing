@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getGoogleProfile } from '../../lib/dataService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 import StarRating from '../StarRating.jsx';
+import GuestPhotos from '../GuestPhotos.jsx';
 
 /* Live Google rating + review count from the cached google_profile row
    (refreshed daily by the Edge Function). See docs/INTEGRATIONS.md §Google Places. */
@@ -30,6 +31,9 @@ export default function ReviewsHero({ data = {} }) {
             )}
           </div>
         )}
+        {/* customer photos from Google (the Edge Function keeps them) — the
+            food and the drinks through the guests' own cameras */}
+        <GuestPhotos photos={profile && profile.photos} heading="From our guests’ cameras" />
       </div>
     </section>
   );

@@ -20,9 +20,10 @@ import { getGoogleProfile, getTestimonials, getContentBlock, reviewKey } from '.
      min_rating  the star floor (default 4 — only the good ones)
      hidden      { key: true } — never show this one
      pinned      { key: true } — show it first, everywhere
-     photos      { key: url }  — a photo the owner attached by hand (Google's
-                 APIs don't return review images, so this is how a review
-                 becomes a "with photo" review)
+     photos      { key: url }  — a photo the owner attached by hand. Google's
+                 review objects carry no images; the Edge Function matches the
+                 place's customer photos to their reviewers where it can
+                 (`photos` on the cached review), and this covers the rest
    ============================================================================= */
 
 export const REVIEW_SETTINGS_KEY = 'review_settings';
@@ -52,6 +53,23 @@ export async function getReviewSettings() {
 
 const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
 
+/* "3 months ago" from an ISO timestamp — reviews from the Business Profile API
+   arrive with only the absolute time, and the cards speak in relative time. */
+export function relativeTime(iso, now = Date.now()) {
+  const t = Date.parse(iso || '');
+  if (!Number.isFinite(t)) return '';
+  const days = Math.max(0, Math.round((now - t) / 86400000));
+  if (days < 1) return 'today';
+  if (days < 2) return 'yesterday';
+  if (days < 7) return `${days} days ago`;
+  if (days < 14) return 'a week ago';
+  if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+  if (days < 60) return 'a month ago';
+  if (days < 365) return `${Math.floor(days / 30)} months ago`;
+  if (days < 730) return 'a year ago';
+  return `${Math.floor(days / 365)} years ago`;
+}
+
 /* Google's cache row → the shape every review renderer consumes. `time` is
    Google's relative description ("2 weeks ago"); `published_at` is the real
    timestamp the newer Edge Function stores, and is what we sort on. */
@@ -64,11 +82,14 @@ function fromGoogle(r, i) {
     quote,
     rating: r.rating == null ? 5 : Number(r.rating),
     source: 'Google',
-    time: clean(r.time),
+    time: clean(r.time) || relativeTime(r.published_at),
     published_at: r.published_at || null,
     url: r.review_url || '',
     avatar: r.profile_photo || '',
-    photo: '',
+    // photos the reviewer posted with the review, when the Edge Function could
+    // match them (see supabase/functions/google-profile)
+    photos: Array.isArray(r.photos) ? r.photos.filter(Boolean) : [],
+    photo: Array.isArray(r.photos) && r.photos[0] ? r.photos[0] : '',
     featured: false,
     curated: false,
   };
@@ -87,6 +108,7 @@ function fromTestimonial(t) {
     published_at: null,
     url: '',
     avatar: '',
+    photos: t.image_url ? [t.image_url] : [],
     photo: t.image_url || '',
     featured: Boolean(t.featured),
     curated: true,
@@ -118,7 +140,7 @@ function compare(a, b) {
  *        sources are always loaded regardless, because dedupe needs both: a
  *        review the owners imported as a testimonial must disappear from the
  *        Google side, or the same quote hangs twice on the reviews page.
- * @returns {Promise<{rating:number, count:number, mapsUrl:string, reviews:object[]}>}
+ * @returns {Promise<{rating:number, count:number, mapsUrl:string, photos:object[], reviews:object[]}>}
  */
 export async function loadReviews({ minLength = 0, only = 'all' } = {}) {
   const [profile, testimonials, settings] = await Promise.all([
@@ -127,7 +149,18 @@ export async function loadReviews({ minLength = 0, only = 'all' } = {}) {
     getReviewSettings(),
   ]);
 
-  const picks = [...(testimonials || []).map(fromTestimonial), ...(profile?.reviews || []).map(fromGoogle)];
+  const google = (profile?.reviews || []).map(fromGoogle);
+  const googleByKey = new Map(google.map((g) => [g.key, g]));
+  // A favourite the owners imported from Google keeps the parts of its Google
+  // twin a pasted quote can't carry — the reviewer's own profile picture, the
+  // "a month ago", the link back, and any photos attached to the review.
+  const curated = (testimonials || []).map(fromTestimonial).map((t) => {
+    const twin = googleByKey.get(t.key);
+    return twin
+      ? { ...t, avatar: t.avatar || twin.avatar, time: t.time || twin.time, url: t.url || twin.url, published_at: t.published_at || twin.published_at, photos: twin.photos, photo: t.photo || twin.photo }
+      : t;
+  });
+  const picks = [...curated, ...google];
 
   const seen = new Set();
   const reviews = [];
@@ -149,6 +182,8 @@ export async function loadReviews({ minLength = 0, only = 'all' } = {}) {
     rating: profile?.rating || 5,
     count: profile?.review_count || 0,
     mapsUrl: profile?.maps_url || '',
+    // guests' photos from Google (food, drinks, the room), newest first
+    photos: Array.isArray(profile?.photos) ? profile.photos : [],
     reviews,
   };
 }
