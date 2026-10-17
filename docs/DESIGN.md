@@ -103,9 +103,9 @@ The Immersive Gallery's room is a generated painting. These five are built only 
 4. **Cozy Editorial** — magazine layout, serif headlines, featured drink, a short "why we exist," soft scrolling rhythm.
 5. **Modern Coffee** — bold, dark, oversized type with a hero drink shot.
 
-## The gold fox (sitewide)
+## The fox guide (sitewide)
 
-`FoxGuide.jsx` hangs the real gilded fox head from the wall in the corner of every public page (bottom-right on Step Inside, out of the cards' way). He turns his head toward the cursor or the last touch, and when tapped he says something true — the live hours (`useShopStatus`) or a nudge toward something on the wall. On special days (`src/lib/foxDays.js`: the **Oct 13 birthday** with the right year count, any **Friday the 13th**, Halloween, Christmas, New Year, Valentine's) he speaks up by himself once per day. `?foxday=MM-DD` previews a date. The × sends him away for the visit; reduced motion keeps him still.
+`FoxGuide.jsx` puts the **logo's fox** (top hat, cup in hand, leaning on his scroll) on a small cream card in the corner of every public page (bottom-right on Step Inside, out of the cards' way). The drawing is `public/images/brand/fox-sipping.png`, cut from `logo-fox.png` with the wordmark removed. He turns round to face the cursor or the last touch and leans toward it; every so often he takes a sip and steam curls up from the cup. Tapped, he says something true: the live hours (`useShopStatus`) or a nudge toward something on the wall. On special days (`src/lib/foxDays.js`: the **Oct 13 birthday** with the right year count, any **Friday the 13th**, Halloween, Christmas, New Year, Valentine's) he speaks up by himself once per day. `?foxday=MM-DD` previews a date. The × sends him away for the visit; reduced motion keeps him still.
 
 ## Accessibility (non-negotiable)
 
