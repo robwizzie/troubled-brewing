@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import BrandImg from '../BrandImg.jsx';
 import StarRating from '../StarRating.jsx';
@@ -8,6 +8,7 @@ import { WALL_ART, WALL_IMAGE, WALL_FOCUS } from '../../lib/galleryWall.js';
 import { getMenu, pickProducts } from '../../lib/menuService.js';
 import { loadReviews } from '../../lib/reviews.js';
 import { useShopStatus } from '../../lib/useShopStatus.js';
+import { openFrame, pieceAt, frameRect, doorFor } from '../../lib/framePortal.js';
 
 /* "Step Inside" landing concept — the homepage as a walk along the real wall.
 
@@ -65,6 +66,25 @@ function placement(rect, W, H, { cx, cy, fill }) {
   return { x, y, s: imgW / coverW, coverW };
 }
 
+/* A link that walks into a frame on the way: the chapter's own piece. Plain
+   <Link> semantics (href, middle-click, new-tab, keyboard) stay intact. */
+function Door({ photoRef, piece, to, children }) {
+  const navigate = useNavigate();
+  return (
+    <Link
+      className="btn sih__ghost"
+      to={to}
+      onClick={(e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        openFrame(photoRef.current, piece, navigate, to);
+      }}
+    >
+      {children}
+    </Link>
+  );
+}
+
 export default function StepInsideHero({ data = {} }) {
   const {
     sih_title: title = 'Step inside',
@@ -75,6 +95,10 @@ export default function StepInsideHero({ data = {} }) {
 
   const section = useRef(null);
   const stage = useRef(null);
+  const photoRef = useRef(null);
+  const navigate = useNavigate();
+  // the frame under the pointer: outlined, with its door's name on a tag
+  const [hover, setHover] = useState(null);
   const [chapter, setChapter] = useState(0);
   const [box, setBox] = useState({ W: 0, H: 0, narrow: false });
   const [drinks, setDrinks] = useState([]);
@@ -179,7 +203,7 @@ export default function StepInsideHero({ data = {} }) {
             </ul>
             <div className="sih__cta">
               <OrderButton label={orderLabel} className="btn btn--accent" location="hero-menu" />
-              <Link className="btn sih__ghost" to="/menu">Full menu</Link>
+              <Door photoRef={photoRef} piece="ducks" to="/menu">Full menu</Door>
             </div>
           </div>
         );
@@ -189,7 +213,7 @@ export default function StepInsideHero({ data = {} }) {
             <p className="sih__kicker">Our story</p>
             <h2 className="sih__h">Opened on Friday the 13th</h2>
             <p className="sih__p">October 2017, 514 Station Ave. Tom and Cat, Haddon Heights locals, opened a coffee house and called it Trouble. Nine years of La Colombe, breakfast all day and a wall that keeps filling up.</p>
-            <div className="sih__cta"><Link className="btn sih__ghost" to="/timeline">The story so far →</Link></div>
+            <div className="sih__cta"><Door photoRef={photoRef} piece="balloon-fox" to="/timeline">The story so far →</Door></div>
           </div>
         );
       case 'reviews':
@@ -209,7 +233,7 @@ export default function StepInsideHero({ data = {} }) {
                 </figcaption>
               </figure>
             )}
-            <div className="sih__cta"><Link className="btn sih__ghost" to="/reviews">Read them all →</Link></div>
+            <div className="sih__cta"><Door photoRef={photoRef} piece="butterflies" to="/reviews">Read them all →</Door></div>
           </div>
         );
       case 'team':
@@ -218,7 +242,7 @@ export default function StepInsideHero({ data = {} }) {
             <p className="sih__kicker">The Troublemakers</p>
             <h2 className="sih__h">The gold fox wears glasses. The team wears aprons.</h2>
             <p className="sih__p">The people behind the counter, who’ll know your order by the third visit.</p>
-            <div className="sih__cta"><Link className="btn sih__ghost" to="/troublemakers">Meet them →</Link></div>
+            <div className="sih__cta"><Door photoRef={photoRef} piece="fox-head" to="/troublemakers">Meet them →</Door></div>
           </div>
         );
       case 'local':
@@ -227,7 +251,7 @@ export default function StepInsideHero({ data = {} }) {
             <p className="sih__kicker">Local love</p>
             <h2 className="sih__h">A fox on a bike, a street full of neighbours</h2>
             <p className="sih__p">Anthony’s next door, Lula’s Empanadas, Ralph’s Pizza, South Jersey Special and the rest of Station Ave. Station Ave only works because all of it works.</p>
-            <div className="sih__cta"><Link className="btn sih__ghost" to="/neighborhood">Walk the block →</Link></div>
+            <div className="sih__cta"><Door photoRef={photoRef} piece="bicycle-fox" to="/neighborhood">Walk the block →</Door></div>
           </div>
         );
       default:
@@ -238,7 +262,7 @@ export default function StepInsideHero({ data = {} }) {
             <p className="sih__p">{status ? status.label : 'Open daily'}. Street parking out front and a lot behind the shop.</p>
             <div className="sih__cta">
               <OrderButton label={orderLabel} className="btn btn--accent" location="hero-visit" />
-              <Link className="btn sih__ghost" to="/location">Directions</Link>
+              <Door photoRef={photoRef} piece="town-hall" to="/location">Directions</Door>
               <Link className="btn sih__ghost" to="/gallery-wall">Every frame →</Link>
             </div>
           </div>
@@ -246,12 +270,41 @@ export default function StepInsideHero({ data = {} }) {
     }
   };
 
+  // Frames are doors: point at one to see where it goes, click to walk in.
+  // Clicks that land on a card, a button or the rail are theirs, not the wall's.
+  const isUi = (t) => t.closest('.sih__cards, .sih__rail, .sih__neon, a, button');
+  function onPoint(e) {
+    if (e.pointerType !== 'mouse' || isUi(e.target) || !photoRef.current) { setHover(null); return; }
+    const art = pieceAt(photoRef.current, e.clientX, e.clientY);
+    if (!art) { setHover(null); return; }
+    if (hover && hover.id === art.id) return;
+    const f = frameRect(photoRef.current, art);
+    const st = stage.current.getBoundingClientRect();
+    setHover({
+      id: art.id,
+      label: doorFor(art.id).label,
+      box: { left: `${f.left - st.left}px`, top: `${f.top - st.top}px`, width: `${f.width}px`, height: `${f.height}px` },
+    });
+  }
+  function onStageClick(e) {
+    if (isUi(e.target) || !photoRef.current) return;
+    const art = pieceAt(photoRef.current, e.clientX, e.clientY);
+    if (art) { setHover(null); openFrame(photoRef.current, art.id, navigate); }
+  }
+
   return (
     <section ref={section} className={`sih ${lit ? 'is-lit' : 'is-dark'}`} style={{ '--chapters': CHAPTERS.length }}>
       <div className="sih__sticky">
-        <div ref={stage} className={`sih__stage ${bookend ? 'is-whole' : 'is-close'}`}>
+        <div
+          ref={stage}
+          className={`sih__stage ${bookend ? 'is-whole' : 'is-close'} ${hover ? 'is-pointing' : ''}`}
+          onPointerMove={onPoint}
+          onPointerLeave={() => setHover(null)}
+          onClick={onStageClick}
+        >
           <img className="sih__blur" src={src} alt="" aria-hidden="true" />
           <img
+            ref={photoRef}
             className="sih__photo"
             src={src}
             alt="The gallery wall at Trouble Brewing: a sage-green wall hung with mismatched vintage frames, a gold fox head in spectacles and a brass hare."
@@ -265,6 +318,12 @@ export default function StepInsideHero({ data = {} }) {
             <span className="sih__neon-word">{lit ? 'Open' : 'Closed'}</span>
             {!lit && backAt && <span className="sih__neon-sub">{backAt}</span>}
           </div>
+
+          {hover && (
+            <div className="sih__door" style={hover.box} aria-hidden="true">
+              <span className="sih__door-tag">{hover.label} →</span>
+            </div>
+          )}
 
           <div className="sih__cards">{CHAPTERS.map((_, i) => card(i))}</div>
 

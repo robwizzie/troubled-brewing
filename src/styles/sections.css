@@ -504,7 +504,7 @@
   position: relative; overflow: visible;
   /* inline-block keeps each note in ONE masonry column — a block card lets
      its tape (drawn just above it) fragment onto the foot of the column before */
-  display: inline-block; width: 100%; margin-top: 12px;
+  display: inline-block; width: 100%; margin: 12px 0 0; /* a <figure>: drop the UA's 40px side margins, which width:100% would push past the column */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 40%), #fffdf6;
   border: 0; border-radius: 3px;
   box-shadow: 0 1px 2px rgba(40, 30, 12, 0.12), 0 10px 22px rgba(40, 44, 25, 0.14);
