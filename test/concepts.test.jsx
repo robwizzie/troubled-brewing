@@ -63,3 +63,15 @@ describe('starter rows', () => {
     expect(realRows('local_businesses', kept, fallback)).toEqual(kept);
   });
 });
+
+describe('the "Set homepage look" workflow', () => {
+  it('offers every concept the site can render', async () => {
+    const fs = await import('node:fs');
+    const yml = fs.readFileSync('.github/workflows/set-homepage-concept.yml', 'utf8');
+    const script = fs.readFileSync('scripts/set-homepage-concept.mjs', 'utf8');
+    CONCEPTS.forEach((c) => {
+      expect(yml).toContain(`- ${c.value}`);
+      expect(script).toContain(`'${c.value}'`);
+    });
+  });
+});
