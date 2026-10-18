@@ -18,7 +18,7 @@ export default function ModernCoffeeHero({ data = {} }) {
     mch_brand: brand = 'Brewing',
     mch_lead: lead = 'Bold espresso, scratch-made paninis and pastries, and a green-walled room worth lingering in — crafted fresh on Station Ave.',
     mch_drink_image_url: drinkPhoto = DRINK,
-    mch_stats: statsSrc = '20+ | Signature drinks\n4.9★ | Neighborhood rating\n7 days | Open weekly',
+    mch_stats: statsSrc = '20+ | Signature drinks\n4.6★ | 298 Google reviews\n7 days | Open weekly',
     order_label: orderLabel = 'Order Now',
   } = data;
   // "Big | Little label" per line

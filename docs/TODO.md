@@ -75,3 +75,11 @@ Read this and `PROJECT.md` first each session.
 ## Notes
 - v1 builds full functionality against Supabase; the site also runs entirely from `seed.js` if Supabase is not yet configured, so it's demoable/deployable immediately.
 - Lighthouse/a11y final pass should run against the live GitHub Pages deploy.
+
+## Content refresh (2026-10-16)
+
+- [ ] **Run `supabase/migrations/2026-10-16-real-content.sql`** once in the Supabase SQL editor. The live tables are missing columns the admin now saves (Local Love `address`/`we_love`/`logo_url`, Troublemakers `pronouns`/`drink`/`started_label`, the gallery credits, `google_profile.photos`), and still hold the starter placeholders. The script is guarded and idempotent — it only replaces rows that still read like the placeholders — and was tested against `backups/2026-10-12.json`. (Until it runs, the site already hides the placeholder rows on read — `src/lib/starterRows.js`.)
+- [ ] Redeploy `google-profile` so review photos + guest photos start flowing; optionally add the `GBP_*` secrets to pull **every** review (docs/INTEGRATIONS.md §Google Places).
+- [ ] Confirm with Tom & Cat: the **mortgage-banker** origin story (no independent public source found), the public **email** address (none listed anywhere), and whether to add **Doc's Unique Boutique** (a birthday-raffle donor; no address/site found) to Local Love.
+- [ ] **Banana Split Coffee** is marked unavailable in the current SpotOn sync but is still the homepage "featured drink" — swap the featured drink or turn it back on in SpotOn.
+- Facts used, and where they came from: opened **Fri Oct 13, 2017** (New Jersey Isn't Boring, Dec 2019 + the shop's 9th-birthday posts); **Metolius** tea + "breakfast all day" (shop Instagram/Linktree); Facebook `tbcoffeehouse`; raffle donors Lula's, Ralph's, South Jersey Special, Doc's (shop Instagram); The Retrospect Quick Bites review (Oct 14, 2026).

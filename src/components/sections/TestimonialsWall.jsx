@@ -43,17 +43,26 @@ export default function TestimonialsWall({ data = {} }) {
         {items === null ? (
           <SkeletonCards count={3} height={180} />
         ) : (
-          <div className={`testimonials testimonials--${layout}`}>
+          <div className={`testimonials testimonials--${layout}${visible.length === 4 || visible.length === 2 ? ' testimonials--pairs' : ''}`}>
             {visible.map((t) => (
               <figure key={t.id} className="card testimonial">
                 {t.photo && <img className="testimonial__photo" src={t.photo} alt={`Photo from ${t.author}'s review`} loading="lazy" referrerPolicy="no-referrer" />}
                 <div className="card__body">
-                  {t.rating ? <StarRating value={t.rating} /> : null}
+                  <div className="testimonial__head">
+                    <span className="social-proof__portrait" aria-hidden="true">
+                      {t.avatar ? <img src={t.avatar} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span>{t.author.slice(0, 1)}</span>}
+                    </span>
+                    <div>
+                      <strong>{t.author}</strong>
+                      {t.rating ? <StarRating value={t.rating} size={14} /> : null}
+                    </div>
+                  </div>
                   <blockquote>“{t.quote}”</blockquote>
-                  <figcaption>
-                    <strong>{t.author}</strong>
-                    {t.source ? <span className="testimonial__source"> · {t.source} review</span> : null}
-                  </figcaption>
+                  {t.source ? (
+                    <figcaption className="testimonial__source">
+                      {t.url ? <a href={t.url} target="_blank" rel="noopener noreferrer">{t.source} review{t.time ? ` · ${t.time}` : ''}</a> : `${t.source} review${t.time ? ` · ${t.time}` : ''}`}
+                    </figcaption>
+                  ) : null}
                 </div>
               </figure>
             ))}

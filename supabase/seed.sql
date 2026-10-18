@@ -52,7 +52,7 @@ insert into sections (page_slug, type, display_order, data) values
 ('home', 'signature_drinks', 3, '{"heading": "Signature sips", "button_label": "See the full menu"}'),
 ('home', 'hours', 4, '{"heading": "Today at Trouble Brewing"}'),
 ('home', 'cta', 5, '{"heading": "Skip the line", "body": "Order ahead on SpotOn and we''ll have it ready.", "button_label": "Order Now", "button_url": ""}'),
-('home', 'intro_duo', 6, '{"heading_a": "Good coffee, real food", "body_a": "We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options.", "heading_b": "More than a coffee shop", "body_b": "Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That''s the good kind of Trouble."}'),
+('home', 'intro_duo', 6, '{"heading_a": "Good coffee, real food", "body_a": "We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options. Breakfast is served all day.", "heading_b": "More than a coffee shop", "body_b": "Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That''s the good kind of Trouble."}'),
 ('home', 'instagram', 7, '{"embed_handle": "troublebrewingcoffee"}'),
 ('home', 'newsletter', 8, '{"heading": "Stay in the loop", "body": "New drinks, events, and the occasional bit of Trouble — straight to your inbox.", "mailchimp_action_url": ""}');
 
@@ -64,8 +64,8 @@ insert into sections (page_slug, type, display_order, data) values
 -- ABOUT -------------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
 ('about', 'hero', 0, '{"heading": "Our Story", "subheading": "From spreadsheets to steamed milk.", "background_image_url": "", "cta_label": "See the Menu", "cta_url": "/menu"}'),
-('about', 'rich_text', 1, '{"heading": "Two bankers walk into a coffee shop", "body_markdown": "Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Trouble Brewing is the result — a warm, art-filled room in the heart of Haddon Heights where the coffee is serious and the vibe is not."}'),
-('about', 'rich_text', 2, '{"heading": "Why La Colombe", "body_markdown": "We partnered with **La Colombe** because great coffee shouldn''t be complicated — it should be consistent, ethical, and delicious. That partnership is the foundation we build every drink on."}'),
+('about', 'rich_text', 1, '{"heading": "Two bankers walk into a coffee shop", "body_markdown": "Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Haddon Heights residents themselves, they opened Trouble Brewing at 514 Station Ave on **Friday the 13th of October, 2017** — about as on-brand an opening day as a shop called Trouble could ask for. It''s been a warm, art-filled room where the coffee is serious and the vibe is not ever since."}'),
+('about', 'rich_text', 2, '{"heading": "Why La Colombe", "body_markdown": "We partnered with **La Colombe** because great coffee shouldn''t be complicated — it should be consistent, ethical, and delicious. That partnership is the foundation we build every drink on, alongside **Metolius** teas and breakfast served all day."}'),
 ('about', 'rich_text', 3, '{"heading": "Why local matters", "body_markdown": "Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for."}');
 
 -- EVENTS ------------------------------------------------------------
@@ -157,7 +157,7 @@ insert into content_blocks (key, data) values
 ('staff_picks', '{"items": [{"label": "Flying off the menu", "value": "Cranberry Walnut Chicken Salad Panini"}, {"label": "Barista''s pick", "value": "Banana Split Coffee"}]}'),
 ('loyalty_copy', '{"body_markdown": "Ask a Troublemaker about loyalty perks. Full program details coming soon."}'),
 ('announcement_banner', '{"enabled": false, "message": ""}'),
-('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "", "tiktok": "", "x": "", "youtube": ""}'),
+('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "https://www.facebook.com/tbcoffeehouse", "tiktok": "https://www.tiktok.com/@troublebrewingcoffee", "x": "", "youtube": ""}'),
 -- Which Google reviews the site shows + the owner's per-review overrides
 -- (hidden / pinned / attached photo), keyed by author+text. See src/lib/reviews.js
 -- and admin -> Reviews. 4 stars is the default floor: only the good ones.
@@ -165,10 +165,10 @@ insert into content_blocks (key, data) values
 on conflict (key) do nothing;
 
 -- -----------------------------------------------------------------------------
--- Google profile (single placeholder row — refreshed by the Edge Function)
+-- Google profile (last known real values — refreshed daily by the Edge Function)
 -- -----------------------------------------------------------------------------
-insert into google_profile (id, rating, review_count, maps_url)
-values (1, 4.9, 0, 'https://www.google.com/maps/search/?api=1&query=Trouble+Brewing+Coffee+House+Haddon+Heights')
+insert into google_profile (id, place_id, rating, review_count, maps_url)
+values (1, 'ChIJaRXwqCHMxokR3omz5QWgCws', 4.6, 298, 'https://maps.google.com/?cid=795905706350053854')
 on conflict (id) do nothing;
 
 -- Instagram cache (single placeholder row — refreshed by the Edge Function;
@@ -183,14 +183,11 @@ on conflict (id) do nothing;
 -- -----------------------------------------------------------------------------
 
 -- -----------------------------------------------------------------------------
--- Gallery pieces (placeholder — owner adds the real wall + stories)
+-- Gallery pieces: intentionally NOT seeded. The Gallery Wall page describes
+-- every piece in the wall photograph from what is visibly in it
+-- (src/lib/galleryWall.js); owners catalogue the real titles, artists and
+-- stories in /admin. Invented backstories used to sit here.
 -- -----------------------------------------------------------------------------
--- Starter rows that teach the shape of a good entry; owners replace them with
--- the real pieces off the wall. `artist` is the point of this page, so it is
--- the field the story below nudges them toward filling in.
-insert into gallery_pieces (title, story, year_label, frame_style, display_order) values
-('The Ornate Gold One', 'Nobody quite remembers where this one came from — it just showed up during the build-out and refused to leave. Now it''s the unofficial centerpiece of the wall. (Owner: if you know who made it, add them — the credit is the best part of this page.)', 'Found, undated', 'gilt-grand', 0),
-('Tiny Oval Mystery', 'A flea-market find from a rainy Saturday. We bought it for the frame and kept it for the smile it gets out of regulars.', '', 'oval-gilt', 1);
 
 -- -----------------------------------------------------------------------------
 -- Team members ("Troublemakers") — placeholder so the page renders
@@ -199,8 +196,7 @@ insert into gallery_pieces (title, story, year_label, frame_style, display_order
 -- EMPTY rather than as em-dashes: the page hides a blank fact, so an unfilled
 -- card looks finished instead of carrying five rows of punctuation.
 insert into team_members (name, role, bio, fun_facts, display_order, active) values
-('Katie', 'General Manager', 'Keeps the whole operation running and somehow still remembers your usual.', '{"favorite_local_food": "", "favorite_movie": "", "favorite_book": "", "favorite_show": "", "favorite_artist": ""}', 0, true),
-('A Troublemaker', 'Barista', 'Pulls shots, makes friends, occasionally causes (delicious) trouble.', '{"favorite_local_food": "", "favorite_movie": "", "favorite_book": "", "favorite_show": "", "favorite_artist": ""}', 1, true);
+('Katie', 'General Manager', 'Keeps the whole operation running and somehow still remembers your usual.', '{"favorite_local_food": "", "favorite_movie": "", "favorite_book": "", "favorite_show": "", "favorite_artist": ""}', 0, true);
 
 -- -----------------------------------------------------------------------------
 -- Local businesses (placeholder Haddon Heights neighbors — confirm with client)
@@ -214,18 +210,19 @@ insert into team_members (name, role, bio, fun_facts, display_order, active) val
 -- send people there for.
 insert into local_businesses (name, category, address, blurb, url, display_order) values
 ('Anthony''s Creative Italian Cuisine', 'restaurant', '512 Station Ave', 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', 'https://www.anthonysonstation.com/', 0),
-('Lula''s Empanadas', 'restaurant', '516 Station Ave', 'Contemporary Dominican empanadas from a takeout window, named after the owner''s mother. Up to eighteen flavors, and a couple of picnic tables out front.', 'https://www.facebook.com/lulasempanadas/', 1),
-('Ralph''s Pizza', 'restaurant', '520 Station Ave', 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town.', 'https://ralphspizzahaddonheights.com/', 2),
-('South Jersey Special', 'retail', '531 Station Ave', 'A gift shop of South Jersey makers — cards, prints, jewelry and small-batch things, most of it funny, all of it local.', 'https://southjerseyspecial.com/', 3),
+('Lula''s Empanadas', 'restaurant', '516 Station Ave', 'Contemporary Dominican empanadas from Yaslyn Lora, named after her mother — up to eighteen flavors, now from a proper Station Ave storefront. They chipped in prizes for our ninth-birthday raffle.', 'https://www.facebook.com/lulasempanadas/', 1),
+('Ralph''s Pizza', 'restaurant', '520 Station Ave', 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town. They donated to our ninth-birthday raffle, too.', 'https://ralphspizzahaddonheights.com/', 2),
+('South Jersey Special', 'retail', '531 Station Ave', 'Amy Murphy’s gift shop of South Jersey makers — cards, prints, jewelry and small-batch things, most of it funny, all of it local. Another of our birthday-raffle donors.', 'https://southjerseyspecial.com/', 3),
 ('Jane''s Tea House', 'cafe', '602 Station Ave', 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', 'https://janesteahouse.com/', 4),
 ('Cabana Water Ice Co.', 'other', '603 Station Ave', 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', '', 5),
 ('April Robin Florist & Gift', 'retail', '620 Station Ave', 'The florist at the top of the avenue — where the flowers on our counter usually come from.', 'https://www.aprilrobinflorist.com/', 6),
 ('John''s Friendly Market', 'other', '622 Station Ave', 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', '', 7);
 
 -- -----------------------------------------------------------------------------
--- TB Timeline milestones (placeholder — owner adds the real history)
+-- TB Timeline milestones — real, sourced dates (see src/lib/seed.js)
 -- -----------------------------------------------------------------------------
 insert into timeline_events (date_label, sort_date, title, description, display_order) values
-('Day One', '2021-01-01', 'Trouble Brewing opens its doors', 'Tom & Cat trade spreadsheets for steamed milk and open Trouble Brewing Coffee House in Haddon Heights. (Owner: update with the real date + story.)', 0),
-('Year One', '2022-01-01', 'Our first anniversary', 'One year of regulars, La Colombe, and good Trouble. Thank you, Haddon Heights.', 1),
-('A new signature', '2023-01-01', 'The Banana Split Coffee is born', 'Our now-signature, dessert-inspired drink joins the menu and quickly becomes a favorite.', 2);
+('Friday the 13th · Oct 2017', '2017-10-13', 'Trouble opens on Station Ave', 'Tom and Cat, Haddon Heights locals, open Trouble Brewing Coffee House at 514 Station Ave — on Friday the 13th, naturally. La Colombe in the grinder, breakfast all day.', 0),
+('December 2019', '2019-12-07', 'The internet finds out', 'New Jersey Isn’t Boring writes Trouble up as one of the best spots around to work from a coffee shop — comfy seats, free WiFi, a shelf of books and drinks sized Trouble and Big Trouble.', 1),
+('October 2026', '2026-10-13', 'Nine years of Trouble', 'A birthday raffle with prizes from our Station Ave neighbors — Lula’s Empanadas, Ralph’s Pizza, South Jersey Special and Doc’s Unique Boutique — and two birthday lattes: The Max (a dirt-cake iced latte) and The Ruby (cake batter, strawberry cold foam, sprinkles).', 2),
+('October 2026', '2026-10-14', 'A Quick Bites review', 'The Retrospect stops in for its Quick Bites column and comes away talking about the cappuccino, the pumpkin spice frozen coffee and the French toast muffin — "a group favorite."', 3);

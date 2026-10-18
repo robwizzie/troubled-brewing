@@ -277,6 +277,81 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
     ],
   },
+  /* The three real-wall concepts (twh_/clh_/sbh_) hang the shop's own
+     photograph of the gallery wall. The photo field warns about the same
+     geometry bargain the Gallery Wall page makes: tags, the lens's labels and
+     the scribbles are measured against the photo we ship. */
+  tagged_wall_hero: {
+    fields: [
+      { name: 'twh_eyebrow', label: 'Eyebrow line', type: 'text', hint: 'The little line above the heading.' },
+      { name: 'twh_title', label: 'Heading', type: 'text', hint: 'Blank = "Come in. Look around."' },
+      { name: 'twh_sub', label: 'Subheading', type: 'textarea', rows: 3 },
+      { name: 'twh_hint', label: 'Hand-written nudge', type: 'text', hint: 'The scribble under the hours, pointing at the wall. Blank = "Pick a tag, any tag →".' },
+      { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
+      { name: 'twh_menu_label', label: 'Second button text', type: 'text', hint: 'Blank = "See the menu".' },
+      { name: 'twh_tags', label: 'Tags on the wall', type: 'textarea', rows: 8, hint: 'One per line: "piece | label | link". Pieces: ducks, oval-landscape, botanical, snow-chain, balloon-fox, butterflies, lady-in-red, grey-room, hare, daisies, early-bird, fox-head, pumpkin, the-company, bicycle-fox, cold-out, silhouette, town-hall, the-cup. Blank keeps our seven.' },
+      { name: 'twh_photo_url', label: 'The wall photo', type: 'image', preset: 'hero', folder: 'wall', hint: 'Careful: the tags are pinned to frames in the photo we ship. A different picture will still show, but the tags will hang in the wrong places. Blank uses ours.' },
+      { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+    ],
+  },
+  closer_look_hero: {
+    fields: [
+      { name: 'clh_eyebrow', label: 'Eyebrow line', type: 'text', hint: 'The little line above the heading.' },
+      { name: 'clh_title', label: 'Heading', type: 'text', hint: 'Blank = "Have a closer look".' },
+      { name: 'clh_sub', label: 'Subheading', type: 'textarea', rows: 3 },
+      { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
+      { name: 'clh_menu_label', label: 'Second button text', type: 'text', hint: 'Blank = "See the menu".' },
+      { name: 'clh_photo_url', label: 'The wall photo', type: 'image', preset: 'hero', folder: 'wall', hint: 'Careful: the magnifying glass knows where each piece is in the photo we ship. A different picture will still show, but the labels will name the wrong art. Blank uses ours. The labels themselves come from Gallery Wall pieces — pin a piece to a spot there and its title and artist show here.' },
+      { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+    ],
+  },
+  scrapbook_hero: {
+    fields: [
+      { name: 'sbh_eyebrow', label: 'Hand-written line', type: 'text', hint: 'The pink scribble above the heading.' },
+      { name: 'sbh_title', label: 'Heading', type: 'text' },
+      { name: 'sbh_sub', label: 'Subheading', type: 'textarea', rows: 3 },
+      { name: 'sbh_hours_label', label: 'Sticky note title', type: 'text', hint: 'Above your live hours. Blank = "Open today".' },
+      { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
+      { name: 'sbh_menu_label', label: 'Second button text', type: 'text', hint: 'Blank = "See the menu".' },
+      { name: 'sbh_photo_url', label: 'The wall photo', type: 'image', preset: 'hero', folder: 'wall', hint: 'Careful: the hand-written arrows point at things in the photo we ship. Blank uses ours.' },
+      { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+    ],
+  },
+  step_inside_hero: {
+    note: 'Scroll down the homepage and the photo walks along your wall, one frame per chapter. The drinks, rating and review come from your live menu and Google; the lights follow your hours.',
+    fields: [
+      { name: 'sih_title', label: 'Heading', type: 'text', hint: 'Blank = "Step inside".' },
+      { name: 'sih_sub', label: 'Subheading', type: 'textarea', rows: 3 },
+      { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
+      { name: 'sih_photo_url', label: 'The wall photo', type: 'image', preset: 'hero', folder: 'wall', hint: 'Careful: each chapter zooms to a frame measured in the photo we ship. Blank uses ours.' },
+      { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+    ],
+  },
+  wall_tour_hero: {
+    fields: [
+      { name: 'wth_eyebrow', label: 'Eyebrow line', type: 'text', hint: 'The little gold line above the heading.' },
+      { name: 'wth_title', label: 'Heading', type: 'text', hint: 'Blank = "Coffee with a view".' },
+      { name: 'wth_sub', label: 'Subheading', type: 'textarea', rows: 3 },
+      { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
+      { name: 'wth_menu_label', label: 'Second button text', type: 'text', hint: 'Blank = "See the menu".' },
+      { name: 'wth_photo_url', label: 'The wall photo', type: 'image', preset: 'hero', folder: 'wall', hint: 'Careful: the tour knows where each piece is in the photo we ship. Blank uses ours.' },
+      { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+    ],
+  },
+  pastry_case_hero: {
+    note: 'The chalkboard lists drinks and bakes from your live menu (synced from SpotOn), with their prices — nothing to keep up to date here.',
+    fields: [
+      { name: 'pch_eyebrow', label: 'Hand-written line', type: 'text', hint: 'The yellow scribble above the heading.' },
+      { name: 'pch_title', label: 'Heading', type: 'text', hint: 'Blank = "Fresh out of the case".' },
+      { name: 'pch_sub', label: 'Subheading', type: 'textarea', rows: 3 },
+      { name: 'pch_board_title', label: 'Chalkboard title', type: 'text', hint: 'Blank = "On the board today".' },
+      { name: 'pch_drinks', label: 'Drinks on the board', type: 'tags', hint: 'Menu item names, comma separated, exactly as on the menu. Blank = Banana Split Coffee, chai, matcha and frozen coffee.' },
+      { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
+      { name: 'pch_menu_label', label: 'Second button text', type: 'text', hint: 'Blank = "Full menu".' },
+      { name: 'pch_photo_url', label: 'Counter photo', type: 'image', preset: 'hero', hint: 'Blank uses the photo of the pastry case we ship.' },
+      { name: 'ticker_items', label: 'Ticker strip items', type: 'tags', hint: 'The scrolling marquee under the hero — comma separated.' },
+    ],
+  },
   gallery_wall_room: {
     manager: 'gallery',
     note: 'The photograph of your actual wall, with every frame in it clickable. Pieces you add below can be pinned to a frame in the photo — pick “Where it hangs on the wall photo” on a piece and its artist, story and photo show up when a visitor opens that frame.',

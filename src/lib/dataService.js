@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase.js';
+import { realRows } from './starterRows.js';
 import { shopNow } from './hours.js';
 import * as seed from './seed.js';
 
@@ -171,7 +172,7 @@ export async function getGalleryPieces() {
       .select('*')
       .order('display_order', { ascending: true });
     if (error) throw error;
-    return data && data.length ? data : seed.GALLERY_PIECES;
+    return realRows('gallery_pieces', data, seed.GALLERY_PIECES);
   } catch {
     return seed.GALLERY_PIECES;
   }
@@ -186,7 +187,7 @@ export async function getTeamMembers() {
       .eq('active', true)
       .order('display_order', { ascending: true });
     if (error) throw error;
-    return data && data.length ? data : seed.TEAM_MEMBERS;
+    return realRows('team_members', data, seed.TEAM_MEMBERS);
   } catch {
     return seed.TEAM_MEMBERS;
   }
@@ -200,7 +201,7 @@ export async function getLocalBusinesses() {
       .select('*')
       .order('display_order', { ascending: true });
     if (error) throw error;
-    return data && data.length ? data : seed.LOCAL_BUSINESSES;
+    return realRows('local_businesses', data, seed.LOCAL_BUSINESSES);
   } catch {
     return seed.LOCAL_BUSINESSES;
   }
@@ -215,7 +216,7 @@ export async function getTimelineEvents() {
       .order('sort_date', { ascending: true, nullsFirst: false })
       .order('display_order', { ascending: true });
     if (error) throw error;
-    return data && data.length ? data : seed.TIMELINE_EVENTS;
+    return realRows('timeline_events', data, seed.TIMELINE_EVENTS);
   } catch {
     return seed.TIMELINE_EVENTS;
   }
