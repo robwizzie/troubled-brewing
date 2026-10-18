@@ -72,6 +72,7 @@
   --font-display: 'Fraunces', 'Georgia', serif;
   --font-body: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-vintage: 'Bree Serif', 'Georgia', serif; /* footer wordmark face (client choice) */
+  --font-hand: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive; /* scribbles, tags, sticky notes (real-wall concepts) */
 
   --text-xs: 0.78rem;
   --text-sm: 0.9rem;

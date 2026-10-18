@@ -36,6 +36,10 @@ export default function GalleryPiecesGrid({ data = {} }) {
     return () => { alive = false; };
   }, [version]);
 
+  // Nothing catalogued yet: the wall photo above already describes every
+  // piece honestly, so an empty catalogue just leaves the page there.
+  if (pieces && pieces.length === 0) return null;
+
   return (
     <Reveal as="section" className="section">
       <div className="container">

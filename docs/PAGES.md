@@ -26,7 +26,7 @@ Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" groupin
 
 ## Concept-swappable home
 
-The Home hero swaps between `immersive_gallery` (lead/default), `gallery_wall`, `warm_storefront`, `cozy_editorial`, and `modern_coffee` via `content_blocks.homepage_concept` so the client can review them and lock one in. See DESIGN.md.
+The Home hero swaps between `immersive_gallery` (lead/default), `gallery_wall`, `warm_storefront`, `cozy_editorial`, `modern_coffee`, and the five real-photo looks — `tagged_wall`, `closer_look`, `scrapbook`, `wall_tour`, `pastry_case` — via `content_blocks.homepage_concept` so the client can review them and lock one in. **Preview any of them without saving: `/?concept=<name>`** — the preview carries a pill bar at the bottom that flips between every look. See DESIGN.md.
 
 ## SEO per page
 
