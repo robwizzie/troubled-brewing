@@ -31,10 +31,13 @@ function catFromHash(hash, allowed) {
 
      list   the classic price list — name, leader dots, price. Right when the
             menu is words only, and the fastest thing to scan on a phone.
-     cards  photo cards in vintage frames. Right once items have pictures.
-     auto   (default) cards as soon as ANY item carries a photo, list until
-            then — so the menu upgrades itself the day the shop's SpotOn menu
-            gets photography, with nothing for the owner to switch on. */
+     cards  photo cards in vintage frames, every item.
+     auto   (default) each category hangs the items that HAVE a photo as
+            framed cards along the top, and prints the rest as the price list
+            under them. Photos arrive a few at a time (a SpotOn upload here, a
+            Menu Manager one there), and this way every photo gets shown off
+            while nothing without one stands in a frame of drawn placeholders
+            — a menu with no photos at all is simply the handsome list. */
 export default function MenuBlock({ data = {} }) {
   const { heading = 'The Menu', categories, layout = 'auto' } = data;
   const allowedCats = useMemo(() => (categories?.length ? categories : MENU_CATEGORY_ORDER), [categories]);
@@ -87,7 +90,8 @@ export default function MenuBlock({ data = {} }) {
   }, [items, diet]);
 
   const groups = groupByCategory(filtered, allowedCats);
-  const asCards = layout === 'cards' || (layout === 'auto' && hasProductPhotos(items));
+  const allCards = layout === 'cards';
+  const framedFirst = layout === 'auto' && hasProductPhotos(items);
   const visibleCats = activeCat === 'all' ? Object.keys(groups) : [activeCat].filter((c) => groups[c]);
 
   function toggleDiet(flag) {
@@ -140,37 +144,46 @@ export default function MenuBlock({ data = {} }) {
         ) : visibleCats.length === 0 ? (
           <p style={{ textAlign: 'center', color: 'var(--color-text-soft)' }}>Nothing matches that filter right now.</p>
         ) : (
-          visibleCats.map((cat) => (
-            <div key={cat} className="menu-category">
-              <h3 className="menu-category__title">{MENU_CATEGORY_LABELS[cat] || cat}</h3>
-              {asCards ? (
-                <div className="products products--menu">
-                  {groups[cat].map((item, i) => <ProductCard key={item.id} item={item} index={i} />)}
-                </div>
-              ) : (
-                <ul className="menu-list">
-                  {groups[cat].map((item) => (
-                    <li key={item.id} className="menu-item">
-                      {item.image_url && <img className="menu-item__img" src={item.image_url} alt="" loading="lazy" />}
-                      <div className="menu-item__main">
-                        <div className="menu-item__head">
-                          <span className="menu-item__name">
-                            {item.name}
-                            {(item.dietary_flags || []).map((f) => (
-                              <span key={f} className="menu-item__flag" title={f}>{DIETARY_LABELS[f] || f}</span>
-                            ))}
-                          </span>
-                          <span className="menu-item__dots" aria-hidden="true" />
-                          {item.price != null && <span className="menu-item__price">${Number(item.price).toFixed(2)}</span>}
+          visibleCats.map((cat) => {
+            const all = groups[cat];
+            const framed = allCards ? all : framedFirst ? all.filter((it) => it.image_url) : [];
+            const listed = allCards ? [] : framedFirst ? all.filter((it) => !it.image_url) : all;
+            return (
+              <div key={cat} className="menu-category">
+                <h3 className="menu-category__title">
+                  {MENU_CATEGORY_LABELS[cat] || cat}
+                  <span className="menu-category__count">{all.length} {all.length === 1 ? 'thing' : 'things'}</span>
+                </h3>
+                {framed.length > 0 && (
+                  <div className={`products products--menu ${listed.length ? 'products--framed' : ''}`}>
+                    {framed.map((item, i) => <ProductCard key={item.id} item={item} index={i} plate={false} />)}
+                  </div>
+                )}
+                {listed.length > 0 && (
+                  <ul className={`menu-list ${listed.length > 5 ? 'menu-list--cols' : ''}`}>
+                    {listed.map((item) => (
+                      <li key={item.id} className="menu-item">
+                        {item.image_url && <img className="menu-item__img" src={item.image_url} alt="" loading="lazy" />}
+                        <div className="menu-item__main">
+                          <div className="menu-item__head">
+                            <span className="menu-item__name">
+                              {item.name}
+                              {(item.dietary_flags || []).map((f) => (
+                                <span key={f} className="menu-item__flag" title={f}>{DIETARY_LABELS[f] || f}</span>
+                              ))}
+                            </span>
+                            <span className="menu-item__dots" aria-hidden="true" />
+                            {item.price != null && <span className="menu-item__price">${Number(item.price).toFixed(2)}</span>}
+                          </div>
+                          {item.description && <p className="menu-item__desc">{item.description}</p>}
                         </div>
-                        {item.description && <p className="menu-item__desc">{item.description}</p>}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })
         )}
 
         <div style={{ textAlign: 'center', marginTop: 'var(--space-6)' }}>

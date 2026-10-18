@@ -52,6 +52,15 @@ async function main() {
       out.tables[t] = { error: e.message };
     }
   }
+  // A project that is paused, restored empty or mid-migration answers every
+  // table with an error. Saving that would put a hollow file at the top of
+  // backups/ — the one a restore reaches for first — so stop instead.
+  const failed = TABLES.filter((t) => !Array.isArray(out.tables[t]));
+  if (failed.length) {
+    console.error(`\nNot writing a backup: ${failed.length}/${TABLES.length} tables failed (${failed.join(', ')}).`);
+    console.error('If the project came back empty, rebuild it with supabase/restore/full-restore.sql (docs/DEPLOYMENT.md §restore).');
+    process.exit(1);
+  }
   await mkdir('backups', { recursive: true });
   const date = new Date().toISOString().slice(0, 10);
   await writeFile(`backups/${date}.json`, JSON.stringify(out, null, 2));
