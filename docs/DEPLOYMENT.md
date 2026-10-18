@@ -42,25 +42,54 @@ things must agree on that subpath or you get a blank page with `/assets/... 404`
 
 ## Custom domain
 
-`public/CNAME` was **removed** so the site serves cleanly under the existing
-GitHub Pages domain at `/troubled-brewing/` while previewing. A CNAME file forces
-the repo's custom domain on every deploy, which would break the subpath preview
-until DNS is pointed.
+`public/CNAME` is deliberately absent: the deploy uses GitHub Actions, and for
+that kind of Pages site the custom domain lives in **Settings → Pages**, not in
+a file. Until that's set, the site serves at `/troubled-brewing/`.
 
-### Switching to the apex domain (troublebrewingcoffeehouse.com) — checklist
+### Switching to troublebrewingcoffeehouse.com — checklist
 
-1. Set the build env `VITE_BASE_PATH=/` (or change the default in `vite.config.js`).
-2. In `public/404.html`, set `segmentCount = 0`.
-3. Re-add `public/CNAME` containing `troublebrewingcoffeehouse.com`.
-4. At **Squarespace Domains** (registrar), set DNS:
-   - Four `A` records on apex `@` → GitHub Pages IPs:
-     `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   - One `CNAME` record `www` → `robwizzie.github.io`.
-   - (Optional) `AAAA` records → GitHub Pages IPv6.
-5. Repo → Settings → Pages → set custom domain to `troublebrewingcoffeehouse.com`,
-   then **Enforce HTTPS** once the cert provisions (up to ~24h).
-6. Update `VITE_SITE_URL`, `public/sitemap.xml`, and `public/robots.txt` to the
-   apex domain.
+What the domain looks like today (checked 2026-10-18):
+
+- **Registrar: GoDaddy** (registered 2017-10-09, renews 2028-10-09).
+- **DNS is hosted at Wix**: the nameservers are `ns4.wixdns.net` / `ns5.wixdns.net`.
+  The apex and `www` point at Wix, which answers with a "ConnectYourDomain
+  Error" page. The old Wix site is gone, so nothing there needs keeping.
+- **Email is live and must keep working**: Microsoft 365, bought through GoDaddy.
+  These records must exist wherever DNS ends up:
+
+  | Type | Host | Value |
+  |---|---|---|
+  | MX (10) | `@` | `troublebrewingcoffeehouse-com.mail.protection.outlook.com` |
+  | TXT | `@` | `v=spf1 include:secureserver.net -all` |
+  | TXT | `@` | `MS=ms78702240` |
+  | CNAME | `autodiscover` | `autodiscover.outlook.com` |
+
+Steps:
+
+1. **Repo → Settings → Pages → Custom domain** = `troublebrewingcoffeehouse.com` → Save.
+   GitHub shows a DNS check that stays red until step 2 lands.
+2. **DNS.** Either edit the records where they are now (Wix → Domains →
+   troublebrewingcoffeehouse.com → DNS records), or, more simply long-term,
+   move DNS home to GoDaddy: My Products → the domain → DNS → Nameservers →
+   **Change → "GoDaddy default"**. If you move it, first re-create the four
+   email records above in GoDaddy's DNS. GoDaddy's M365 setup usually adds
+   them itself, but check. Either way, set:
+   - `A` `@` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+     (delete any other apex `A` records, including Wix's `185.230.63.*`)
+   - `CNAME` `www` → `robwizzie.github.io`
+   - (optional) `AAAA` `@` → `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
+3. **Repo → Settings → Secrets and variables → Actions → Variables**: add
+   `VITE_BASE_PATH` = `/`. Also set the `VITE_SITE_URL` secret to
+   `https://troublebrewingcoffeehouse.com`. Then re-run **Deploy** (Actions tab).
+   `deploy.yml` passes the variable to the build. `public/404.html` works out
+   its own path depth from the URL, so it needs no edit.
+4. When the Pages DNS check turns green, tick **Enforce HTTPS**. The certificate can take up to about 24 hours.
+5. **Supabase → Authentication → URL Configuration**: set Site URL to
+   `https://troublebrewingcoffeehouse.com` and add `https://troublebrewingcoffeehouse.com/**`
+   to the redirect URLs, so admin magic links land on the new domain.
+6. `public/sitemap.xml`, `public/robots.txt` and the `og:` tags already use the
+   apex domain, so no change is needed. `robwiscount.org/troubled-brewing/` redirects by itself
+   once the custom domain is set.
 
 ## Weekly backups (§5.11)
 
@@ -68,10 +97,24 @@ until DNS is pointed.
 
 ### Restore steps
 
-1. Pick the desired `backups/YYYY-MM-DD.json`.
-2. For a full restore, use the Supabase SQL editor or a small script to upsert each table's rows from the JSON (service_role).
-3. For a single record, copy its object from the backup and paste into the relevant admin editor, or upsert directly.
-4. The in-app **Revisions** history (per record, last ~20) covers most "oops" cases without needing a file restore.
+**Whole project came back empty** (every API call says `PGRST205 Could not find
+the table … in the schema cache`, e.g. after a pause/restore):
+
+1. `node scripts/build-restore-sql.mjs > restore.sql`. It uses the newest
+   backup by default; pass a path to choose another. A ready-built copy from the
+   2026-10-12 backup is committed at `supabase/restore/full-restore.sql`.
+2. Supabase → SQL Editor → New query → paste the file → **Run**. In order, it runs:
+   schema → backup rows (`on conflict do nothing`) → `supabase/migrations/*` → `notify pgrst, 'reload schema'`.
+   It's safe to run twice. It's also safe on a project that still has data: existing rows are left alone.
+3. If the tables were actually there and only the API had lost track of
+   them, `notify pgrst, 'reload schema';` on its own is the whole fix.
+
+**One record:** copy its object from the backup and paste it into the matching admin
+editor, or upsert it directly. The in-app **Revisions** history (the last ~20 per
+record) covers most "oops" cases without a file restore.
+
+`scripts/backup.mjs` refuses to write a backup when any table fails, so a
+paused or empty project can't put a hollow file at the top of `backups/`.
 
 ## First deploy checklist
 
