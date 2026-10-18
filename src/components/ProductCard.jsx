@@ -46,7 +46,11 @@ export function ProductArt({ item, index = 0, eager = false }) {
   );
 }
 
-export default function ProductCard({ item, index = 0, eager = false }) {
+/* `plate`: the name on a brass plate pinned to the frame (the homepage
+   teaser, where the frame IS the picture) or, with plate={false}, printed
+   above the description so the photo stays clear — the menu, where the
+   photo is the thing people came to look at. */
+export default function ProductCard({ item, index = 0, eager = false, plate = true }) {
   const flags = item.dietary_flags || [];
   return (
     <article className="product">
@@ -55,9 +59,10 @@ export default function ProductCard({ item, index = 0, eager = false }) {
         style={{ '--ar': '16 / 10', '--tint': 'var(--color-paper)' }}
       >
         <ProductArt item={item} index={index} eager={eager} />
-        <h3 className="brass-plate brass-plate--pin">{item.name}</h3>
+        {plate && <h3 className="brass-plate brass-plate--pin">{item.name}</h3>}
       </span>
       <div className="product__body">
+        {!plate && <h4 className="product__name">{item.name}</h4>}
         {/* rendered even when empty — see .product__desc, it's what bottom-aligns
             the price line across a row of cards */}
         <p className="product__desc">{item.description || ''}</p>
