@@ -11,7 +11,10 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const CONCEPT = (process.env.CONCEPT || '').trim();
 
 // mirror src/lib/concepts.js (kept inline: this runs in CI without the app bundle)
-const CONCEPTS = ['immersive_gallery', 'gallery_wall', 'warm_storefront', 'cozy_editorial', 'modern_coffee'];
+const CONCEPTS = [
+  'immersive_gallery', 'gallery_wall', 'warm_storefront', 'cozy_editorial', 'modern_coffee',
+  'step_inside', 'tagged_wall', 'closer_look', 'scrapbook', 'wall_tour', 'pastry_case',
+];
 
 if (!SUPABASE_URL || !SERVICE_KEY) {
   console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.');

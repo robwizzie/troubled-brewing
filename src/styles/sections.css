@@ -376,8 +376,32 @@
 }
 .chip--on { background: var(--color-accent); color: var(--color-on-accent); border-color: var(--color-accent); }
 .menu-category { margin-bottom: var(--space-6); }
-.menu-category__title { font-size: var(--text-2xl); border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-2); }
+.menu-category__title {
+  font-size: var(--text-2xl); border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-2);
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3);
+}
+/* a pencilled tally beside the category name, like a hand-lettered board */
+.menu-category__count { font-family: var(--font-hand); font-weight: 600; font-size: var(--text-lg); color: var(--color-text-soft); white-space: nowrap; }
+/* pictured items hang in frames above the price list for the rest */
+.products--framed { margin-bottom: var(--space-5); }
+.product__name { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; margin: 0; line-height: 1.2; }
+.products--menu .gw-frame__img { object-fit: cover; }
+@media (max-width: 720px) {
+  /* On a phone a pictured item is a row: the framed photo on the left, the
+     words beside it. Still one column you scan top to bottom, but the photo
+     is big enough to see and a category doesn't cost a screen per drink. */
+  .products--menu { grid-template-columns: 1fr; gap: var(--space-3); }
+  .products--menu .product { flex-direction: row; align-items: stretch; }
+  .products--menu .product__frame { --ar: 1 / 1; flex: 0 0 42%; margin: var(--space-3) 0 var(--space-3) var(--space-3); align-self: center; }
+  .products--menu .product__body { padding: var(--space-3) var(--space-4); justify-content: center; }
+  .products--menu .product__desc { flex: 0 1 auto; }
+}
 .menu-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-4); }
+/* a long category reads as a two-column board on wide screens instead of a
+   very tall single column */
+@media (min-width: 900px) {
+  .menu-list--cols { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-6); }
+}
 .menu-item { display: flex; gap: var(--space-3); }
 .menu-item__img { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-md); flex-shrink: 0; }
 .menu-item__main { flex: 1; }

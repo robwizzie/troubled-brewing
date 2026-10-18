@@ -19,6 +19,12 @@ on:
           - warm_storefront
           - cozy_editorial
           - modern_coffee
+          - step_inside
+          - tagged_wall
+          - closer_look
+          - scrapbook
+          - wall_tour
+          - pastry_case
   push:
     branches: [claude/landing-page-menu-sync-3qxpdk]
     paths:

@@ -12,10 +12,12 @@
     -->
     <script type="text/javascript">
       (function () {
-        // Number of leading path segments to preserve before the SPA route.
-        // 1 = project page under /troubled-brewing/. Set to 0 for an apex domain.
-        var segmentCount = 1;
+        // Number of leading path segments to preserve before the SPA route:
+        // 1 while served as the project page under /troubled-brewing/, 0 on the
+        // shop's own domain. Worked out from the URL, so the same file is right
+        // for both and the domain switch needs no edit here.
         var l = window.location;
+        var segmentCount = /^\/troubled-brewing(\/|$)/.test(l.pathname) ? 1 : 0;
         l.replace(
           l.protocol +
             '//' +

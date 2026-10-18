@@ -41,6 +41,10 @@ jobs:
           VITE_GA4_MEASUREMENT_ID: ${{ secrets.VITE_GA4_MEASUREMENT_ID }}
           VITE_SPOTON_ORDER_URL: ${{ secrets.VITE_SPOTON_ORDER_URL }}
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
+          # Unset → /troubled-brewing/ (the github.io project page). Set the repo
+          # *variable* VITE_BASE_PATH to "/" once the shop's domain points here
+          # (docs/DEPLOYMENT.md §custom domain).
+          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
