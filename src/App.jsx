@@ -5,6 +5,7 @@ import Footer from './components/Footer.jsx';
 import FoxGuide from './components/FoxGuide.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import AnnouncementBanner from './components/AnnouncementBanner.jsx';
+import RainyBanner from './components/RainyBanner.jsx';
 import ConsentBanner from './components/ConsentBanner.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { useAnalytics } from './lib/analytics.js';
@@ -30,7 +31,8 @@ function PublicShell({ children }) {
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
-      <AnnouncementBanner />
+      {/* the rainy-day nudge shows only when the owner's announcement is off */}
+      <AnnouncementBanner fallback={<RainyBanner />} />
       <Nav />
       <main id="main" className={`page page-${slug}`}>{children}</main>
       <Footer />

@@ -12,6 +12,91 @@
   font-weight: 500;
 }
 
+/* ---- Rainy-day banner (RainyBanner.jsx) -----------------------------------
+   A slim sage bar that appears only once hours + weather are in, so it
+   slides open (its row grows from 0) rather than jolting the page; with
+   reduced motion it simply appears. No hover lift anywhere. */
+.rainy {
+  --rainy-bg: #545f33;
+  --rainy-fg: #f7f1e4;
+  display: grid;
+  grid-template-rows: 1fr;
+  background: var(--rainy-bg);
+  color: var(--rainy-fg);
+  border-bottom: 2px solid #a87c1c;
+  animation: rainy-in 460ms var(--ease) both;
+}
+.rainy[data-kind='snow'] { --rainy-bg: #2c2722; }
+.rainy__clip { min-height: 0; overflow: hidden; }
+@keyframes rainy-in {
+  from { grid-template-rows: 0fr; opacity: 0; }
+  to { grid-template-rows: 1fr; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rainy { animation: none; }
+}
+.rainy__bar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 56px 8px 16px;
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+.rainy__icon { flex: none; color: #d4ad57; font-size: 1rem; }
+.rainy__msg { margin: 0; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+.rainy__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: #d4ad57;
+  color: #2c2722;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+.rainy__cta svg { font-size: 0.75em; }
+.rainy__cta:hover { background: #e2c27a; color: #2c2722; }
+.rainy__close {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rainy-fg);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+.rainy__close:hover { background: rgba(247, 241, 228, 0.14); }
+.rainy__cta:focus-visible,
+.rainy__close:focus-visible { outline: 3px solid #d4ad57; outline-offset: 2px; }
+.rainy__close:focus-visible { outline-color: #f7f1e4; }
+@media (max-width: 640px) {
+  /* phone: icon + message on one line, the button under it, × top-right */
+  .rainy__bar { justify-content: flex-start; padding: 8px 48px 10px 14px; }
+  .rainy__msg { flex: 1 1 calc(100% - 1rem - 14px); }
+  .rainy__cta { margin-left: calc(1rem + 14px); }
+  .rainy__close { top: 4px; right: 4px; transform: none; }
+}
+
 /* ---- Nav ------------------------------------------------------------------ */
 .nav {
   position: sticky;
