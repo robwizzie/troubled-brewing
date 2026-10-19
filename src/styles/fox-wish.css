@@ -371,6 +371,11 @@
 @media (min-width: 860px) {
   .fox-wish--page { --s: 1.45; }
 }
+/* phones: the fox steps aside to the top-left here (fox-guide.css), so the
+   heading starts below him */
+@media (max-width: 600px) {
+  .wish-page { padding-top: 84px; }
+}
 
 /* a page block (the Menu page's "Don't see your favorite?", the Wish list
    CMS section): the same layout on the sage wall, a smaller hat */
@@ -380,6 +385,11 @@
 .wish-section__lede { margin: 12px 0 0; max-width: 40ch; font: 400 1.05rem/1.55 var(--font-body); color: var(--color-ink-soft); }
 @media (min-width: 860px) {
   .wish-section .fox-wish--split { --s: 1.15; }
+}
+/* phones: the fox sits bottom-left; extra room under the block so its
+   submit button clears him when the block's end is at the screen's foot */
+@media (max-width: 600px) {
+  .section.wish-section { padding-bottom: calc(var(--space-8, 64px) + 40px); }
 }
 
 /* ---- the small hat moment (404): the hat at rest and a link to /wish ---- */
