@@ -99,7 +99,7 @@
 .social-proof__quotes {
   list-style: none; margin: 0;
   display: flex; align-items: stretch; gap: var(--sp-gap);
-  overflow-x: auto; scroll-snap-type: x mandatory;
+  overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--sp-pad); /* snap flush with the strip's padded edge */
   /* A horizontal scroller clips paint at its own box. This gutter is at least
      as deep as --shadow-frame, so no molding shadow is sliced at an edge. */
@@ -1394,7 +1394,7 @@
     display: flex;
     grid-template-columns: none;
     gap: var(--space-4);
-    overflow-x: auto;
+    overflow-x: auto; overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--space-4);
     -webkit-overflow-scrolling: touch;
@@ -1421,7 +1421,7 @@
   .menu-tabs {
     flex-wrap: nowrap;
     justify-content: flex-start;
-    overflow-x: auto;
+    overflow-x: auto; overflow-y: hidden;
     scroll-snap-type: x proximity;
     /* without this the strip snaps a pill flush to the scrollport edge on
        load and the first one lands half off the screen */
@@ -1676,7 +1676,7 @@
   position: relative; z-index: 1;
   list-style: none; margin: 0;
   display: flex; gap: clamp(18px, 3vw, 44px);
-  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory;
+  overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory;
   scrollbar-width: none;
   /* line the first item up with the heading's container edge */
   padding: var(--wall-pad) calc((100vw - min(var(--container), 100vw - 2 * var(--space-5))) / 2) var(--wall-pad-b);
@@ -1780,7 +1780,7 @@
   .showcase { --stage-h: 160px; --item-w: 38vw; --wall-pad: 36px; --string: 18px; --wall-pad-b: 22px; }
   .showcase__head { align-items: flex-start; }
   .showcase__row { padding-left: var(--space-4); padding-right: var(--space-4); scroll-padding-inline: var(--space-4); }
-  .showcase__filters { margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .showcase__filters { margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4); flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .showcase__filter { white-space: nowrap; }
   .showcase__tag-name { font-size: 1.25rem; }
   .showcase__nudge { display: none; }
