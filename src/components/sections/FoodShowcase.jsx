@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { getMenu, MENU_CATEGORY_ORDER, MENU_CATEGORY_LABELS } from '../../lib/menuService.js';
-import { isCutout, slugifyDrink } from '../../lib/productImage.js';
+import { isCutout } from '../../lib/productImage.js';
+import { orderUrlFor, orderLabelFor } from '../../lib/order.js';
+import { track } from '../../lib/analytics.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 
 /* "The shelf" — a reusable showcase of the menu's photographed items, staged
    like the shop itself: a long wooden shelf on the sage wall, each cutout
    standing on it and gently bobbing, a hand-lettered paper price tag swinging
    from the shelf on a bit of twine beneath it. Tap an item (or its tag) to
-   jump to it on the Menu page.
+   order it on SpotOn (orderUrlFor — the store's order page until SpotOn has
+   per-item links), in a new tab, tracked as an order_now_click.
 
    Everything comes from the LIVE menu (menuService), so a photo added in Menu
    Manager appears here on its own. By default it shows every item with a
@@ -23,7 +25,7 @@ import { useDataVersion } from '../../lib/dataVersion.js';
 export default function FoodShowcase({ data = {} }) {
   const {
     heading = 'Fresh off the counter',
-    subheading = 'Tap anything to find it on the menu.',
+    subheading = 'Tap anything to order it on SpotOn.',
     items: names,
     categories,
     include_photos: includePhotos = false,
@@ -35,8 +37,6 @@ export default function FoodShowcase({ data = {} }) {
   const [all, setAll] = useState(null);
   const [cat, setCat] = useState('all');
   const version = useDataVersion('menu_items');
-  const location = useLocation();
-  const onMenuPage = /(^|\/)menu\/?$/.test(location.pathname);
 
   useEffect(() => {
     let alive = true;
@@ -121,11 +121,13 @@ export default function FoodShowcase({ data = {} }) {
           {(shown || Array.from({ length: 5 }, () => null)).map((m, i) =>
             m ? (
               <li key={m.id} className={`showcase__item showcase__item--${i % 2 ? 'b' : 'a'}`} style={{ '--i': i }}>
-                <Link
+                <a
                   className="showcase__link"
-                  to={`/menu#item-${slugifyDrink(m.name)}`}
-                  replace={onMenuPage}
-                  aria-label={`${m.name}${showPrices && m.price != null ? `, $${Number(m.price).toFixed(2)}` : ''} — see it on the menu`}
+                  href={orderUrlFor(m)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${orderLabelFor(m)}${showPrices && m.price != null ? `, $${Number(m.price).toFixed(2)}` : ''}`}
+                  onClick={() => track('order_now_click', { location: 'food_shelf', item: m.name })}
                 >
                   <span className="showcase__stage">
                     <img className="showcase__img" src={m.image_url} alt="" loading="lazy" decoding="async" />
@@ -134,7 +136,7 @@ export default function FoodShowcase({ data = {} }) {
                     <span className="showcase__tag-name">{m.name}</span>
                     {showPrices && m.price != null && <span className="showcase__tag-price">${Number(m.price).toFixed(2)}</span>}
                   </span>
-                </Link>
+                </a>
               </li>
             ) : (
               <li key={i} className="showcase__item showcase__item--loading" aria-hidden="true" />

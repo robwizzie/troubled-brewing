@@ -27,8 +27,43 @@
    loose beneath it. The card is positioned against `.gwr__room`, so it can
    hang inside the room on a wide screen and drop below it on a phone without
    moving in the markup. */
+/* THE BAND: the room runs the full width of the page. The real wall sits in
+   the middle as large as the screen allows; beyond its edges, the same
+   photograph — enlarged, blurred and dimmed — carries the green wall out to
+   the sides of the window, so a wide monitor gets a room, not a print on a
+   cream page. (The blurred copy is the small 934px file: it's a backdrop.) */
+.gwr__band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--space-6);
+  background: #2c2d1c;
+}
+.gwr__band::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  z-index: -1;
+  background-image: var(--gwr-ambient);
+  background-size: cover;
+  background-position: 50% 30%;
+  filter: blur(28px) saturate(1.05) brightness(0.62);
+  transform: scale(1.08);
+}
+.gwr__band::after { /* a soft vignette so the edges recede and the wall leads */
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(75% 90% at 50% 50%, transparent 40%, rgba(18, 16, 9, 0.55) 100%);
+}
+
+/* The wall stands as tall as the window allows (never taller than the
+   window, so the whole room is in view at once) and as wide as that height
+   implies. Width is derived from height via the ratio — never a set height,
+   which would break the ratio the pan math depends on. */
 .gwr__body {
-  width: min(100%, calc(var(--gwr-ratio, 1) * min(74vh, 780px)));
+  width: min(100% - 2 * var(--space-5), calc(var(--gwr-ratio, 1) * min(86vh, 1180px)), 1180px);
   margin-inline: auto;
 }
 
@@ -370,7 +405,7 @@
    apology for one. */
 .gwr__index {
   list-style: none;
-  margin: var(--space-5) 0 0;
+  margin: var(--space-6) 0 0;
   padding: 0;
   display: grid;
   gap: var(--space-1) var(--space-4);
@@ -400,6 +435,27 @@
 .gwr__index-link.is-open { border-bottom-color: var(--color-accent); }
 .gwr__index-artist { color: var(--color-text-soft); }
 .gwr__index-artist::before { content: '— '; }
+
+/* ---- the band, at its extremes (kept last so they win) ------------------- */
+
+/* A phone gets the wall edge to edge — every pixel goes to the art. */
+@media (max-width: 859px) {
+  .gwr__band { padding-block: 0 var(--space-4); }
+  .gwr__body { width: 100%; }
+  .gwr__stage { border-radius: 0; box-shadow: none; }
+  .gwr-card { margin-inline: var(--space-4); }
+}
+/* A wide window: the card hangs on the wall BESIDE the room, not over the
+   art (the component switches to this once there's room — see useSideRoom),
+   and the chosen piece takes the middle of the stage. */
+.gwr--side .gwr-card {
+  top: 0;
+  bottom: auto;
+  right: auto;
+  left: calc(100% + var(--space-5));
+  width: min(340px, calc((100vw - 100%) / 2 - var(--space-6)));
+  max-height: 100%;
+}
 
 /* ---- reduced motion ------------------------------------------------------ */
 

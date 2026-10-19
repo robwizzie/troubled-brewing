@@ -15,7 +15,9 @@ import { useDataVersion } from '../../lib/dataVersion.js';
 
 /* The house favorites lead the board when they're on the menu; the rest of
    the category tops it up. Owners can name their own picks (pch_drinks). */
-const HOUSE_SIPS = ['Banana Split Coffee', 'Hot Chai Latte', 'Hot Matcha Latte', 'Frozen Coffee'];
+// real, available menu names only (getMenu() drops switched-off items, so a
+// name SpotOn turns off simply falls out of the list)
+const HOUSE_SIPS = ['Iced Matcha Latte', 'Hot Chai Latte', 'Hot Matcha Latte', 'Frozen Coffee'];
 const HOUSE_BAKES = ['Scone', 'Muffin', 'Croissant', 'Caramel Apple Crumbcake'];
 
 function board(all, names, category) {

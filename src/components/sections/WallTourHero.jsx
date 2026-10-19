@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import HoursToday from '../HoursToday.jsx';
-import { asset } from '../../lib/config.js';
+import { wallPhotoProps } from '../../lib/wallPhoto.js';
 import { WALL_ART, WALL_IMAGE, WALL_STAGE_RATIO, REST_VIEW, viewFor } from '../../lib/galleryWall.js';
 
 /* "Wall Tour" landing concept — the gallery after hours. The shop's REAL
@@ -68,7 +68,7 @@ export default function WallTourHero({ data = {} }) {
             <div className="wth__stage" style={{ aspectRatio: WALL_STAGE_RATIO }}>
               <div className="wth__art" style={{ transform: `translate(${view.x}%, ${view.y}%) scale(${view.scale})` }}>
                 <img
-                  src={photo || asset('images/wall/gallery-wall.jpg')}
+                  {...wallPhotoProps(photo, `(min-width: 900px) ${Math.round(640 * Math.max(1, view.scale))}px, ${Math.round(100 * Math.max(1, view.scale))}vw`)}
                   alt="The gallery wall at Trouble Brewing: dozens of mismatched vintage frames on a sage-green wall"
                   width={WALL_IMAGE.w}
                   height={WALL_IMAGE.h}

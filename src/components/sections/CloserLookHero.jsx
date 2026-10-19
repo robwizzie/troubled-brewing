@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import HoursToday from '../HoursToday.jsx';
 import RealWallPhoto from '../RealWallPhoto.jsx';
-import { asset } from '../../lib/config.js';
+import { WALL_PHOTO_LARGE } from '../../lib/wallPhoto.js';
 import { getGalleryPieces } from '../../lib/dataService.js';
 import { WALL_ART, WALL_FOCUS, WALL_IMAGE, mergeWallArt } from '../../lib/galleryWall.js';
 import { stageBox, stageXY } from '../../lib/realWall.js';
@@ -79,7 +79,8 @@ export default function CloserLookHero({ data = {} }) {
   const art = useMemo(() => mergeWallArt(pieces), [pieces]);
   const active = art.find((a) => a.id === activeId) || art[0];
   const index = art.indexOf(active);
-  const src = photo || asset('images/wall/gallery-wall.jpg');
+  // the lens magnifies 2.2× — it reads from the full-resolution copy
+  const src = photo || WALL_PHOTO_LARGE;
 
   // Put the lens at a stage-% point and aim its magnified copy there.
   const placeLens = (xPct, yPct) => {

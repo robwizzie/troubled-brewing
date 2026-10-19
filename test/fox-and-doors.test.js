@@ -18,7 +18,37 @@ describe('the fox’s calendar', () => {
 
   it('stays quiet on an ordinary day', () => {
     expect(specialDay(new Date(2026, 4, 6))).toBeNull();
-    expect(QUIPS.length).toBeGreaterThan(2);
+  });
+});
+
+describe('what the fox says', () => {
+  // every line the fox can say, everyday and special-day alike
+  const lines = () => [
+    ...QUIPS,
+    ...[[10, 13], [10, 31], [12, 25], [1, 1], [2, 14]].map(([m, d]) => specialDay(new Date(2026, m - 1, d)).text),
+  ];
+
+  it('has a good handful of everyday lines', () => {
+    expect(QUIPS.length).toBeGreaterThan(5);
+    QUIPS.forEach((q) => expect(typeof q === 'string' && q.length > 10).toBe(true));
+  });
+
+  it('never claims the top-hat fox wears glasses (that is the gold fox-head on the wall)', () => {
+    lines().forEach((l) => expect(l).not.toMatch(/glasses|spectacles|specs\b|monocle/i));
+  });
+
+  it('names only menu items that are actually available', async () => {
+    const { items } = (await import('../src/data/spoton-menu.json')).default;
+    const available = new Set(items.filter((i) => i.available !== false).map((i) => i.name));
+    ['Pup Cup!', 'Oatmeal Creme Pie (GF)', 'Dark Chocolate Brownie (GF)', 'Cranberry Walnut Chicken Salad', 'Bagel/Breakfast Sandwich', 'No Bread Breakfast Sandwich']
+      .forEach((n) => expect(available.has(n)).toBe(true));
+    expect(QUIPS.some((q) => /Pup Cup/.test(q))).toBe(true);
+    expect(items.find((i) => i.name === 'Cappuccino').description).toMatch(/La Colombe/);
+  });
+
+  it('gives the real address and opening day', () => {
+    expect(QUIPS.join(' ')).toMatch(/514 Station Ave/);
+    expect(QUIPS.join(' ')).toMatch(/Friday the 13th of October, 2017/);
   });
 });
 
