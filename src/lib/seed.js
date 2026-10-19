@@ -88,7 +88,7 @@ export const SECTIONS = {
   menu: [
     { type: 'food_showcase', data: { heading: 'Fresh off the counter', subheading: 'Tap anything to order it on SpotOn.' } },
     { type: 'menu_block', data: { heading: 'The Menu', categories: ['espresso', 'specialty', 'food', 'pastry', 'seasonal'], layout: 'auto' } },
-    { type: 'cta', data: { heading: 'Ready to order?', body: 'Order ahead on SpotOn for pickup.', button_label: 'Order on SpotOn', button_url: '' } },
+    { type: 'cta', data: { heading: 'Ready to order?', body: 'Order ahead on SpotOn for pickup.', button_label: 'Order on SpotOn', button_url: '', secondary_label: 'Buying for someone? Send a gift card', secondary_url: '/gift-cards' } },
   ],
   /* About, Events, Location, Troublemakers and the Timeline are told with the
      shop's own photographs (PAGE_PHOTOS below) hung in the wall's frames —
@@ -167,6 +167,26 @@ export const SECTIONS = {
     { type: 'hero', data: { heading: 'Local Love', subheading: "The Haddon Heights spots we can't get enough of.", background_image_url: '', cta_label: '', cta_url: '' } },
     { type: 'local_businesses_grid', data: { heading: 'Our neighbors', intro: 'Everyone on this list is a few doors from our own. Station Ave only works because all of it works.', layout: 'street', order_by: 'street', show_us: true } },
     { type: 'cta', data: { heading: 'Know a great local spot?', body: "Tell us who we're missing.", button_label: 'Send a suggestion', button_url: '/contact' } },
+  ],
+  /* Give someone Trouble: one section, live before its migration runs
+     (supabase/migrations/2026-10-19-gift-cards-page.sql mirrors it). The
+     purchase link is config (SPOTON_GIFT_CARD_URL) unless the owner sets one. */
+  'gift-cards': [
+    { type: 'gift_cards', data: {
+      eyebrow: 'Gift cards',
+      heading: 'Give someone Trouble',
+      intro: 'For the regular, the early riser, the friend who could use a good morning: send a Trouble Brewing e-gift card straight to their inbox.',
+      button_label: 'Buy an e-gift card',
+      button_url: '',
+      how_it_works: "Pick an amount, add a note, and we'll email it.",
+      occasions_heading: 'A little Trouble for…',
+      occasions_hint: 'Tap a card to send one.',
+      occasion_1_label: 'Birthday', occasion_1_note: 'Another lap around the sun calls for a latte.', occasion_1_art: 'cake',
+      occasion_2_label: 'Thank you', occasion_2_note: 'For the neighbor, the sitter, the one who always shows up.', occasion_2_art: 'thanks',
+      occasion_3_label: 'Teacher gift', occasion_3_note: 'Fuel for the people grading papers before first bell.', occasion_3_art: 'apple',
+      occasion_4_label: 'Just because', occasion_4_note: 'No occasion needed. That’s the best kind of Trouble.', occasion_4_art: 'fox',
+      show_phone: true,
+    } },
   ],
   timeline: [
     { type: 'photo_hero', data: { eyebrow: 'Since 2017', heading: 'Our Story So Far', subheading: 'A few of the moments that made Trouble.', image_url: P('wall-detail'), image_alt: ALT['wall-detail'], caption: 'The gallery wall', frame_style: 'bronze-carved', layout: 'framed', focus: '50% 90%' } },
