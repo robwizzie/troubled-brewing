@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /* =============================================================================
    SpotOn → site menu sync (no official API required).
 
@@ -38,6 +37,7 @@
    ============================================================================= */
 
 import { appendFile, readFile, writeFile } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
 
 const ORDER_URL =
   process.env.SPOTON_ORDER_URL ||
@@ -49,6 +49,30 @@ const MIN_ITEMS = 5;
 const SNAPSHOT_URL = new URL('../src/data/spoton-menu.json', import.meta.url);
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
+
+/* ---------------------------------------------------------------------------
+   Per-item order links (menu_items.order_url → orderUrlFor in src/lib/order.js)
+
+   UNVERIFIED: SpotOn's per-item URL scheme has not been confirmed — the
+   order page could not be inspected from the build sandbox (see
+   docs/INTEGRATIONS.md §SpotOn item links). So nothing here GUESSES a URL.
+   An item gets a deep link only from evidence:
+
+     1. an explicit same-site URL/path field on the item in SpotOn's own
+        payload (e.g. `url`, `path`, `shareUrl`), or
+     2. the URL the live page actually navigated to when the rendered pass
+        clicked that item's card (pushState/?query/#hash/route all count), or
+     3. SPOTON_ITEM_URL_TEMPLATE below — set ONLY after confirming the
+        pattern in a real browser during open hours, or
+     4. a template LEARNED in this run from (2): if clicking an item put that
+        item's SpotOn id into the URL, the same shape is applied to the rest.
+
+   Template placeholders: {store} = the order page URL (no query/hash, no
+   trailing slash), {id} = the item's SpotOn id (URI-encoded).
+   e.g. SPOTON_ITEM_URL_TEMPLATE=https://…/BL-…/item/{id}  or  {store}?itemId={id}
+   Items with no evidence keep order_url empty → the site links the store page.
+--------------------------------------------------------------------------- */
+const SPOTON_ITEM_URL_TEMPLATE = process.env.SPOTON_ITEM_URL_TEMPLATE || null;
 
 /* ---------------------------------------------------------------------------
    Category mapping: SpotOn's names → the site's five buckets.
@@ -340,6 +364,114 @@ function availOf(o) {
   return true;
 }
 
+/* ----------------------------- per-item links ------------------------------ */
+
+const SPOTON_ID_KEYS = ['id', 'uuid', 'itemId', 'item_id', 'menuItemId', 'menu_item_id', 'productId', 'product_id', 'guid', '_id'];
+const ITEM_URL_KEYS = [
+  'url', 'href', 'link', 'path', 'permalink', 'deepLink', 'deep_link', 'deeplink',
+  'shareUrl', 'share_url', 'itemUrl', 'item_url', 'orderUrl', 'order_url', 'webUrl', 'web_url',
+];
+
+/** SpotOn's own id for an item (whatever key it ships under), as a string. */
+function spotonIdOf(raw) {
+  for (const k of SPOTON_ID_KEYS) {
+    const v = raw?.[k];
+    if ((typeof v === 'string' && v.trim()) || (typeof v === 'number' && Number.isFinite(v))) {
+      const s = String(v).trim();
+      if (s.length <= 80 && /^[\w.:-]+$/.test(s)) return s;
+    }
+  }
+  return null;
+}
+
+/** The order page without query/hash/trailing slash — the {store} placeholder. */
+function storeBase(orderUrl) {
+  try {
+    const u = new URL(orderUrl);
+    return `${u.origin}${u.pathname.replace(/\/+$/, '')}`;
+  } catch {
+    return String(orderUrl || '').split(/[?#]/)[0].replace(/\/+$/, '');
+  }
+}
+
+/** A URL is only trusted as an item link when it lives on the order site and
+    isn't an image/asset or the bare store page itself. */
+function asItemLink(value, orderUrl) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  let u;
+  try {
+    u = new URL(value.trim(), orderUrl);
+  } catch {
+    return null;
+  }
+  const store = new URL(orderUrl);
+  if (!/^https?:$/.test(u.protocol) || u.host !== store.host) return null;
+  if (/\.(png|jpe?g|webp|gif|svg|avif|js|css|json)$/i.test(u.pathname)) return null;
+  const href = u.href;
+  const bare = (s) => s.replace(/\/+$/, '');
+  if (bare(href) === bare(storeBase(orderUrl)) || bare(href) === bare(orderUrl)) return null;
+  return href;
+}
+
+/** An explicit item URL in SpotOn's own payload (relative paths resolve
+    against the order site). Bare slugs are ignored — how SpotOn would use
+    one is exactly the unverified part. */
+function explicitItemUrl(raw, orderUrl) {
+  for (const k of ITEM_URL_KEYS) {
+    const v = raw?.[k];
+    if (typeof v !== 'string') continue;
+    if (!/^(https?:\/\/|\/|\?|#)/i.test(v.trim())) continue;
+    const link = asItemLink(v, orderUrl);
+    if (link) return link;
+  }
+  return null;
+}
+
+/** Fill a template's {store}/{id} placeholders. */
+function fillItemTemplate(template, { id, orderUrl }) {
+  if (!template || !id || !/\{id\}/.test(template)) return null;
+  return asItemLink(template.replace(/\{store\}/g, storeBase(orderUrl)).replace(/\{id\}/g, encodeURIComponent(id)), orderUrl);
+}
+
+/** Turn ONE observed item URL into a template, if (and only if) the item's
+    SpotOn id literally appears in it — that's the proof the URL addresses the
+    item and not, say, a category scroll position. */
+function learnItemTemplate(observedUrl, id, orderUrl) {
+  const link = asItemLink(observedUrl, orderUrl);
+  if (!link || !id) return null;
+  const enc = encodeURIComponent(id);
+  const at = link.indexOf(enc);
+  if (at < 0 || link.indexOf(enc, at + enc.length) > -1) return null; // absent or ambiguous
+  let tpl = link.slice(0, at) + '{id}' + link.slice(at + enc.length);
+  const base = storeBase(orderUrl);
+  if (tpl.startsWith(base)) tpl = `{store}${tpl.slice(base.length)}`;
+  return tpl;
+}
+
+/** An observed URL only counts as THIS item's link when it names the item —
+    its SpotOn id or its name slug — not e.g. a category anchor the click
+    happened to scroll to. */
+function urlNamesItem(url, { id, name }) {
+  if (typeof url !== 'string' || !url) return false;
+  let decoded = url;
+  try { decoded = decodeURIComponent(url); } catch { /* keep raw */ }
+  if (id && decoded.includes(String(id))) return true;
+  const slug = norm(name).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return slug.length >= 3 && new RegExp(`(^|[/=#?&_-])${slug}($|[/?#&_-])`, 'i').test(decoded);
+}
+
+/** The deep link for one scraped item, best evidence first (see the
+    SPOTON_ITEM_URL_TEMPLATE note at the top). null → the site uses the store page. */
+function itemOrderUrl({ explicit = null, observed = null, id = null, name = '' }, { template = SPOTON_ITEM_URL_TEMPLATE, learned = null, orderUrl = ORDER_URL } = {}) {
+  return (
+    asItemLink(explicit, orderUrl) ||
+    (urlNamesItem(observed, { id, name }) ? asItemLink(observed, orderUrl) : null) ||
+    fillItemTemplate(template, { id, orderUrl }) ||
+    fillItemTemplate(learned, { id, orderUrl }) ||
+    null
+  );
+}
+
 /** Walk any JSON tree; collect {category, items[]} wherever a named object owns
     an array of item-looking children. Captured items are not walked into, so
     modifier lists nested under items stay out. */
@@ -422,6 +554,9 @@ async function fetchStatic(url) {
 async function clickForDetails(page, netBlobs, wantedNames) {
   const priceByName = new Map();
   const imageByName = new Map();
+  // where the page went when an item card opened — the per-item deep link
+  // evidence (route change, ?query or #hash all show up in page.url())
+  const urlByName = new Map();
   let opened = 0;
   for (const name of wantedNames.slice(0, 40)) {
     const start = netBlobs.length;
@@ -435,6 +570,8 @@ async function clickForDetails(page, netBlobs, wantedNames) {
     }
     opened++;
     await page.waitForTimeout(1300);
+    const afterUrl = page.url();
+    if (afterUrl !== beforeUrl && !urlByName.has(norm(name))) urlByName.set(norm(name), afterUrl);
     for (const blob of netBlobs.slice(start).map((b) => tryParse(b.text)).filter(Boolean)) {
       const scope = findByName(blob, name) || blob;
       const key = norm(name);
@@ -455,14 +592,18 @@ async function clickForDetails(page, netBlobs, wantedNames) {
       await page.waitForTimeout(250);
     }
   }
-  console.log(`detail pass: opened ${opened}/${wantedNames.length} cards → ${priceByName.size} prices, ${imageByName.size} photos`);
-  return { priceByName, imageByName };
+  console.log(`detail pass: opened ${opened}/${wantedNames.length} cards → ${priceByName.size} prices, ${imageByName.size} photos, ${urlByName.size} item URLs`);
+  for (const [n, u] of [...urlByName].slice(0, 5)) console.log(`  item URL seen: ${n} → ${u}`);
+  return { priceByName, imageByName, urlByName };
 }
 
 async function fetchRendered(url, wantedNames = []) {
   let chromium;
   try {
-    ({ chromium } = await import('playwright-core'));
+    // specifier in a variable: an optional dependency, so the test runner's
+    // bundler (which imports the pure helpers) must not try to resolve it
+    const optionalDep = 'playwright-core';
+    ({ chromium } = await import(/* @vite-ignore */ optionalDep));
   } catch {
     console.warn('playwright-core not installed — skipping rendered fetch');
     return null;
@@ -501,8 +642,11 @@ async function fetchRendered(url, wantedNames = []) {
     // below adds modifier/option payloads that would leak junk "items"
     const menuBlobs = netBlobs.slice();
     let details = null;
-    if (wantedNames.length) {
-      details = await clickForDetails(page, netBlobs, wantedNames).catch((e) => {
+    // a function picks the cards once the rendered menu is known (the static
+    // HTML may not have carried it)
+    const names = typeof wantedNames === 'function' ? wantedNames(menuBlobs) : wantedNames;
+    if (names.length) {
+      details = await clickForDetails(page, netBlobs, names).catch((e) => {
         console.warn(`detail pass failed: ${e.message}`);
         return null;
       });
@@ -534,7 +678,12 @@ async function sb(pathAndQuery, init = {}) {
 
 /* ------------------------------- merge logic ------------------------------- */
 
-function planMerge(existing, scraped) {
+/* withOrderUrl: write menu_items.order_url. Off until the column exists
+   (supabase/migrations/2026-10-19-menu-order-url.sql) — PostgREST rejects a
+   PATCH naming an unknown column, which would fail the whole sync.
+   A link only ever replaces with a NEW link: a run that learns nothing (shop
+   closed, SpotOn hiccup) keeps yesterday's rather than blanking it. */
+function planMerge(existing, scraped, { withOrderUrl = true } = {}) {
   const byName = new Map(existing.map((r) => [norm(r.name), r]));
   const ops = { update: [], insert: [], hide: [] };
   const claimed = new Set();
@@ -553,6 +702,7 @@ function planMerge(existing, scraped) {
       if ((!row.description || !String(row.description).trim()) && s.description) patch.description = s.description;
       // SpotOn photos only fill in where the owner hasn't uploaded one
       if (!row.image_url && s.image) patch.image_url = s.image;
+      if (withOrderUrl && s.order_url && row.order_url !== s.order_url) patch.order_url = s.order_url;
       if (Object.keys(patch).length) ops.update.push({ id: row.id, name: row.name, patch });
     } else {
       ops.insert.push({
@@ -565,6 +715,7 @@ function planMerge(existing, scraped) {
         available: s.available,
         display_order: order,
         status: 'published',
+        ...(withOrderUrl && s.order_url ? { order_url: s.order_url } : {}),
       });
     }
   });
@@ -585,23 +736,35 @@ function simulateMerge(existing, ops) {
 
 /* --------------------------------- output ---------------------------------- */
 
-async function writeSnapshot(rows, scraped, categories) {
-  const spotonCatByName = new Map(scraped.map((s) => [norm(s.name), s.spoton_category]));
-  const items = rows
+/** Post-merge rows → the bundled snapshot's item shape. `id` stays the
+    site's row id; SpotOn's own id rides along as `spoton_id`, and `order_url`
+    falls back to this run's scrape when the DB column doesn't exist yet. */
+function snapshotItems(rows, scraped) {
+  const scrapedByName = new Map(scraped.map((s) => [norm(s.name), s]));
+  return rows
     .filter((r) => r.status !== 'draft')
     .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
-    .map((r) => ({
-      id: String(r.id),
-      name: r.name,
-      description: r.description || '',
-      price: r.price != null ? Number(r.price) : null,
-      category: r.category,
-      spoton_category: spotonCatByName.get(norm(r.name)) ?? null,
-      dietary_flags: r.dietary_flags || [],
-      image_url: r.image_url || null,
-      available: r.available !== false,
-      display_order: r.display_order ?? 0,
-    }));
+    .map((r) => {
+      const s = scrapedByName.get(norm(r.name));
+      return {
+        id: String(r.id),
+        name: r.name,
+        description: r.description || '',
+        price: r.price != null ? Number(r.price) : null,
+        category: r.category,
+        spoton_category: s?.spoton_category ?? null,
+        spoton_id: s?.spoton_id ?? r.spoton_id ?? null,
+        order_url: r.order_url || s?.order_url || null,
+        dietary_flags: r.dietary_flags || [],
+        image_url: r.image_url || null,
+        available: r.available !== false,
+        display_order: r.display_order ?? 0,
+      };
+    });
+}
+
+async function writeSnapshot(rows, scraped, categories) {
+  const items = snapshotItems(rows, scraped);
   const snapshot = {
     generated_at: new Date().toISOString(),
     source_url: ORDER_URL,
@@ -617,6 +780,55 @@ async function summarize(lines) {
   const text = lines.join('\n');
   console.log(`\n${text}`);
   if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `${text}\n`);
+}
+
+/* ------------------------------ flatten menu ------------------------------- */
+
+/** Detected categories (+ the rendered pass's details) → the scraped items the
+    merge works from. Each item carries SpotOn's id and, where there is
+    evidence, its deep link (see itemOrderUrl). */
+function flattenMenu(cats, details = null, { orderUrl = ORDER_URL, template = SPOTON_ITEM_URL_TEMPLATE } = {}) {
+  const urlByName = details?.urlByName || new Map();
+  // learn a template from the first clicked card whose URL names its own id
+  let learned = null;
+  for (const c of cats) {
+    for (const raw of c.items) {
+      const seen = urlByName.get(norm(strFrom(raw, NAME_KEYS)));
+      const tpl = seen && learnItemTemplate(seen, spotonIdOf(raw), orderUrl);
+      if (tpl) { learned = tpl; break; }
+    }
+    if (learned) break;
+  }
+
+  const scraped = [];
+  const categories = [];
+  for (const c of cats) {
+    const bucketGuess = bucketFor(c.category, strFrom(c.items[0] || {}, NAME_KEYS) || '');
+    categories.push({ spoton: c.category, site: bucketGuess, items: c.items.length });
+    for (const raw of c.items) {
+      const name = strFrom(raw, NAME_KEYS);
+      if (!name) continue;
+      // modifier rows dress like items ("w/ [Tuscan Butter]", "* [Gridled]") —
+      // real menu names start with a letter/number and don't bracket-tag
+      if (!/^[a-z0-9"'¡!]/i.test(name) || /\[.+\]/.test(name)) continue;
+      const spotonId = spotonIdOf(raw);
+      scraped.push({
+        name,
+        description: (strFrom(raw, DESC_KEYS, 800) || '').trim(),
+        price: priceOf(raw) ?? sizeMinPrice(raw) ?? details?.priceByName?.get(norm(name)) ?? null,
+        image: imageOf(raw) ?? details?.imageByName?.get(norm(name)) ?? null,
+        category: bucketFor(c.category, name),
+        spoton_category: c.category,
+        spoton_id: spotonId,
+        order_url: itemOrderUrl(
+          { explicit: explicitItemUrl(raw, orderUrl), observed: urlByName.get(norm(name)) || null, id: spotonId, name },
+          { template, learned, orderUrl },
+        ),
+        available: availOf(raw),
+      });
+    }
+  }
+  return { scraped, categories, learned };
 }
 
 /* ---------------------------------- main ----------------------------------- */
@@ -644,18 +856,27 @@ async function main() {
 
   let rendered = null;
   const count = cats.reduce((n, c) => n + c.items.length, 0);
-  if (count < MIN_ITEMS || pricedShare(cats) < 0.9) {
+  // per-item links: with no confirmed template and no explicit URLs in the
+  // payload, click a few cards to SEE how SpotOn addresses an item
+  const needLinkProbe = !SPOTON_ITEM_URL_TEMPLATE && !cats.some((c) => c.items.some((i) => explicitItemUrl(i, ORDER_URL)));
+  if (count < MIN_ITEMS || pricedShare(cats) < 0.9 || needLinkProbe) {
     // sized drinks keep their prices behind a per-item detail fetch — open
     // those cards in the browser and harvest the payloads
-    const wanted = cats
-      .flatMap((c) => c.items)
+    const allItems = cats.flatMap((c) => c.items);
+    const unpriced = allItems
       .filter((i) => priceOf(i) == null && sizeMinPrice(i) == null)
       .map((i) => strFrom(i, NAME_KEYS))
       .filter(Boolean);
+    const probes = needLinkProbe ? allItems.filter((i) => spotonIdOf(i)).slice(0, 3).map((i) => strFrom(i, NAME_KEYS)).filter(Boolean) : [];
+    const wanted = [...new Set([...probes, ...unpriced])];
     console.log(count < MIN_ITEMS
       ? 'menu not in static HTML — rendering with headless Chrome…'
-      : `${Math.round(pricedShare(cats) * 100)}% of items carry prices — rendering to fetch ${wanted.length} item detail(s)…`);
-    rendered = await fetchRendered(ORDER_URL, wanted);
+      : `${Math.round(pricedShare(cats) * 100)}% of items carry prices — rendering to open ${wanted.length} item card(s) (${probes.length} link probe(s))…`);
+    rendered = await fetchRendered(ORDER_URL, (netBlobs) => {
+      if (wanted.length || !needLinkProbe) return wanted;
+      const live = detectMenu(netBlobs.map((b) => tryParse(b.text)).filter(Boolean)).flatMap((c) => c.items);
+      return live.filter((i) => spotonIdOf(i)).slice(0, 3).map((i) => strFrom(i, NAME_KEYS)).filter(Boolean);
+    });
     if (rendered) {
       const netParsed = rendered.netBlobs.map((b) => tryParse(b.text)).filter(Boolean);
       console.log(`rendered fetch: ${rendered.netBlobs.length} JSON response(s) captured`);
@@ -679,29 +900,11 @@ async function main() {
     process.exit(1);
   }
 
-  // 2) flatten to the site's shape
-  const scraped = [];
-  const categories = [];
-  for (const c of cats) {
-    const bucketGuess = bucketFor(c.category, strFrom(c.items[0] || {}, NAME_KEYS) || '');
-    categories.push({ spoton: c.category, site: bucketGuess, items: c.items.length });
-    for (const raw of c.items) {
-      const name = strFrom(raw, NAME_KEYS);
-      if (!name) continue;
-      // modifier rows dress like items ("w/ [Tuscan Butter]", "* [Gridled]") —
-      // real menu names start with a letter/number and don't bracket-tag
-      if (!/^[a-z0-9"'¡!]/i.test(name) || /\[.+\]/.test(name)) continue;
-      scraped.push({
-        name,
-        description: (strFrom(raw, DESC_KEYS, 800) || '').trim(),
-        price: priceOf(raw) ?? sizeMinPrice(raw) ?? details?.priceByName.get(norm(name)) ?? null,
-        image: imageOf(raw) ?? details?.imageByName.get(norm(name)) ?? null,
-        category: bucketFor(c.category, name),
-        spoton_category: c.category,
-        available: availOf(raw),
-      });
-    }
-  }
+  // 2) flatten to the site's shape (+ each item's deep link, from evidence only)
+  const { scraped, categories, learned } = flattenMenu(cats, details);
+  if (learned) console.log(`item link template learned from a live click: ${learned}`);
+  const linked = scraped.filter((s) => s.order_url).length;
+  console.log(`${linked}/${scraped.length} items carry a per-item SpotOn link${linked ? '' : ' (none verified — the site links the store page)'}`);
   const sized = scraped.filter((s) => s.price != null).length;
   const pictured = scraped.filter((s) => s.image).length;
   console.log(`${sized}/${scraped.length} items carry a price (sized drinks show their smallest size), ${pictured} carry a photo`);
@@ -716,7 +919,10 @@ async function main() {
     console.warn('SUPABASE_URL/SERVICE_ROLE_KEY not set — merging against the previous snapshot only.');
     try { existing = JSON.parse(await readFile(SNAPSHOT_URL, 'utf8')).items || []; } catch { existing = []; }
   }
-  const ops = planMerge(existing, scraped);
+  // menu_items.order_url only once the migration has added it (select=* rows show it)
+  const withOrderUrl = !sbConfigured || existing.some((r) => Object.prototype.hasOwnProperty.call(r, 'order_url'));
+  if (!withOrderUrl && linked) console.warn('menu_items.order_url missing — run supabase/migrations/2026-10-19-menu-order-url.sql; links go to the snapshot only.');
+  const ops = planMerge(existing, scraped, { withOrderUrl });
 
   if (sbConfigured && !DRY_RUN) {
     for (const u of ops.update) await sb(`menu_items?id=eq.${encodeURIComponent(u.id)}`, { method: 'PATCH', body: JSON.stringify(u.patch) });
@@ -742,7 +948,16 @@ async function main() {
   ]);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Pure pieces exported for tests (test/spoton-item-links.test.js); the sync
+// itself only runs when this file is executed directly.
+export {
+  asItemLink, explicitItemUrl, fillItemTemplate, flattenMenu, itemOrderUrl,
+  learnItemTemplate, planMerge, urlNamesItem, simulateMerge, snapshotItems, spotonIdOf, storeBase,
+};
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
