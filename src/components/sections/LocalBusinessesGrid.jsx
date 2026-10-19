@@ -5,7 +5,7 @@ import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 import { track } from '../../lib/analytics.js';
 import { SITE } from '../../lib/seed.js';
-import { categoryLabel, directionsUrl, initials, orderBusinesses, streetNumber, usIndex } from '../../lib/localBusinesses.js';
+import { categoryLabel, directionsUrl, initials, logoFor, mediaUrl, orderBusinesses, streetNumber, usIndex } from '../../lib/localBusinesses.js';
 import StationAveStrip from './StationAveStrip.jsx';
 
 /* Local Love — the neighbors, laid out as a walk down the street.
@@ -33,11 +33,13 @@ function Card({ b }) {
   const [photoOk, setPhotoOk] = useState(true);
   const number = streetNumber(b.address);
   const mapsUrl = directionsUrl(b);
+  const logo = logoOk ? logoFor(b.logo_url) : null;
+  const photo = photoOk ? mediaUrl(b.photo_url) : '';
   return (
     <article className="neighbor">
       <div className="neighbor__head">
-        {b.logo_url && logoOk ? (
-          <img className="neighbor__logo" src={b.logo_url} alt={`${b.name} logo`} loading="lazy" referrerPolicy="no-referrer" onError={() => setLogoOk(false)} />
+        {logo ? (
+          <img className="neighbor__logo" src={logo.src} alt={`${b.name} logo`} loading="lazy" referrerPolicy="no-referrer" style={logo.bg ? { background: logo.bg } : undefined} onError={() => setLogoOk(false)} />
         ) : (
           /* a drawn monogram beats an empty logo box, and beats hotlinking a
              logo nobody gave us permission to use */
@@ -52,7 +54,7 @@ function Card({ b }) {
         </div>
       </div>
 
-      {b.photo_url && photoOk && <img className="neighbor__photo" src={b.photo_url} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setPhotoOk(false)} />}
+      {photo && <img className="neighbor__photo" src={photo} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setPhotoOk(false)} />}
 
       {b.blurb && <p className="neighbor__blurb">{b.blurb}</p>}
 
