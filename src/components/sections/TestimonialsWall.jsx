@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
 import { loadReviews } from '../../lib/reviews.js';
@@ -15,6 +16,9 @@ export default function TestimonialsWall({ data = {} }) {
   const { heading = 'A few of our favorites', layout = 'masonry' } = data;
   const [items, setItems] = useState(null);
   const [photosOnly, setPhotosOnly] = useState(false);
+  // On the Reviews page the favorites lead the one combined feed
+  // (GoogleReviewsFeed), so this separate wall steps aside there.
+  const onReviewsPage = /\/reviews\/?$/.test(useLocation().pathname);
 
   const version = useDataVersion('testimonials');
   const blocksVersion = useDataVersion('content_blocks');
@@ -24,8 +28,8 @@ export default function TestimonialsWall({ data = {} }) {
     return () => { alive = false; };
   }, [version, blocksVersion]);
 
-  // no hand-picked favorites yet — the Google feed carries the page
-  if (items && items.length === 0) return null;
+  // no hand-picked favorites yet, or they're already in the Reviews feed
+  if (onReviewsPage || (items && items.length === 0)) return null;
 
   const hasPhotos = (items || []).some((t) => t.photo);
   const visible = photosOnly ? items.filter((t) => t.photo) : items;

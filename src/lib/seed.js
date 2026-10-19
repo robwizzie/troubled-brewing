@@ -94,7 +94,7 @@ export const SECTIONS = {
   reviews: [
     { type: 'reviews_hero', data: { heading: 'What the neighborhood says' } },
     { type: 'testimonials_wall', data: { heading: 'A few of our favorites', layout: 'masonry' } },
-    { type: 'google_reviews_feed', data: { heading: 'Fresh from Google', count: 9 } },
+    { type: 'google_reviews_feed', data: { heading: 'Every review, in one place', count: 9 } },
     { type: 'review_cta', data: { heading: 'Been in lately?', body: "We'd love to hear about it.", button_label: 'Leave a review on Google' } },
   ],
   /* The page opens ON the wall itself — the shop's own photograph, with every
