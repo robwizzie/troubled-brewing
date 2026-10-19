@@ -5,6 +5,8 @@ import { useDataVersion } from '../../lib/dataVersion.js';
 import { SkeletonCards } from '../Skeleton.jsx';
 import { track } from '../../lib/analytics.js';
 import { SITE } from '../../lib/seed.js';
+import { categoryLabel, directionsUrl, initials, orderBusinesses, streetNumber, usIndex } from '../../lib/localBusinesses.js';
+import StationAveStrip from './StationAveStrip.jsx';
 
 /* Local Love — the neighbors, laid out as a walk down the street.
 
@@ -18,46 +20,11 @@ import { SITE } from '../../lib/seed.js';
    Everything on a card is optional and degrades gracefully: no logo shows a
    drawn monogram tile in the house palette rather than a grey box, no address
    simply drops the number badge and the directions link, and the whole thing
-   still works if all they filled in was a name. */
+   still works if all they filled in was a name.
 
-const CATEGORY_LABELS = {
-  restaurant: 'Restaurant',
-  cafe: 'Café',
-  retail: 'Shop',
-  service: 'Service',
-  bakery: 'Bakery',
-  bar: 'Bar',
-  other: 'Local spot',
-};
-
-/* Leading street number, for the walk-the-block ordering. Anything without one
-   sorts after the numbered places, keeping its manual display_order. */
-function streetNumber(address) {
-  const m = /^\s*(\d{1,5})/.exec(String(address || ''));
-  return m ? Number(m[1]) : null;
-}
-
-const initials = (name) =>
-  String(name || '?')
-    .replace(/^(the|a)\s+/i, '')
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
-
-/* The directions link. A row's own maps_url (if the table ever gains one)
-   wins; otherwise a Google Maps search for name + address. The addresses are
-   typed as just the street ("512 Station Ave"), which Maps would resolve to
-   whichever Station Ave it fancies, so the town is appended unless the
-   address already names it. No address and no maps_url → no link. */
-const TOWN = ', Haddon Heights, NJ 08035';
-function directionsUrl(b) {
-  if (b.maps_url) return b.maps_url;
-  if (!b.address) return null;
-  const where = /haddon heights/i.test(b.address) ? b.address : `${b.address}${TOWN}`;
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${where}`)}`;
-}
+   Two layouts share the same data and helpers: 'street' (the default) draws
+   the block as an illustrated, sideways-scrolling Station Ave strip
+   (StationAveStrip.jsx); 'grid' is the original card grid. */
 
 function Card({ b }) {
   // the images are hotlinked from each business's own site — if one moves,
@@ -79,7 +46,7 @@ function Card({ b }) {
         <div className="neighbor__title">
           <h3>{b.name}</h3>
           <p className="neighbor__meta">
-            {b.category && <span className="neighbor__cat">{CATEGORY_LABELS[b.category] || b.category}</span>}
+            {b.category && <span className="neighbor__cat">{categoryLabel(b.category)}</span>}
             {number != null && <span className="neighbor__num">{number} Station Ave</span>}
           </p>
         </div>
@@ -124,6 +91,7 @@ export default function LocalBusinessesGrid({ data = {} }) {
     intro = '',
     order_by: orderBy = 'street',
     show_us: showUs = true,
+    layout = 'street',
   } = data;
   const [list, setList] = useState(null);
 
@@ -134,34 +102,19 @@ export default function LocalBusinessesGrid({ data = {} }) {
     return () => { alive = false; };
   }, [version]);
 
-  const ordered = useMemo(() => {
-    const rows = list || [];
-    if (orderBy !== 'street') return rows;
-    return [...rows].sort((a, b) => {
-      const na = streetNumber(a.address);
-      const nb = streetNumber(b.address);
-      if (na == null && nb == null) return (a.display_order ?? 0) - (b.display_order ?? 0);
-      if (na == null) return 1;
-      if (nb == null) return -1;
-      return na - nb;
-    });
-  }, [list, orderBy]);
+  const ordered = useMemo(() => orderBusinesses(list, orderBy), [list, orderBy]);
 
   // where the shop's own door falls in the walk, so it can be marked in place
-  const ourNumber = streetNumber(SITE.address);
-  const usAfter =
-    showUs && orderBy === 'street' && ourNumber != null
-      ? ordered.filter((b) => (streetNumber(b.address) ?? Infinity) < ourNumber).length
-      : -1;
+  const usAfter = showUs && orderBy === 'street' ? usIndex(ordered, streetNumber(SITE.address)) : -1;
 
   return (
-    <Reveal as="section" className="section">
+    <Reveal as="section" className={layout === 'street' ? 'section section--ave' : 'section'}>
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
         {intro && <p className="section-sub">{intro}</p>}
         {list === null ? (
           <SkeletonCards count={3} height={220} />
-        ) : (
+        ) : layout === 'street' ? null : (
           <div className="neighbors">
             {ordered.map((b, i) => (
               <Fragment key={b.id}>
@@ -174,6 +127,9 @@ export default function LocalBusinessesGrid({ data = {} }) {
           </div>
         )}
       </div>
+      {list !== null && layout === 'street' && (
+        <StationAveStrip ordered={ordered} showUs={showUs && orderBy === 'street'} />
+      )}
     </Reveal>
   );
 }

@@ -118,7 +118,7 @@ export const SECTIONS = {
   ],
   neighborhood: [
     { type: 'hero', data: { heading: 'Local Love', subheading: "The Haddon Heights spots we can't get enough of.", background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'local_businesses_grid', data: { heading: 'Our neighbors', intro: 'Everyone on this list is a few doors from our own. Station Ave only works because all of it works.', order_by: 'street', show_us: true } },
+    { type: 'local_businesses_grid', data: { heading: 'Our neighbors', intro: 'Everyone on this list is a few doors from our own. Station Ave only works because all of it works.', layout: 'street', order_by: 'street', show_us: true } },
     { type: 'cta', data: { heading: 'Know a great local spot?', body: "Tell us who we're missing.", button_label: 'Send a suggestion', button_url: '/contact' } },
   ],
   timeline: [
