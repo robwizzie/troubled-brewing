@@ -5,17 +5,20 @@ const ToastContext = createContext(() => {});
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
-  const push = useCallback((message, type = 'success') => {
+  const push = useCallback((message, type = 'success', { duration } = {}) => {
     const id = Math.random().toString(36).slice(2);
     setToasts((t) => [...t, { id, message, type }]);
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3500);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), duration || (type === 'error' ? 8000 : 4000));
   }, []);
   return (
     <ToastContext.Provider value={push}>
       {children}
       <div className="toast-wrap" aria-live="polite">
         {toasts.map((t) => (
-          <div key={t.id} className={`toast toast--${t.type}`}>{t.message}</div>
+          <div key={t.id} className={`toast toast--${t.type}`} role={t.type === 'error' ? 'alert' : undefined}>
+            {t.message}
+            <button type="button" className="toast__close" aria-label="Dismiss" onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))}>✕</button>
+          </div>
         ))}
       </div>
     </ToastContext.Provider>
@@ -26,7 +29,7 @@ export function useToast() {
 }
 
 /* ---- Confirm modal (destructive guardrail) -------------------------------- */
-export function ConfirmModal({ open, title, body, confirmLabel = 'Confirm', danger = true, onConfirm, onCancel }) {
+export function ConfirmModal({ open, title, body, confirmLabel = 'Confirm', cancelLabel = 'Cancel', danger = true, onConfirm, onCancel }) {
   if (!open) return null;
   return (
     <div className="modal-backdrop" role="presentation" onClick={onCancel}>
@@ -34,7 +37,7 @@ export function ConfirmModal({ open, title, body, confirmLabel = 'Confirm', dang
         <h3>{title}</h3>
         {body && <p>{body}</p>}
         <div className="modal__actions">
-          <button className="btn btn--ghost" onClick={onCancel}>Cancel</button>
+          <button className="btn btn--ghost" onClick={onCancel}>{cancelLabel}</button>
           <button className={`btn ${danger ? 'btn--danger' : 'btn--primary'}`} onClick={onConfirm}>{confirmLabel}</button>
         </div>
       </div>
@@ -54,9 +57,9 @@ export function Hint({ children }) {
 
 /* ---- Status badge --------------------------------------------------------- */
 export function StatusBadge({ status, hasDraft }) {
-  if (hasDraft) return <span className="badge badge--draft">Unpublished changes</span>;
-  if (status === 'draft') return <span className="badge badge--draft">Draft</span>;
-  return <span className="badge badge--live">Published</span>;
+  if (hasDraft) return <span className="badge badge--draft">Changed — not live yet</span>;
+  if (status === 'draft') return <span className="badge badge--draft">Not on the site</span>;
+  return <span className="badge badge--live">Live</span>;
 }
 
 /* ---- Misc ----------------------------------------------------------------- */

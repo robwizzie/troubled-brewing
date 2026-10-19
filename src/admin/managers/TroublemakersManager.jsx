@@ -30,5 +30,5 @@ export const TROUBLEMAKERS_COLLECTION = {
 };
 
 export default function TroublemakersManager() {
-  return <CollectionManager {...TROUBLEMAKERS_COLLECTION} />;
+  return <CollectionManager {...TROUBLEMAKERS_COLLECTION} help="The staff cards on the Troublemakers page — photos, roles, go-to orders and fun facts." />;
 }

@@ -41,5 +41,5 @@ export const LOCAL_BUSINESS_COLLECTION = {
 };
 
 export default function LocalBusinessManager() {
-  return <CollectionManager {...LOCAL_BUSINESS_COLLECTION} />;
+  return <CollectionManager {...LOCAL_BUSINESS_COLLECTION} help="The neighbors on the Local Love page, walked down the street in address order." />;
 }

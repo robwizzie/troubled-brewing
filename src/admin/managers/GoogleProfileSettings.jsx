@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, Hint } from '../components/ui.jsx';
+import { ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
 
 /* Settings for the cached Google Business Profile (reviews + hours/location).
    Store the Place ID + review URL; "Refresh now" invokes the google-profile
-   Edge Function on demand (it also runs daily — .github/workflows/google-reviews-refresh.yml). See docs/INTEGRATIONS.md. */
+   Edge Function on demand (it also runs daily — .github/workflows/google-reviews-refresh.yml). See docs/INTEGRATIONS.md.
+   The two connection fields follow the explicit-publish rule (written on
+   Publish); "Fetch from Google now" is its own deliberate, labelled action. */
 export default function GoogleProfileSettings() {
   const toast = useToast();
   const [profile, setProfile] = useState(null);
@@ -23,14 +26,19 @@ export default function GoogleProfileSettings() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load().catch(() => toast('Could not load profile', 'error')); }, []);
 
-  async function saveSettings() {
-    try {
+  const dirty = profile !== null && ((placeId || '') !== (profile.place_id || '') || (mapsUrl || '') !== (profile.maps_url || ''));
+  usePublishUnit('google:connection', {
+    dirty,
+    async publish() {
       const { error } = await supabase.from('google_profile').upsert({ id: 1, place_id: placeId || null, maps_url: mapsUrl || null }, { onConflict: 'id' });
       if (error) throw error;
-      toast('Saved');
-      load();
-    } catch (e) { toast(e.message || 'Save failed', 'error'); }
-  }
+      setProfile((p) => ({ ...p, place_id: placeId || null, maps_url: mapsUrl || null }));
+    },
+    discard() {
+      setPlaceId(profile.place_id || '');
+      setMapsUrl(profile.maps_url || '');
+    },
+  });
 
   async function refreshNow() {
     setRefreshing(true);
@@ -55,23 +63,33 @@ export default function GoogleProfileSettings() {
 
   return (
     <div>
-      <h1>Google Profile</h1>
-      <p className="admin__lead">Connects your live Google rating, reviews, hours, and location to the site.</p>
+      <ScreenHead
+        title="Google connection"
+        help="Connects your Google rating, reviews, hours and address to the site. The “Leave a review” buttons use the link below."
+      />
 
       <section className="admin__panel">
         <h2>Connection</h2>
         <div className="field">
-          <label>Google Place ID <Hint>Find it via Google’s Place ID finder, or send us your business name + address and we’ll fill it in.</Hint></label>
-          <input value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="ChIJ…" />
+          <label htmlFor="gp-place">Google Place ID <Hint>Find it via Google’s Place ID finder, or send us your business name + address and we’ll fill it in.</Hint></label>
+          <input id="gp-place" value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="ChIJ…" />
         </div>
         <div className="field">
-          <label>“Leave a review” link <Hint>Your Google Business Profile review URL.</Hint></label>
-          <input value={mapsUrl} onChange={(e) => setMapsUrl(e.target.value)} placeholder="https://g.page/r/…/review" />
+          <label htmlFor="gp-review">“Leave a review” link <Hint>Your Google Business Profile review URL.</Hint></label>
+          <input id="gp-review" value={mapsUrl} onChange={(e) => setMapsUrl(e.target.value)} placeholder="https://g.page/r/…/review" />
         </div>
-        <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-          <button className="btn btn--primary" onClick={saveSettings}>Save</button>
-          <button className="btn btn--accent" onClick={refreshNow} disabled={refreshing}>{refreshing ? 'Refreshing…' : 'Refresh now'}</button>
-        </div>
+        {dirty && <p className="field__hint">Press <strong>Publish</strong> at the bottom to save the connection.</p>}
+      </section>
+
+      <section className="admin__panel">
+        <h2>Fetch the latest from Google</h2>
+        <p className="panel-help">
+          This happens by itself every day. Press it to pull new reviews, your rating and hours right
+          now — they update on the site straight away, because they come from Google, not from here.
+        </p>
+        <button className="btn btn--accent" onClick={refreshNow} disabled={refreshing || dirty} title={dirty ? 'Publish your connection changes first' : undefined}>
+          {refreshing ? 'Fetching…' : 'Fetch from Google now'}
+        </button>
       </section>
 
       <section className="admin__panel">

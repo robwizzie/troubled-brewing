@@ -19,7 +19,7 @@ export default function ImageField({ label = 'Image', value, onChange, preset = 
       const res = await uploadImage(file, { preset, folder });
       onChange(res.url);
       setStats({ before: res.before, after: res.after });
-      toast('Image uploaded');
+      toast('Photo uploaded — it goes on the site when you press Publish');
     } catch (err) {
       toast(err.message || 'Upload failed', 'error');
     } finally {
