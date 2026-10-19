@@ -102,6 +102,20 @@ describe('the fox’s help card', () => {
     expect(btn.getAttribute('aria-expanded')).toBe('false');
   });
 
+  it('keeps the answer outside the scrolling chip list, so it is never scrolled away', async () => {
+    renderFox();
+    fireEvent.click(fox());
+    const card = screen.getByRole('dialog', { name: 'Ask the fox' });
+    const park = await within(card).findByRole('button', { name: 'Where do I park?' });
+    fireEvent.click(park);
+    const say = card.querySelector('.fox-help__say');
+    expect(say.textContent).toMatch(/Where do I park/);
+    expect(say.closest('.fox-help__body')).toBeNull();
+    // the answer box comes before the chips, straight under the header
+    expect(say.previousElementSibling.tagName).toBe('HEADER');
+    expect(say.nextElementSibling.classList.contains('fox-help__body')).toBe(true);
+  });
+
   it('closes on an outside tap', async () => {
     renderFox();
     fireEvent.click(fox());
@@ -120,8 +134,12 @@ describe('the fox’s help card', () => {
 
     renderFox(); // a later page view
     expect(screen.queryByRole('button', { name: /ask the fox/i })).toBeNull();
+    // the tab is his own head peeking in, not an icon
+    expect(screen.getByRole('button', { name: 'Bring back the fox' }).querySelector('.fox-guide__peek')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Bring back the fox' }));
     expect(fox()).toBeTruthy();
+    // he comes back with the slide-in-from-the-edge entrance, not the page-load rise
+    expect(document.querySelector('.fox-guide').classList.contains('is-back')).toBe(true);
     expect(localStorage.getItem('tb-fox-hidden')).toBeNull();
   });
 
@@ -130,5 +148,16 @@ describe('the fox’s help card', () => {
     const xs = screen.getAllByRole('button', { name: 'Hide the fox' });
     fireEvent.click(xs[0]);
     expect(screen.getByRole('button', { name: 'Bring back the fox' })).toBeTruthy();
+  });
+});
+
+describe('computeStatus closed label', () => {
+  it('names tomorrow after closing, today before opening', async () => {
+    const { computeStatus } = await import('../src/lib/hours.js');
+    const hours = [0, 1, 2, 3, 4, 5, 6].map((d) => ({ day_of_week: d, open_time: '7:30 AM', close_time: '7:00 PM' }));
+    // 23:30 shop time (03:30Z next day in EDT) on a Monday in Oct 2026
+    expect(computeStatus(hours, [], new Date('2026-10-20T03:30:00Z')).label).toBe('Closed — opens tomorrow 7:30 AM');
+    // 06:00 shop time
+    expect(computeStatus(hours, [], new Date('2026-10-19T10:00:00Z')).label).toBe('Closed — opens 7:30 AM');
   });
 });
