@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { FaArrowLeft, FaArrowUpRightFromSquare, FaMedal, FaMugHot, FaRotateRight } from 'react-icons/fa6';
+import { FaArrowLeft, FaArrowUpRightFromSquare, FaMugHot, FaRotateRight } from 'react-icons/fa6';
 import { orderUrlFor, orderLabelFor } from '../lib/order.js';
 import { productImageSources, isCutout } from '../lib/productImage.js';
 import { track } from '../lib/analytics.js';
@@ -174,7 +174,7 @@ function Glass({ look, id, still }) {
       {/* the glass, its back wall and the back of the rim */}
       <path d={GLASS_BODY} fill={`url(#${id}-glass)`} />
       <path d="M23 20 A27 5.2 0 0 1 77 20" fill="none" stroke={INK} strokeWidth="1.4" opacity="0.55" />
-      {!still && <rect className="fox-pour__stream" x="48.2" y="0" width="3.6" height="80" rx="1.8" fill={look.fill} />}
+      {!still && <rect className="fox-pour__stream" x="48.2" y="0" width="3.6" height="80" rx="1.8" fill={look.fill} style={{ '--stream-h': '80px' }} />}
       {!frozen && <Straw d={straw} tint={look.fill} clip={`${id}-under`} />}
       {/* the drink */}
       <g clipPath={`url(#${id}-in)`}>
@@ -289,7 +289,7 @@ function Mug({ look, id, still }) {
       <path d={MUG_OUT} fill="none" stroke={INK} strokeWidth={LINE} strokeLinecap="round" />
       {/* the opening: inside wall, then the drink rising into it */}
       <ellipse cx="46" cy="40" rx="25" ry="6" fill="#e8dcc4" stroke={INK} strokeWidth={LINE} />
-      {!still && <rect className="fox-pour__stream" x="44.2" y="0" width="3.6" height="41" rx="1.8" fill={look.fill} />}
+      {!still && <rect className="fox-pour__stream" x="44.2" y="0" width="3.6" height="41" rx="1.8" fill={look.fill} style={{ '--stream-h': '41px' }} />}
       <g clipPath={`url(#${id}-in)`}>
         <g className="fox-pour__liquid">
           <ellipse cx="46" cy="41.4" rx="22.4" ry="4.9" fill={`url(#${id}-top)`} />
@@ -355,7 +355,6 @@ export function SurprisePane({ menu, hours, overrides }) {
     const done = setTimeout(() => setPouring(false), POUR_MS);
     return () => { clearTimeout(tick); clearTimeout(done); };
   }, [pouring, pour.n]);
-  useEffect(() => { if (!pouring && pour.item) saveUsual(pour.item); }, [pouring, pour]); // fox-outfits: a poured pick is "your usual"
 
   const again = () => {
     const next = pickSurprise(menu, { not: pour.item?.name });
@@ -433,7 +432,6 @@ export function QuizPane({ menu, hours, overrides }) {
 
   // keyboard users stay with the quiz: focus moves to each new question
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [at, result]);
-  useEffect(() => { if (result?.r?.item) saveUsual(result.r.item); }, [result]); // fox-outfits: a match is "your usual"
 
   const finish = (ans) => {
     setResult({ r: matchDrink(menu, ans), refine: [], aside: [] });
@@ -554,20 +552,6 @@ export function QuizPane({ menu, hours, overrides }) {
   );
 }
 
-/* ---- The Trouble-maker award ------------------------------------------- */
-export function AwardPane() {
-  return (
-    <div className="fox-play fox-award" data-testid="fox-award">
-      <span className="fox-award__medal" aria-hidden="true"><FaMedal /></span>
-      <div>
-        <p className="fox-help__q">Badge unlocked</p>
-        <p className="fox-award__title">Trouble-maker!</p>
-        <p className="fox-help__a">Ten pets for the fox. That makes you an official Trouble-maker. Your badge is pinned to this card.</p>
-      </div>
-    </div>
-  );
-}
-
 /* ---- The fox himself, and his accessories --------------------------------
    The drawing is the logo fox as a vector (src/lib/foxArt.js), traced 1:1
    from public/images/brand/fox-sipping.png and drawn at the PNG's own size
@@ -609,13 +593,3 @@ export function Pumpkin() {
   );
 }
 
-/** His bushy tail — tucked behind his card, it pops out to wag when petted. */
-export function Tail() {
-  return (
-    <svg className="fox-acc fox-acc--tail" viewBox="0 0 60 40" aria-hidden="true">
-      <path d="M2 27 C10 19 24 22 34 14 C41 8 48 3 57 2 C59 10 56 21 46 28 C36 36 18 39 2 34 Z" fill="#f2c08a" stroke="#221f1a" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M57 2 C58 9 56 16 51 22 C47 16 49 7 57 2 Z" fill="#fffdf7" stroke="#221f1a" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M14 31 C24 30 32 26 39 19 M20 25 C27 24 32 20 36 16" fill="none" stroke="#221f1a" strokeWidth="1.1" opacity="0.45" />
-    </svg>
-  );
-}

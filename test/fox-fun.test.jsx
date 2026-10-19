@@ -3,7 +3,7 @@ import { render, screen, fireEvent, cleanup, within } from '@testing-library/rea
 import { MemoryRouter } from 'react-router-dom';
 import FoxGuide from '../src/components/FoxGuide.jsx';
 import {
-  DAILY, backLine, closedOrderNote, dailyFact, drinkCandidates, foxMood, pickSurprise, registerTap,
+  DAILY, backLine, closedOrderNote, dailyFact, drinkCandidates, foxMood, pickSurprise,
 } from '../src/lib/foxFun.js';
 import { HOURS, MENU_ITEMS } from '../src/lib/seed.js';
 import { SPOTON_ORDER_URL } from '../src/lib/config.js';
@@ -104,33 +104,6 @@ describe('his mood follows the shop’s clock', () => {
   });
 });
 
-describe('petting', () => {
-  it('a single tap is a click; three quick taps wag his tail', () => {
-    let r = registerTap(null, 1000);
-    expect(r).toMatchObject({ quick: false, wag: false });
-    r = registerTap(r.state, 1200);
-    expect(r).toMatchObject({ quick: true, wag: false });
-    r = registerTap(r.state, 1400);
-    expect(r).toMatchObject({ quick: true, wag: true });
-    // slow taps never wag
-    let s = registerTap(null, 0);
-    s = registerTap(s.state, 2000);
-    s = registerTap(s.state, 4000);
-    expect(s).toMatchObject({ quick: false, wag: false });
-  });
-
-  it('the 10th tap ever earns the badge once; later 10ths just celebrate', () => {
-    let r = { state: null };
-    const results = [];
-    for (let i = 1; i <= 20; i += 1) { r = registerTap(r.state, i * 5000); results.push(r); }
-    expect(results.filter((x) => x.award).length).toBe(1);
-    expect(results[9]).toMatchObject({ award: true, confetti: true });
-    expect(results[9].state.badge).toBe(true);
-    expect(results[19]).toMatchObject({ award: false, confetti: true });
-    expect(results[8].confetti).toBe(false);
-  });
-});
-
 /* the quiz and the Surprise reel: test/fox-quiz.test.jsx */
 
 /* ---- in the card ---------------------------------------------------------- */
@@ -180,22 +153,17 @@ describe('the games in the fox’s card', () => {
     expect(fox().getAttribute('aria-label')).not.toMatch(/new fox fact/);
   });
 
-  it('petting: a tap opens the card, quick taps don’t close it, and the 10th earns the badge', async () => {
+  it('a tap opens the card, quick taps don’t close it, and there is no badge, tail or confetti', async () => {
     renderFox();
     const btn = fox();
     fireEvent.click(btn);
     expect(btn.getAttribute('aria-expanded')).toBe('true');
-    for (let i = 2; i <= 9; i += 1) fireEvent.click(btn); // quick taps: petting
+    for (let i = 2; i <= 12; i += 1) fireEvent.click(btn); // quick taps
     expect(btn.getAttribute('aria-expanded')).toBe('true');
     expect(screen.queryByTestId('fox-award')).toBeNull();
-    fireEvent.click(btn); // the 10th
-    expect(screen.getByTestId('fox-award').textContent).toMatch(/Trouble-maker/);
-    expect(JSON.parse(localStorage.getItem('tb-fox-pets'))).toEqual({ total: 10, badge: true });
-    cleanup();
-
-    renderFox(); // a later visit keeps the badge in the header
-    fireEvent.click(fox());
-    expect(within(screen.getByRole('dialog')).getByText('Trouble-maker')).toBeTruthy();
+    expect(screen.queryByText('Trouble-maker')).toBeNull();
+    expect(document.querySelector('.fox-acc--tail, .fox-guide__confetti')).toBeNull();
+    expect(localStorage.getItem('tb-fox-pets')).toBeNull();
   });
 
   it('sleeps in a nightcap after closing and says when he’s back', async () => {

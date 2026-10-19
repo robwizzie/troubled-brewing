@@ -7,7 +7,6 @@ import { computeStatus, dayName, nextOpening, shopNow } from './hours.js';
      · drinkLook                        — how its pour looks
      · DAILY + dailyFact                — one fox fact or riddle per day
      · foxMood                          — sleepy / morning / October
-     · registerTap                      — petting, and the 10th-tap badge
      · QUIZ + classifyDrink + quizPlan + matchDrink + refineOptions
                                         — the pick-a-drink quiz
 
@@ -152,36 +151,8 @@ export function backLine(next) {
   return `Zzz… back ${dayName(next.dow)} at ${next.time}!`;
 }
 
-/* ---------------------------------------------------------------------------
-   Petting
-   A tap within QUICK_MS of the last one is a pet, not a click: it never
-   toggles the card (so the first tap opens it and petting leaves it be).
-   PET_COUNT taps inside PET_WINDOW_MS wag his tail. Every 10th tap ever
-   earns the Trouble-maker badge — the award card the first time, a little
-   confetti after that.
-   ------------------------------------------------------------------------ */
-
+/** Taps closer together than this never toggle the fox's card. */
 export const QUICK_MS = 450;
-export const PET_COUNT = 3;
-export const PET_WINDOW_MS = 1500;
-export const BADGE_EVERY = 10;
-
-/** state: { recent: number[], total: number, badge: boolean } */
-export function registerTap(state, t) {
-  const prev = state?.recent || [];
-  const last = prev[prev.length - 1];
-  const recent = [...prev.filter((x) => t - x <= PET_WINDOW_MS), t];
-  const total = (state?.total || 0) + 1;
-  const milestone = total % BADGE_EVERY === 0;
-  const award = milestone && !state?.badge;
-  return {
-    state: { recent, total, badge: Boolean(state?.badge || milestone) },
-    quick: last != null && t - last < QUICK_MS,
-    wag: recent.length >= PET_COUNT,
-    award,            // first time: show the award card
-    confetti: milestone,
-  };
-}
 
 /* ---------------------------------------------------------------------------
    The "Surprise me" pour
