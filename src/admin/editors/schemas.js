@@ -6,8 +6,12 @@
 
 import { WALL_PIECES } from '../../lib/wallPieces.js';
 import { MENU_CATEGORY_ORDER, MENU_CATEGORY_LABELS } from '../../lib/menuService.js';
+import { FRAME_STYLE_OPTIONS } from '../../lib/frameStyles.js';
 
 const LAYOUTS = [{ value: 'masonry', label: 'Masonry' }, { value: 'grid', label: 'Grid' }];
+const FRAMES = FRAME_STYLE_OPTIONS;
+const PHOTO_HINT = 'Blank = no photo. The shop photos we ship live in /images/pages/ — upload your own to replace one.';
+const ALT_HINT = 'Describe the photo for someone who can’t see it (and for Google), e.g. “The black front door at 514 Station Ave under the Trouble Brewing sign”.';
 const MENU_CATEGORIES = MENU_CATEGORY_ORDER.map((c) => ({ value: c, label: MENU_CATEGORY_LABELS[c] || c }));
 
 export const SECTION_EDITOR_SCHEMAS = {
@@ -34,6 +38,7 @@ export const SECTION_EDITOR_SCHEMAS = {
           { value: '', label: 'Plain — normal text on the page' },
           { value: 'lead', label: 'Opening paragraph — centered and larger, with a coffee cup above' },
           { value: 'alt', label: 'On a soft sage band — good for breaking up a long page' },
+          { value: 'note', label: 'A taped-up note — short, practical things like parking' },
         ],
         hint: 'Alternating a couple of blocks onto the sage band is what keeps a long page from reading as one wall of text.',
       },
@@ -79,20 +84,33 @@ export const SECTION_EDITOR_SCHEMAS = {
     ],
   },
   cta: {
+    note: 'Add a photo and the band becomes a sage panel with the photo hung in a frame beside it (and room for a second button).',
     fields: [
+      { name: 'eyebrow', label: 'Little line above the heading', type: 'text', hint: 'Optional. Shows on the photo panel.' },
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'body', label: 'Body', type: 'textarea', rows: 2 },
       { name: 'button_label', label: 'Button label', type: 'text' },
       { name: 'button_url', label: 'Button link', type: 'text', hint: 'Leave blank (or use an order link) to point at SpotOn ordering.' },
+      { name: 'image_url', label: 'Photo', type: 'image', preset: 'card', hint: 'Optional. ' + PHOTO_HINT },
+      { name: 'image_alt', label: 'Photo alt text', type: 'text', hint: ALT_HINT },
+      { name: 'frame_style', label: 'Frame', type: 'select', options: FRAMES },
+      { name: 'secondary_label', label: 'Second button label', type: 'text', hint: 'Optional. Shows on the photo panel.' },
+      { name: 'secondary_url', label: 'Second button link', type: 'text' },
     ],
   },
   events_list: {
     manager: 'events',
-    note: 'Add and edit events below. Anything with a date in the past drops off the site by itself — you never have to tidy up.',
+    note: 'Add and edit events below — each one becomes a poster with a calendar date block (add a photo or flyer to fill the poster). Anything with a date in the past leaves the posters by itself; with “Show past events” on, past events that have a photo move to a photo wall underneath.',
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional.' },
+      { name: 'empty_heading', label: 'Heading when there’s nothing coming up', type: 'text', hint: 'Blank = “Nothing on the calendar just yet”.' },
       { name: 'empty_message', label: 'When there’s nothing coming up', type: 'text', hint: 'Shown when the list is empty. Blank = “Nothing on the calendar right now — check back soon.”' },
+      { name: 'empty_image_url', label: 'Photo when there’s nothing coming up', type: 'image', preset: 'card', hint: PHOTO_HINT },
+      { name: 'empty_image_alt', label: 'That photo’s alt text', type: 'text', hint: ALT_HINT },
+      { name: 'instagram_handle', label: 'Instagram handle to follow', type: 'text', hint: 'Without the @. Blank hides the “Follow us” button.' },
+      { name: 'show_past', label: 'Show past events (with photos) as a photo wall', type: 'checkbox' },
+      { name: 'past_heading', label: 'Past events heading', type: 'text', hint: 'Blank = “Lately at Trouble”.' },
     ],
   },
   community_board: {
@@ -393,7 +411,7 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   troublemakers_grid: {
     manager: 'troublemakers',
-    note: 'Your team — a photo, what they do, their go-to drink and a few fun facts. Add and edit them below.',
+    note: 'Your team, as polaroids — a photo, what they do, their go-to drink and a few fun facts. Type their drink exactly as it’s named on the menu and it links to it. Someone without a photo yet gets a “photo coming soon” polaroid. Add and edit them below.',
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional. A sentence introducing the crew.' },
@@ -431,10 +449,117 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   timeline_grid: {
     manager: 'timeline',
-    note: 'Your milestones — opening day, anniversaries, the drink that took off. Add and edit them below.',
+    note: 'Your milestones — opening day, anniversaries, the drink that took off — hung as framed photos along a picture wire. Give a milestone its own photo below and it shows that; the others borrow the “shop today” photos here, labelled so nobody thinks they’re from that day.',
     fields: [
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional.' },
+      { name: 'fill_images', label: 'Photos for milestones without their own', type: 'images', hint: 'Photos of the shop as it is now. They take turns on any milestone that has no photo of its own.' },
+      { name: 'fill_caption', label: 'Label on those photos', type: 'text', hint: 'Blank = “The shop today”. Keeps it honest that they aren’t from the event itself.' },
+      { name: 'end_label', label: 'Tag at the end of the wire', type: 'text', hint: 'Blank = “…and counting”.' },
+    ],
+  },
+  /* Photo-led building blocks for the inside pages (About, Location, Events,
+     Troublemakers, Timeline): the shop's own photographs hung in the same
+     frame moldings as the homepage wall. */
+  photo_hero: {
+    fields: [
+      { name: 'eyebrow', label: 'Little line above the title', type: 'text', hint: 'Optional.' },
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'subheading', label: 'Subheading', type: 'textarea', rows: 2 },
+      { name: 'image_url', label: 'Photo', type: 'image', preset: 'hero', hint: PHOTO_HINT },
+      { name: 'image_alt', label: 'Photo alt text', type: 'text', hint: ALT_HINT },
+      { name: 'caption', label: 'Brass plate under the photo', type: 'text', hint: 'Optional. A few words — e.g. “514 Station Ave”.' },
+      {
+        name: 'layout',
+        label: 'How it looks',
+        type: 'select',
+        placeholderOption: false,
+        options: [
+          { value: 'framed', label: 'Framed — the photo hung in a frame beside the heading' },
+          { value: 'full', label: 'Full width — the photo behind the heading' },
+        ],
+      },
+      { name: 'frame_style', label: 'Frame (framed look)', type: 'select', options: FRAMES },
+      { name: 'focus', label: 'Keep in view', type: 'text', hint: 'Optional. Which part of the photo to keep when it’s cropped, e.g. “center 30%” or “left center”.' },
+      { name: 'cta_label', label: 'Button label', type: 'text', hint: 'Leave blank for no button. A label with “Order” and no link goes to SpotOn.' },
+      { name: 'cta_url', label: 'Button link', type: 'text', hint: 'A page like /menu, a full https:// address, or tel:+18566176638.' },
+      { name: 'secondary_label', label: 'Second button label', type: 'text', hint: 'Optional.' },
+      { name: 'secondary_url', label: 'Second button link', type: 'text' },
+    ],
+  },
+  photo_story: {
+    note: 'One chapter: a short bit of text beside a framed photo. Stack a few and flip “Photo on” between them so the page zig-zags.',
+    fields: [
+      { name: 'eyebrow', label: 'Little line above the heading', type: 'text', hint: 'Optional.' },
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'body_markdown', label: 'Text', type: 'markdown', rows: 6, hint: 'Keep it to a short paragraph or two. Supports **bold**, *italic* and [links](https://…).' },
+      { name: 'image_url', label: 'Photo', type: 'image', preset: 'hero', hint: PHOTO_HINT },
+      { name: 'image_alt', label: 'Photo alt text', type: 'text', hint: ALT_HINT },
+      { name: 'caption', label: 'Brass plate under the photo', type: 'text', hint: 'Optional.' },
+      { name: 'frame_style', label: 'Frame', type: 'select', options: FRAMES },
+      {
+        name: 'image_side',
+        label: 'Photo on',
+        type: 'select',
+        placeholderOption: false,
+        options: [{ value: 'right', label: 'The right' }, { value: 'left', label: 'The left' }],
+      },
+      { name: 'inset_url', label: 'Small second photo', type: 'image', preset: 'card', hint: 'Optional. Tucked over the corner of the main frame.' },
+      { name: 'inset_alt', label: 'Second photo alt text', type: 'text' },
+      { name: 'inset_frame', label: 'Second photo frame', type: 'select', options: FRAMES },
+      { name: 'link_label', label: 'Link button label', type: 'text', hint: 'Optional.' },
+      { name: 'link_url', label: 'Link button link', type: 'text', hint: 'A page like /neighborhood, or a full URL.' },
+      {
+        name: 'tone',
+        label: 'Background',
+        type: 'select',
+        placeholderOption: false,
+        options: [{ value: 'paper', label: 'Cream paper' }, { value: 'sage', label: 'Sage wall' }],
+      },
+    ],
+  },
+  pull_quote: {
+    note: 'Only ever a real quote — a customer’s words from a review, or a line from a published write-up — with who said it.',
+    fields: [
+      { name: 'quote', label: 'Quote', type: 'textarea', rows: 3 },
+      { name: 'attribution', label: 'Who said it', type: 'text' },
+      { name: 'source', label: 'Where', type: 'text', hint: 'e.g. “Google review” or the publication’s name.' },
+    ],
+  },
+  photo_mosaic: {
+    note: 'A few photos hung together. “Salon” mixes frames like your wall (4–6 photos look best); “Row” lines up tall frames.',
+    fields: [
+      { name: 'eyebrow', label: 'Little line above the heading', type: 'text', hint: 'Optional.' },
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'intro', label: 'Text under the heading', type: 'markdown', rows: 4, hint: 'Optional.' },
+      { name: 'badges', label: 'Brass labels', type: 'tags', hint: 'Optional, comma separated — e.g. La Colombe coffee, Metolius tea.' },
+      { name: 'images', label: 'Photos', type: 'images', hint: 'Alt text describes each photo. The photos we ship also carry a little name plate; a photo you add here shows without one.' },
+      {
+        name: 'layout',
+        label: 'How they hang',
+        type: 'select',
+        placeholderOption: false,
+        options: [{ value: 'salon', label: 'Salon — mixed frames, like the wall' }, { value: 'strip', label: 'Row — tall frames side by side' }],
+      },
+      {
+        name: 'tone',
+        label: 'Background',
+        type: 'select',
+        placeholderOption: false,
+        options: [{ value: 'paper', label: 'Cream paper' }, { value: 'sage', label: 'Sage wall' }],
+      },
+    ],
+  },
+  visit_panel: {
+    note: 'The map and this week’s hours (live from Settings → Hours, today picked out), side by side. Parking lives in its own “Parking” text block underneath, which the fox also quotes when someone asks where to park.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text', hint: 'Blank = “Find us”.' },
+      { name: 'address', label: 'Address', type: 'text', hint: 'Drives both the map and the directions button.' },
+      { name: 'directions_label', label: 'Directions button', type: 'text', hint: 'Blank = “Get directions”.' },
+      { name: 'phone_label', label: 'Call button', type: 'text', hint: 'Optional, e.g. “Call (856) 617-6638”.' },
+      { name: 'phone_url', label: 'Call button link', type: 'text', hint: 'tel:+18566176638' },
+      { name: 'hours_heading', label: 'Hours sign title', type: 'text', hint: 'Blank = “This week”.' },
+      { name: 'embed_url', label: 'Custom map embed URL', type: 'text', hint: 'Optional — leave blank to build the map from the address above.' },
     ],
   },
 };
