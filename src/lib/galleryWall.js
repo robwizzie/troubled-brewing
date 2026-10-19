@@ -1,7 +1,8 @@
 /* THE REAL WALL, AS DATA.
 
-   `public/images/wall/gallery-wall.jpg` (934×1400) is the shop's own
-   photograph of the green gallery wall over the condiment counter. The Gallery
+   `public/images/wall/gallery-wall.jpg` (934×1400 — and the same frame at up
+   to 3000px wide, see src/lib/wallPhoto.js) is the shop's own photograph of
+   the green gallery wall over the condiment counter. The Gallery
    Wall page hangs that photograph as its canvas and lays a hotspot over every
    piece in it, so a visitor explores the actual wall instead of scrolling a
    grid of thumbnails.
@@ -207,12 +208,14 @@ export function mergeWallArt(pieces) {
  * Everything is expressed in percentages OF THE PHOTOGRAPH, which is what CSS
  * `translate()` percentages mean on the photograph's own layer — so the room
  * pans and zooms correctly at every screen size without measuring a single
- * pixel. `scale` is clamped: the source is 934px wide, and blowing a
- * thumb-sized frame up past ~3× turns a photograph into porridge.
+ * pixel. `scale` is clamped at 5×: the room loads the photographer's
+ * full-resolution frame (up to 3000px wide, see src/lib/wallPhoto.js) as it
+ * zooms, so a small frame can come right up to the glass and stay sharp —
+ * past ~5× even that runs out of real detail.
  */
 export function viewFor(rect, fit) {
   const raw = Math.min((100 * fit.w) / rect.w, (WALL_FOCUS.h * fit.h) / rect.h);
-  const scale = Math.min(Math.max(raw, 1), 3.4);
+  const scale = Math.min(Math.max(raw, 1), 5);
   const cx = rect.x + rect.w / 2;
   const cy = rect.y + rect.h / 2;
   /* Vertically the pan is held inside the photograph: centering a piece hung

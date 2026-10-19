@@ -4,6 +4,7 @@ import OrderButton from '../OrderButton.jsx';
 import BrandImg from '../BrandImg.jsx';
 import StarRating from '../StarRating.jsx';
 import { asset } from '../../lib/config.js';
+import { WALL_PHOTO, wallPhotoProps } from '../../lib/wallPhoto.js';
 import { WALL_ART, WALL_IMAGE, WALL_FOCUS } from '../../lib/galleryWall.js';
 import { getMenu, pickProducts } from '../../lib/menuService.js';
 import { loadReviews } from '../../lib/reviews.js';
@@ -170,7 +171,10 @@ export default function StepInsideHero({ data = {} }) {
   const imgStyle = pos
     ? { width: `${pos.coverW}px`, transform: `translate3d(${pos.x}px, ${pos.y}px, 0) scale(${pos.s})` }
     : undefined;
-  const src = photo || asset('images/wall/gallery-wall.jpg');
+  const src = photo || WALL_PHOTO;
+  /* rendered width of the photo after the close-up scale — picks a copy of
+     the wall sharp enough for the zoom (src/lib/wallPhoto.js) */
+  const photoSizes = pos ? `${Math.ceil(pos.coverW * pos.s)}px` : '100vw';
   const quote = reviews?.reviews?.[0];
   const backAt = status && !status.open
     ? (status.label.startsWith('Closed — opens') ? status.label.replace('Closed — opens', 'Back at') : 'Back tomorrow')
@@ -306,7 +310,7 @@ export default function StepInsideHero({ data = {} }) {
           <img
             ref={photoRef}
             className="sih__photo"
-            src={src}
+            {...wallPhotoProps(photo, photoSizes)}
             alt="The gallery wall at Trouble Brewing: a sage-green wall hung with mismatched vintage frames, a gold fox head in spectacles and a brass hare."
             style={imgStyle}
             fetchpriority="high"
