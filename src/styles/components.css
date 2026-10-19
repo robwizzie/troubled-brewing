@@ -488,3 +488,39 @@
 .frame-portal__ground { position: absolute; inset: 0; opacity: 0; }
 
 /* ---- The fox guide lives in fox-guide.css ---------------------------------- */
+
+/* Full-screen photo viewer (PhotoLightbox) — object-fit contain, native pinch
+   zoom on phones (touch-action left to the browser). */
+.lightbox {
+  position: fixed; inset: 0; z-index: 1150; display: grid; place-items: center;
+  grid-template-rows: minmax(0, 1fr) auto; padding: 3.5rem 0.75rem 1rem;
+  background: rgba(12, 10, 7, 0.96);
+}
+.lightbox__img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); }
+.lightbox__caption { margin: 0.75rem 0 0; color: #f4f1e6; text-align: center; font-size: var(--text-sm); max-width: 60ch; }
+.lightbox__close {
+  position: absolute; top: 0.75rem; right: 0.75rem; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 1.2rem; cursor: pointer;
+  color: #fffaf0; background: rgba(255, 250, 240, 0.14); border: 1px solid rgba(255, 250, 240, 0.4);
+}
+.lightbox__close:hover { background: rgba(255, 250, 240, 0.26); }
+.lightbox__close:focus-visible { outline: 3px solid var(--color-yellow); outline-offset: 2px; }
+
+/* Menu page: "Today's chalkboard" thumbnail (ChalkboardStrip) */
+.chalk-strip {
+  display: flex; align-items: center; gap: var(--space-4); width: 100%; max-width: 560px;
+  margin: 0 auto var(--space-5); padding: var(--space-3); text-align: left; cursor: zoom-in;
+  font: inherit; color: inherit; background: var(--color-surface);
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+}
+.chalk-strip img {
+  width: 96px; height: 96px; flex-shrink: 0; object-fit: cover; background: #23261f;
+  border: 6px solid #6b4a2c; border-image: linear-gradient(135deg, #8a6038, #5a3b20 40%, #7d5532 70%, #4d321a) 1;
+  transform: rotate(-2deg);
+}
+.chalk-strip__text { display: grid; gap: 0.15rem; min-width: 0; }
+.chalk-strip__text strong { font-family: var(--font-display); font-size: var(--text-lg); }
+.chalk-strip__text span { color: var(--color-text-soft); font-size: var(--text-sm); }
+.chalk-strip__text .chalk-strip__cta { color: var(--color-accent-text); font-weight: 600; }
+.chalk-strip:hover { border-color: var(--color-yellow-deep); }
+.chalk-strip:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
