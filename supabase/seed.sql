@@ -10,17 +10,17 @@
 -- Pages
 -- -----------------------------------------------------------------------------
 insert into pages (slug, title, meta_description) values
-  ('home',          'Trouble Brewing Coffee House — Haddon Heights, NJ', 'A warm, independent coffee shop in Haddon Heights, NJ pouring La Colombe coffee. Espresso, signature drinks, fresh paninis, and pastries.'),
-  ('menu',          'Menu — Trouble Brewing Coffee House',               'Espresso, specialty drinks, paninis, and fresh pastries at Trouble Brewing Coffee House in Haddon Heights, NJ. Order online via SpotOn.'),
-  ('about',         'Our Story — Trouble Brewing Coffee House',          'From mortgage bankers to a neighborhood coffee shop. The story of Trouble Brewing and our La Colombe coffee in Haddon Heights, NJ.'),
-  ('events',        'Events & Community — Trouble Brewing Coffee House',  'Upcoming events at Trouble Brewing Coffee House. Host your own gathering in our Haddon Heights space.'),
-  ('location',      'Hours & Location — Trouble Brewing Coffee House',    'Visit Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ. Hours, parking, and directions.'),
-  ('contact',       'Contact & Catering — Trouble Brewing Coffee House',  'Get in touch with Trouble Brewing Coffee House or send a catering inquiry.'),
-  ('reviews',       'Reviews — Trouble Brewing Coffee House',            'See what the neighborhood says about Trouble Brewing Coffee House. Read our Google reviews and leave your own.'),
-  ('gallery-wall',  'The Gallery Wall — Trouble Brewing Coffee House',    'The stories behind the framed art on our wall. A little bit of Trouble Brewing history, one frame at a time.'),
-  ('troublemakers', 'The Troublemakers — Trouble Brewing Coffee House',   'Meet the Troublemakers — the team behind your coffee at Trouble Brewing Coffee House in Haddon Heights, NJ.'),
-  ('neighborhood',  'Local Love — Trouble Brewing Coffee House',          'The Haddon Heights businesses we know and love. Support local with Trouble Brewing Coffee House.'),
-  ('timeline',      'Our Story So Far — Trouble Brewing Coffee House',     'The Trouble Brewing timeline — opening day, anniversaries, menu launches, and the milestones that made us who we are in Haddon Heights, NJ.')
+  ('home', 'Trouble Brewing Coffee House | Haddon Heights NJ Coffee Shop', 'Independent coffee shop on Station Ave in Haddon Heights, NJ. La Colombe coffee, Metolius teas, breakfast all day, gluten-free sweets and a Pup Cup.'),
+  ('menu', 'Menu | Trouble Brewing Coffee House, Haddon Heights NJ', 'La Colombe espresso drinks, Metolius teas, breakfast sandwiches served all day, lunch melts, fresh bakery and gluten-free sweets. Order ahead online.'),
+  ('about', 'Our Story | Trouble Brewing Coffee House, Haddon Heights', 'Haddon Heights locals Tom and Cat opened Trouble Brewing on Station Ave on Friday the 13th, October 2017. Serious coffee, breakfast all day, good Trouble.'),
+  ('events', 'Events | Trouble Brewing Coffee House, Haddon Heights NJ', 'Upcoming events and community gatherings at Trouble Brewing Coffee House, 514 Station Ave in Haddon Heights, NJ. See what''s on, then come say hi.'),
+  ('location', 'Hours & Directions | Trouble Brewing Coffee House', 'Find Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ 08035, open seven days a week. Hours, parking, directions: (856) 617-6638.'),
+  ('contact', 'Contact & Catering | Trouble Brewing Coffee House', 'Call (856) 617-6638 or send a message to Trouble Brewing Coffee House in Haddon Heights, NJ: questions, feedback and catering inquiries.'),
+  ('timeline', 'Our Story So Far | Trouble Brewing Coffee House Timeline', 'From opening day on Friday the 13th, October 2017, to nine years on Station Ave: the milestones of Trouble Brewing Coffee House in Haddon Heights, NJ.'),
+  ('reviews', 'Reviews | Trouble Brewing Coffee House, Haddon Heights NJ', 'What neighbors say about Trouble Brewing Coffee House in Haddon Heights, NJ: real Google reviews of our coffee, breakfast and crew. Leave your own.'),
+  ('gallery-wall', 'The Gallery Wall | Trouble Brewing Coffee House', 'The green gallery wall at Trouble Brewing Coffee House: framed art, a gold fox and the curiosities that make our Haddon Heights café feel like home.'),
+  ('troublemakers', 'Meet the Troublemakers | Trouble Brewing Coffee House', 'Meet the Troublemakers, the crew pouring La Colombe coffee and making breakfast all day at Trouble Brewing Coffee House in Haddon Heights, NJ.'),
+  ('neighborhood', 'Local Love: Station Ave Neighbors | Trouble Brewing', 'Our favorite Haddon Heights neighbors on Station Ave: Italian, empanadas, pizza, afternoon tea, flowers and local gifts. Shop small with Trouble Brewing.')
 on conflict (slug) do nothing;
 
 -- -----------------------------------------------------------------------------
