@@ -11,6 +11,13 @@ vi.mock('../src/lib/storyImage.js', () => ({
   storyBlob: vi.fn(async () => new Blob(['png'], { type: 'image/png' })),
 }));
 vi.mock('../src/lib/analytics.js', () => ({ track: vi.fn(), useAnalytics: () => {} }));
+// The fox card's menu is the SpotOn snapshot, which now carries real photos
+// for some drinks. These tests decide photo / no photo per drink themselves,
+// so the card's menu is the same snapshot with every photo taken off.
+vi.mock('../src/lib/menuService.js', async (importOriginal) => {
+  const real = await importOriginal();
+  return { ...real, getMenu: async (...args) => (await real.getMenu(...args)).map((i) => ({ ...i, image_url: '' })) };
+});
 
 const { track } = await import('../src/lib/analytics.js');
 const { default: FoxGuide } = await import('../src/components/FoxGuide.jsx');
