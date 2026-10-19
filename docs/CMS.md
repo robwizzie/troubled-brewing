@@ -14,7 +14,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `gallery` | `{ heading, images: [{url, alt}] }` | data | `Gallery.jsx` |
 | `menu_block` | `{ heading, categories: [..], layout: 'auto'\|'cards'\|'list', show_chalkboard }` — `show_chalkboard` (default true) adds a small "Today's chalkboard" thumbnail under the heading while `chalkboard_photo` is live (`ChalkboardStrip.jsx`); nothing renders otherwise. `auto` (default) draws photo cards as soon as any item has an `image_url`, the classic price list until then; `cards` uses the shared `ProductCard`, the same card the homepage drinks teaser draws | `menu_items` | `MenuBlock.jsx` |
 | `hours` | `{ heading, intro }` | `hours`+`hours_overrides`/Google | `HoursSection.jsx` |
-| `cta` | `{ heading, body, button_label, button_url, eyebrow?, image_url?, image_alt?, frame_style?, secondary_label?, secondary_url? }` — with an `image_url` it renders as the sage photo panel with the photo in a gallery frame (same type on purpose: the fox reads the Events host cta by type) | data | `CTA.jsx` |
+| `cta` | `{ heading, body, button_label, button_url, eyebrow?, image_url?, image_alt?, frame_style?, secondary_label?, secondary_url? }` — with an `image_url` it renders as the sage photo panel with the photo in a gallery frame (same type on purpose: the fox reads the Events host cta by type); without a photo, `secondary_label` + `secondary_url` show as a small text link under the button | data | `CTA.jsx` |
 | `events_list` | `{ heading, intro, empty_heading, empty_message, empty_image_url, empty_image_alt, instagram_handle, show_past, past_heading }` — poster cards with a calendar date block, plus "Add to calendar" (.ics / Google / Outlook) and "Text a friend" on upcoming ones (`src/lib/calendar.js`); `show_past` adds a photo wall of past events that have an image | `events` | `EventsList.jsx` |
 | `community_board` | `{ heading, intro }` | `content_blocks.staff_picks` | `CommunityBoard.jsx` |
 | `instagram` | `{ heading, body, embed_handle }` | `instagram_feed` + data | `InstagramFeed.jsx` |
@@ -54,6 +54,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `pull_quote` | `{ quote, attribution, source }` — real quotes only; renders nothing without one | data | `PullQuote.jsx` |
 | `photo_mosaic` | `{ eyebrow, heading, intro, badges, images: [{url, alt, caption?}], layout: 'salon'\|'strip', tone }` | data | `PhotoMosaic.jsx` |
 | `visit_panel` | `{ heading, address, embed_url, directions_label, phone_label, phone_url, hours_heading }` — map + live hours letterboard (today highlighted) | data + hours | `VisitPanel.jsx` |
+| `gift_cards` | `{ eyebrow, heading, intro, button_label, button_url, how_it_works, occasions_heading, occasions_hint, occasion_N_label / _note / _art (N = 1–4; art: cake, thanks, apple, fox, cup, heart), show_phone }` — the /gift-cards page: hero + one "Buy an e-gift card" button (new tab) + occasion cards that all open the same link. Blank `button_url` = `SPOTON_GIFT_CARD_URL` (config.js) | data | `GiftCards.jsx` (lazy) |
 
 ### Future-stub section types (built as no-op/coming-soon placeholders, not in v1 scope)
 
