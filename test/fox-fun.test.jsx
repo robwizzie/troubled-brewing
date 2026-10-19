@@ -3,8 +3,7 @@ import { render, screen, fireEvent, cleanup, within } from '@testing-library/rea
 import { MemoryRouter } from 'react-router-dom';
 import FoxGuide from '../src/components/FoxGuide.jsx';
 import {
-  DAILY, backLine, classifyDrink, closedOrderNote, dailyFact, drinkCandidates, foxMood,
-  matchDrink, pickSurprise, registerTap,
+  DAILY, backLine, closedOrderNote, dailyFact, drinkCandidates, foxMood, pickSurprise, registerTap,
 } from '../src/lib/foxFun.js';
 import { HOURS, MENU_ITEMS } from '../src/lib/seed.js';
 import { SPOTON_ORDER_URL } from '../src/lib/config.js';
@@ -17,7 +16,6 @@ const MAY = new Date(2026, 4, 6, 12);
 
 const available = MENU_ITEMS.filter((i) => i.available !== false);
 const availableNames = new Set(available.map((i) => i.name));
-const seq = (...xs) => { let i = 0; return () => xs[i++ % xs.length]; };
 
 describe('Surprise me', () => {
   it('only ever picks an available, priced drink', () => {
@@ -133,50 +131,7 @@ describe('petting', () => {
   });
 });
 
-describe('the pick-a-drink quiz', () => {
-  const by = (n) => MENU_ITEMS.find((i) => i.name === n);
-
-  it('reads real names, categories and descriptions', () => {
-    expect(classifyDrink(by('Cold Brew'))).toEqual({ temp: 'iced', taste: 'strong', caffeine: 'yes' });
-    expect(classifyDrink(by('Hot Chocolate'))).toEqual({ temp: 'hot', taste: 'sweet', caffeine: 'no' });
-    expect(classifyDrink(by('Frappe - 16oz'))).toMatchObject({ temp: 'iced', taste: 'sweet', caffeine: 'no' }); // "(non-caffeinated)"
-    expect(classifyDrink(by('Hot Chai Latte'))).toEqual({ temp: 'hot', taste: 'sweet', caffeine: 'yes' });
-    expect(classifyDrink(by('Espresso'))).toEqual({ temp: 'hot', taste: 'strong', caffeine: 'yes' });
-    expect(classifyDrink(by('Iced Latte'))).toEqual({ temp: 'iced', taste: null, caffeine: 'yes' });
-    expect(classifyDrink(by('Hot Turmeric Latte')).caffeine).toBeNull(); // not claimed either way
-  });
-
-  it('finds an exact, available match when there is one', () => {
-    const cases = [
-      [{ temp: 'hot', taste: 'sweet', caffeine: 'no' }, ['Hot Chocolate', 'Hot Apple Cider']],
-      [{ temp: 'iced', taste: 'strong', caffeine: 'yes' }, ['Cold Brew', 'Iced Americano', 'Iced Espresso', 'Iced Cortado', 'Shaken Espresso - 20oz', 'Aircano', 'Espresso Tonic', 'Coconut Water Americano']],
-      [{ temp: 'iced', taste: 'sweet', caffeine: 'no' }, ['Frappe - 16oz', 'Lemonade', 'Iced Apple Cider']],
-      [{ temp: 'hot', taste: 'strong', caffeine: 'yes' }, ['Drip Coffee', 'Hot Americano', 'Espresso', 'Flat White', 'Cortado', 'Machiatto']],
-    ];
-    for (const [answers, ok] of cases) {
-      for (const k of [0, 0.5, 0.99]) {
-        const m = matchDrink(MENU_ITEMS, answers, { rand: () => k });
-        expect(m.exact).toBe(true);
-        expect(ok).toContain(m.item.name);
-        expect(availableNames.has(m.item.name)).toBe(true);
-      }
-    }
-  });
-
-  it('owns up when nothing ticks all three, and still picks a real drink', () => {
-    const m = matchDrink(MENU_ITEMS, { temp: 'iced', taste: 'strong', caffeine: 'no' }, { rand: seq(0) });
-    expect(m.exact).toBe(false);
-    expect(m.misses.length).toBe(1);
-    expect(availableNames.has(m.item.name)).toBe(true);
-  });
-
-  it('never suggests an unavailable drink', () => {
-    const onlyBanana = MENU_ITEMS.map((i) => ({ ...i, available: i.name === 'Banana Split Coffee' ? false : i.available }));
-    for (const temp of ['hot', 'iced']) for (const taste of ['sweet', 'strong']) for (const caffeine of ['yes', 'no']) {
-      expect(matchDrink(onlyBanana, { temp, taste, caffeine }).item.name).not.toBe('Banana Split Coffee');
-    }
-  });
-});
+/* the quiz and the Surprise reel: test/fox-quiz.test.jsx */
 
 /* ---- in the card ---------------------------------------------------------- */
 
@@ -223,25 +178,6 @@ describe('the games in the fox’s card', () => {
     expect(localStorage.getItem('tb-fox-fact-seen')).toBe('2026-10-19');
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(fox().getAttribute('aria-label')).not.toMatch(/new fox fact/);
-  });
-
-  it('the quiz walks three questions (with a back step) to a real drink', async () => {
-    renderFox();
-    const card = await openCard();
-    fireEvent.click(within(card).getByRole('button', { name: 'Pick my drink' }));
-    const quiz = () => within(card).getByTestId('fox-quiz');
-    expect(within(quiz()).getByRole('img', { name: 'Question 1 of 3' })).toBeTruthy();
-    fireEvent.click(within(quiz()).getByRole('button', { name: 'Hot' }));
-    fireEvent.click(within(quiz()).getByRole('button', { name: 'Strong' }));
-    fireEvent.click(within(quiz()).getByRole('button', { name: /Back/ })); // change my mind
-    expect(within(quiz()).getByRole('heading', { name: 'Sweet or strong?' })).toBeTruthy();
-    fireEvent.click(within(quiz()).getByRole('button', { name: 'Sweet' }));
-    fireEvent.click(within(quiz()).getByRole('button', { name: 'No caffeine' }));
-    const result = within(card).getByTestId('fox-quiz-result');
-    expect(result.textContent).toMatch(/Hot Chocolate|Hot Apple Cider/);
-    expect(result.textContent).toMatch(/Your drink/);
-    fireEvent.click(within(result).getByRole('button', { name: /Try again/ }));
-    expect(within(card).getByTestId('fox-quiz')).toBeTruthy();
   });
 
   it('petting: a tap opens the card, quick taps don’t close it, and the 10th earns the badge', async () => {
