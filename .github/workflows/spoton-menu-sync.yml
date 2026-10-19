@@ -51,6 +51,9 @@ jobs:
         run: node scripts/sync-spoton-menu.mjs
         env:
           SPOTON_ORDER_URL: ${{ secrets.VITE_SPOTON_ORDER_URL }}
+          # per-item link pattern, e.g. {store}/item/{id} — set ONLY once confirmed
+          # in a browser (docs/INTEGRATIONS.md §SpotOn item links). Empty = evidence only.
+          SPOTON_ITEM_URL_TEMPLATE: ${{ vars.SPOTON_ITEM_URL_TEMPLATE }}
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           DRY_RUN: ${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[sync-live]')) || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}

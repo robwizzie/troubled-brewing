@@ -24,6 +24,15 @@ We use clean URLs (BrowserRouter), so a hard refresh on e.g. `/menu` would 404 o
 
 `404.html` is copied into `dist/` automatically because it lives in `public/`. Chosen over `HashRouter` for clean, SEO-friendly URLs.
 
+**Public routes no longer depend on it.** `404.html` answers with an HTTP 404,
+which is what crawlers saw for every deep link. The build now prerenders a real
+page per public route (`dist/menu.html`, `dist/about.html`, …; Pages serves
+`/menu` from `menu.html` with a 200) with that page's title, description,
+canonical, Open Graph/Twitter tags and JSON-LD already in the HTML, and writes
+`sitemap.xml` + `robots.txt` (scripts/seo-build-plugin.mjs, data in
+src/lib/seo.js). `404.html` is now only the fallback for unknown URLs and
+admin deep links, and is `noindex`.
+
 ## Base path (IMPORTANT — read before changing the domain)
 
 The site is built as a GitHub **project page**, served under the repo subpath
@@ -87,8 +96,8 @@ Steps:
 5. **Supabase → Authentication → URL Configuration**: set Site URL to
    `https://troublebrewingcoffeehouse.com` and add `https://troublebrewingcoffeehouse.com/**`
    to the redirect URLs, so admin magic links land on the new domain.
-6. `public/sitemap.xml`, `public/robots.txt` and the `og:` tags already use the
-   apex domain, so no change is needed. `robwiscount.org/troubled-brewing/` redirects by itself
+6. `sitemap.xml`, `robots.txt`, canonicals and the `og:` tags are generated at
+   build time from `VITE_SITE_URL` (default: the apex domain), so no change is needed. `robwiscount.org/troubled-brewing/` redirects by itself
    once the custom domain is set.
 
 ## Weekly backups (§5.11)

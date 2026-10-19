@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, Empty, ConfirmModal } from '../components/ui.jsx';
+import { ScreenHead } from '../lib/publishing.jsx';
 
 /* Contact + catering submissions. Read/unread, filter by type, delete. */
 export default function Inbox() {
@@ -31,7 +32,7 @@ export default function Inbox() {
   }
   async function del(id) {
     await supabase.from('submissions').delete().eq('id', id);
-    toast('Deleted');
+    toast('Message deleted');
     setConfirmDel(null);
     load();
   }
@@ -40,7 +41,10 @@ export default function Inbox() {
 
   return (
     <div>
-      <h1>Inbox</h1>
+      <ScreenHead
+        title="Inbox"
+        help="Messages people sent from the Contact and Catering forms. Nothing here is shown on the site."
+      />
       <div className="inbox-filters">
         {['all', 'unread', 'contact', 'catering'].map((f) => (
           <button key={f} className={`chip ${filter === f ? 'chip--on' : ''}`} onClick={() => setFilter(f)}>{f}</button>
@@ -48,7 +52,7 @@ export default function Inbox() {
       </div>
 
       {filtered.length === 0 ? (
-        <Empty>No messages here.</Empty>
+        <Empty>{filter === 'all' ? 'No messages yet. When someone uses the Contact or Catering form, it lands here.' : 'No messages match that filter. Tap “all” to see every message.'}</Empty>
       ) : (
         <ul className="admin-list">
           {filtered.map((m) => (

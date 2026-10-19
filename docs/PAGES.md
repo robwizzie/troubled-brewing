@@ -30,4 +30,4 @@ The Home hero swaps between `immersive_gallery` (lead/default), `gallery_wall`, 
 
 ## SEO per page
 
-Each page's `<title>` + meta description come from the `pages` table (editable) with seed defaults. `LocalBusiness` JSON-LD on Home + Location. All public pages in `sitemap.xml`; `/admin` is noindex.
+Each page's `<title>` + meta description come from the `pages` table (editable), defaulting to `src/lib/seo.js`, which also sets each page's OG card (`public/og/*.jpg`, regenerate with `python3 scripts/generate-og-images.py`). Every page carries CafeOrCoffeeShop + WebPage + BreadcrumbList JSON-LD (WebSite on Home, Menu on /menu, Event on /events). The build prerenders each public route to static HTML and generates `sitemap.xml` + `robots.txt`; `/admin`, previews and the 404 are noindex.
