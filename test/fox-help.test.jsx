@@ -150,3 +150,14 @@ describe('the fox’s help card', () => {
     expect(screen.getByRole('button', { name: 'Bring back the fox' })).toBeTruthy();
   });
 });
+
+describe('computeStatus closed label', () => {
+  it('names tomorrow after closing, today before opening', async () => {
+    const { computeStatus } = await import('../src/lib/hours.js');
+    const hours = [0, 1, 2, 3, 4, 5, 6].map((d) => ({ day_of_week: d, open_time: '7:30 AM', close_time: '7:00 PM' }));
+    // 23:30 shop time (03:30Z next day in EDT) on a Monday in Oct 2026
+    expect(computeStatus(hours, [], new Date('2026-10-20T03:30:00Z')).label).toBe('Closed — opens tomorrow 7:30 AM');
+    // 06:00 shop time
+    expect(computeStatus(hours, [], new Date('2026-10-19T10:00:00Z')).label).toBe('Closed — opens 7:30 AM');
+  });
+});
