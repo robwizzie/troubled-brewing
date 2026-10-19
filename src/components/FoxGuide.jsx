@@ -11,7 +11,7 @@ import { googleWeekly, shopNow } from '../lib/hours.js';
 import { findSection, foxAnswers, hoursAnswer, plainText } from '../lib/foxHelp.js';
 import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
 import { QUICK_MS, backLine, dailyFact, foxMood, registerTap } from '../lib/foxFun.js';
-import { AwardPane, FactPane, Nightcap, Pumpkin, QuizPane, SurprisePane, Tail } from './FoxPlay.jsx';
+import { AwardPane, FactPane, FoxFigure, QuizPane, SurprisePane, Tail } from './FoxPlay.jsx';
 
 /* The Trouble Brewing fox — the dapper top-hatted fox from the logo, cup in
    hand (public/images/brand/fox-sipping.png). He's the logo fox, so no
@@ -34,8 +34,10 @@ import { AwardPane, FactPane, Nightcap, Pumpkin, QuizPane, SurprisePane, Tail } 
    it (CSS), leaving only the words.
 
    Games and moods (rules in src/lib/foxFun.js, panes in FoxPlay.jsx):
-   "Surprise me" picks a real available drink; "Pick my drink" is a three-
-   question quiz; "Fox fact" changes daily (a dot on him until you've seen
+   "Surprise me" spins a reel of real available drinks and lands on one;
+   "Pick my drink" is a short quiz (only the questions that narrow today's
+   menu, each skippable) ending in a match + two runner-ups that can be
+   fine-tuned; "Fox fact" changes daily (a dot on him until you've seen
    it). By the shop's clock he's sleepy in a nightcap when it's closed (with
    the real next opening), has a fresh steaming cup in the morning, and sits
    by a pumpkin all October. Pet him (quick taps) and his tail wags; every
@@ -518,14 +520,13 @@ export default function FoxGuide() {
           aria-haspopup="dialog"
           aria-label={open ? 'Close the fox’s help' : `Ask the fox: hours, directions, menu and more${factNew ? ' (new fox fact today)' : ''}`}
         >
+          {/* his medallion: a brass ring like the gallery wall's frames, a
+              cream face, and the logo fox (vector) centred inside */}
           <span className="fox-guide__card">
-            <span className="fox-guide__figure">
-              <img src={asset('images/brand/fox-sipping.png')} alt="" width="266" height="148" />
-              <span className="fox-guide__steam" aria-hidden="true"><i /><i /><i /></span>
-              {mood.sleepy && <Nightcap />}
+            <span className="fox-guide__face">
+              <FoxFigure sleepy={mood.sleepy} october={mood.october} />
+              {mood.sleepy && <span className="fox-guide__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>}
             </span>
-            {mood.sleepy && <span className="fox-guide__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>}
-            {mood.october && <Pumpkin />}
             {Badge && <span className="fox-guide__badge" aria-hidden="true"><Badge /></span>}
             {factNew && !open && <span className="fox-guide__dot" aria-hidden="true" />}
           </span>
