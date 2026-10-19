@@ -1,8 +1,19 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { getEvents } from '../../lib/dataService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 import { shopNow } from '../../lib/hours.js';
-import { mediaUrl, BRAND } from '../../lib/config.js';
+import { mediaUrl, BRAND, SITE_URL } from '../../lib/config.js';
+import { absoluteUrl } from '../../lib/seo.js';
+
+/* The calendar / share buttons (and the .ics builder behind them) load on
+   their own, only once there's an upcoming event to put them on. */
+const EventActions = lazy(() => import('../EventActions.jsx'));
+
+/** A stable in-page anchor for a poster ("event-<id>") — the link people share. */
+function eventAnchor(ev) {
+  const raw = ev.id ? String(ev.id) : `${ev.title || 'event'}-${ev.event_date || ''}`;
+  return `event-${raw.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '')}`;
+}
 import { SkeletonCards } from '../Skeleton.jsx';
 import FramedPhoto from '../PagePhoto.jsx';
 
@@ -13,6 +24,10 @@ import FramedPhoto from '../PagePhoto.jsx';
    Past events with a photo can be shown underneath as a photo wall
    (`show_past`), newest first — nothing to tidy: an event moves from the
    posters to the wall by itself once its date has passed.
+
+   Each upcoming poster with a real date carries "Add to calendar" and "Text
+   a friend" (EventActions.jsx); the link they share is this poster's own
+   anchor on /events. Past events never get them.
 
    Nothing coming up → a friendly empty state with a photo of the room and a
    nudge to follow along on Instagram, instead of a lone grey sentence. */
@@ -34,8 +49,10 @@ function parts(iso) {
 function Poster({ ev, index }) {
   const p = parts(ev.event_date);
   const img = mediaUrl(ev.image_url);
+  const anchor = eventAnchor(ev);
+  const canAdd = /^\d{4}-\d{2}-\d{2}$/.test(String(ev.event_date || ''));
   return (
-    <li className={`ev-poster ev-poster--${POSTER_TONES[index % POSTER_TONES.length]} ev-poster--tilt-${index % 3}`}>
+    <li id={anchor} className={`ev-poster ev-poster--${POSTER_TONES[index % POSTER_TONES.length]} ev-poster--tilt-${index % 3}`}>
       <article className="ev-poster__card">
         <span className="ev-poster__pin" aria-hidden="true" />
         {p && (
@@ -56,6 +73,11 @@ function Poster({ ev, index }) {
           <h3 className="ev-poster__title">{ev.title}</h3>
           {ev.event_time && <p className="ev-poster__time">{ev.event_time}</p>}
           {ev.description && <p className="ev-poster__text">{ev.description}</p>}
+          {canAdd && (
+            <Suspense fallback={<div className="ev-actions ev-actions--loading" aria-hidden="true" />}>
+              <EventActions ev={ev} url={`${absoluteUrl(SITE_URL, '/events')}#${anchor}`} />
+            </Suspense>
+          )}
         </div>
       </article>
     </li>
