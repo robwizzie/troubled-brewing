@@ -18,7 +18,7 @@ import App from '../src/App.jsx';
 
 const ROUTES = [
   '/', '/menu', '/about', '/events', '/location', '/contact', '/community',
-  '/timeline', '/reviews', '/gallery-wall', '/troublemakers', '/neighborhood', '/gift-cards',
+  '/timeline', '/reviews', '/gallery-wall', '/troublemakers', '/neighborhood', '/gift-cards', '/chalkboard',
   '/privacy', '/accessibility',
 ];
 

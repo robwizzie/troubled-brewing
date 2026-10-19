@@ -5,8 +5,9 @@ import HoursToday from '../HoursToday.jsx';
 import { asset } from '../../lib/config.js';
 import { getMenu, pickProducts } from '../../lib/menuService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
-import { useChalkboardPhoto, updatedLabel } from '../../lib/chalkboard.js';
+import { MIN_PAST_BOARDS, useChalkboardHistory, useChalkboardPhoto, updatedLabel } from '../../lib/chalkboard.js';
 import PhotoLightbox from '../PhotoLightbox.jsx';
+import PastBoards from '../PastBoards.jsx';
 
 /* "Pastry Case" landing concept — the shop's real photograph of the counter
    (the pastry case, the hand-lettered bakery board, the TB letters) as the
@@ -49,6 +50,16 @@ export default function PastryCaseHero({ data = {} }) {
   const [zoomed, setZoomed] = useState(false);
   const closeZoom = useCallback(() => setZoomed(false), []);
   const showPhoto = chalk && chalk.url !== failedUrl;
+  // "See past boards": the staff's old chalkboard photos, once there are a few
+  const past = useChalkboardHistory();
+  const [pastOpen, setPastOpen] = useState(false);
+  const closePast = useCallback(() => setPastOpen(false), []);
+  const hasPast = (past?.length || 0) >= MIN_PAST_BOARDS;
+  const pastLink = hasPast && (
+    <p className="pch__past-wrap">
+      <button type="button" className="pch__past" onClick={() => setPastOpen(true)} aria-haspopup="dialog">See past boards</button>
+    </p>
+  );
 
   useEffect(() => {
     let alive = true;
@@ -92,6 +103,7 @@ export default function PastryCaseHero({ data = {} }) {
               <p className="pch__chalk-when">{updatedLabel(chalk.updated_at)}</p>
             </div>
             <div className="pch__board-foot"><HoursToday /></div>
+            {pastLink}
           </aside>
         ) : (
           <aside className="pch__board" aria-label={boardTitle}>
@@ -113,6 +125,7 @@ export default function PastryCaseHero({ data = {} }) {
               </>
             )}
             <div className="pch__board-foot"><HoursToday /></div>
+            {pastLink}
           </aside>
         )}
       </div>
@@ -124,6 +137,7 @@ export default function PastryCaseHero({ data = {} }) {
           onClose={closeZoom}
         />
       )}
+      {hasPast && pastOpen && <PastBoards boards={past} onClose={closePast} />}
     </section>
   );
 }

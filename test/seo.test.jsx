@@ -17,7 +17,7 @@ const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://troublebrewingcoffeehouse.com';
 const PUBLIC_PATHS = [
   '/', '/menu', '/about', '/events', '/location', '/contact', '/timeline', '/reviews',
-  '/gallery-wall', '/troublemakers', '/neighborhood', '/gift-cards', '/privacy', '/accessibility',
+  '/gallery-wall', '/troublemakers', '/neighborhood', '/gift-cards', '/chalkboard', '/privacy', '/accessibility',
 ];
 
 const head = (sel) => document.head.querySelector(sel);

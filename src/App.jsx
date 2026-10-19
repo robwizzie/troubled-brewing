@@ -15,6 +15,7 @@ import SitePage from './pages/SitePage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
 import PrivacyPage from './pages/PrivacyPage.jsx';
 import AccessibilityPage from './pages/AccessibilityPage.jsx';
+import ChalkboardPage from './pages/ChalkboardPage.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 // Admin is auth-gated and irrelevant to visitors — keep it out of the main bundle.
@@ -77,6 +78,7 @@ export default function App() {
         <Route path="/troublemakers" element={<PublicShell><SitePage slug="troublemakers" /></PublicShell>} />
         <Route path="/neighborhood" element={<PublicShell><SitePage slug="neighborhood" /></PublicShell>} />
         <Route path="/gift-cards" element={<PublicShell><SitePage slug="gift-cards" /></PublicShell>} />
+        <Route path="/chalkboard" element={<PublicShell><ChalkboardPage /></PublicShell>} />
         <Route path="/privacy" element={<PublicShell><PrivacyPage /></PublicShell>} />
         <Route path="/accessibility" element={<PublicShell><AccessibilityPage /></PublicShell>} />
         <Route path="*" element={<PublicShell><NotFound /></PublicShell>} />
