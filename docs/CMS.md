@@ -9,13 +9,13 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `type` | `data` shape (jsonb) | Backed by | Renderer |
 |---|---|---|---|
 | `hero` | `{ eyebrow, heading, subheading, background_image_url, cta_label, cta_url }` — `cta_url` renders as a router link for `/paths`, a real anchor for `https://` and `tel:` | data | `Hero.jsx` |
-| `rich_text` | `{ heading, body_markdown, variant: ''\|'lead'\|'alt' }` — `lead` is the centered opening paragraph with the cup motif, `alt` sits on a sage band | data | `RichText.jsx` |
+| `rich_text` | `{ heading, body_markdown, variant: ''\|'lead'\|'alt'\|'note' }` — `lead` is the centered opening paragraph with the cup motif, `alt` sits on a sage band, `note` is a static taped-up note (Location's Parking — the fox quotes that row, so it stays a rich_text) | data | `RichText.jsx` |
 | `image` | `{ image_url, alt, caption }` | data | `ImageBlock.jsx` |
 | `gallery` | `{ heading, images: [{url, alt}] }` | data | `Gallery.jsx` |
 | `menu_block` | `{ heading, categories: [..], layout: 'auto'\|'cards'\|'list', show_chalkboard }` — `show_chalkboard` (default true) adds a small "Today's chalkboard" thumbnail under the heading while `chalkboard_photo` is live (`ChalkboardStrip.jsx`); nothing renders otherwise. `auto` (default) draws photo cards as soon as any item has an `image_url`, the classic price list until then; `cards` uses the shared `ProductCard`, the same card the homepage drinks teaser draws | `menu_items` | `MenuBlock.jsx` |
 | `hours` | `{ heading, intro }` | `hours`+`hours_overrides`/Google | `HoursSection.jsx` |
-| `cta` | `{ heading, body, button_label, button_url }` | data | `CTA.jsx` |
-| `events_list` | `{ heading, intro, empty_message }` | `events` | `EventsList.jsx` |
+| `cta` | `{ heading, body, button_label, button_url, eyebrow?, image_url?, image_alt?, frame_style?, secondary_label?, secondary_url? }` — with an `image_url` it renders as the sage photo panel with the photo in a gallery frame (same type on purpose: the fox reads the Events host cta by type) | data | `CTA.jsx` |
+| `events_list` | `{ heading, intro, empty_heading, empty_message, empty_image_url, empty_image_alt, instagram_handle, show_past, past_heading }` — poster cards with a calendar date block; `show_past` adds a photo wall of past events that have an image | `events` | `EventsList.jsx` |
 | `community_board` | `{ heading, intro }` | `content_blocks.staff_picks` | `CommunityBoard.jsx` |
 | `instagram` | `{ heading, body, embed_handle }` | `instagram_feed` + data | `InstagramFeed.jsx` |
 | `map` | `{ heading, address, button_label, note, embed_url }` | data | `MapSection.jsx` |
@@ -37,13 +37,23 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `pastry_case_hero` | `{ pch_eyebrow, pch_title, pch_sub, pch_board_title, pch_menu_label, pch_photo_url, pch_drinks, pch_chalk_max_days }` — the real counter photo with a chalkboard of live menu items + prices. When `content_blocks.chalkboard_photo` is live (see below) the drawn board is replaced by the staff photo of the real chalkboard, in the same frame; `pch_chalk_max_days` (optional, not in the editor) overrides the block's `max_age_days` | `menu_items` + `content_blocks.chalkboard_photo` | `PastryCaseHero.jsx` |
 | `gallery_wall_room` | `{ heading, intro, hint, image_url }` — the shop's own photograph of the wall with a hotspot over every piece in it; opening one pans and magnifies the photograph under a spotlight and raises a card with the credits and the story. Hotspot geometry lives in `src/lib/galleryWall.js` and is **measured against `public/images/wall/gallery-wall.jpg`** — a different `image_url` still renders, but the hotspots have to be re-measured in code to match it. A `gallery_pieces` row claims a frame with its `wall_spot` | `gallery_pieces` | `GalleryWallRoom.jsx` |
 | `gallery_pieces_grid` | `{ heading, intro }` — each piece hangs in a real molding with a museum label: title, **artist** (linked via `artist_url`), medium and date | `gallery_pieces` | `GalleryPiecesGrid.jsx` |
-| `troublemakers_grid` | `{ heading, intro }` | `team_members` | `TroublemakersGrid.jsx` |
+| `troublemakers_grid` | `{ heading, intro, empty_message }` — polaroids; `drink` links to `/menu#item-<slug>` when it names a menu item | `team_members` | `TroublemakersGrid.jsx` |
 | `local_businesses_grid`| `{ heading, intro, order_by: 'street'\|'manual', show_us }` — `street` orders by the leading number in each `address`, laying the page out as a walk down the avenue with the shop's own door marked in place | `local_businesses` | `LocalBusinessesGrid.jsx` |
-| `timeline_grid` | `{ heading, intro }` | `timeline_events` | `TimelineGrid.jsx` |
+| `timeline_grid` | `{ heading, intro, fill_images, fill_caption, end_label }` — a string of frames; milestones without their own `image_url` borrow `fill_images`, tagged `fill_caption` ("The shop today") | `timeline_events` | `TimelineGrid.jsx` |
 | `featured_drink` | `{ heading }` | `content_blocks.featured_drink` — `{ item, description, image_url, name, price }`. `item` = an exact menu name, pulled live (name, price, photo) by `lib/featured.js`; `description`/`image_url` override the menu's when non-empty; `name`/`price` are used only when no `item` is set. A missing/unavailable item (or a manual `name` matching an unavailable item) falls back to the best available specialty item — an unavailable drink is never featured | `FeaturedDrink.jsx` |
 | `announcement` | `{}` | `content_blocks.announcement_banner` | `AnnouncementBanner.jsx` |
 
 > **Concept-hero keys are namespaced** (`igh_*`, `wsh_*`, `ceh_*`, `mch_*`, `twh_*`, `clh_*`, `sbh_*`, `wth_*`, `pch_*`, `sih_*`) because all the homepage looks share the ONE home hero row's `data` object — the namespaces keep editing one look from bleeding into the others. Blank fields fall back to each concept's crafted default copy. `order_label`, `specials_link`, `ticker_items`, and `frames` are deliberately un-namespaced (shared by every look).
+
+**Photo-led inside pages** (About, Location, Events, Troublemakers, Timeline — see `supabase/migrations/2026-10-19-pages-glowup.sql`). Image urls under `/images/pages/<name>.jpg` are the shop's own photos shipped in `public/images/pages/`; `src/lib/pagePhotos.js` gives them a WebP srcset (800/1400/2000w), any other url renders as-is. Frames use the gallery wall's `frame_style` vocabulary. One orchestrated motion per page at most, always off under reduced motion.
+
+| Type | Data shape | Source | Renderer |
+|---|---|---|---|
+| `photo_hero` | `{ eyebrow, heading, subheading, image_url, image_alt, caption, layout: 'framed'\|'full', frame_style, focus, cta_label, cta_url, secondary_label, secondary_url }` | data | `PhotoHero.jsx` |
+| `photo_story` | `{ eyebrow, heading, body_markdown, image_url, image_alt, caption, frame_style, image_side: 'right'\|'left', inset_url, inset_alt, inset_frame, link_label, link_url, tone: 'paper'\|'sage' }` — frames swing onto their nails as they scroll in | data | `PhotoStory.jsx` |
+| `pull_quote` | `{ quote, attribution, source }` — real quotes only; renders nothing without one | data | `PullQuote.jsx` |
+| `photo_mosaic` | `{ eyebrow, heading, intro, badges, images: [{url, alt, caption?}], layout: 'salon'\|'strip', tone }` | data | `PhotoMosaic.jsx` |
+| `visit_panel` | `{ heading, address, embed_url, directions_label, phone_label, phone_url, hours_heading }` — map + live hours letterboard (today highlighted) | data + hours | `VisitPanel.jsx` |
 
 ### Future-stub section types (built as no-op/coming-soon placeholders, not in v1 scope)
 

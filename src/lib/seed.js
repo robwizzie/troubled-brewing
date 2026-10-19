@@ -27,6 +27,35 @@ export const PAGES = Object.fromEntries(
   SEO_ROUTES.map((r) => [r.slug, { slug: r.slug, title: r.title, meta_description: r.description }])
 );
 
+/* The shop's own photographs used by the inside pages — Alex McDonnell's
+   shoot for the owners, plus their storefront and street snaps — optimised
+   into public/images/pages/ (see src/lib/pagePhotos.js). Stored as plain
+   "/images/pages/<name>.jpg" urls so the CMS treats them like any image; the
+   renderer adds the WebP srcset. One alt text per photo, reused wherever it
+   hangs. */
+const P = (name) => `/images/pages/${name}.jpg`;
+export const PAGE_PHOTO_ALT = {
+  'room-fox-sign': 'Inside Trouble Brewing: the round brass sign of the top-hatted fox leaning against the counter between potted plants, under a white pressed-tin ceiling',
+  'storefront-door': 'The front of Trouble Brewing Coffee House: a black door numbered 514 under the TROUBLE BREWING sign, with bistro chairs on the sidewalk',
+  'storefront-wide': 'The white panelled shopfront of Trouble Brewing Coffee House on Station Ave — black door, big windows, the TROUBLE BREWING sign above and bistro tables out front',
+  'station-ave-street': 'Station Ave on a sunny day: Trouble Brewing’s black awning between Anthony’s and Lula’s, behind leafy street trees and parked cars',
+  'wall-and-bar': 'A corner of the gallery wall — gilt and black frames and a gold fox head — above the self-serve station with dried flowers, cups and sweeteners',
+  'wall-detail': 'Close-up of the gallery wall: framed prints, a gold fox head, a pumpkin in an oval frame and a silhouette, all on sage green',
+  'wall-corner': 'More of the gallery wall: framed sketches, a small red cross-stitch and black-and-white photographs on the green wall',
+  'retail-corner': 'The shop corner: La Colombe coffee and Trouble Brewing tumblers on a black shelf, a Trouble Brewing long-sleeve under a gold fox head, and snacks on a wooden stand',
+  'pastry-counter': 'The counter: a pastry case full of muffins, scones and croissants under a hand-lettered bakery chalkboard and a gold TB sign',
+  'chalkboard-counter': 'Behind the counter: a chalkboard of seasonal drinks beside the espresso machine, stacks of cups, and the big menu board on the wall',
+  'fox-planter': 'A fox-shaped planter with a spider plant on the counter, with the seating area and green walls of the shop beyond',
+  'espresso-pull': 'Espresso pouring from the machine into a small glass',
+  'latte-art': 'A latte with a leaf poured in the foam, in a black textured mug on a wooden table',
+  'iced-matcha': 'An Iced Matcha Latte: bright green matcha over milk in a tall glass, finished with a fresh strawberry',
+  'iced-coffee-tb-glass': 'Iced coffee and milk in a glass printed with the Trouble Brewing fox, with a bamboo lid and a glass straw',
+  'scone-on-a-book': 'A scone on a black plate and a warm drink in a glass mug, set on a hardback book',
+  'table-spread': 'Sandwiches and chips on white plates across a wooden table, seen from above',
+  'muffin-and-refresher': 'A crumb-topped muffin on a pink plate beside an iced pink-and-orange drink in a Trouble Brewing glass',
+};
+const ALT = PAGE_PHOTO_ALT;
+
 export const SECTIONS = {
   home: [
     /* frame_style values are the vintage molding recipes in frameStyles.js —
@@ -61,32 +90,54 @@ export const SECTIONS = {
     { type: 'menu_block', data: { heading: 'The Menu', categories: ['espresso', 'specialty', 'food', 'pastry', 'seasonal'], layout: 'auto' } },
     { type: 'cta', data: { heading: 'Ready to order?', body: 'Order ahead on SpotOn for pickup.', button_label: 'Order on SpotOn', button_url: '' } },
   ],
+  /* About, Events, Location, Troublemakers and the Timeline are told with the
+     shop's own photographs (PAGE_PHOTOS below) hung in the wall's frames —
+     every word is the copy these pages already had, or a fact from elsewhere
+     in this file; the one pull quote is a real Google review. Mirrored for
+     the live site by supabase/migrations/2026-10-19-pages-glowup.sql. */
   about: [
-    { type: 'hero', data: { heading: 'Our Story', subheading: 'From spreadsheets to steamed milk.', background_image_url: '', cta_label: 'See the Menu', cta_url: '/menu' } },
-    { type: 'rich_text', data: { variant: 'lead', heading: 'Two bankers walk into a coffee shop', body_markdown: 'Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Haddon Heights residents themselves, they opened Trouble Brewing at 514 Station Ave on **Friday the 13th of October, 2017** — about as on-brand an opening day as a shop called Trouble could ask for. It\'s been a warm, art-filled room where the coffee is serious and the vibe is not ever since.' } },
-    { type: 'rich_text', data: { variant: 'alt', heading: "What's in the cup", body_markdown: "Great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. We pour **La Colombe** beans and steep **Metolius** teas, pull every shot with care, and build everything from a classic cappuccino to the season's specialty lattes on top of it." } },
-    { type: 'rich_text', data: { heading: 'Why local matters', body_markdown: 'Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for.' } },
+    { type: 'photo_hero', data: { eyebrow: 'Since Friday the 13th, October 2017', heading: 'Our Story', subheading: 'From spreadsheets to steamed milk.', image_url: P('room-fox-sign'), image_alt: ALT['room-fox-sign'], caption: 'Inside 514 Station Ave', frame_style: 'gilt-grand', layout: 'framed', cta_label: 'See the Menu', cta_url: '/menu', secondary_label: 'Plan a visit', secondary_url: '/location' } },
+    { type: 'photo_story', data: { eyebrow: 'Chapter one', heading: 'Two bankers walk into a coffee shop', body_markdown: 'Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Haddon Heights residents themselves, they opened Trouble Brewing at 514 Station Ave on **Friday the 13th of October, 2017** — about as on-brand an opening day as a shop called Trouble could ask for. It\'s been a warm, art-filled room where the coffee is serious and the vibe is not ever since.', image_url: P('storefront-door'), image_alt: ALT['storefront-door'], caption: '514 Station Ave', frame_style: 'black-mat', image_side: 'right', inset_url: P('wall-detail'), inset_alt: ALT['wall-detail'], inset_frame: 'oval-gilt', tone: 'paper' } },
+    { type: 'pull_quote', data: { quote: 'This shop is cozy, clearly loved by locals, and has plenty of seating without feeling overcrowded. Chosen decor includes foxes and mushrooms and adds the right touch of whimsy.', attribution: 'Hazel Stjernelys', source: 'Google review' } },
+    { type: 'photo_mosaic', data: { eyebrow: 'What we pour', heading: "What's in the cup", intro: "Great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. We pour **La Colombe** beans and steep **Metolius** teas, pull every shot with care, and build everything from a classic cappuccino to the season's specialty lattes on top of it.", badges: ['La Colombe coffee', 'Metolius tea'], layout: 'strip', tone: 'sage', images: [
+      { url: P('espresso-pull'), alt: ALT['espresso-pull'], caption: 'Pulled to order' },
+      { url: P('latte-art'), alt: ALT['latte-art'], caption: 'Latte art' },
+      { url: P('iced-matcha'), alt: ALT['iced-matcha'], caption: 'Iced Matcha Latte' },
+      { url: P('iced-coffee-tb-glass'), alt: ALT['iced-coffee-tb-glass'], caption: 'Iced, in a Trouble glass' },
+    ] } },
+    { type: 'photo_story', data: { eyebrow: 'Chapter two', heading: 'Why local matters', body_markdown: 'Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for.', image_url: P('retail-corner'), image_alt: ALT['retail-corner'], caption: 'La Colombe to take home', frame_style: 'bronze-carved', image_side: 'left', link_label: 'Meet our Station Ave neighbors', link_url: '/neighborhood', tone: 'paper' } },
+    { type: 'photo_mosaic', data: { heading: 'Have a look around', intro: 'The green-walled, art-covered room our regulars call a second home.', layout: 'salon', tone: 'paper', images: [
+      { url: P('wall-and-bar'), alt: ALT['wall-and-bar'] },
+      { url: P('chalkboard-counter'), alt: ALT['chalkboard-counter'] },
+      { url: P('fox-planter'), alt: ALT['fox-planter'] },
+      { url: P('pastry-counter'), alt: ALT['pastry-counter'] },
+      { url: P('wall-corner'), alt: ALT['wall-corner'] },
+    ] } },
+    { type: 'cta', data: { eyebrow: '514 Station Ave · Haddon Heights', heading: 'Pull up a chair', body: 'Breakfast is served all day. Order ahead on SpotOn and we’ll have it ready — or come in and stay a while.', button_label: 'Order Now', button_url: '', secondary_label: 'Hours & directions', secondary_url: '/location', image_url: P('scone-on-a-book'), image_alt: ALT['scone-on-a-book'], frame_style: 'gold-botanical' } },
   ],
   /* The old /community page is folded in here: its events list was a duplicate
      of this one, and the board, the loyalty note and the Instagram strip are
      the rest of "community" — they belong on the page people already visit. */
   events: [
-    { type: 'hero', data: { heading: 'Events & Community', subheading: "There's always something brewing.", background_image_url: '', cta_label: 'Host an event', cta_url: '/contact' } },
-    { type: 'events_list', data: { heading: 'Upcoming at Trouble Brewing' } },
+    { type: 'photo_hero', data: { eyebrow: 'Events & Community', heading: "There's always something brewing", subheading: 'Raffles, birthday lattes, neighbors dropping by — and room for your own gathering.', image_url: P('fox-planter'), image_alt: ALT['fox-planter'], layout: 'full', focus: 'center 40%', cta_label: 'Host an event', cta_url: '/contact' } },
+    { type: 'events_list', data: { heading: 'Upcoming at Trouble Brewing', empty_message: 'New events go up here as soon as they’re planned — check back soon, or follow along on Instagram.', empty_image_url: P('wall-and-bar'), empty_image_alt: ALT['wall-and-bar'], instagram_handle: 'troublebrewingcoffee', show_past: true, past_heading: 'Lately at Trouble' } },
     { type: 'community_board', data: { heading: 'On the Community Board' } },
-    { type: 'cta', data: { heading: 'Want to host something?', body: "Showers, meetings, small parties — our space is yours. Tell us what you're planning.", button_label: 'Start a catering inquiry', button_url: '/contact' } },
+    { type: 'cta', data: { eyebrow: 'Catering & private gatherings', heading: 'Want to host something?', body: "Showers, meetings, small parties — our space is yours. Tell us what you're planning.", button_label: 'Start a catering inquiry', button_url: '/contact', secondary_label: 'Call (856) 617-6638', secondary_url: 'tel:+18566176638', image_url: P('table-spread'), image_alt: ALT['table-spread'], frame_style: 'black-mat' } },
     { type: 'rich_text', data: { heading: 'Loyalty', body_markdown: "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you're in. *(Full program details coming soon.)*" } },
     { type: 'instagram', data: { embed_handle: 'troublebrewingcoffee' } },
   ],
   /* Find us BEFORE the hours: someone opening this page on a phone is usually
      standing somewhere trying to get here, and the map is the thing they came
-     for. The hours sit right under it, where they read as "…and it's open". */
+     for. The visit panel puts the hours right beside it, where they read as
+     "…and it's open", with the parking note under them. */
   location: [
-    { type: 'hero', data: { heading: 'Hours & Location', subheading: 'Find us on Station Ave. Pull up a chair and stay a while.', background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'map', data: { address: '514 Station Ave, Haddon Heights, NJ 08035', embed_url: '' } },
-    { type: 'hours', data: { heading: "When we're open" } },
-    { type: 'rich_text', data: { heading: 'Parking', body_markdown: 'Street parking is available out front, plus a **lot behind the coffee house**. Enter from White Horse Pike or Atlantic Ave.' } },
-    { type: 'cta', data: { heading: 'Come say hi', body: 'Questions? Give us a call.', button_label: 'Call (856) 617-6638', button_url: 'tel:+18566176638' } },
+    { type: 'photo_hero', data: { eyebrow: '514 Station Ave · Haddon Heights, NJ', heading: 'Look for the black door at 514', subheading: 'Find us on Station Ave. Pull up a chair and stay a while.', image_url: P('storefront-wide'), image_alt: ALT['storefront-wide'], layout: 'full', focus: 'center 60%', cta_label: 'Get directions', cta_url: 'https://maps.google.com/maps?q=514%20Station%20Ave%2C%20Haddon%20Heights%2C%20NJ%2008035', secondary_label: 'Call (856) 617-6638', secondary_url: 'tel:+18566176638' } },
+    { type: 'visit_panel', data: { heading: 'Find us', address: '514 Station Ave, Haddon Heights, NJ 08035', directions_label: 'Get directions', phone_label: 'Call (856) 617-6638', phone_url: 'tel:+18566176638', hours_heading: "When we're open", embed_url: '' } },
+    /* its own block (not a visit_panel field): the fox quotes it verbatim */
+    { type: 'rich_text', data: { variant: 'note', heading: 'Parking', body_markdown: 'Street parking is available out front, plus a **lot behind the coffee house**. Enter from White Horse Pike or Atlantic Ave.' } },
+    { type: 'photo_story', data: { eyebrow: 'The neighborhood', heading: 'On Station Ave', body_markdown: "We're at 514, between Anthony's Creative Italian Cuisine at 512 and Lula's Empanadas at 516 — a short stroll from Ralph's Pizza, South Jersey Special, Jane's Tea House and April Robin Florist. Make an afternoon of it.", image_url: P('station-ave-street'), image_alt: ALT['station-ave-street'], caption: 'Station Ave', frame_style: 'gilt-thin', image_side: 'left', inset_url: P('storefront-door'), inset_alt: ALT['storefront-door'], inset_frame: 'oval-black', link_label: 'Walk the block with Local Love', link_url: '/neighborhood', tone: 'sage' } },
+    { type: 'photo_story', data: { eyebrow: 'Once you’re in', heading: 'Step inside', body_markdown: 'Order at the counter: the pastry case is right there and the drinks are up on the chalkboard. Breakfast is served all day, and there are gluten-free and vegan options too. Then grab a seat under the gallery wall.', image_url: P('pastry-counter'), image_alt: ALT['pastry-counter'], caption: 'The counter', frame_style: 'gilt-grand', image_side: 'right', inset_url: P('chalkboard-counter'), inset_alt: ALT['chalkboard-counter'], inset_frame: 'black-flat', tone: 'paper' } },
+    { type: 'cta', data: { eyebrow: 'In a hurry?', heading: 'Skip the line', body: "Order ahead on SpotOn and we'll have it ready.", button_label: 'Order ahead', button_url: '', secondary_label: 'See the menu', secondary_url: '/menu', image_url: P('muffin-and-refresher'), image_alt: ALT['muffin-and-refresher'], frame_style: 'gold-botanical' } },
   ],
   contact: [
     { type: 'hero', data: { heading: 'Get in touch', subheading: 'Questions, ideas, or planning something? Use the forms below. We read every message.', background_image_url: '', cta_label: '', cta_url: '' } },
@@ -107,8 +158,10 @@ export const SECTIONS = {
     { type: 'gallery_pieces_grid', data: { heading: 'The collection, close up', intro: 'The same wall, photographed piece by piece. Where we know who made something, their name links to them.' } },
   ],
   troublemakers: [
-    { type: 'hero', data: { heading: 'The Troublemakers', subheading: 'The people behind your coffee.', background_image_url: '', cta_label: '', cta_url: '' } },
+    { type: 'photo_hero', data: { eyebrow: 'Behind the counter', heading: 'The Troublemakers', subheading: 'The people behind your coffee.', image_url: P('chalkboard-counter'), image_alt: ALT['chalkboard-counter'], caption: 'Where the Trouble happens', frame_style: 'black-stacked', layout: 'framed' } },
     { type: 'troublemakers_grid', data: { heading: 'Meet the team', intro: 'The people who will know your order by the third visit.' } },
+    { type: 'pull_quote', data: { quote: 'Their staff are fantastic. I love chatting with them every time I go in.', attribution: 'Heather Roth', source: 'Google review' } },
+    { type: 'cta', data: { heading: 'Ask them what to order', body: "It's the question they answer all day — and they'll have your usual down by the third visit.", button_label: 'See the menu', button_url: '/menu', secondary_label: 'Order Now', secondary_url: '', image_url: P('latte-art'), image_alt: ALT['latte-art'], frame_style: 'oval-gilt' } },
   ],
   neighborhood: [
     { type: 'hero', data: { heading: 'Local Love', subheading: "The Haddon Heights spots we can't get enough of.", background_image_url: '', cta_label: '', cta_url: '' } },
@@ -116,8 +169,14 @@ export const SECTIONS = {
     { type: 'cta', data: { heading: 'Know a great local spot?', body: "Tell us who we're missing.", button_label: 'Send a suggestion', button_url: '/contact' } },
   ],
   timeline: [
-    { type: 'hero', data: { heading: 'Our Story So Far', subheading: 'A few of the moments that made Trouble.', background_image_url: '', cta_label: '', cta_url: '' } },
-    { type: 'timeline_grid', data: { heading: 'The Trouble Brewing timeline' } },
+    { type: 'photo_hero', data: { eyebrow: 'Since 2017', heading: 'Our Story So Far', subheading: 'A few of the moments that made Trouble.', image_url: P('wall-detail'), image_alt: ALT['wall-detail'], caption: 'The gallery wall', frame_style: 'bronze-carved', layout: 'framed', focus: '50% 90%' } },
+    { type: 'timeline_grid', data: { heading: 'The Trouble Brewing timeline', fill_caption: 'The shop today', end_label: '…and counting', fill_images: [
+      { url: P('storefront-wide'), alt: ALT['storefront-wide'] },
+      { url: P('fox-planter'), alt: ALT['fox-planter'] },
+      { url: P('chalkboard-counter'), alt: ALT['chalkboard-counter'] },
+      { url: P('wall-and-bar'), alt: ALT['wall-and-bar'] },
+    ] } },
+    { type: 'cta', data: { heading: 'Come be part of the next chapter', body: 'Pull up a chair at 514 Station Ave and stay a while.', button_label: 'Plan a visit', button_url: '/location', secondary_label: 'Read our story', secondary_url: '/about', image_url: P('room-fox-sign'), image_alt: ALT['room-fox-sign'], frame_style: 'gilt-thin' } },
   ],
 };
 
