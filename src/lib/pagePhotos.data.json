@@ -1,0 +1,133 @@
+{
+ "storefront-door": {
+  "ratio": 0.75,
+  "widths": [
+   765
+  ]
+ },
+ "storefront-wide": {
+  "ratio": 1.3333,
+  "widths": [
+   800,
+   1360
+  ]
+ },
+ "station-ave-street": {
+  "ratio": 2.2715,
+  "widths": [
+   800,
+   1400,
+   2000
+  ]
+ },
+ "room-fox-sign": {
+  "ratio": 0.6666,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "wall-and-bar": {
+  "ratio": 0.6667,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "wall-detail": {
+  "ratio": 1.5001,
+  "widths": [
+   800,
+   1400,
+   2000
+  ]
+ },
+ "wall-corner": {
+  "ratio": 1.5,
+  "widths": [
+   800,
+   1400,
+   2000
+  ]
+ },
+ "retail-corner": {
+  "ratio": 0.6667,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "pastry-counter": {
+  "ratio": 1.5,
+  "widths": [
+   800,
+   1400,
+   2000
+  ]
+ },
+ "chalkboard-counter": {
+  "ratio": 1.5,
+  "widths": [
+   800,
+   1400,
+   2000
+  ]
+ },
+ "fox-planter": {
+  "ratio": 1.5001,
+  "widths": [
+   800,
+   1400,
+   2000
+  ]
+ },
+ "espresso-pull": {
+  "ratio": 0.6667,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "latte-art": {
+  "ratio": 0.6666,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "iced-matcha": {
+  "ratio": 0.6666,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "iced-coffee-tb-glass": {
+  "ratio": 0.6666,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "muffin-and-refresher": {
+  "ratio": 0.6667,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "scone-on-a-book": {
+  "ratio": 0.6667,
+  "widths": [
+   800,
+   1400
+  ]
+ },
+ "table-spread": {
+  "ratio": 0.6666,
+  "widths": [
+   800,
+   1400
+  ]
+ }
+}

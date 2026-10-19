@@ -6,16 +6,16 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 |---|---|---|---|---|
 | 1 | Home | `/` | First impression + funnel to Order | `immersive_gallery_hero` by default (or chosen concept; a real photo of the room, the live open/closed chalkboard, the owner-editable **Today's Special** note, and the salon hang of framed photographs — no generated artwork) → `featured_drink` → `hours` strip → `cta` (Order) → La Colombe `rich_text` → community teaser → `instagram` → `announcement` (if set) → `newsletter` |
 | 2 | Menu | `/menu` | Browse the menu, order | `menu_block` (category-tabbed, dietary filters) → `cta` (Order on SpotOn) |
-| 3 | About | `/about` | Tom & Cat's story, La Colombe, why local | `hero` → `rich_text` (story) → `rich_text` (La Colombe, factual) → `image`/`gallery` |
-| 4 | Events & Community | `/events` | Upcoming events, the board, host-an-event | `hero` → `events_list` → `community_board` → `cta` (host an event → catering) → `rich_text` (loyalty) → `instagram` |
-| 5 | Hours & Location | `/location` | Find us first, then live hours, parking, contact | `hero` → `map` (**Find us**) → `hours` → `rich_text` (parking) → `cta` (call) |
+| 3 | About | `/about` | Tom & Cat's story, La Colombe, why local | `photo_hero` (the room) → `photo_story` (Tom & Cat, front door) → `pull_quote` (a real Google review) → `photo_mosaic` strip (what we pour: La Colombe / Metolius + drink photos) → `photo_story` (why local) → `photo_mosaic` salon (the room) → `cta` with photo (visit / order) |
+| 4 | Events & Community | `/events` | Upcoming events, the board, host-an-event | `photo_hero` full → `events_list` (posters with date blocks; past events with photos as a wall; photo empty state) → `community_board` → `cta` with photo (host an event → catering) → `rich_text` (loyalty) → `instagram` |
+| 5 | Hours & Location | `/location` | Find us first, then live hours, parking, contact | `photo_hero` full (storefront: "Look for the black door at 514") → `visit_panel` (**Find us**: map + live hours, today highlighted) → `rich_text` note (parking) → `photo_story` (Station Ave → Local Love) → `photo_story` (step inside: the counter) → `cta` with photo (order ahead) |
 | 6 | Contact | `/contact` | General + catering inquiry forms | `rich_text` (intro) → contact form → catering form (→ `submissions`) |
 | ~~7~~ | ~~Community~~ | ~~`/community`~~ | **Retired** — folded into Events; the route redirects there | — |
 | 8 | Reviews | `/reviews` | Google rating + curated testimonials + fresh reviews | `reviews_hero` → `testimonials_wall` → `google_reviews_feed` → `review_cta` |
 | 9 | Gallery Wall | `/gallery-wall` | The real framed art, with stories | `gallery_wall_room` (the shop's photograph of the wall, every frame in it clickable — choosing one pans and magnifies the photo under a spotlight and raises a card with the credits and story) → `gallery_pieces_grid` (the same collection as a catalogue) |
-| 10 | Troublemakers | `/troublemakers` | The team, bios + fun facts | `hero` → `troublemakers_grid` |
+| 10 | Troublemakers | `/troublemakers` | The team, bios + fun facts | `photo_hero` (behind the counter) → `troublemakers_grid` (polaroids) → `pull_quote` (a real review about the staff) → `cta` with photo |
 | 11 | Neighborhood / Local Love | `/neighborhood` | Local businesses they support (community + SEO) | `hero` → `local_businesses_grid` → `cta` |
-| 12 | TB Timeline | `/timeline` | Scrollable timeline of TB milestones (opening day, anniversaries, launches) | `hero` → `timeline_grid` |
+| 12 | TB Timeline | `/timeline` | Scrollable timeline of TB milestones (opening day, anniversaries, launches) | `photo_hero` (the gallery wall) → `timeline_grid` (string of frames, year tags) → `cta` with photo |
 | — | Privacy | `/privacy` | Privacy policy (forms/newsletter/analytics) | static legal content |
 | — | Accessibility | `/accessibility` | Accessibility statement + contact | static legal content |
 | — | Admin | `/admin/*` | Auth-gated CMS (not in sitemap, noindex) | see CMS.md |
