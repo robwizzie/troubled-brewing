@@ -16,13 +16,14 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 | 10 | Troublemakers | `/troublemakers` | The team, bios + fun facts | `photo_hero` (behind the counter) → `troublemakers_grid` (polaroids) → `pull_quote` (a real review about the staff) → `cta` with photo |
 | 11 | Neighborhood / Local Love | `/neighborhood` | Local businesses they support (community + SEO) | `hero` → `local_businesses_grid` → `cta` |
 | 12 | TB Timeline | `/timeline` | Scrollable timeline of TB milestones (opening day, anniversaries, launches) | `photo_hero` (the gallery wall) → `timeline_grid` (string of frames, year tags) → `cta` with photo |
+| 13 | Gift Cards | `/gift-cards` | "Give someone Trouble": buy a SpotOn e-gift card | `gift_cards` (hero line + drawn gift card and the top-hat fox, "Buy an e-gift card" → SpotOn in a new tab, how-it-works line, four occasion cards → the same link) |
 | — | Privacy | `/privacy` | Privacy policy (forms/newsletter/analytics) | static legal content |
 | — | Accessibility | `/accessibility` | Accessibility statement + contact | static legal content |
 | — | Admin | `/admin/*` | Auth-gated CMS (not in sitemap, noindex) | see CMS.md |
 
 ## Navigation
 
-Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" grouping for Gallery Wall, Troublemakers, **Our Story So Far (Timeline)**, Neighborhood, Contact. (**/community was retired** — its events list duplicated /events, and its board, loyalty note and Instagram strip moved there; the route stays as a redirect to /events.) A persistent **Order Now** button (SpotOn deep link) sits in the header on every page. Footer links: all pages + Privacy, Accessibility, **social links** (Instagram, Facebook, TikTok, X, YouTube — owner-managed), newsletter. Social links also appear on the contact page.
+Primary nav: Home, Menu, About, Events, Location, Reviews, plus a "More" grouping for Gallery Wall, Troublemakers, **Our Story So Far (Timeline)**, Neighborhood, Gift Cards, Contact. (**/community was retired** — its events list duplicated /events, and its board, loyalty note and Instagram strip moved there; the route stays as a redirect to /events.) A persistent **Order Now** button (SpotOn deep link) sits in the header on every page. Footer links: all pages + Privacy, Accessibility, **social links** (Instagram, Facebook, TikTok, X, YouTube — owner-managed), newsletter. Social links also appear on the contact page.
 
 ## Concept-swappable home
 
