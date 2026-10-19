@@ -3,26 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- Primary meta (per-page values are managed at runtime via the `pages` table + <SEO/>) -->
-    <title>Trouble Brewing Coffee House — Haddon Heights, NJ</title>
-    <meta
-      name="description"
-      content="Trouble Brewing Coffee House — a warm, independent coffee shop in Haddon Heights, NJ pouring La Colombe coffee. Espresso, signature drinks, fresh paninis, and pastries."
-    />
+    <meta name="theme-color" content="#f7f1e4" />
+    <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Open Graph / social -->
-    <meta property="og:type" content="business.business" />
-    <meta property="og:title" content="Trouble Brewing Coffee House" />
-    <meta
-      property="og:description"
-      content="A warm, independent coffee shop in Haddon Heights, NJ pouring La Colombe coffee."
-    />
-    <meta property="og:url" content="https://troublebrewingcoffeehouse.com/" />
-    <meta property="og:image" content="https://troublebrewingcoffeehouse.com/og-image.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <!--
+      Per-page SEO. The build (scripts/seo-build-plugin.mjs) replaces everything
+      between these markers with each route's own title, description, canonical,
+      Open Graph/Twitter tags and JSON-LD, writing dist/<route>.html per page.
+      At runtime <SEO/> upserts the same tags (CMS `pages` values win when set).
+      Source of truth: src/lib/seo.js + src/lib/jsonld.js. Keep the markers.
+    -->
+    <!--seo:start-->
+    <title>Trouble Brewing Coffee House | Haddon Heights NJ Coffee Shop</title>
+    <!--seo:end-->
 
     <!--
       SPA routing fix for GitHub Pages (spa-github-pages technique).

@@ -8,6 +8,7 @@
 
 import { asset } from './config.js';
 import SPOTON_MENU from '../data/spoton-menu.json';
+import { SEO_ROUTES } from './seo.js';
 
 export const SITE = {
   name: 'Trouble Brewing Coffee House',
@@ -19,19 +20,12 @@ export const SITE = {
   email: 'hello@troublebrewingcoffeehouse.com',
 };
 
-export const PAGES = {
-  home: { slug: 'home', title: 'Trouble Brewing Coffee House — Haddon Heights, NJ', meta_description: 'A warm, independent coffee shop and kitchen in Haddon Heights, NJ. Serious espresso, specialty drinks, fresh paninis, brioche breakfast sandwiches, and scratch-baked pastries.' },
-  menu: { slug: 'menu', title: 'Menu — Trouble Brewing Coffee House', meta_description: 'Espresso, specialty drinks, paninis, and fresh pastries at Trouble Brewing Coffee House in Haddon Heights, NJ. Order online via SpotOn.' },
-  about: { slug: 'about', title: 'Our Story — Trouble Brewing Coffee House', meta_description: 'From mortgage bankers to a neighborhood coffee shop. The story of Trouble Brewing in Haddon Heights, NJ — serious coffee, scratch food, and good Trouble.' },
-  events: { slug: 'events', title: 'Events & Community — Trouble Brewing Coffee House', meta_description: 'Upcoming events at Trouble Brewing Coffee House. Host your own gathering in our Haddon Heights space.' },
-  location: { slug: 'location', title: 'Hours & Location — Trouble Brewing Coffee House', meta_description: 'Visit Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ. Hours, parking, and directions.' },
-  contact: { slug: 'contact', title: 'Contact & Catering — Trouble Brewing Coffee House', meta_description: 'Get in touch with Trouble Brewing Coffee House or send a catering inquiry.' },
-  reviews: { slug: 'reviews', title: 'Reviews — Trouble Brewing Coffee House', meta_description: 'See what the neighborhood says about Trouble Brewing Coffee House. Read our Google reviews and leave your own.' },
-  'gallery-wall': { slug: 'gallery-wall', title: 'The Gallery Wall — Trouble Brewing Coffee House', meta_description: 'The stories behind the framed art on our wall. A little bit of Trouble Brewing history, one frame at a time.' },
-  troublemakers: { slug: 'troublemakers', title: 'The Troublemakers — Trouble Brewing Coffee House', meta_description: 'Meet the Troublemakers — the team behind your coffee at Trouble Brewing Coffee House in Haddon Heights, NJ.' },
-  neighborhood: { slug: 'neighborhood', title: 'Local Love — Trouble Brewing Coffee House', meta_description: "The Haddon Heights businesses we know and love. Support local with Trouble Brewing Coffee House." },
-  timeline: { slug: 'timeline', title: 'Our Story So Far — Trouble Brewing Coffee House', meta_description: 'The Trouble Brewing timeline — opening day, anniversaries, menu launches, and the milestones that made us who we are in Haddon Heights, NJ.' },
-};
+/* Page titles + search descriptions: the defaults live with the rest of the
+   SEO data in src/lib/seo.js (one source for runtime, prerender and tests).
+   The owner's values in the `pages` table win when set. */
+export const PAGES = Object.fromEntries(
+  SEO_ROUTES.map((r) => [r.slug, { slug: r.slug, title: r.title, meta_description: r.description }])
+);
 
 export const SECTIONS = {
   home: [
