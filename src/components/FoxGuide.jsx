@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaEyeSlash, FaGhost, FaHeart, FaPaw, FaSnowflake, FaStar, FaXmark } from 'react-icons/fa6';
+import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaDice, FaEyeSlash, FaGhost, FaHeart, FaLightbulb, FaMedal, FaSnowflake, FaStar, FaWandMagicSparkles, FaXmark } from 'react-icons/fa6';
 import { asset } from '../lib/config.js';
 import { track } from '../lib/analytics.js';
 import { orderUrlFor } from '../lib/order.js';
 import { SITE } from '../lib/seed.js';
 import { getEvents, getGoogleProfile, getHours, getHoursOverrides, getSections } from '../lib/dataService.js';
 import { getMenu } from '../lib/menuService.js';
-import { googleWeekly } from '../lib/hours.js';
+import { googleWeekly, shopNow } from '../lib/hours.js';
 import { findSection, foxAnswers, hoursAnswer, plainText } from '../lib/foxHelp.js';
 import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
+import { QUICK_MS, backLine, dailyFact, foxMood, registerTap } from '../lib/foxFun.js';
+import { AwardPane, FactPane, Nightcap, Pumpkin, QuizPane, SurprisePane, Tail } from './FoxPlay.jsx';
 
 /* The Trouble Brewing fox — the dapper top-hatted fox from the logo, cup in
    hand (public/images/brand/fox-sipping.png). He's the logo fox, so no
@@ -29,18 +31,38 @@ import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
    tapped, and on special days wears a little badge and says so. Once a visit
    he offers one of the sourced QUIPS. One motion at a time — a wave or hop
    replaces the sip while it plays — and prefers-reduced-motion stills all of
-   it (CSS), leaving only the words. */
+   it (CSS), leaving only the words.
+
+   Games and moods (rules in src/lib/foxFun.js, panes in FoxPlay.jsx):
+   "Surprise me" picks a real available drink; "Pick my drink" is a three-
+   question quiz; "Fox fact" changes daily (a dot on him until you've seen
+   it). By the shop's clock he's sleepy in a nightcap when it's closed (with
+   the real next opening), has a fresh steaming cup in the morning, and sits
+   by a pumpkin all October. Pet him (quick taps) and his tail wags; every
+   10th tap is a little celebration, and the first earns the Trouble-maker
+   badge in his card's header. */
 
 const SEEN_KEY = 'tb-fox-day'; // special-day line already said today
 const HIDDEN_KEY = 'tb-fox-hidden'; // '1' = the visitor sent him away
 const MET_KEY = 'tb-fox-met'; // '1' = the first-visit hello has happened
 const QUIP_I_KEY = 'tb-fox-quip'; // which quip is next (localStorage)
 const QUIPPED_KEY = 'tb-fox-quipped'; // already offered a quip this visit (sessionStorage)
+const FACT_SEEN_KEY = 'tb-fox-fact-seen'; // shop date of the last daily fact opened
+const PETS_KEY = 'tb-fox-pets'; // { total, badge }: taps ever, and the Trouble-maker badge
 
 const store = {
   get(s, k) { try { return window[s].getItem(k); } catch { return null; } },
   set(s, k, v) { try { window[s].setItem(k, v); } catch { /* private mode: fine */ } },
   del(s, k) { try { window[s].removeItem(k); } catch { /* fine */ } },
+};
+
+const readPets = () => {
+  try {
+    const v = JSON.parse(store.get('localStorage', PETS_KEY) || '{}');
+    return { recent: [], total: Number(v.total) || 0, badge: Boolean(v.badge) };
+  } catch {
+    return { recent: [], total: 0, badge: false };
+  }
 };
 
 const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -55,25 +77,40 @@ const telHref = (phone) => {
   return SITE.phoneHref;
 };
 
-/** Everything the answers are built from, loaded the first time it's wanted. */
-function useFoxData(wanted) {
-  const [data, setData] = useState(null);
+/** The shop's hours (Google weekly when cached, else the table) + overrides
+    + the Google profile, loaded at once, because his mood follows them. */
+function useFoxHours() {
+  const [base, setBase] = useState(null);
   useEffect(() => {
-    if (!wanted || data) return undefined;
     let alive = true;
-    Promise.all([
-      getHours(), getHoursOverrides(), getGoogleProfile(), getMenu(),
-      getSections('location'), getSections('events'), getSections('home'), getEvents(),
-    ]).then(([hours, overrides, profile, menu, location, eventsPage, home, events]) => {
+    Promise.all([getHours(), getHoursOverrides(), getGoogleProfile()]).then(([hours, overrides, profile]) => {
       if (!alive) return;
       const google = googleWeekly(profile);
+      setBase({ hours: google.length ? google : hours, overrides: overrides || [], profile });
+    });
+    return () => { alive = false; };
+  }, []);
+  return base;
+}
+
+/** Everything the answers are built from, loaded the first time it's wanted. */
+function useFoxData(wanted, base) {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    if (!wanted || !base || data) return undefined;
+    let alive = true;
+    Promise.all([
+      getMenu(), getSections('location'), getSections('events'), getSections('home'), getEvents(),
+    ]).then(([menu, location, eventsPage, home, events]) => {
+      if (!alive) return;
+      const { profile } = base;
       const parking = findSection(location, 'rich_text', /parking/i);
       const host = (eventsPage || []).find((s) => s?.type === 'cta' && /contact/.test(s?.data?.button_url || ''))?.data;
       const skip = (home || []).find((s) => s?.type === 'cta' && /order/i.test(`${s?.data?.button_label} ${s?.data?.body}`))?.data;
       const phone = profile?.formatted_phone || SITE.phone;
       setData({
-        hours: google.length ? google : hours,
-        overrides: overrides || [],
+        hours: base.hours,
+        overrides: base.overrides,
         address: profile?.formatted_address || SITE.address,
         mapsUrl: profile?.maps_url || '',
         orderUrl: orderUrlFor(null),
@@ -87,7 +124,7 @@ function useFoxData(wanted) {
       });
     });
     return () => { alive = false; };
-  }, [wanted, data]);
+  }, [wanted, base, data]);
   return data;
 }
 
@@ -114,22 +151,46 @@ export default function FoxGuide() {
   const panel = useRef(null);
   const [hidden, setHidden] = useState(() => store.get('localStorage', HIDDEN_KEY) === '1');
   const [open, setOpen] = useState(false);
+  const [back, setBack] = useState(false); // came back from the edge this visit
   const [wanted, setWanted] = useState(false);
   const [picked, setPicked] = useState(null);
   const [line, setLine] = useState(null);
   const [move, setMove] = useState(null); // 'wave' | 'hop' — the one motion playing
   const [quipN, setQuipN] = useState(() => Number(store.get('localStorage', QUIP_I_KEY)) || 0);
   const [, tick] = useState(0);
-  const data = useFoxData(wanted || open);
+  const [pets, setPets] = useState(readPets);
+  const [burst, setBurst] = useState(0); // confetti key (0 = none)
+  const [factSeen, setFactSeen] = useState(() => store.get('localStorage', FACT_SEEN_KEY));
+  const moveTimer = useRef(0);
+  const openTimer = useRef(0);
+  const pointerType = useRef('mouse');
+  useEffect(() => () => { clearTimeout(openTimer.current); clearTimeout(moveTimer.current); }, []);
+  const base = useFoxHours();
+  const data = useFoxData(wanted || open, base);
   const day = specialDay(foxToday());
   const Badge = day ? BADGES[day.id] : null;
 
+  // the ONE motion playing (wave / hop / wag); a new one replaces the last
   const play = useCallback((m, ms) => {
     if (reduced()) return undefined;
+    clearTimeout(moveTimer.current);
     setMove(m);
-    const t = setTimeout(() => setMove(null), ms);
-    return () => clearTimeout(t);
+    moveTimer.current = setTimeout(() => setMove(null), ms);
+    return () => clearTimeout(moveTimer.current);
   }, []);
+
+  // his mood follows the shop's clock: re-check every minute, open or not
+  useEffect(() => {
+    const id = setInterval(() => tick((t) => t + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // confetti clears itself
+  useEffect(() => {
+    if (!burst) return undefined;
+    const t = setTimeout(() => setBurst(0), 1300);
+    return () => clearTimeout(t);
+  }, [burst]);
 
   // a special day speaks up by itself (once a day); otherwise a first-time
   // visitor gets a peek + wave and a hello
@@ -216,17 +277,38 @@ export default function FoxGuide() {
       if (panel.current?.contains(e.target) || foxBtn.current?.contains(e.target)) return;
       close(false);
     };
-    const id = setInterval(() => tick((t) => t + 1), 60_000);
+    // the card gets exactly the room between the bottom of the header (or
+    // the top of the screen, once a banner has scrolled away) and the fox,
+    // so it never tucks under the nav on a short laptop
+    let raf = 0;
+    const fit = () => {
+      const el = panel.current;
+      if (!el) return;
+      const nav = document.querySelector('.nav');
+      const top = Math.max(0, nav ? nav.getBoundingClientRect().bottom : 0);
+      const sheet = window.matchMedia?.('(max-width: 600px)').matches;
+      const foxTop = foxBtn.current?.getBoundingClientRect().top ?? window.innerHeight;
+      const room = sheet ? window.innerHeight - top - 12 : foxTop - 14 - top - 12;
+      el.style.setProperty('--fox-room', `${Math.max(240, Math.floor(room))}px`);
+    };
+    const onLayout = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
+    fit();
+    window.addEventListener('resize', onLayout, { passive: true });
+    window.addEventListener('scroll', onLayout, { passive: true });
     document.addEventListener('keydown', onKey);
     document.addEventListener('pointerdown', onDown);
     return () => {
-      clearInterval(id);
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', onLayout);
+      window.removeEventListener('scroll', onLayout);
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('pointerdown', onDown);
     };
   }, [open, close]);
 
   if (inEditor()) return null;
+
+  const todayIso = shopNow().isoDate;
 
   const hide = () => {
     setOpen(false);
@@ -242,44 +324,95 @@ export default function FoxGuide() {
     store.del('localStorage', HIDDEN_KEY);
     store.set('localStorage', MET_KEY, '1'); // no first-visit hello on a return
     setLine('I’m back! Tap me any time.');
-    play('wave', 1400);
+    setBack(true); // he slides in from the edge and lands with one small hop (CSS)
     track('fox_show');
     requestAnimationFrame(() => foxBtn.current?.focus());
   };
 
-  const toggle = () => {
+  const openCard = () => {
     setLine(null);
-    if (open) { close(true); return; }
-    play('hop', 420);
     setOpen(true);
     track('fox_open');
   };
 
-  const ask = (id) => {
-    setPicked((cur) => (cur === id ? null : id));
-    if (id === 'fun' && picked !== 'fun') {
-      setQuipN((n) => { store.set('localStorage', QUIP_I_KEY, String(n + 1)); return n + 1; });
+  const toggle = () => {
+    if (open) { setLine(null); close(true); return; }
+    play('hop', 420);
+    openCard();
+  };
+
+  /* Every tap counts; quick ones are petting and never toggle the card.
+     With a mouse or keyboard the first tap opens the card at once. On a
+     touch screen the card is a bottom sheet that would cover him, so he hops
+     straight away and the sheet opens once the taps stop (QUICK_MS later,
+     or after the wag) — a single tap still opens it, petting just comes
+     first. */
+  const onFoxTap = (e) => {
+    const touch = pointerType.current === 'touch' && e.detail !== 0;
+    const r = registerTap(pets, Date.now());
+    setPets(r.state);
+    store.set('localStorage', PETS_KEY, JSON.stringify({ total: r.state.total, badge: r.state.badge }));
+    clearTimeout(openTimer.current);
+    if (r.award) {
+      setLine(null);
+      setOpen(true);
+      setPicked('award');
+      if (!reduced()) setBurst(Date.now());
+      track('fox_badge');
+      return;
     }
+    if (r.confetti && !reduced()) setBurst(Date.now());
+    else if (r.wag) play('wag', 950);
+    if (touch && !open) {
+      if (!r.quick && !r.wag) play('hop', 420);
+      openTimer.current = setTimeout(openCard, r.wag && !reduced() ? 950 : QUICK_MS);
+      return;
+    }
+    if (r.quick) return;
+    toggle();
+  };
+
+  const ask = (id) => {
+    if (id === 'fact') {
+      setFactSeen(todayIso);
+      store.set('localStorage', FACT_SEEN_KEY, todayIso);
+    }
+    setPicked((cur) => (cur === id ? null : id));
     track('fox_question', { question: id });
   };
 
-  const quip = QUIPS[(quipN + QUIPS.length - 1) % QUIPS.length];
-  const answers = data ? foxAnswers({ ...data, now: new Date(), quip }) : [];
+  const answers = data ? foxAnswers({ ...data, now: new Date() }) : [];
   const chosen = answers.find((a) => a.id === picked);
-  const status = data ? hoursAnswer(data.hours, data.overrides) : null;
+  const hrs = data || base;
+  const status = hrs ? hoursAnswer(hrs.hours, hrs.overrides) : null;
+  const mood = foxMood({ hours: hrs?.hours, overrides: hrs?.overrides, now: new Date(), today: foxToday() });
+  const fact = dailyFact(new Date(), data?.menu || null);
+  const factNew = factSeen !== todayIso;
+  const greeting = day ? day.text
+    : mood.sleepy ? `${backLine(mood.next)} Ask me anything meanwhile.`
+      : mood.morning ? 'Good morning! What can I help you with?'
+        : 'Hi there! What can I help you with?';
+  const PLAY = [
+    { id: 'surprise', label: 'Surprise me', Icon: FaDice },
+    { id: 'quiz', label: 'Pick my drink', Icon: FaWandMagicSparkles },
+    { id: 'fact', label: 'Fox fact', Icon: FaLightbulb, dot: factNew },
+  ];
+  const isPlay = ['surprise', 'quiz', 'fact', 'award'].includes(picked);
+  const moodCls = `${mood.sleepy ? ' is-sleepy' : ''}${mood.morning ? ' is-morning' : ''}${mood.october ? ' is-october' : ''}`;
 
   if (hidden) {
     return (
       <div className="fox-guide is-hidden">
         <button type="button" ref={tabBtn} className="fox-guide__tab" onClick={bringBack} aria-label="Bring back the fox" title="Bring back the fox">
-          <FaPaw aria-hidden="true" />
+          {/* his own head and top hat, peeking in from the edge */}
+          <span className="fox-guide__peek" aria-hidden="true" style={{ backgroundImage: `url(${asset('images/brand/fox-sipping.png')})` }} />
         </button>
       </div>
     );
   }
 
   return (
-    <div className={`fox-guide${open ? ' is-open' : ''}${move ? ` is-${move}` : ''}`}>
+    <div className={`fox-guide${open ? ' is-open' : ''}${back ? ' is-back' : ''}${move ? ` is-${move}` : ''}${moodCls}`}>
       {open && <div className="fox-guide__scrim" aria-hidden="true" />}
       {open && (
         <section
@@ -292,7 +425,10 @@ export default function FoxGuide() {
         >
           <header className="fox-help__head">
             <div>
-              <h2 className="fox-help__title" id={`${panelId}-title`}>Ask the fox</h2>
+              <h2 className="fox-help__title" id={`${panelId}-title`}>
+                Ask the fox
+                {pets.badge && <span className="fox-help__badge" title="You earned the Trouble-maker badge"><FaMedal aria-hidden="true" /> Trouble-maker</span>}
+              </h2>
               {status && (
                 <p className={`fox-help__status${status.open ? ' is-open' : ''}`}>
                   <span className="fox-help__dot" aria-hidden="true" />{status.short}
@@ -304,9 +440,15 @@ export default function FoxGuide() {
             </button>
           </header>
 
-          <div className="fox-help__body">
-            <div className="fox-help__say" aria-live="polite">
-              {chosen ? (
+          {/* the answer sits right under the header and never scrolls away —
+              only the chips below it scroll when the card is short */}
+          <div className="fox-help__say" aria-live="polite">
+            <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
+              {picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
+                : picked === 'quiz' && data ? <QuizPane menu={data.menu} hours={data.hours} overrides={data.overrides} />
+                  : picked === 'fact' && data ? <FactPane fact={fact} />
+                    : picked === 'award' ? <AwardPane />
+                      : chosen ? (
                 <>
                   <p className="fox-help__q">{chosen.q}</p>
                   <p className="fox-help__a">{chosen.a}</p>
@@ -317,10 +459,25 @@ export default function FoxGuide() {
                   )}
                 </>
               ) : (
-                <p className="fox-help__a">{day ? day.text : 'Hi there! What can I help you with?'}</p>
+                <p className="fox-help__a">{greeting}</p>
               )}
             </div>
+          </div>
 
+          <div className="fox-help__body">
+            {data && (
+              <ul className="fox-help__play" aria-label="Fox games">
+                {PLAY.map(({ id, label, Icon, dot }) => (
+                  <li key={id}>
+                    <button type="button" className="fox-help__tile" aria-pressed={picked === id} onClick={() => ask(id)}>
+                      <Icon aria-hidden="true" />
+                      <span>{label}</span>
+                      {dot && <i className="fox-help__new"><span className="sr-only"> (new today)</span></i>}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
             {data ? (
               <ul className="fox-help__chips" aria-label="Common questions">
                 {answers.map((a) => (
@@ -352,22 +509,35 @@ export default function FoxGuide() {
           type="button"
           ref={foxBtn}
           className="fox-guide__fox"
-          onClick={toggle}
+          onClick={onFoxTap}
+          onPointerDown={(e) => { pointerType.current = e.pointerType; }}
           onPointerEnter={() => setWanted(true)}
           onFocus={() => setWanted(true)}
           aria-expanded={open}
           aria-controls={open ? panelId : undefined}
           aria-haspopup="dialog"
-          aria-label={open ? 'Close the fox’s help' : 'Ask the fox: hours, directions, menu and more'}
+          aria-label={open ? 'Close the fox’s help' : `Ask the fox: hours, directions, menu and more${factNew ? ' (new fox fact today)' : ''}`}
         >
           <span className="fox-guide__card">
             <span className="fox-guide__figure">
               <img src={asset('images/brand/fox-sipping.png')} alt="" width="266" height="148" />
               <span className="fox-guide__steam" aria-hidden="true"><i /><i /><i /></span>
+              {mood.sleepy && <Nightcap />}
             </span>
+            {mood.sleepy && <span className="fox-guide__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>}
+            {mood.october && <Pumpkin />}
             {Badge && <span className="fox-guide__badge" aria-hidden="true"><Badge /></span>}
+            {factNew && !open && <span className="fox-guide__dot" aria-hidden="true" />}
           </span>
+          <Tail />
         </button>
+        {burst > 0 && (
+          <span className="fox-guide__confetti" key={burst} aria-hidden="true">
+            {Array.from({ length: 16 }, (_, i) => (
+              <i key={i} style={{ '--a': `${(i * 360) / 16}deg`, '--d': `${46 + (i % 4) * 14}px`, '--c': ['#e3b53f', '#e98fb0', '#7e8c54', '#b0436e'][i % 4] }} />
+            ))}
+          </span>
+        )}
         {!open && (
           <button type="button" className="fox-guide__x" onClick={hide} aria-label="Hide the fox">
             <FaXmark aria-hidden="true" />
