@@ -242,7 +242,7 @@ export default function WishList() {
             <path d="M58 6 V16 M53 11 H63" stroke="#b0436e" strokeWidth="3" strokeLinecap="round" />
           </svg>
           <h2>No wishes yet</h2>
-          <p>Share the menu page and they’ll roll in. Visitors find “Make a wish” in the fox’s card, and “Wish for something new?” at the bottom of the Menu page.</p>
+          <p>Share the menu page and they’ll roll in. Visitors find “Make a wish” in the fox’s card, on the /wish page, and in “Don’t see your favorite?” at the bottom of the Menu page.</p>
         </section>
       </div>
     );

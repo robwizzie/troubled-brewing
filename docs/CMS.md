@@ -56,6 +56,12 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `visit_panel` | `{ heading, address, embed_url, directions_label, phone_label, phone_url, hours_heading }` — map + live hours letterboard (today highlighted) | data + hours | `VisitPanel.jsx` |
 | `gift_cards` | `{ eyebrow, heading, intro, button_label, button_url, how_it_works, occasions_heading, occasions_hint, occasion_N_label / _note / _art (N = 1–4; art: cake, thanks, apple, fox, cup, heart), show_phone }` — the /gift-cards page: hero + one "Buy an e-gift card" button (new tab) + occasion cards that all open the same link. Blank `button_url` = `GIFT_CARD_URL` (config.js) | data | `GiftCards.jsx` (lazy) |
 
+**Wish list** — the "Make a wish for the menu" form as a page block (the same flow as the fox's card, `/wish` and the end of the Menu page; `src/components/FoxWish.jsx`). Wishes land in Admin → Wish list.
+
+| Type | Data shape | Source | Renderer |
+|---|---|---|---|
+| `wish_list` | `{ heading, intro }` — blank = “Make a wish for the menu” / “A drink or a treat you’d love to see? Tom and Cat read every one.” Inside the editor canvas the form is shown but can't send. When a Menu page has its own `wish_list` block, the built-in “Don’t see your favorite?” block at its end steps aside | `submit_wish` RPC | `WishListSection.jsx` |
+
 ### Future-stub section types (built as no-op/coming-soon placeholders, not in v1 scope)
 
 - `flavor_voting` — community flavor poll. Stub renderer + note.

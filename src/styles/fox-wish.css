@@ -1,13 +1,18 @@
 /* ==========================================================================
-   "Make a wish for the menu" (src/components/FoxWish.jsx) — the paper-note
-   form, the fold → flight → swallow → sparkle timeline, the thank-you, and
-   the "Make a wish" button in the fox's card. Scoped to .fox-wish* and
-   .menu-wish*. 8px rhythm, 44px tap targets, Lucide icons at one size and
-   stroke. Motion is transform + opacity only; no hover lifts; reduced
-   motion skips straight to a still thank-you.
+   "Make a wish for the menu" (src/components/FoxWish.jsx) — one flow in two
+   presentations: inside the fox's card (.fox-wish--card, with the card's
+   own header, see "the fox's card while the wish is open") and on a page
+   (.fox-wish--split: /wish, the end of the Menu page, the Wish list CMS
+   block). The form is ONE surface: the wish itself is written on a strip of
+   ruled paper; no note-in-a-card-in-a-panel. Then the fold → flight →
+   swallow → sparkle timeline, the thank-you, the "Make a wish" button in
+   the fox's card and the small hat nudge (404). 8px rhythm, 44px tap
+   targets, Lucide icons at one stroke, sentence case. Motion is transform +
+   opacity only; no hover lifts; reduced motion skips straight to a still
+   thank-you.
    ========================================================================== */
 
-.fox-wish {
+.fox-wish, .fox-help.is-wish {
   --wish-ink: #2c2722;
   --wish-sage: #545f33;
   --wish-gold: #d4ad57;
@@ -17,9 +22,9 @@
   --wish-rasp: #b0436e;
   --wish-blush: #e98fb0;
   --wish-line: #e6dcc6;
+  --wish-rule: #d9ccb0;
 }
-.fox-wish svg[class*='fox-wish__chip-ico'], .fox-wish-btn svg, .fox-wish__submit svg, .fox-wish__back svg,
-.fox-wish__kicker svg, .menu-wish__link svg, .fox-wish__chip-check svg {
+.fox-wish svg, .fox-wish-btn svg, .wish-nudge svg, .wish-page__menu svg {
   stroke-width: 1.9; /* one stroke weight for every Lucide icon in the flow */
 }
 
@@ -43,37 +48,45 @@
 .fox-wish-btn[aria-pressed='true'] small { color: inherit; opacity: 0.85; }
 .fox-wish-btn:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 
-/* ---- the form: a little paper note --------------------------------------- */
-.fox-wish--form { margin: -3px -6px; }
-.fox-wish__paper {
-  position: relative; display: grid; gap: 16px; padding: 20px 16px 16px;
-  border-radius: 12px;
-  background:
-    linear-gradient(90deg, transparent 27px, rgba(176, 67, 110, 0.16) 27px 28px, transparent 28px),
-    repeating-linear-gradient(180deg, transparent 0 31px, rgba(84, 95, 51, 0.07) 31px 32px),
-    var(--wish-paper);
-  box-shadow: 0 0 0 1px var(--wish-line), 0 1px 0 rgba(44, 39, 34, 0.04), 0 8px 18px rgba(44, 39, 34, 0.08);
+/* ---- the fox's card while the wish is open --------------------------------
+   The wish owns the card: a back button and "Make a wish" in the header, no
+   game tiles, question chips or footer underneath, and the form sits right
+   on the card's paper (the speech-bubble tint is dropped). The pane scrolls
+   only if a very short screen leaves it no choice. */
+.fox-help__titles { flex: 1 1 auto; min-width: 0; }
+.fox-help__back {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; margin: -6px -2px -6px -10px; padding: 0;
+  border: 0; border-radius: 50%; background: transparent; color: var(--color-ink); font-size: 17px; cursor: pointer;
 }
-.fox-wish__paper::before { /* a strip of gold tape holding the note on */
-  content: ''; position: absolute; top: -7px; left: 50%; width: 64px; height: 16px; margin-left: -32px;
-  background: rgba(212, 173, 87, 0.5); border-radius: 2px; transform: rotate(-2.5deg);
-  box-shadow: 0 1px 2px rgba(44, 39, 34, 0.1);
+.fox-help__back:hover { background: var(--color-green-soft); }
+.fox-help__back:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: -2px; }
+.fox-help__sub { margin: 3px 0 0; font: 500 0.85rem/1.3 var(--font-body); color: var(--color-ink-soft); }
+.fox-help.is-wish .fox-help__head { align-items: center; padding: 12px 12px 12px 16px; }
+.fox-help.is-wish .fox-help__close { width: 44px; height: 44px; margin: -4px -4px -4px 0; }
+.fox-help.is-wish .fox-help__say {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: 16px 18px 18px; scrollbar-width: thin;
 }
-.fox-wish__head .fox-help__q { margin: 0; }
-.fox-wish__sub { margin: 4px 0 0; font: 500 0.95rem/1.4 var(--font-body); color: var(--color-ink); }
-.fox-wish__label { display: block; margin: 0 0 8px; padding: 0; font: 700 0.84rem/1.2 var(--font-body); color: var(--color-ink); }
+.fox-help.is-wish .fox-help__say-in { padding: 0; background: none; border-radius: 0; }
+
+/* ---- the form -------------------------------------------------------------- */
+.fox-wish__form { display: grid; gap: 16px; }
+.fox-wish__label { display: block; margin: 0 0 8px; padding: 0; font: 600 0.9rem/1.2 var(--font-body); color: var(--color-ink); }
 .fox-wish__labelrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.fox-wish__labelrow .fox-wish__label { margin-bottom: 6px; }
 .fox-wish__opt { font-weight: 500; color: var(--color-ink-soft); }
 .fox-wish__cats { margin: 0; padding: 0; border: 0; min-width: 0; }
+
+/* the four kinds: one row of small illustrated tiles */
 .fox-wish__chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .fox-wish__chip {
   position: relative; display: grid; justify-items: center; align-content: center; gap: 4px;
-  min-height: 64px; padding: 8px 4px; border-radius: 12px; cursor: pointer; text-align: center;
-  background: #fff; box-shadow: inset 0 0 0 1.5px var(--wish-line);
-  font: 600 0.74rem/1.15 var(--font-body); color: var(--color-ink);
+  min-height: 58px; padding: 6px 4px; border-radius: 12px; cursor: pointer; text-align: center;
+  background: var(--wish-paper); box-shadow: inset 0 0 0 1.5px var(--wish-line);
+  font: 600 0.76rem/1.15 var(--font-body); color: var(--color-ink);
   transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
-.fox-wish__chip-ico { width: 22px; height: 22px; color: var(--wish-sage); transition: color 0.15s ease; }
+.fox-wish__chip-ico { width: 20px; height: 20px; color: var(--wish-sage); transition: color 0.15s ease; }
 .fox-wish__chip input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
 .fox-wish__chip:hover { box-shadow: inset 0 0 0 1.5px var(--wish-gold-deep); }
 .fox-wish__chip:active { transform: scale(0.97); }
@@ -95,20 +108,50 @@
   font: 500 1rem/1.3 var(--font-body); color: var(--color-ink);
   transition: border-color 0.15s ease;
 }
-.fox-wish__input::placeholder { color: #9a917f; font-style: italic; }
+.fox-wish__input::placeholder { color: #8f8673; font-style: italic; }
 .fox-wish__input:focus { outline: 3px solid var(--focus-ring); outline-offset: 1px; border-color: var(--wish-sage); }
 .fox-wish__input[aria-invalid='true'] { border-color: var(--wish-rasp); }
-.fox-wish__count { font: 600 0.75rem/1.2 var(--font-body); color: var(--color-ink-soft); opacity: 0.7; font-variant-numeric: tabular-nums; transition: color 0.2s ease; }
-.fox-wish__count.is-near { color: var(--wish-gold-deep); opacity: 1; }
+
+/* the wish itself, written on a strip of ruled note paper: a blush margin
+   line, a ruled baseline, Caveat for the handwriting and a bit of gold tape */
+.fox-wish__notefield { position: relative; }
+.fox-wish__notefield::before {
+  content: ''; position: absolute; z-index: 1; top: -7px; left: 4px; width: 40px; height: 14px; pointer-events: none;
+  background: rgba(212, 173, 87, 0.55); border-radius: 2px; transform: rotate(-6deg);
+}
+.fox-wish__input--note {
+  min-height: 56px; padding: 8px 14px 6px 26px; border-radius: 4px;
+  font: 600 1.5rem/1.2 var(--font-hand); color: var(--wish-ink);
+  background:
+    linear-gradient(90deg, transparent 15px, rgba(176, 67, 110, 0.3) 15px 16px, transparent 16px),
+    linear-gradient(0deg, transparent 11px, var(--wish-rule) 11px 12px, transparent 12px),
+    var(--wish-paper);
+  box-shadow: 0 1px 0 rgba(44, 39, 34, 0.04), 0 4px 12px rgba(44, 39, 34, 0.06);
+}
+.fox-wish__input--note::placeholder { font-style: normal; color: #a49a86; }
+.fox-wish__count { font: 600 0.75rem/1.2 var(--font-body); color: var(--color-ink-soft); font-variant-numeric: tabular-nums; transition: color 0.2s ease; }
+.fox-wish__count.is-near { color: var(--wish-gold-deep); }
 .fox-wish__error { margin: 8px 0 0; font: 600 0.88rem/1.35 var(--font-body); color: var(--wish-rasp); }
-.fox-wish__field--name .fox-wish__input { max-width: 240px; }
+.fox-wish__field--name .fox-wish__input { max-width: 260px; }
 /* the honeypot: off-screen, out of the tab order, hidden from screen readers */
 .fox-wish__hp { position: absolute !important; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 
-.fox-wish__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+/* "Say why" / "Sign it": the optional fields stay folded until asked for */
+.fox-wish__extras { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -4px; }
+.fox-wish__extra {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
+  border: 1.5px dashed var(--wish-rule); border-radius: 999px; background: transparent; cursor: pointer;
+  font: 600 0.9rem/1 var(--font-body); color: var(--wish-sage);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.fox-wish__extra svg { font-size: 17px; }
+.fox-wish__extra:hover { border-color: var(--wish-sage); background: rgba(84, 95, 51, 0.06); }
+.fox-wish__extra:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+.fox-wish__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 4px; }
 .fox-wish__submit, .fox-wish__back {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 46px; padding: 0 20px; border: 0; border-radius: 999px; cursor: pointer;
+  min-height: 48px; padding: 0 22px; border: 0; border-radius: 999px; cursor: pointer;
   font: 700 0.98rem/1 var(--font-body);
 }
 .fox-wish__submit svg, .fox-wish__back svg { font-size: 20px; }
@@ -126,10 +169,14 @@
 }
 .fox-wish__submit:disabled { cursor: default; }
 .fox-wish__submit:focus-visible, .fox-wish__back:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
-.fox-wish__fine { margin: 0; font: 600 1.12rem/1.2 var(--font-hand); color: var(--wish-gold-deep); }
+.fox-wish__fine { margin: 0; font: 600 1.08rem/1.05 var(--font-hand); color: var(--wish-gold-deep); }
+
+/* ---- the card's scene and thank-you: centred in the space the form had -- */
+.fox-wish--card.fox-wish--anim, .fox-wish--card.fox-wish--done { display: grid; align-content: center; }
+.fox-wish--card.fox-wish--anim { min-height: 220px; }
+.fox-wish--card .fox-wish__words { justify-items: center; text-align: center; }
 
 /* ---- the scene ----------------------------------------------------------- */
-.fox-wish--anim { min-height: 200px; }
 .fox-wish__scene { position: relative; height: 200px; }
 .fox-wish__hat {
   position: absolute; left: 50%; bottom: 4px; width: 150px; height: auto; margin-left: -75px; overflow: visible;
@@ -231,11 +278,10 @@
 }
 
 /* ---- the thank-you (and "already wished") --------------------------------- */
-.fox-wish--done { display: grid; gap: 0; }
-.fox-wish--done .fox-wish__scene { height: 150px; }
+.fox-wish--card.fox-wish--done .fox-wish__scene { height: 150px; }
 /* the thank-you's scene is 50px shorter (no note to fold): the hat glides up
    into it from exactly where it swallowed the note, so nothing jumps */
-.fox-wish--done.is-fresh .fox-wish__hat, .fox-wish--done.is-fresh .fox-wish__sparks {
+.fox-wish--card.fox-wish--done.is-fresh .fox-wish__hat, .fox-wish--card.fox-wish--done.is-fresh .fox-wish__sparks {
   animation: fox-wish-settle 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }
 @keyframes fox-wish-settle { from { translate: 0 50px; } }
@@ -247,14 +293,17 @@
 .fox-wish--done.is-fresh .is-still .fox-wish__spark { animation: fox-wish-rest 0.5s ease-out both; }
 @keyframes fox-wish-rest { from { opacity: 0; } }
 .fox-wish__words { display: grid; justify-items: start; gap: 8px; }
-.fox-wish__kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0; }
-.fox-wish__kicker svg { font-size: 16px; color: var(--wish-gold-deep); }
-.fox-wish--done .fox-help__q:focus { outline: none; }
-.fox-wish--done .fox-help__q:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
-.fox-wish__reply { margin: 0; font-size: 1.06rem; line-height: 1.4; }
-.fox-wish__again { margin: 0; font: 700 1.25rem/1.1 var(--font-hand); color: var(--wish-sage); }
+.fox-wish__kicker {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0;
+  font: 600 1.3rem/1.2 var(--font-display); color: var(--wish-ink);
+}
+.fox-wish__kicker svg { font-size: 18px; color: var(--wish-gold-deep); }
+.fox-wish__kicker:focus { outline: none; }
+.fox-wish__kicker:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; border-radius: 4px; }
+.fox-wish__reply { margin: 0; font: 500 1.02rem/1.45 var(--font-body); color: var(--color-ink); max-width: 38ch; }
+.fox-wish__again { margin: 0; font: 700 1.3rem/1.1 var(--font-hand); color: var(--wish-sage); }
 .fox-wish__back {
-  margin-top: 4px; background: transparent; color: var(--wish-sage);
+  margin-top: 8px; background: transparent; color: var(--wish-sage);
   box-shadow: inset 0 0 0 1.5px var(--wish-sage);
   transition: transform 0.1s ease, background-color 0.15s ease;
 }
@@ -267,25 +316,103 @@
 .fox-wish--done.is-fresh .fox-wish__words > :nth-child(4) { animation-delay: 0.24s; }
 @keyframes fox-wish-rise { from { opacity: 0; transform: translateY(10px); } }
 
-/* the Menu page's "Wish for something new?" link */
-.menu-wish { display: flex; justify-content: center; padding: 0 var(--space-4, 16px) var(--space-6, 40px); }
-.menu-wish__link {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: 999px;
+
+/* ---- on a page: /wish, the end of the Menu page, the Wish list block ----
+   The words and a big top hat on one side, the form on a single sheet of
+   paper on the other; one column on phones (words, hat, form). The hat is
+   the same scene the note flies into, scaled up with --s. */
+.fox-wish--split {
+  --s: 1;
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'intro' 'stage' 'main';
+  gap: 16px; align-items: start;
+}
+.fox-wish__intro { grid-area: intro; }
+.fox-wish__stage { grid-area: stage; position: relative; height: calc(200px * var(--s)); }
+/* at rest the top of the scene is only air (the note's runway): tuck it up */
+@media (max-width: 859px) { .fox-wish__stage { margin-top: calc(-36px * var(--s)); } }
+.fox-wish__stage .fox-wish__scene {
+  position: absolute; left: 50%; bottom: 0; width: 240px; margin-left: -120px;
+  transform: scale(var(--s)); transform-origin: 50% 100%;
+}
+.fox-wish__main {
+  grid-area: main; min-width: 0; padding: 24px 20px;
+  background: var(--wish-paper); border-radius: 16px;
+  box-shadow: 0 0 0 1px var(--wish-line), 0 10px 30px rgba(44, 39, 34, 0.07);
+}
+.fox-wish--split .fox-wish__form[inert] { opacity: 0.45; transition: opacity 0.3s ease; }
+.fox-wish--split.fox-wish--done .fox-wish__main { padding-block: 28px; }
+
+@media (min-width: 860px) {
+  .fox-wish--split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    grid-template-areas: 'intro main' 'stage main';
+    grid-template-rows: auto 1fr;
+    column-gap: clamp(32px, 6vw, 88px); row-gap: 0;
+  }
+  .fox-wish__stage { align-self: start; margin-top: calc(-24px * var(--s)); }
+  .fox-wish__main { padding: 28px; }
+}
+
+/* the /wish page: the hat is the hero */
+.wish-page { padding-block: clamp(24px, 5vw, 64px) clamp(48px, 7vw, 96px); }
+.fox-wish--page { --s: 1.15; }
+.wish-page__title {
+  margin: 0; max-width: 13ch;
+  font: 700 clamp(2.2rem, 4.4vw, 3.4rem)/1.04 var(--font-display); letter-spacing: -0.015em; color: var(--color-ink);
+}
+.wish-page__lede, .wish-section__lede, .fox-wish__reply, .fox-help__sub { text-wrap: pretty; }
+.wish-page__lede { margin: 16px 0 0; max-width: 42ch; font: 400 1.08rem/1.6 var(--font-body); color: var(--color-ink-soft); }
+.wish-page__menu {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 4px;
   color: var(--color-green-deep); font: 600 1rem/1.2 var(--font-body); text-decoration: underline; text-underline-offset: 3px;
 }
-.menu-wish__link svg { font-size: 20px; color: var(--color-yellow-deep, #a87c1c); }
-.menu-wish__link:hover { color: var(--color-ink); }
-.menu-wish__link:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.wish-page__menu:hover { color: var(--color-ink); }
+.wish-page__menu:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+@media (min-width: 860px) {
+  .fox-wish--page { --s: 1.45; }
+}
 
+/* a page block (the Menu page's "Don't see your favorite?", the Wish list
+   CMS section): the same layout on the sage wall, a smaller hat */
+.wish-section { background: var(--color-green-soft); }
+.wish-section .fox-wish--split { --s: 0.9; }
+.wish-section__title { margin: 0; font: 700 clamp(1.8rem, 3.4vw, 2.5rem)/1.1 var(--font-display); color: var(--color-ink); max-width: 16ch; }
+.wish-section__lede { margin: 12px 0 0; max-width: 40ch; font: 400 1.05rem/1.55 var(--font-body); color: var(--color-ink-soft); }
+@media (min-width: 860px) {
+  .wish-section .fox-wish--split { --s: 1.15; }
+}
+
+/* ---- the small hat moment (404): the hat at rest and a link to /wish ---- */
+.wish-hat { display: inline-block; position: relative; width: 120px; height: 75px; flex: none; }
+.wish-hat .fox-wish__scene {
+  position: absolute; left: 50%; bottom: 0; width: 240px; height: 150px; margin-left: -120px;
+  transform: scale(0.5); transform-origin: 50% 100%;
+}
+.wish-nudge {
+  display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+  margin: var(--space-7, 48px) auto 0; max-width: 34rem; text-align: left;
+}
+.wish-nudge__words { display: grid; gap: 2px; }
+.wish-nudge__lead { font: 600 1.25rem/1.15 var(--font-hand); color: var(--wish-gold-deep); }
+.wish-nudge__link {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  color: var(--color-green-deep); font: 600 1.02rem/1.2 var(--font-body); text-decoration: underline; text-underline-offset: 3px;
+}
+.wish-nudge__link svg { font-size: 19px; color: var(--color-yellow-deep); }
+.wish-nudge__link:hover { color: var(--color-ink); }
+.wish-nudge__link:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+
+/* ---- small phones ---------------------------------------------------------- */
 @media (max-width: 400px) {
-  .fox-wish__paper { padding: 20px 12px 16px; }
   .fox-wish__chips { gap: 6px; }
-  .fox-wish__chip { font-size: 0.7rem; min-height: 60px; }
+  .fox-wish__chip { font-size: 0.72rem; min-height: 56px; }
+  .fox-wish__main { padding: 20px 16px; }
+  .fox-help.is-wish .fox-help__say { padding-inline: 14px; }
 }
 
 /* reduced motion: no flight, no burst; a quick fade to the still thank-you */
 @media (prefers-reduced-motion: reduce) {
   .fox-wish *, .fox-wish-btn, .fox-wish__submit { animation: none !important; transition: none !important; }
-  .fox-wish--done.is-fresh { animation: fox-wish-fade 0.25s ease-out both !important; }
+  .fox-wish--done.is-fresh .fox-wish__words, .fox-wish--card.fox-wish--done.is-fresh { animation: fox-wish-fade 0.25s ease-out both !important; }
 }
 @keyframes fox-wish-fade { from { opacity: 0; } }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO.jsx';
+import { WishNudge } from '../components/FoxWish.jsx';
 
 export default function NotFound() {
   return (
@@ -16,6 +17,8 @@ export default function NotFound() {
             <Link className="btn btn--primary btn--lg" to="/">Back home</Link>
             <Link className="btn btn--ghost btn--lg" to="/menu">See the menu</Link>
           </div>
+          {/* a small hat moment: the wish hat, and a way to /wish */}
+          <WishNudge lead="Looking for a drink we don’t make yet?" />
         </div>
       </section>
     </>

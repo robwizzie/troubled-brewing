@@ -9,15 +9,15 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 vi.mock('../src/lib/analytics.js', () => ({ track: vi.fn() }));
 const { track } = await import('../src/lib/analytics.js');
 const FoxGuide = (await import('../src/components/FoxGuide.jsx')).default;
-const { MenuWishLink } = await import('../src/components/FoxWish.jsx');
+const { MenuWish } = await import('../src/components/FoxWish.jsx');
 const { FOX_VIEWS, parseFoxLink, stripFoxParams } = await import('../src/lib/foxDeepLink.js');
 
 const renderAt = (url) => render(
   <MemoryRouter initialEntries={[url]}>
-    <Routes><Route path="*" element={<><MenuWishLink /><FoxGuide /></>} /></Routes>
+    <Routes><Route path="*" element={<><MenuWish /><FoxGuide /></>} /></Routes>
   </MemoryRouter>,
 );
-const card = () => screen.getByRole('dialog', { name: /Ask the fox/ });
+const card = () => screen.getByRole('dialog', { name: /Ask the fox|Make a wish/ });
 const deeplinks = () => track.mock.calls.filter(([ev]) => ev === 'fox_deeplink').map(([, p]) => p);
 
 let replace;
@@ -82,6 +82,8 @@ describe('opening the card', () => {
     window.history.pushState({}, '', '/?fox=wish&src=table');
     renderAt('/?fox=wish&src=table');
     expect(within(card()).getByTestId('fox-wish').dataset.stage).toBe('form');
+    expect(card().getAttribute('aria-labelledby')).toBeTruthy();
+    expect(within(card()).getByRole('heading', { name: 'Make a wish' })).toBeTruthy();
     const input = within(card()).getByLabelText('Your wish');
     await waitFor(() => expect(document.activeElement).toBe(input));
     await waitFor(() => expect(deeplinks()).toEqual([{ to: 'wish', src: 'table' }]));
@@ -142,10 +144,11 @@ describe('opening the card', () => {
     expect(replace).not.toHaveBeenCalled();
   });
 
-  it('the Menu page’s "Wish for something new?" link opens the wish', async () => {
-    renderAt('/menu');
-    fireEvent.click(screen.getByRole('link', { name: /Wish for something new/ }));
-    expect(within(card()).getByTestId('fox-wish')).toBeTruthy();
-    await waitFor(() => expect(deeplinks()).toEqual([{ to: 'wish', src: 'menu' }]));
+  it('?fox=wish still opens the fox’s wish on a page that has its own wish block', async () => {
+    window.history.pushState({}, '', '/menu?fox=wish&src=table');
+    renderAt('/menu?fox=wish&src=table');
+    expect(screen.getByRole('heading', { name: /Don’t see your favorite/ })).toBeTruthy();
+    expect(within(card()).getByTestId('fox-wish').dataset.stage).toBe('form');
+    await waitFor(() => expect(deeplinks()).toEqual([{ to: 'wish', src: 'table' }]));
   });
 });

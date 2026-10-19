@@ -44,6 +44,7 @@ import PullQuote from './PullQuote.jsx';
 import PhotoMosaic from './PhotoMosaic.jsx';
 import VisitPanel from './VisitPanel.jsx';
 import GiftCards from './GiftCardsLazy.jsx';
+import WishListSection from './WishListSection.jsx';
 import { FlavorVoting, DrinkSuggestions } from './Stubs.jsx';
 
 export const SECTION_RENDERERS = {
@@ -93,6 +94,8 @@ export const SECTION_RENDERERS = {
   visit_panel: VisitPanel,
   // The /gift-cards page (hero, buy button, occasion cards)
   gift_cards: GiftCards,
+  // "Make a wish for the menu" — the same flow as the fox's card and /wish
+  wish_list: WishListSection,
   // Future stubs (not added to pages in v1)
   flavor_voting: FlavorVoting,
   drink_suggestions: DrinkSuggestions,
@@ -132,6 +135,7 @@ export const ADDABLE_SECTION_TYPES = [
   'pull_quote',
   'photo_mosaic',
   'visit_panel',
+  'wish_list',
 ];
 
 export const SECTION_LABELS = {
@@ -178,6 +182,7 @@ export const SECTION_LABELS = {
   photo_mosaic: 'Photo wall (a few framed photos)',
   visit_panel: 'Visit us (map + hours + parking)',
   gift_cards: 'Gift cards (buy button + occasion cards)',
+  wish_list: 'Wish list (make a wish for the menu)',
   flavor_voting: 'Flavor voting (coming soon)',
   drink_suggestions: 'Drink suggestions (coming soon)',
 };

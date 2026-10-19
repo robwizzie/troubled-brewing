@@ -596,6 +596,13 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'show_phone', label: 'Show “Questions? Call us” under the cards', type: 'checkbox' },
     ],
   },
+  wish_list: {
+    note: 'The “Make a wish for the menu” form, the same one as in the fox’s card and on /wish. Wishes land in Wish list. Each visitor can make one wish a day, and nobody leaves an email or phone number.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text', hint: 'Blank = “Make a wish for the menu”.' },
+      { name: 'intro', label: 'A line under the heading', type: 'textarea', rows: 2, hint: 'Blank = “A drink or a treat you’d love to see? Tom and Cat read every one.”' },
+    ],
+  },
 };
 
 export function schemaFor(type) {
