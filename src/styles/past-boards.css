@@ -1,0 +1,126 @@
+/* =============================================================================
+   Past boards — the flip-through of old chalkboard photos (PastBoards.jsx),
+   the "See past boards" link under the homepage board, and the /chalkboard
+   page. Same slate + wood frame as the homepage board (real-wall.css), cream
+   and gold on dark. No hover lifts; reduced motion turns the flip off.
+   ============================================================================= */
+
+.pastb {
+  --pb-slate: #23261f;
+  --pb-wood: linear-gradient(135deg, #8a6038, #5a3b20 40%, #7d5532 70%, #4d321a);
+  --pb-cream: #fff7c9;
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  background: radial-gradient(120% 90% at 50% 0%, rgba(58, 49, 39, 0.97), rgba(20, 17, 12, 0.97) 70%);
+  color: #f4f1e6;
+  overscroll-behavior: contain;
+}
+.pastb__panel { width: min(100%, 980px); max-height: 100%; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.pastb__head { display: flex; align-items: center; gap: 1rem; }
+.pastb__title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.4rem, 3vw, 2rem); color: var(--pb-cream); }
+.pastb__count { margin: 0 0 0 auto; font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; color: var(--color-yellow); font-variant-numeric: tabular-nums; }
+.pastb__close {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 999px; border: 1px solid rgba(255, 250, 240, 0.35);
+  background: rgba(255, 250, 240, 0.1); color: #fffaf0; font-size: 1.35rem; cursor: pointer;
+}
+.pastb__close:hover { background: rgba(255, 250, 240, 0.22); }
+.pastb__close:focus-visible, .pastb__nav:focus-visible { outline: 3px solid var(--color-yellow); outline-offset: 3px; }
+
+.pastb__stage { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: clamp(0.5rem, 2vw, 1.5rem); min-height: 0; }
+.pastb__nav {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 999px; cursor: pointer;
+  border: 2px solid var(--color-yellow); background: rgba(20, 16, 10, 0.6); color: var(--color-yellow); font-size: 1.6rem;
+}
+.pastb__nav:hover:not(:disabled) { background: var(--color-yellow); color: var(--color-black); }
+.pastb__nav:disabled { opacity: 0.3; cursor: default; }
+
+/* the stack: the top board, with one or two empty frames peeking out behind */
+.pastb__stack { position: relative; display: grid; place-items: center; touch-action: pan-y; user-select: none; min-height: 0; }
+.pastb__card {
+  grid-area: 1 / 1; width: 100%;
+  background: var(--pb-slate);
+  border: 12px solid #6b4a2c; border-image: var(--pb-wood) 1;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+.pastb__card--behind { align-self: stretch; }
+.pastb__card--b1 { transform: rotate(-3deg) translate(-10px, 6px); filter: brightness(0.8); }
+.pastb__card--b2 { transform: rotate(3.5deg) translate(12px, 10px); filter: brightness(0.62); }
+.pastb__card--front { position: relative; margin: 0; padding: 0.55rem 0.55rem 0.8rem; transform: rotate(-0.8deg); animation: pastb-in 0.32s ease-out; }
+.pastb__card--front.is-older { animation-name: pastb-from-right; }
+.pastb__card--front.is-newer { animation-name: pastb-from-left; }
+.pastb__slate { background: #1b1d18; line-height: 0; }
+.pastb__slate img { display: block; width: 100%; height: auto; max-height: min(64vh, 640px); object-fit: contain; -webkit-user-drag: none; }
+.pastb__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.9rem; padding: 0.55rem 0.4rem 0; font-family: var(--font-hand); }
+.pastb__date { font-size: 1.45rem; font-weight: 700; color: var(--color-yellow); white-space: nowrap; }
+.pastb__caption { font-size: 1.35rem; line-height: 1.2; color: var(--pb-cream); }
+
+.pastb__hint { margin: 0; text-align: center; font-size: var(--text-sm); color: #cfc6b2; }
+.pastb__hint--touch { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .pastb__hint--touch { display: inline; }
+  .pastb__hint--keys { display: none; }
+}
+
+@keyframes pastb-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pastb-from-right { from { opacity: 0; transform: translateX(40px) rotate(2deg); } to { opacity: 1; transform: rotate(-0.8deg); } }
+@keyframes pastb-from-left { from { opacity: 0; transform: translateX(-40px) rotate(-3deg); } to { opacity: 1; transform: rotate(-0.8deg); } }
+
+@media (max-width: 640px) {
+  .pastb { padding: 0.75rem; align-items: stretch; }
+  .pastb__panel { justify-content: center; }
+  .pastb__stage { grid-template-columns: 1fr 1fr; row-gap: 1.4rem; }
+  .pastb__stack { grid-column: 1 / -1; grid-row: 1; }
+  .pastb__nav { grid-row: 2; width: 48px; height: 48px; }
+  .pastb__nav--newer { justify-self: start; }
+  .pastb__nav--older { justify-self: end; }
+  .pastb__card { border-width: 9px; }
+  .pastb__slate img { max-height: 58vh; }
+  .pastb__hint { order: 3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pastb__card--front, .pastb__card--front.is-older, .pastb__card--front.is-newer { animation: none; }
+}
+
+/* ---- "See past boards" under the homepage chalkboard -------------------- */
+.pch__past-wrap { margin: 0.7rem 0 0; text-align: center; }
+.pch__past {
+  padding: 0.2rem 0.4rem; border: 0; background: none; cursor: pointer;
+  font-family: var(--font-hand); font-size: 1.3rem; font-weight: 700; color: var(--color-yellow);
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
+}
+.pch__past:hover { color: #f2c84e; }
+.pch__past:focus-visible { outline: 3px solid var(--color-yellow); outline-offset: 3px; border-radius: 4px; }
+
+/* ---- /chalkboard ---------------------------------------------------------- */
+.pastpage { background: #1d1a14; color: #f4f1e6; padding: var(--space-8, 4rem) 0 var(--space-9, 5rem); min-height: 60vh; }
+.pastpage__head { max-width: 46rem; margin-bottom: var(--space-6, 2.5rem); }
+.pastpage .eyebrow { color: var(--color-yellow); }
+.pastpage h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.02; color: #fffaf0; margin: 0 0 var(--space-3, 1rem); }
+.pastpage__lede { font-size: var(--text-lg); line-height: 1.55; color: #e9dfc8; margin: 0 0 var(--space-4, 1.5rem); }
+.pastpage__flip {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--color-yellow); color: var(--color-black); border-color: var(--color-yellow);
+}
+.pastpage__flip:hover { background: #f2c84e; color: var(--color-black); }
+.pastpage__month { font-family: var(--font-display); font-weight: 800; font-size: var(--text-2xl, 1.6rem); color: var(--color-yellow); margin: var(--space-6, 2.5rem) 0 var(--space-3, 1rem); }
+.pastpage__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: var(--space-5, 2rem) var(--space-4, 1.5rem); }
+.pastpage__tile { display: block; width: 100%; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; font: inherit; }
+.pastpage__frame {
+  display: block; line-height: 0; padding: 0.4rem; background: #23261f;
+  border: 9px solid #6b4a2c; border-image: linear-gradient(135deg, #8a6038, #5a3b20 40%, #7d5532 70%, #4d321a) 1;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.5);
+}
+.pastpage__grid li:nth-child(odd) .pastpage__frame { transform: rotate(-1.2deg); }
+.pastpage__grid li:nth-child(even) .pastpage__frame { transform: rotate(1deg); }
+.pastpage__frame img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #1b1d18; }
+.pastpage__tile:focus-visible { outline: 3px solid var(--color-yellow); outline-offset: 6px; border-radius: 2px; }
+@media (hover: hover) { .pastpage__tile:hover .pastpage__date { text-decoration: underline; } }
+.pastpage__date { display: block; margin-top: 0.7rem; font-family: var(--font-hand); font-size: 1.4rem; font-weight: 700; color: var(--color-yellow); }
+.pastpage__caption { display: block; font-size: var(--text-sm); color: #e9dfc8; line-height: 1.4; }
+.pastpage__empty { max-width: 40rem; font-size: var(--text-lg); color: #e9dfc8; }
+.pastpage__empty a { color: var(--color-yellow); }
