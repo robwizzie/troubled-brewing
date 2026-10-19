@@ -2,6 +2,41 @@
    illustrated Station Ave strip, so the two layouts can never disagree about
    where a business sits on the street or where its directions link points. */
 
+import { mediaUrl } from './config.js';
+
+/* logo_url / photo_url may be absolute (hotlinked, or an admin upload) or a
+   site-relative path to a file we host ("/images/neighbors/anthonys.png");
+   mediaUrl() resolves the latter under the deploy base. */
+export { mediaUrl };
+
+/* The logos the owners sent us, self-hosted under public/images/neighbors/
+   (trimmed to the artwork, PNG/JPG with a WebP twin). Each one is drawn on
+   the street as a painted sign board in the logo's own ground colour, so the
+   artwork sits flush on it; `ratio` is the file's width / height, so the
+   board can be sized before the image arrives. */
+const NEIGHBOR_LOGOS = {
+  anthonys: { bg: '#000000', ink: '#ffffff', ratio: 480 / 265 },
+  ralphs: { bg: '#47403a', ink: '#f3e9da', ratio: 1 },
+  'south-jersey-special': { bg: '#ffffff', ink: '#111111', ratio: 480 / 79 },
+  'janes-tea-house': { bg: '#ffffff', ink: '#c9787a', ratio: 480 / 168 },
+  'april-robin': { bg: '#dacce0', ink: '#141414', ratio: 480 / 163 },
+};
+const HOSTED_LOGO = /^\/?images\/neighbors\/([a-z0-9-]+)\.(png|jpe?g|webp)$/i;
+
+/* Everything the storefront needs to hang a logo: the resolved src, a WebP
+   twin for the files we host (only the known ones — each has a .webp beside
+   it), and the sign's ground colour + shape when we know them. Anything else
+   (a hotlink, an admin upload) gets a cream board and is measured as it
+   loads. No logo → null. */
+export function logoFor(url) {
+  const src = mediaUrl(url);
+  if (!src) return null;
+  const m = HOSTED_LOGO.exec(String(url).trim());
+  const known = m ? NEIGHBOR_LOGOS[m[1].toLowerCase()] : null;
+  const webp = known && m[2].toLowerCase() !== 'webp' ? src.replace(/\.(png|jpe?g)$/i, '.webp') : null;
+  return { src, webp, bg: known?.bg || null, ink: known?.ink || null, ratio: known?.ratio || null };
+}
+
 export const CATEGORY_LABELS = {
   restaurant: 'Restaurant',
   cafe: 'Café',
