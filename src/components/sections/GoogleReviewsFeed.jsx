@@ -29,8 +29,18 @@ import { useDataVersion } from '../../lib/dataVersion.js';
    The summary line states the true number shown, and when Google's own total
    (google_profile.review_count) is bigger than what we've cached, a quiet line
    says so and links to the full list on Google. */
+/* ONE list for the Reviews page: the owners' hand-picked favorites lead,
+   marked "Our pick", then every other Google review, newest first — a
+   favorite that came from Google shows once, as the pick. (The separate
+   "A few of our favorites" wall steps aside on /reviews; see
+   TestimonialsWall.) The old default heading "Fresh from Google" — still on
+   the live row — reads as the new one-list title. */
+const LEGACY_HEADING = 'Fresh from Google';
+const DEFAULT_HEADING = 'Every review, in one place';
+
 export default function GoogleReviewsFeed({ data = {} }) {
-  const { heading = 'Fresh from Google', count = 9 } = data;
+  const { count = 9 } = data;
+  const heading = !data.heading || data.heading === LEGACY_HEADING ? DEFAULT_HEADING : data.heading;
   const batch = Math.max(12, Number(count) || 0);
   const [feed, setFeed] = useState(null);
   const [shown, setShown] = useState(batch);
@@ -42,7 +52,16 @@ export default function GoogleReviewsFeed({ data = {} }) {
   const blocksVersion = useDataVersion('content_blocks');
   useEffect(() => {
     let alive = true;
-    loadReviews({ only: 'google', order: 'newest', minLength: 1 }).then((r) => alive && setFeed(r));
+    Promise.all([
+      loadReviews({ only: 'curated', minLength: 1 }),
+      loadReviews({ only: 'google', order: 'newest', minLength: 1 }),
+    ]).then(([picks, google]) => {
+      if (!alive) return;
+      const pickKeys = new Set(picks.reviews.map((r) => r.key));
+      const favorites = picks.reviews.map((r) => ({ ...r, favorite: true }));
+      const rest = google.reviews.filter((r) => !pickKeys.has(r.key));
+      setFeed({ ...google, reviews: [...favorites, ...rest], favoriteCount: favorites.length, googleCount: google.reviews.length });
+    });
     return () => { alive = false; };
   }, [profileVersion, testimonialsVersion, blocksVersion]);
 
@@ -68,10 +87,11 @@ export default function GoogleReviewsFeed({ data = {} }) {
     return () => io.disconnect();
   }, [reviews, remaining, shown, batch]);
 
-  if (reviews && reviews.length === 0) return null; // nothing cached yet — testimonials carry the page
+  if (reviews && reviews.length === 0) return null; // nothing to show yet
 
   const visible = pool.slice(0, shown);
-  const total = reviews ? reviews.length : 0;
+  const total = feed?.googleCount || 0;
+  const favCount = feed?.favoriteCount || 0;
   const onGoogle = Number(feed?.count) || 0;
   const googleUrl = feed?.mapsUrl || (feed?.placeId ? `https://www.google.com/maps/place/?q=place_id:${feed.placeId}` : '');
 
@@ -84,6 +104,7 @@ export default function GoogleReviewsFeed({ data = {} }) {
             {onGoogle > total
               ? <>The latest {total} of our {onGoogle} Google reviews, newest first{googleUrl ? <> — <a href={googleUrl} target="_blank" rel="noopener noreferrer">read them all on Google</a></> : null}.</>
               : <>{total === 1 ? '1 review from Google' : `All ${total} reviews from Google`}, newest first.</>}
+            {favCount > 0 && <> Our own favorites lead the way.</>}
           </p>
         )}
         {hasPhotos && (
@@ -94,7 +115,8 @@ export default function GoogleReviewsFeed({ data = {} }) {
         )}
         <div className="testimonials testimonials--masonry testimonials--google">
           {visible.map((r) => (
-            <figure key={r.id} className="card testimonial">
+            <figure key={r.id} className={`card testimonial${r.favorite ? ' testimonial--pick' : ''}`}>
+              {r.favorite && <span className="testimonial__pick">★ Our pick</span>}
               {r.photo && <img className="testimonial__photo" src={r.photo} alt={`Photo from ${r.author}'s review`} loading="lazy" referrerPolicy="no-referrer" />}
               <div className="card__body">
                 <div className="testimonial__head">
@@ -108,9 +130,9 @@ export default function GoogleReviewsFeed({ data = {} }) {
                 {(r.time || r.url) && (
                   <figcaption className="testimonial__source">
                     {r.url ? (
-                      <a href={r.url} target="_blank" rel="noopener noreferrer">{r.time || 'See on Google'} · Google</a>
+                      <a href={r.url} target="_blank" rel="noopener noreferrer">{r.time || 'See on Google'} · {r.source || 'Google'}</a>
                     ) : (
-                      `${r.time} · Google`
+                      `${r.time} · ${r.source || 'Google'}`
                     )}
                   </figcaption>
                 )}

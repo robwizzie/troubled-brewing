@@ -1848,3 +1848,13 @@
   .featured__frame.featured__frame--cutout { width: min(300px, 76vw); }
   .featured__media:has(.featured__frame--cutout) { padding-bottom: var(--space-6); }
 }
+
+/* ---- Reviews page: one list — the owners' picks lead, ribboned ---------- */
+.testimonial--pick { box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-yellow-deep) 70%, transparent), 0 10px 22px rgba(40, 44, 25, 0.16); }
+.testimonial__pick {
+  position: absolute; top: 10px; right: -6px; z-index: 2;
+  padding: 3px 10px 3px 12px; border-radius: 3px 0 0 3px;
+  background: var(--color-yellow-deep); color: var(--color-black);
+  font: 700 0.72rem/1.4 var(--font-body); letter-spacing: 0.04em;
+  box-shadow: 0 2px 5px rgba(40, 30, 12, 0.25);
+}
