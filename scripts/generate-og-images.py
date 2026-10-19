@@ -48,6 +48,7 @@ CARDS = {
     "gallery-wall": ("images/wall/gallery-wall-2000.webp", (0.5, 0.33), "The Gallery Wall", "Framed art, a gold fox & curiosities"),
     "troublemakers": ("images/wall/troublemakers.jpg", (0.5, 0.5), "The Troublemakers", "The crew behind your coffee"),
     "neighborhood": ("images/wall/local-love.jpg", (0.5, 0.5), "Local Love", "Our Station Ave neighbors"),
+    "gift-cards": ("images/pages/iced-coffee-tb-glass.jpg", (0.5, 0.5), "Gift Cards", "Give someone Trouble"),
 }
 
 PANEL = 520  # width of the cream text panel

@@ -18,6 +18,7 @@ export const PAGE_NAMES = {
   troublemakers: 'Troublemakers',
   neighborhood: 'Local Love',
   timeline: 'Timeline',
+  'gift-cards': 'Gift Cards',
 };
 
 /* Every screen. `nav` places it in the sidebar: 'top' (always visible, in

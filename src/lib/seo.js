@@ -158,6 +158,18 @@ export const SEO_ROUTES = [
     priority: '0.6',
   },
   {
+    path: '/gift-cards',
+    slug: 'gift-cards',
+    label: 'Gift Cards',
+    title: 'Gift Cards | Trouble Brewing Coffee House, Haddon Heights',
+    description:
+      'Give someone Trouble: send an e-gift card for Trouble Brewing Coffee House in Haddon Heights, NJ. Pick an amount, add a note, and it goes by email.',
+    og: 'gift-cards',
+    ogAlt: 'Iced coffee in a glass printed with the Trouble Brewing fox, with a bamboo lid and a glass straw',
+    changefreq: 'monthly',
+    priority: '0.6',
+  },
+  {
     path: '/privacy',
     slug: 'privacy',
     label: 'Privacy Policy',
