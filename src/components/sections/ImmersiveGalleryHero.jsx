@@ -4,6 +4,7 @@ import HoursToday from '../HoursToday.jsx';
 import OrderButton from '../OrderButton.jsx';
 import { asset } from '../../lib/config.js';
 import { track } from '../../lib/analytics.js';
+import { useFeaturedDrink } from '../../lib/featured.js';
 import { mergeWallPieces, WALL_OBJECTS } from '../../lib/wallPieces.js';
 import {
   CoffeeCup, FoxFace, Balloon, FramedScene, Heart, TopHat, Star, Bunting,
@@ -143,13 +144,20 @@ export default function ImmersiveGalleryHero({ data = {} }) {
     igh_hours_label: hoursLabel = 'Open Daily',
     igh_address: addressLine = '514 Station Ave · Haddon Heights, NJ 08035',
     igh_special_label: specialsLabel = "Today's Special",
-    igh_special_text: specialText = 'Honey Almond Latte',
+    // unset = the featured drink's name (below); '' hides the note
+    igh_special_text: specialTextSetting,
     igh_mailchimp_action_url: mailchimpUrl,
     igh_wall_heading: wallHeading = 'Have a look around',
     igh_scene_image_url: sceneImage,
     igh_pieces: pieceOverrides,
     specials_link: specialsLink = '/menu#specials',
   } = data;
+
+  // "Today's Special" names the same real, available drink as This Week's
+  // Trouble (src/lib/featured.js) unless the owner typed their own text —
+  // never a made-up drink the shop doesn't sell
+  const featured = useFeaturedDrink();
+  const specialText = specialTextSetting !== undefined ? specialTextSetting : featured?.name || '';
 
   // the wall the owner actually configured (built-in geometry + their labels,
   // links, photographs and moldings)

@@ -1,50 +1,91 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Reveal from '../Reveal.jsx';
 import StarRating from '../StarRating.jsx';
 import { loadReviews } from '../../lib/reviews.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 
-/* Every real Google review the shop has, straight from the cached
+/* EVERY real Google review the shop has, straight from the cached
    google_profile.reviews library (the Edge Function merges each refresh's
-   top-5 in, so it grows toward the full set). Which ones are allowed on the
-   page — the star floor, anything the owners hid, the photos they attached —
-   is decided once in src/lib/reviews.js, the same rules the homepage strip
-   uses, so the two can never disagree.
+   reviews in, so it grows toward the full set), newest first.
 
-   Renders a masonry wall a page at a time, with a "with photos" filter once
-   any review carries one. */
+   This is the complete list, not a teaser: the only reviews left off are the
+   ones the owners chose to leave off — anything below their star floor and
+   anything they hid (admin → Reviews; the rules live once in
+   src/lib/reviews.js, the same ones the homepage strip uses). A review the
+   owners ALSO hand-picked as a testimonial still appears here; the favorites
+   wall above is a selection, this is the record. The same review never shows
+   twice within the feed (Google-vs-Google duplicates collapse in
+   loadReviews). Star-only ratings with no words at all are skipped — there's
+   nothing to pin up.
+
+   The section's `count` used to cap the feed (the live row says 5); now it
+   only sizes the first batch, and never below 12. Rendering is progressive so
+   a 300-review library stays quick: the first batch draws at once, and a
+   sentinel under the wall appends the next batch as a visitor scrolls near
+   the end (IntersectionObserver; where that's missing, everything renders
+   up front). A plain "Show all N reviews" button stays underneath as the
+   keyboard / no-scroll fallback.
+
+   The summary line states the true number shown, and when Google's own total
+   (google_profile.review_count) is bigger than what we've cached, a quiet line
+   says so and links to the full list on Google. */
 export default function GoogleReviewsFeed({ data = {} }) {
   const { heading = 'Fresh from Google', count = 9 } = data;
-  const pageSize = Math.max(3, Number(count) || 9);
-  const [reviews, setReviews] = useState(null);
-  const [shown, setShown] = useState(pageSize);
+  const batch = Math.max(12, Number(count) || 0);
+  const [feed, setFeed] = useState(null);
+  const [shown, setShown] = useState(batch);
   const [photosOnly, setPhotosOnly] = useState(false);
+  const sentinel = useRef(null);
 
   const profileVersion = useDataVersion('google_profile');
   const testimonialsVersion = useDataVersion('testimonials');
   const blocksVersion = useDataVersion('content_blocks');
   useEffect(() => {
     let alive = true;
-    // Google only: the hand-picked favorites already have their own wall
-    // above, and a review imported as a testimonial is dropped from this side
-    // by loadReviews so a quote never hangs twice on one page. Star-only
-    // reviews (no words) have nothing to pin up, so they're left off.
-    loadReviews({ only: 'google', minLength: 12 }).then((r) => alive && setReviews(r.reviews));
+    loadReviews({ only: 'google', order: 'newest', minLength: 1 }).then((r) => alive && setFeed(r));
     return () => { alive = false; };
   }, [profileVersion, testimonialsVersion, blocksVersion]);
 
+  const reviews = feed?.reviews || null;
   const hasPhotos = useMemo(() => (reviews || []).some((r) => r.photo), [reviews]);
-  const pool = photosOnly ? (reviews || []).filter((r) => r.photo) : reviews || [];
+  const pool = useMemo(() => (photosOnly ? (reviews || []).filter((r) => r.photo) : reviews || []), [reviews, photosOnly]);
+  const remaining = Math.max(0, pool.length - shown);
+
+  // append the next batch whenever the sentinel under the wall comes near the
+  // viewport. Re-observing after every append matters: if the new batch still
+  // leaves the sentinel on screen, the fresh observer reports it at once and
+  // the next batch follows.
+  useEffect(() => {
+    if (!reviews || remaining === 0) return undefined;
+    if (typeof IntersectionObserver === 'undefined') { setShown(Infinity); return undefined; }
+    const el = sentinel.current;
+    if (!el) return undefined;
+    const io = new IntersectionObserver(
+      (entries) => { if (entries.some((e) => e.isIntersecting)) setShown((n) => n + batch); },
+      { rootMargin: '0px 0px 800px 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reviews, remaining, shown, batch]);
 
   if (reviews && reviews.length === 0) return null; // nothing cached yet — testimonials carry the page
 
   const visible = pool.slice(0, shown);
-  const remaining = pool.length - visible.length;
+  const total = reviews ? reviews.length : 0;
+  const onGoogle = Number(feed?.count) || 0;
+  const googleUrl = feed?.mapsUrl || (feed?.placeId ? `https://www.google.com/maps/place/?q=place_id:${feed.placeId}` : '');
 
   return (
     <Reveal as="section" className="section section--alt">
       <div className="container">
         <h2 className="section-heading">{heading}</h2>
+        {reviews && (
+          <p className="section-sub reviews-feed__summary">
+            {onGoogle > total
+              ? <>The latest {total} of our {onGoogle} Google reviews, newest first{googleUrl ? <> — <a href={googleUrl} target="_blank" rel="noopener noreferrer">read them all on Google</a></> : null}.</>
+              : <>{total === 1 ? '1 review from Google' : `All ${total} reviews from Google`}, newest first.</>}
+          </p>
+        )}
         {hasPhotos && (
           <div className="testimonials-filter" role="group" aria-label="Filter reviews">
             <button type="button" className={`testimonials-filter__chip ${photosOnly ? '' : 'is-active'}`} aria-pressed={!photosOnly} onClick={() => setPhotosOnly(false)}>All</button>
@@ -78,11 +119,14 @@ export default function GoogleReviewsFeed({ data = {} }) {
           ))}
         </div>
         {remaining > 0 && (
-          <p style={{ textAlign: 'center', marginTop: 'var(--space-5)' }}>
-            <button type="button" className="btn btn--ghost" onClick={() => setShown((n) => n + pageSize)}>
-              Show more reviews ({remaining})
-            </button>
-          </p>
+          <>
+            <div ref={sentinel} className="reviews-feed__sentinel" aria-hidden="true" />
+            <p style={{ textAlign: 'center', marginTop: 'var(--space-5)' }}>
+              <button type="button" className="btn btn--ghost" onClick={() => setShown(Infinity)}>
+                Show all {pool.length} reviews
+              </button>
+            </p>
+          </>
         )}
       </div>
     </Reveal>

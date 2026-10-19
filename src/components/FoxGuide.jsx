@@ -8,10 +8,12 @@ import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
    the wordmark) — keeps you company in the corner of every page, leaning on
    his scroll. He turns to face your cursor (or wherever your finger last
    touched) and leans toward it; every so often he takes a sip and a curl of
-   steam rises from the cup. Tap him and he says something true: the shop's
-   real hours, or a nudge toward something on the wall. On special days (the
-   October 13 birthday, any Friday the 13th, Halloween…) he speaks up by
-   himself, once a day.
+   steam rises from the cup. Tap him and he says something true and useful:
+   the shop's real hours, or one of the facts in QUIPS (src/lib/foxDays.js —
+   ordering ahead, the address, parking, the Pup Cup…). He's the logo fox, so
+   no spectacles — those belong to the gold fox-head on the wall. On special
+   days (the October 13 birthday, any Friday the 13th, Halloween…) he speaks
+   up by himself, once a day.
 
    Facing + leaning are CSS custom properties written straight from a
    requestAnimationFrame — no React re-render per mouse move. Reduced motion:
@@ -83,7 +85,7 @@ export default function FoxGuide() {
 
   const talk = () => {
     if (line) { setLine(null); return; }
-    // every other tap is the live hours; the rest are wall gossip
+    // the live hours come first, then the facts in turn
     const hours = status
       ? (status.open ? `We’re open. ${status.label}. Come say hi!` : `${status.label.replace('Closed — opens', 'We’re closed. Back at')}.`)
       : null;

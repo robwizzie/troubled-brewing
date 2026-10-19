@@ -13,17 +13,28 @@ vi.mock('../src/lib/menuService.js', async (orig) => ({
   getMenu: () => Promise.resolve(ITEMS),
 }));
 
+vi.mock('../src/lib/analytics.js', () => ({ track: vi.fn() }));
+const { track } = await import('../src/lib/analytics.js');
+const { SPOTON_ORDER_URL } = await import('../src/lib/config.js');
+
 const load = async () => (await import('../src/components/sections/FoodShowcase.jsx')).default;
 
 describe('the food shelf', () => {
-  it('stands every cutout on the shelf, in menu order, each linking to its menu card', async () => {
+  it('stands every cutout on the shelf, in menu order, each linking to order it on SpotOn', async () => {
     const FoodShowcase = await load();
     const { container } = render(<MemoryRouter><FoodShowcase /></MemoryRouter>);
     await screen.findByText('Hot Latte');
     const names = [...container.querySelectorAll('.showcase__tag-name')].map((n) => n.textContent);
     expect(names).toEqual(['Hot Latte', 'Scone']); // cutouts only; no plain photo, no photo-less item
-    expect(container.querySelector('.showcase__link').getAttribute('href')).toBe('/menu#item-hot-latte');
+    const link = container.querySelector('.showcase__link');
+    expect(link.getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(link.getAttribute('aria-label')).toMatch(/^Order Hot Latte on SpotOn \(opens in a new tab\)/);
+    expect(screen.getByText('Tap anything to order it on SpotOn.')).toBeTruthy();
     expect(screen.getByText('$3.50')).toBeTruthy();
+    fireEvent.click(link);
+    expect(track).toHaveBeenCalledWith('order_now_click', { location: 'food_shelf', item: 'Hot Latte' });
   });
 
   it('filters by category and can let ordinary photos in', async () => {
