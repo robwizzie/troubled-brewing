@@ -1,85 +1,68 @@
 import { useEffect, useRef, useState } from 'react';
-import { supabase } from '../../lib/supabase.js';
 import { getContentBlock } from '../../lib/dataService.js';
 import { schemaFor } from '../editors/schemas.js';
 import { SECTION_LABELS } from '../../components/sections/registry.js';
-import FieldRenderer, { coerceFieldValue } from '../components/FieldRenderer.jsx';
+import FieldRenderer from '../components/FieldRenderer.jsx';
 import RevisionHistory from '../components/RevisionHistory.jsx';
 import CollectionManager from '../components/CollectionManager.jsx';
 import { useToast, Spinner } from '../components/ui.jsx';
 import { managerFor } from './sectionMeta.js';
+import { usePublishScope, useUnsaved } from '../lib/publishing.jsx';
 
-/* Editor for a section whose content lives in a content_blocks row (e.g. the
-   featured drink). Blocks have no draft column that the public reader honors,
-   so these fields keep an explicit Save that goes live immediately — the note
-   says so out loud. */
-function BlockFields({ spec, onChanged }) {
-  const toast = useToast();
-  const [data, setData] = useState(null);
-  const [saving, setSaving] = useState(false);
+/* Fields for a section whose content lives in a content_blocks row (e.g. the
+   featured drink). The editor holds the value (blockApi) so it publishes with
+   everything else on the page — no separate Save. */
+function BlockFields({ spec, blockApi }) {
+  const value = blockApi.get(spec.key);
 
   useEffect(() => {
+    if (value !== undefined) return undefined;
     let alive = true;
-    getContentBlock(spec.key).then((d) => alive && setData(d || {}));
+    getContentBlock(spec.key).then((d) => alive && blockApi.loaded(spec.key, d || {}));
     return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec.key]);
 
-  async function save() {
-    setSaving(true);
-    try {
-      const payload = { ...data };
-      spec.fields.forEach((f) => { payload[f.name] = coerceFieldValue(f, payload[f.name]); });
-      const { error } = await supabase
-        .from('content_blocks')
-        .upsert({ key: spec.key, data: payload, status: 'published' }, { onConflict: 'key' });
-      if (error) throw error;
-      toast(`${spec.title} updated`);
-      onChanged?.('content_blocks'); // canvas refetches in place
-    } catch (e) {
-      toast(e.message || 'Save failed', 'error');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  if (data === null) return <Spinner />;
+  if (value === undefined) return <Spinner />;
   return (
     <div className="tb-panel__block">
-      <p className="tb-panel__grouplabel">{spec.title}</p>
+      <p className="tb-panel__grouplabel">
+        {spec.title} {blockApi.dirty(spec.key) && <span className="badge badge--draft">Changed — not live yet</span>}
+      </p>
       {spec.fields.map((f) => (
-        <FieldRenderer key={f.name} field={f} value={data[f.name]} onChange={(v) => setData((d) => ({ ...d, [f.name]: v }))} />
+        <FieldRenderer
+          key={f.name}
+          field={f}
+          value={value[f.name]}
+          onChange={(v) => blockApi.set(spec.key, { ...value, [f.name]: v })}
+        />
       ))}
-      <button className="btn btn--primary btn--sm" disabled={saving} onClick={save}>
-        {saving ? 'Saving…' : `Save ${spec.title.toLowerCase()}`}
-      </button>
       {spec.note && <p className="field__hint">{spec.note}</p>}
     </div>
   );
 }
 
-/* Docked editing panel for the selected section. Fields come from the same
-   schemas the old drawer used; every change goes up through onChangeData,
-   which updates the canvas instantly and autosaves as a draft. `children`
-   renders extra controls above the fields (concept switcher).
+/* Docked editing panel for the selected section. Every change goes up through
+   onChangeData, which updates the canvas instantly — and stays local until
+   the page is published. `children` renders extra controls above the fields
+   (the homepage-look switcher).
 
    Collection-backed sections (menu, events, team…) get a "Manage —" button
-   that swaps the panel to the embedded collection manager, so the owner
-   reaches "the menu items" from the menu they're looking at.
-
-   Value resolution is draft_data ?? data — REPLACEMENT, matching publishData
-   (adminData.js) — never a merge of the two. */
-export default function SectionPanel({ section, effectiveType, focusTarget, onChangeData, onClose, onRestored, onCollectionChanged, children }) {
+   that swaps the panel to the embedded collection manager. Its changes join
+   the same Publish button at the bottom of the editor. */
+export default function SectionPanel({ section, isNew, effectiveType, focusTarget, onChangeData, onClose, onCollectionChanged, blockApi, children }) {
+  const toast = useToast();
+  const { guard, isDirty } = useUnsaved();
+  const scope = usePublishScope();
   const type = effectiveType || section.type;
   const schema = schemaFor(type);
   const manager = managerFor(type);
   const [managing, setManaging] = useState(false);
   const [autoLabel, setAutoLabel] = useState(null);
   const bodyRef = useRef(null);
-  const data = (section.draft_data ?? section.data) || {};
+  const data = section.data || {};
   const set = (name, val) => onChangeData(section.id, { ...data, [name]: val });
 
-  // Selecting a section (usually by clicking the canvas) hands focus to the
-  // panel's first field so keyboard users land where the editing happens.
   useEffect(() => {
     bodyRef.current?.querySelector('input, textarea, select')?.focus({ preventScroll: true });
   }, []);
@@ -98,7 +81,7 @@ export default function SectionPanel({ section, effectiveType, focusTarget, onCh
     const raf = requestAnimationFrame(() => {
       const holder = bodyRef.current?.querySelector(`[data-panelfield="${focusTarget.field}"]`);
       if (!holder) return;
-      let target = holder.firstElementChild; // the .field block
+      let target = holder.firstElementChild;
       if (focusTarget.index != null) {
         const items = holder.querySelectorAll('.frames-editor__row, .card');
         if (items[focusTarget.index]) target = items[focusTarget.index];
@@ -117,14 +100,25 @@ export default function SectionPanel({ section, effectiveType, focusTarget, onCh
     return (
       <aside className="tb-panel" aria-label={`Manage ${manager.title}`}>
         <div className="tb-panel__head">
-          <button className="btn btn--ghost btn--sm" onClick={() => setManaging(false)}>← Section</button>
+          <button
+            className="btn btn--ghost btn--sm"
+            onClick={() =>
+              guard(() => setManaging(false), {
+                when: () => Boolean(scope?.unitDirty((id) => id !== 'editor:page')) || isDirty((id) => id.startsWith('form:')),
+                title: 'Leave this list without publishing?',
+                body: 'You changed items in this list but haven’t published them. If you go back now those changes are thrown away. Stay and press Publish to keep them.',
+                confirmLabel: 'Go back and discard',
+              })
+            }
+          >
+            ← Back to the section
+          </button>
           <button className="iconbtn" aria-label="Close" onClick={onClose}>✕</button>
         </div>
         <div className="tb-panel__body">
           {manager.component ? (
             <manager.component embedded onChanged={onCollectionChanged} />
           ) : (
-            /* key: a click on a different item re-arms the one-shot auto-open */
             <CollectionManager
               key={autoLabel || 'manager'}
               {...manager}
@@ -136,9 +130,8 @@ export default function SectionPanel({ section, effectiveType, focusTarget, onCh
         </div>
         <div className="tb-panel__foot">
           <p className="tb-panel__hint">
-            {manager.component
-              ? 'Changes here go live right away — the page behind updates as you go.'
-              : 'Changes here go live when you publish each item — the page behind updates as you go.'}
+            List changes stay here until you press <strong>Publish</strong> at the bottom. The page
+            behind shows them after publishing.
           </p>
         </div>
       </aside>
@@ -165,16 +158,26 @@ export default function SectionPanel({ section, effectiveType, focusTarget, onCh
             <FieldRenderer field={f} value={data[f.name]} onChange={(v) => set(f.name, v)} />
           </div>
         ))}
-        {schema.block && <BlockFields spec={schema.block} onChanged={onCollectionChanged} />}
-        <details className="admin-history">
-          <summary>History & restore</summary>
-          <RevisionHistory table="sections" recordId={section.id} labelKey="type" onRestored={onRestored} />
-        </details>
+        {schema.block && blockApi && <BlockFields spec={schema.block} blockApi={blockApi} />}
+        {!isNew && (
+          <details className="admin-history">
+            <summary>Earlier versions</summary>
+            <RevisionHistory
+              table="sections"
+              recordId={section.id}
+              labelKey="type"
+              onLoad={(snap) => {
+                onChangeData(section.id, snap.data || {});
+                toast('Earlier version loaded — press Publish to put it back on the site');
+              }}
+            />
+          </details>
+        )}
       </div>
       <div className="tb-panel__foot">
         <p className="tb-panel__hint">
-          Changes save automatically as a private draft — press <strong>Publish</strong> up top when
-          you're ready for the world to see them.
+          You see your changes on the page straight away. Nobody else does until you press{' '}
+          <strong>Publish</strong> at the bottom.
         </p>
       </div>
     </aside>
