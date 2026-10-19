@@ -234,3 +234,133 @@ export function viewFor(rect, fit) {
 
 /** The resting view: the whole wall, nothing magnified. */
 export const REST_VIEW = viewFor(WALL_FOCUS, { cx: 0.5, cy: 0.5, w: 1, h: 1 });
+
+/* ---- walking the wall ----------------------------------------------------
+
+   Prev / Next, the counter and the index all share one order, and it has to
+   be the order your eye would take standing in front of the wall — otherwise
+   "Next" teleports across the room and the visitor loses their place. A salon
+   hang like this one is stacked in loose columns, so the walk goes column by
+   column, left to right, and top to bottom inside each column: every step is
+   to a neighbour. A column breaks wherever there is a clear horizontal gap
+   (more than `gap` % of the width) between the centres of the pieces. */
+
+/**
+ * The pieces in walking order: columns left → right, top → bottom in each.
+ * Pure and stable — the same art always walks the same way.
+ */
+export function spatialOrder(art, gap = 5) {
+  const list = Array.isArray(art) ? art : [];
+  const byX = list
+    .map((a) => ({ a, cx: a.x + a.w / 2, cy: a.y + a.h / 2 }))
+    .sort((p, q) => p.cx - q.cx || p.cy - q.cy);
+  const columns = [];
+  byX.forEach((p) => {
+    const col = columns[columns.length - 1];
+    if (col && p.cx - col[col.length - 1].cx <= gap) col.push(p);
+    else columns.push([p]);
+  });
+  return columns.flatMap((col) => col.sort((p, q) => p.cy - q.cy || p.cx - q.cx).map((p) => p.a));
+}
+
+/**
+ * One step along the walk. `wrap` carries on round from the last piece to
+ * the first (the room's Prev / Next); without it the walk stops at either end.
+ * An index that isn't on the wall yet (-1) steps onto the first or last piece.
+ */
+export function stepIndex(index, delta, length, wrap = true) {
+  if (!length) return -1;
+  if (index < 0) return delta < 0 ? length - 1 : 0;
+  const next = index + delta;
+  if (wrap) return ((next % length) + length) % length;
+  return Math.min(length - 1, Math.max(0, next));
+}
+
+/**
+ * The piece under a point on the photograph (x, y in % of it) — the smallest
+ * frame that contains it, so a little piece hung over a big one still wins;
+ * otherwise the nearest frame, measured in real pixels of the photograph.
+ * This is what a tap on the mini-map lands on.
+ */
+export function pieceAt(art, x, y) {
+  const list = Array.isArray(art) ? art : [];
+  const inside = list
+    .filter((a) => x >= a.x && x <= a.x + a.w && y >= a.y && y <= a.y + a.h)
+    .sort((p, q) => p.w * p.h - q.w * q.h);
+  if (inside.length) return inside[0];
+  let best = null;
+  let bestD = Infinity;
+  list.forEach((a) => {
+    const dx = (a.x + a.w / 2 - x) * IMAGE_W;
+    const dy = (a.y + a.h / 2 - y) * IMAGE_H;
+    const d = dx * dx + dy * dy;
+    if (d < bestD) { bestD = d; best = a; }
+  });
+  return best;
+}
+
+/**
+ * A box in % of the photograph, re-expressed in % of the resting room (the
+ * WALL_FOCUS slice) — the coordinates the mini-map is drawn in.
+ */
+export function toFocusBox(rect) {
+  return {
+    x: ((rect.x - WALL_FOCUS.x) / WALL_FOCUS.w) * 100,
+    y: ((rect.y - WALL_FOCUS.y) / WALL_FOCUS.h) * 100,
+    w: (rect.w / WALL_FOCUS.w) * 100,
+    h: (rect.h / WALL_FOCUS.h) * 100,
+  };
+}
+
+/** The inverse for a single point: mini-map % → photograph %. */
+export function fromFocusPoint(fx, fy) {
+  return {
+    x: WALL_FOCUS.x + (fx / 100) * WALL_FOCUS.w,
+    y: WALL_FOCUS.y + (fy / 100) * WALL_FOCUS.h,
+  };
+}
+
+/**
+ * The part of the photograph a view leaves on screen, in % of the photograph:
+ * the "you are here" box on the mini-map.
+ */
+export function visibleBox(view) {
+  return {
+    x: -view.x / view.scale,
+    y: -view.y / view.scale,
+    w: 100 / view.scale,
+    h: WALL_FOCUS.h / view.scale,
+  };
+}
+
+/* ---- deep links -----------------------------------------------------------
+
+   `/gallery-wall?piece=pumpkin` opens the room on that piece, and the address
+   bar follows the visitor as they walk (replaceState, so Back still leaves
+   the page rather than stepping back through every frame). */
+
+export const PIECE_PARAM = 'piece';
+
+/** The piece id a query string asks for, if it is one of `ids`; else null. */
+export function readPieceParam(search, ids) {
+  let id = null;
+  try {
+    id = new URLSearchParams(search || '').get(PIECE_PARAM);
+  } catch {
+    return null;
+  }
+  if (!id) return null;
+  return ids.includes(id) ? id : null;
+}
+
+/**
+ * `href` with ?piece= set to `id` (or removed for null), every other
+ * parameter and the hash kept. Returns path + search + hash — what
+ * history.replaceState wants.
+ */
+export function withPieceParam(href, id) {
+  const url = new URL(href, 'http://local.invalid');
+  if (id) url.searchParams.set(PIECE_PARAM, id);
+  else url.searchParams.delete(PIECE_PARAM);
+  return `${url.pathname}${url.search}${url.hash}`;
+}
