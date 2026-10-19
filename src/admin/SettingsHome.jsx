@@ -20,6 +20,7 @@ export default function SettingsHome() {
       <section className="admin__panel">
         <h2>What lives here</h2>
         <ul className="kv">
+          <li><Link to="/admin/chalkboard">Today’s chalkboard</Link> <span>snap the real specials board and put it on the homepage</span></li>
           <li><Link to="/admin/hours">Hours</Link> <span>weekly grid + holiday closures</span></li>
           <li><Link to="/admin/quick-blocks">Quick Blocks</Link> <span>announcement banner, social links, featured drink</span></li>
           <li><Link to="/admin/google">Google Profile</Link> <span>live rating + reviews connection</span></li>
