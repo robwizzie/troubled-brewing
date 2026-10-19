@@ -14,8 +14,10 @@ vi.mock('../src/lib/analytics.js', () => ({ track: vi.fn(), useAnalytics: () => 
 
 const { track } = await import('../src/lib/analytics.js');
 const { default: FoxGuide } = await import('../src/components/FoxGuide.jsx');
+const { QuizPane } = await import('../src/components/FoxPlay.jsx');
+const { storyBlob } = await import('../src/lib/storyImage.js');
 const { ANY, QUIZ, drinkCandidates, matchDrink, quizPlan } = await import('../src/lib/foxFun.js');
-const { PERSONAS, THEMES, PERSONA_LINK, personaFor, personaIdFor, article } = await import('../src/lib/drinkPersona.js');
+const { PERSONAS, THEMES, PERSONA_LINK, personaFor, personaIdFor, article, hasPersonaPhoto } = await import('../src/lib/drinkPersona.js');
 const { canShareFiles, shareStoryImage } = await import('../src/lib/storyShare.js');
 const { MENU_ITEMS } = await import('../src/lib/seed.js');
 
@@ -141,7 +143,7 @@ describe('sharing the Story image', () => {
     await expect(shareStoryImage(blob, persona, { nav })).resolves.toBe('share');
     const arg = nav.share.mock.calls[0][0];
     expect(arg.files).toHaveLength(1);
-    expect(arg.files[0].name).toBe('trouble-brewing-matcha-story.png');
+    expect(arg.files[0].name).toBe('trouble-brewing-matcha.png');
     expect(arg.files[0].type).toBe('image/png');
     expect(arg.text).toContain('@troublebrewingcoffee');
     expect(clicks).toHaveLength(0);
@@ -151,7 +153,7 @@ describe('sharing the Story image', () => {
     for (const nav of [{ canShare: () => false, share: vi.fn() }, {}, null]) {
       clicks = [];
       await expect(shareStoryImage(blob, persona, { nav })).resolves.toBe('download');
-      expect(clicks).toEqual([{ href: 'blob:story', download: 'trouble-brewing-matcha-story.png' }]);
+      expect(clicks).toEqual([{ href: 'blob:story', download: 'trouble-brewing-matcha.png' }]);
     }
     expect(canShareFiles({})).toBe(false);
   });
@@ -169,29 +171,33 @@ describe('sharing the Story image', () => {
   });
 });
 
-/* ---- in the fox's card ------------------------------------------------------- */
+/* ---- in the fox's card: real photos only --------------------------------------
+   Image is stubbed so a preload "loads" unless its URL is in BROKEN. */
 
-const openGame = async (label) => {
-  render(<MemoryRouter><FoxGuide /></MemoryRouter>);
-  fireEvent.click(screen.getByRole('button', { name: /ask the fox/i }));
-  const card = screen.getByRole('dialog', { name: /Ask the fox/ });
-  fireEvent.click(await within(card).findByRole('button', { name: label }));
-  return card;
-};
-const skipToResult = (card) => {
-  let n = 0;
-  while (within(card).queryByTestId('fox-quiz') && n < 10) {
-    fireEvent.click(within(card).getByRole('button', { name: 'No preference' }));
-    n += 1;
-  }
-  return within(card).getByTestId('fox-quiz-result');
-};
+const PHOTO = 'https://x.supabase.co/storage/v1/object/public/menu/1729-iced-matcha-latte.jpg';
+const withPhoto = (n, url = PHOTO) => ({ ...by(n), image_url: url });
+const BROKEN = new Set();
+class FakeImage {
+  set src(v) { this._src = v; setTimeout(() => (BROKEN.has(v) ? this.onerror?.() : this.onload?.()), 0); }
+  get src() { return this._src; }
+}
+
+/** A one-drink menu: the quiz has nothing to ask and shows the match at once. */
+const renderMatch = (item) => render(
+  <section className="fox-help" tabIndex={-1} data-testid="panel"><QuizPane menu={[item]} hours={[]} overrides={[]} /></section>,
+);
+const launcher = () => screen.queryByRole('button', { name: 'Get my drink personality' });
+const settle = () => act(() => new Promise((r) => setTimeout(r, 5)));
 
 beforeEach(() => {
   localStorage.clear();
   sessionStorage.clear();
   localStorage.setItem('tb-fox-met', '1');
   track.mockClear();
+  storyBlob.mockClear();
+  storyBlob.mockImplementation(async () => new Blob(['png'], { type: 'image/png' }));
+  BROKEN.clear();
+  vi.stubGlobal('Image', FakeImage);
   window.requestAnimationFrame = (cb) => setTimeout(cb, 0);
 });
 afterEach(() => {
@@ -201,71 +207,145 @@ afterEach(() => {
   delete navigator.share;
 });
 
-describe('Get my drink personality', () => {
-  it('appears on a quiz result only — not on the questions, nor in Surprise me', async () => {
-    const card = await openGame('Pick my drink');
-    expect(within(card).queryByRole('button', { name: 'Get my drink personality' })).toBeNull();
-    fireEvent.click(within(card).getByRole('button', { name: 'No preference' }));
-    expect(within(card).queryByRole('button', { name: 'Get my drink personality' })).toBeNull();
-    const result = skipToResult(card);
-    // right after "Your match"
-    const btn = within(result).getByRole('button', { name: 'Get my drink personality' });
-    expect(result.querySelector('.fox-match').compareDocumentPosition(btn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    cleanup();
-    const again = await openGame('Surprise me');
-    expect(within(again).queryByRole('button', { name: 'Get my drink personality' })).toBeNull();
+describe('Get my drink personality: only for a drink with a real photo', () => {
+  it('knows which drinks have one', () => {
+    expect(hasPersonaPhoto(by('Cold Brew'))).toBe(false); // the seed menu has no photos
+    expect(hasPersonaPhoto({ ...by('Cold Brew'), image_url: '  ' })).toBe(false);
+    expect(hasPersonaPhoto(withPhoto('Cold Brew'))).toBe(true);
   });
 
-  it('opens the card over the fox’s panel: the match’s persona, its real drink, no price; Esc closes it', async () => {
-    const card = await openGame('Pick my drink');
-    const result = skipToResult(card);
-    const drink = result.querySelector('.fox-match .fox-drink__name').textContent;
-    const launch = within(result).getByRole('button', { name: 'Get my drink personality' });
-    fireEvent.click(launch);
+  it('no photo: no button, and the quiz result is exactly as before', async () => {
+    renderMatch(by('Cold Brew'));
+    await settle();
+    const result = screen.getByTestId('fox-quiz-result');
+    expect(launcher()).toBeNull();
+    expect(result.querySelector('.persona-launch')).toBeNull();
+    expect(within(result).getByRole('link', { name: /^Order Cold Brew/ })).toBeTruthy();
+    // and through the whole fox card with today's (photo-less) menu
+    cleanup();
+    render(<MemoryRouter><FoxGuide /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: /ask the fox/i }));
+    const card = screen.getByRole('dialog', { name: /Ask the fox/ });
+    fireEvent.click(await within(card).findByRole('button', { name: 'Pick my drink' }));
+    while (within(card).queryByTestId('fox-quiz')) fireEvent.click(within(card).getByRole('button', { name: 'No preference' }));
+    await settle();
+    expect(within(card).getByTestId('fox-quiz-result')).toBeTruthy();
+    expect(within(card).queryByRole('button', { name: 'Get my drink personality' })).toBeNull();
+  });
 
-    const dialog = await screen.findByRole('dialog', { name: /^You’re an? / });
-    const persona = personaFor({ answers: { temp: ANY, base: ANY, caffeine: ANY, flavour: ANY, milk: ANY }, item: by(drink) });
+  it('a photo that fails to preload never gives a button', async () => {
+    BROKEN.add(PHOTO);
+    renderMatch(withPhoto('Iced Matcha Latte'));
+    expect(launcher()).toBeNull(); // not while it's still loading either
+    await settle();
+    expect(launcher()).toBeNull();
+  });
+
+  it('the photo loads: the button appears after "Your match", and the card shows that real photo, never the drawn cup', async () => {
+    renderMatch(withPhoto('Iced Matcha Latte'));
+    expect(launcher()).toBeNull();
+    const btn = await screen.findByRole('button', { name: 'Get my drink personality' });
+    const result = screen.getByTestId('fox-quiz-result');
+    expect(result.querySelector('.fox-match').compareDocumentPosition(btn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(btn);
+
+    const dialog = await screen.findByRole('dialog', { name: 'You’re a Matcha Mischief-Maker' });
+    const persona = personaFor({ answers: {}, item: by('Iced Matcha Latte') });
+    expect(screen.getByTestId('panel').contains(dialog)).toBe(true); // a portal into the panel
     expect(dialog.getAttribute('aria-modal')).toBe('true');
-    expect(card.contains(dialog)).toBe(true); // a portal into the panel: taps on it are "inside"
     expect(document.activeElement).toBe(dialog);
-    expect(within(dialog).getByRole('heading', { level: 3 }).textContent).toBe(persona.title);
-    expect(dialog.querySelector('.persona-card__drink').textContent).toBe(drink);
+    const photo = within(dialog).getByRole('img', { name: 'Iced Matcha Latte' });
+    expect(photo.getAttribute('src')).toBe(PHOTO);
+    expect(dialog.querySelector('.fox-pour__cup, .fox-photo__art')).toBeNull();
+    expect(dialog.querySelector('.persona-card__drink').textContent).toBe('Iced Matcha Latte');
     expect(dialog.textContent).not.toMatch(/\$\d/);
     expect(dialog.textContent).toContain('@troublebrewingcoffee');
     expect(dialog.textContent).toContain('troublebrewingcoffeehouse.com');
     expect(dialog.textContent).toContain('Share to your Story and tag @troublebrewingcoffee');
     expect(within(dialog).getByRole('img', { name: 'Trouble Brewing' })).toBeTruthy();
     persona.traits.forEach((t) => expect(within(dialog).getByText(t)).toBeTruthy());
-    expect(track).toHaveBeenCalledWith('persona_view', { persona: persona.id });
+    expect(track).toHaveBeenCalledWith('persona_view', { persona: 'matcha' });
+    await waitFor(() => expect(storyBlob).toHaveBeenCalledTimes(1));
+    expect(Object.keys(storyBlob.mock.calls[0][0]).sort()).toEqual(['item', 'persona']);
+    expect(storyBlob.mock.calls[0][0].item.image_url).toBe(PHOTO);
 
-    // Tab stays inside the dialog
+    // Tab stays inside; Esc closes only this card and focus returns to the button
     const close = within(dialog).getByRole('button', { name: 'Close drink personality' });
     const back = within(dialog).getByRole('button', { name: 'Back to my match' });
     back.focus();
     fireEvent.keyDown(back, { key: 'Tab' });
     expect(document.activeElement).toBe(close);
-
-    // Esc closes the personality card only; focus goes back to the button
     fireEvent.keyDown(dialog, { key: 'Escape' });
-    expect(screen.queryByRole('dialog', { name: /^You’re/ })).toBeNull();
-    expect(screen.getByRole('dialog', { name: /Ask the fox/ })).toBeTruthy();
-    await waitFor(() => expect(document.activeElement).toBe(within(card).getByRole('button', { name: 'Get my drink personality' })));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(launcher()));
   });
 
-  it('shares with navigator.share when it can share files', async () => {
+  it('if the card’s photo fails after all, the card closes and the button goes away', async () => {
+    renderMatch(withPhoto('Iced Matcha Latte'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Get my drink personality' }));
+    const dialog = await screen.findByRole('dialog', { name: /^You’re/ });
+    fireEvent.error(within(dialog).getByRole('img', { name: 'Iced Matcha Latte' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(launcher()).toBeNull();
+    expect(screen.getByTestId('fox-quiz-result')).toBeTruthy();
+  });
+
+  it('says the card is getting ready on the button itself until the PNG exists', async () => {
+    let finish;
+    storyBlob.mockImplementation(() => new Promise((r) => { finish = r; }));
+    renderMatch(withPhoto('Iced Matcha Latte'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Get my drink personality' }));
+    const dialog = await screen.findByRole('dialog', { name: /^You’re/ });
+    const waiting = within(dialog).getByRole('button', { name: 'Getting your card ready…' });
+    expect(waiting.disabled).toBe(true);
+    expect(dialog.querySelector('.persona-actions').getAttribute('aria-busy')).toBe('true');
+    await act(async () => { finish(new Blob(['png'], { type: 'image/png' })); });
+    expect(within(dialog).getByRole('button', { name: 'Download image' }).disabled).toBe(false);
+  });
+
+  it('only if every way to the photo fails: a friendly "try again", Copy link — and the retry can succeed', async () => {
+    storyBlob.mockImplementationOnce(async () => { throw Object.assign(new Error('no drawable photo'), { name: 'NoPhotoError' }); });
+    navigator.canShare = vi.fn(() => true);
+    navigator.share = vi.fn(async () => {});
+    renderMatch(withPhoto('Iced Matcha Latte'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Get my drink personality' }));
+    const dialog = await screen.findByRole('dialog', { name: /^You’re/ });
+    const oops = await within(dialog).findByRole('alert');
+    expect(oops.textContent).toMatch(/Couldn’t grab the photo/);
+    expect(within(dialog).queryByRole('button', { name: /Share image/ })).toBeNull();
+    expect(within(dialog).queryByRole('button', { name: /Download image/ })).toBeNull();
+    expect(within(dialog).getByRole('button', { name: 'Copy link' })).toBeTruthy();
+    // the card itself still shows the real photo, never a cup
+    expect(within(dialog).getByRole('img', { name: 'Iced Matcha Latte' }).getAttribute('src')).toBe(PHOTO);
+    expect(dialog.querySelector('.fox-pour__cup')).toBeNull();
+    // Try again: the second attempt works, and sharing is back
+    await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: 'Try again' })); });
+    expect(storyBlob).toHaveBeenCalledTimes(2);
+    expect(await within(dialog).findByRole('button', { name: 'Share image' })).toBeTruthy();
+    expect(within(dialog).queryByRole('alert')).toBeNull();
+  });
+
+  it('shares the generated PNG with navigator.share when it can share files', async () => {
+    const made = new Blob([new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3])], { type: 'image/png' });
+    storyBlob.mockImplementation(async () => made);
     const share = vi.fn(async () => {});
     navigator.canShare = vi.fn(() => true);
     navigator.share = share;
-    const card = await openGame('Pick my drink');
-    fireEvent.click(within(skipToResult(card)).getByRole('button', { name: 'Get my drink personality' }));
+    renderMatch(withPhoto('Iced Matcha Latte'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Get my drink personality' }));
     const dialog = await screen.findByRole('dialog', { name: /^You’re/ });
     const btn = await within(dialog).findByRole('button', { name: 'Share image' });
     await waitFor(() => expect(btn.disabled).toBe(false));
     await act(async () => { fireEvent.click(btn); });
     expect(share).toHaveBeenCalledTimes(1);
-    expect(share.mock.calls[0][0].files[0].type).toBe('image/png');
+    // the real PNG the generator made, as an image/png File
+    const [file] = share.mock.calls[0][0].files;
+    expect(file).toBeInstanceOf(File);
+    expect(file.type).toBe('image/png');
+    expect(file.name).toBe('trouble-brewing-matcha.png');
+    expect(file.size).toBe(made.size);
+    expect(storyBlob.mock.calls[0][0].item.image_url).toBe(PHOTO);
     expect(track).toHaveBeenCalledWith('persona_share', { method: 'share' });
-    // the download stays on offer too
     expect(within(dialog).getByRole('button', { name: 'Download image' })).toBeTruthy();
   });
 
@@ -275,8 +355,8 @@ describe('Get my drink personality', () => {
     const clicked = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     const writeText = vi.fn(async () => {});
     vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
-    const card = await openGame('Pick my drink');
-    fireEvent.click(within(skipToResult(card)).getByRole('button', { name: 'Get my drink personality' }));
+    renderMatch(withPhoto('Iced Matcha Latte'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Get my drink personality' }));
     const dialog = await screen.findByRole('dialog', { name: /^You’re/ });
     expect(within(dialog).queryByRole('button', { name: 'Share image' })).toBeNull();
     const btn = within(dialog).getByRole('button', { name: /Download image|Getting your image ready/ });
@@ -284,7 +364,6 @@ describe('Get my drink personality', () => {
     fireEvent.click(btn);
     expect(clicked).toHaveBeenCalledTimes(1);
     expect(track).toHaveBeenCalledWith('persona_download');
-
     await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: 'Copy link' })); });
     expect(writeText).toHaveBeenCalledWith(PERSONA_LINK);
     expect(track).toHaveBeenCalledWith('persona_share', { method: 'copy_link' });

@@ -1,7 +1,7 @@
 import { asset } from './config.js';
 import { FOX_H, FOX_PATH, FOX_W } from './foxArt.js';
-import { isCutout, productImageSources } from './productImage.js';
-import { SHOP_HANDLE, SHOP_SITE } from './drinkPersona.js';
+import { isCutout } from './productImage.js';
+import { SHOP_HANDLE, SHOP_SITE, personaPhoto } from './drinkPersona.js';
 
 /* The drink-personality card as an Instagram Story: a 1080 x 1920 PNG drawn
    client-side on a canvas.
@@ -15,12 +15,11 @@ import { SHOP_HANDLE, SHOP_SITE } from './drinkPersona.js';
    between SAFE_TOP and SAFE_BOTTOM; only paper, gilt and flourishes live
    outside it.
 
-   The drink: its real photo (image_url, then the drop-in file — the same
-   order as DrinkPhoto), loaded crossOrigin="anonymous" so the Supabase
-   upload can be drawn without tainting the canvas. If a photo fails, or
-   would taint the canvas anyway, the drink's illustrated cup (the same
-   SVG the card shows, passed in as markup) is drawn instead. Fonts are
-   waited for before any text is drawn. */
+   The drink: ONLY its real photo (the menu item's image_url), loaded
+   crossOrigin="anonymous" so the Supabase upload can be drawn without
+   tainting the canvas. There is no stand-in: if the photo fails, or would
+   taint the canvas, renderStory rejects (NoPhotoError) and the card offers
+   no image to share. Fonts are waited for before any text is drawn. */
 
 export const STORY_W = 1080;
 export const STORY_H = 1920;
@@ -338,8 +337,8 @@ function flourish(ctx, cx, y, w, color) {
 }
 
 /* The drink's gilt frame: a bevelled gold moulding, a lit cream mat, and the
-   picture — a photo fills the opening (cover), a cutout or the drawn cup
-   stands whole on the mat (contain). */
+   photo — an ordinary photo fills the opening (cover), a cutout stands
+   whole on the mat (contain). */
 function drawDrinkFrame(ctx, f, art) {
   const g = Math.round(f.w * 0.06); // moulding width
   ctx.save();
@@ -372,23 +371,21 @@ function drawDrinkFrame(ctx, f, art) {
   mat.addColorStop(0, '#fffdf7'); mat.addColorStop(0.6, '#f7efdc'); mat.addColorStop(1, '#e8d9b8');
   ctx.fillStyle = mat;
   ctx.fillRect(o.x, o.y, o.w, o.h);
-  if (art?.img) {
-    const iw = art.img.naturalWidth || art.img.width || 1;
-    const ih = art.img.naturalHeight || art.img.height || 1;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(o.x, o.y, o.w, o.h); ctx.clip();
-    if (art.kind === 'photo') {
-      const s = Math.max(o.w / iw, o.h / ih);
-      ctx.drawImage(art.img, o.x + (o.w - iw * s) / 2, o.y + (o.h - ih * s) / 2, iw * s, ih * s);
-    } else {
-      const pad = art.kind === 'drawn' ? 0.06 : 0.09;
-      const bw = o.w * (1 - 2 * pad); const bh = o.h * (1 - 2 * pad);
-      const s = Math.min(bw / iw, bh / ih);
-      if (art.kind === 'cutout') { ctx.shadowColor = 'rgba(58, 40, 14, 0.28)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 10; }
-      ctx.drawImage(art.img, o.x + (o.w - iw * s) / 2, o.y + (o.h - ih * s) / 2 + (art.kind === 'drawn' ? o.h * 0.02 : 0), iw * s, ih * s);
-    }
-    ctx.restore();
+  // the photo: an ordinary one fills the opening, a cutout stands whole on the mat
+  const iw = art.img.naturalWidth || art.img.width || 1;
+  const ih = art.img.naturalHeight || art.img.height || 1;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(o.x, o.y, o.w, o.h); ctx.clip();
+  if (art.kind === 'cutout') {
+    const pad = 0.09;
+    const s = Math.min((o.w * (1 - 2 * pad)) / iw, (o.h * (1 - 2 * pad)) / ih);
+    ctx.shadowColor = 'rgba(58, 40, 14, 0.28)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 10;
+    ctx.drawImage(art.img, o.x + (o.w - iw * s) / 2, o.y + (o.h - ih * s) / 2, iw * s, ih * s);
+  } else {
+    const s = Math.max(o.w / iw, o.h / ih);
+    ctx.drawImage(art.img, o.x + (o.w - iw * s) / 2, o.y + (o.h - ih * s) / 2, iw * s, ih * s);
   }
+  ctx.restore();
   // inner shadow under the moulding and a soft sheen across the glass
   ctx.save();
   ctx.strokeStyle = 'rgba(60, 44, 16, 0.35)'; ctx.lineWidth = 6;
@@ -467,26 +464,93 @@ export function isReadable(img, make) {
   }
 }
 
-export const svgDataUrl = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+/** Thrown when the drink has no photo that can be drawn on the canvas. */
+export class NoPhotoError extends Error {
+  constructor(message = 'no drawable photo') { super(message); this.name = 'NoPhotoError'; }
+}
+
+/** A network-level failure (worth one more try), as opposed to a 404. */
+const isNetworkError = (e) => e?.name === 'TypeError' || e?.name === 'NetworkError' || e?.name === 'AbortError' || e?.network === true;
+
+/** Add a cache-busting parameter, so a copy cached without CORS isn't reused. */
+export function cacheBust(src, stamp = Date.now()) {
+  const [path, hash = ''] = String(src).split('#');
+  return `${path}${path.includes('?') ? '&' : '?'}tbstory=${stamp}${hash ? `#${hash}` : ''}`;
+}
+
+async function tryTwice(fn) {
+  try { return await fn(); } catch (e) {
+    if (!isNetworkError(e)) throw e;
+    return fn(); // one retry on a network error
+  }
+}
+
+/* The default ways in. (a) fetch the bytes with CORS, bypassing the HTTP
+   cache (an earlier <img> without crossOrigin can't poison it), and decode
+   the Blob ourselves; (b) an Image with crossOrigin="anonymous" on a
+   cache-busted URL. */
+const browserDeps = () => ({
+  fetch: typeof fetch === 'function' ? (...a) => fetch(...a) : null,
+  bitmap: typeof createImageBitmap === 'function' ? (b) => createImageBitmap(b) : null,
+  load: loadImage,
+  objectUrl: (b) => URL.createObjectURL(b),
+  revoke: (u) => URL.revokeObjectURL(u),
+});
 
 /**
- * The drink's picture for the story: its photo when one loads and can be
- * drawn untainted, else its illustrated cup (from `cupSvg` markup).
- * Returns { img, kind: 'photo' | 'cutout' | 'drawn', src } or null.
+ * Load the drink's photo so it can be drawn on a canvas and exported.
+ *   (a) fetch(src, { mode: 'cors', cache: 'no-store' }) → Blob →
+ *       createImageBitmap (or an object-URL Image), retried once on a
+ *       network error;
+ *   (b) failing that, new Image() with crossOrigin="anonymous" and a
+ *       cache-busting query, retried once.
+ * Each result is checked with a pixel read (no taint). Resolves to
+ * { img, via: 'fetch' | 'image', cleanup } or null.
  */
-export async function loadDrinkArt(item, { cupSvg = '', load = loadImage, make = defaultCanvas } = {}) {
-  for (const src of productImageSources(item)) {
+export async function loadPhoto(src, deps = {}) {
+  const d = { ...browserDeps(), ...deps };
+  const make = d.make || defaultCanvas;
+  if (d.fetch) {
     try {
-      const img = await load(src);
-      if (isReadable(img, make)) return { img, kind: isCutout(src) ? 'cutout' : 'photo', src };
-    } catch { /* next source, then the drawn cup */ }
+      const got = await tryTwice(async () => {
+        const res = await d.fetch(src, { mode: 'cors', cache: 'no-store', credentials: 'omit' });
+        if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });
+        const blob = await res.blob();
+        if (!blob || !blob.size) throw new Error('empty image');
+        if (d.bitmap) {
+          try { return { img: await d.bitmap(blob), cleanup: (x) => x.img.close?.() }; } catch { /* decode it as an <img> instead */ }
+        }
+        const url = d.objectUrl(blob);
+        try {
+          return { img: await d.load(url), cleanup: () => d.revoke(url) };
+        } catch (e) { d.revoke(url); throw e; }
+      });
+      if (isReadable(got.img, make)) return { img: got.img, via: 'fetch', cleanup: () => got.cleanup?.(got) };
+      got.cleanup?.(got);
+    } catch { /* (b) next */ }
   }
-  if (cupSvg) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      return { img: await load(svgDataUrl(cupSvg)), kind: 'drawn', src: 'cup' };
-    } catch { /* nothing to draw: the empty mat */ }
+      const img = await d.load(cacheBust(src, `${Date.now()}${attempt}`));
+      if (isReadable(img, make)) return { img, via: 'image', cleanup: () => {} };
+      return null; // it loaded but would taint the canvas: retrying won't change that
+    } catch { /* one more go */ }
   }
   return null;
+}
+
+/**
+ * The drink's real photo for the story (its image_url), or null if there is
+ * none or every way of loading it failed. A cutout (transparent background,
+ * "cutout" in the file name — isCutout) is staged whole on the frame's mat;
+ * any other photo fills the frame.
+ * Returns { img, kind: 'photo' | 'cutout', src, via, cleanup } or null.
+ */
+export async function loadDrinkArt(item, deps = {}) {
+  const src = personaPhoto(item);
+  if (!src) return null;
+  const got = await loadPhoto(src, deps);
+  return got ? { ...got, kind: isCutout(src) ? 'cutout' : 'photo', src } : null;
 }
 
 function defaultCanvas(w, h) {
@@ -501,21 +565,23 @@ function defaultCanvas(w, h) {
  * Draw the story. Options:
  *   persona  personaFor() result (name, article, line, traits, theme, drink)
  *   item     the matched menu row (for its photo)
- *   cupSvg   the drink's illustrated cup as SVG markup (the fallback)
  *   make     (w, h) => canvas   — injectable for tests
  *   load     (src) => Promise<img> — injectable for tests
- * Resolves to { canvas, layout, art }.
+ *   fetch, bitmap, objectUrl, revoke — the photo loader's ways in (loadPhoto)
+ * Resolves to { canvas, layout, art }; rejects with NoPhotoError when the
+ * drink's photo can't be drawn (there is never a stand-in picture).
  */
-export async function renderStory({ persona, item, cupSvg = '', make = defaultCanvas, load = loadImage, fonts = ensureFonts } = {}) {
+export async function renderStory({ persona, item, make = defaultCanvas, load = loadImage, fonts = ensureFonts, ...deps } = {}) {
   const theme = persona.theme;
   const canvas = make(STORY_W, STORY_H);
   const ctx = canvas.getContext('2d');
   const [art, wordmark, foxImg] = await Promise.all([
-    loadDrinkArt(item, { cupSvg, load, make }),
+    loadDrinkArt(item, { ...deps, load, make }),
     load(asset('images/brand/logo-primary.png')).catch(() => null),
     typeof Path2D === 'function' ? null : load(asset('images/brand/fox-sipping.png')).catch(() => null),
     fonts(),
   ]);
+  if (!art) throw new NoPhotoError();
   const measure = (text, font) => { ctx.font = font; return ctx.measureText(text).width; };
   const L = layoutStory(persona, measure);
 
@@ -556,6 +622,7 @@ export async function renderStory({ persona, item, cupSvg = '', make = defaultCa
 
   // the drink, framed, with the fox up on top raising his cup
   drawDrinkFrame(ctx, L.frame, art);
+  releaseArt(art); // drawn: the bitmap / object URL can go
   drawFox(ctx, L.fox, theme.dark ? '#f7f1e4' : '#2c2722', foxImg);
 
   // "Your match", the drink, the traits
@@ -610,6 +677,10 @@ export async function renderStory({ persona, item, cupSvg = '', make = defaultCa
   flourish(ctx, STORY_W / 2, 1764, 200, rgba(theme.accent, 0.55));
 
   return { canvas, layout: L, art };
+}
+
+function releaseArt(art) {
+  try { art?.cleanup?.(); } catch { /* fine */ }
 }
 
 /** The story as a PNG Blob. */
