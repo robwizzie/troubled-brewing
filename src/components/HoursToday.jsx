@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getHours, getHoursOverrides, getGoogleProfile } from '../lib/dataService.js';
-import { computeStatus, dayName, shopNow, googleWeekly } from '../lib/hours.js';
+import { computeStatus, dayName, shopNow, googleWeekly, statusParts } from '../lib/hours.js';
 
 /* Today's open/closed status pill, plus an optional full weekly table.
    Source of truth for hours: the shop's GOOGLE BUSINESS PROFILE once its
@@ -57,11 +57,12 @@ export default function HoursToday({ showWeek = false, variant }) {
     );
   }
 
+  const parts = statusParts(status);
   return (
     <div>
       <div className="hours-today">
         <span className={`hours-today__dot ${status.open ? 'is-open' : 'is-closed'}`} aria-hidden="true" />
-        <span><strong>{status.open ? 'Open now' : 'Closed'}</strong> · {status.label}</span>
+        <span><strong>{parts.head}</strong>{parts.detail && <> · {parts.detail}</>}</span>
       </div>
 
       {status.override && status.overrideLabel && (

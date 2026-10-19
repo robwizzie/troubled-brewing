@@ -76,6 +76,7 @@ export default function App() {
         <Route path="/gallery-wall" element={<PublicShell><SitePage slug="gallery-wall" /></PublicShell>} />
         <Route path="/troublemakers" element={<PublicShell><SitePage slug="troublemakers" /></PublicShell>} />
         <Route path="/neighborhood" element={<PublicShell><SitePage slug="neighborhood" /></PublicShell>} />
+        <Route path="/gift-cards" element={<PublicShell><SitePage slug="gift-cards" /></PublicShell>} />
         <Route path="/privacy" element={<PublicShell><PrivacyPage /></PublicShell>} />
         <Route path="/accessibility" element={<PublicShell><AccessibilityPage /></PublicShell>} />
         <Route path="*" element={<PublicShell><NotFound /></PublicShell>} />
