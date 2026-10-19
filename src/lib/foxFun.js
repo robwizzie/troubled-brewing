@@ -212,10 +212,25 @@ const LATTE = '#c9a27a';
 const CORTADO = '#a8784f';
 const TEA_TONE = '#b4692a';
 
-/** How the pour should look: { vessel: 'mug'|'glass', fill, ice, frozen,
-    steam, heart }. Purely a drawing — it says nothing the classification
-    doesn't (hot → mug + steam; iced → ice; frozen → whipped top; a hot
-    milky espresso or tea latte gets a heart on top). */
+/* A few drinks pour in two tones: [name, the colour at the TOP of the glass]
+   (the fill above is the colour at the bottom) — a refresher runs pink to
+   orange, lemonade pale to sunny. */
+const TOPS = [
+  [/refresher/i, '#f29a5e'],
+  [/lemonade/i, '#f8e9a0'],
+];
+// a citrus wheel on the rim: only for drinks that really are citrus
+const CITRUS = [
+  [/lemonade|\blemon\b/i, 'lemon'],
+  [/refresher|orange/i, 'orange'],
+];
+
+/** How the pour should look: { vessel: 'mug'|'glass', fill, top, ice, frozen,
+    steam, heart, milk, crema, citrus }. Purely a drawing — it says nothing
+    the classification doesn't (hot → mug + steam; iced → ice; frozen →
+    whipped top; a hot milky espresso or tea latte gets a heart on top; a
+    cold drink with milk pours in layers — the drink over the milk; a black
+    hot coffee gets crema; lemonade and refreshers get a citrus wheel). */
 export function drinkLook(item) {
   const c = classifyDrink(item);
   const name = String(item?.name || '');
@@ -230,13 +245,20 @@ export function drinkLook(item) {
   }
   const hot = c.temp === 'hot';
   const latte = /\b(latte|cappuccino|flat white|cortado|au lait)\b/i.test(name) && !/chocolate|steamer/i.test(name);
+  const milk = c.milk === 'yes';
+  // an iced coffee with milk: the espresso cascading down into the milk
+  const cascade = !hot && milk && fill === LATTE ? '#8a5a3a' : null;
   return {
     vessel: hot ? 'mug' : 'glass',
     fill,
+    top: TOPS.find(([re]) => re.test(name))?.[1] || cascade,
     ice: c.temp === 'iced',
     frozen: c.temp === 'frozen',
     steam: hot,
-    heart: hot && c.milk === 'yes' && latte,
+    heart: hot && milk && latte,
+    milk,
+    crema: hot && !milk && c.base.includes('coffee'),
+    citrus: c.temp === 'hot' ? null : CITRUS.find(([re]) => re.test(name))?.[1] || null,
   };
 }
 
