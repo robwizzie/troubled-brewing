@@ -242,3 +242,92 @@
 @media (max-width: 600px) {
   .chalkmgr__pick .chalkmgr__btn, .chalkmgr__actions .chalkmgr__btn { flex: 1 1 100%; }
 }
+
+/* =============================================================================
+   Explicit publishing — the shared bottom action bar, screen headings, and the
+   "not live yet" vocabulary used on every editing screen.
+   ============================================================================= */
+.screenhead { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-5); }
+.screenhead h1 { margin: 0; }
+.screenhead__help { margin: var(--space-1) 0 0; color: var(--color-ink-soft); max-width: 62ch; line-height: 1.5; }
+.screenhead__actions { display: flex; gap: var(--space-2); align-items: center; }
+.panel-help { margin: calc(-1 * var(--space-2)) 0 var(--space-4); color: var(--color-ink-soft); font-size: var(--text-sm); }
+.panel-badge { vertical-align: middle; margin-left: var(--space-2); }
+.admin__panel h2 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
+
+.badge--remove { background: #f4d6cf; color: var(--color-error); }
+.badge--hidden { background: #e5e0d6; color: var(--color-ink-soft); }
+.admin-list__row.is-removed, .tb-outline__row.is-removed { opacity: 0.7; background: repeating-linear-gradient(135deg, transparent 0 9px, rgba(179,64,47,0.05) 9px 18px); }
+.admin-list__row.is-removed strong { text-decoration: line-through; }
+.drawer-hint { margin-top: var(--space-4); }
+
+/* room under the content so the sticky bar never covers the last field */
+.editscreen { padding-bottom: var(--space-4); }
+
+.actionbar {
+  position: sticky; bottom: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;
+  margin: var(--space-5) calc(-1 * var(--space-6)) calc(-1 * var(--space-6));
+  padding: var(--space-3) var(--space-6);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -6px 18px rgba(28, 24, 20, 0.08);
+}
+.actionbar.is-dirty { background: #fbf3df; border-top: 2px solid var(--color-brass); }
+.actionbar__status { margin: 0; display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); font-weight: 600; color: var(--color-ink-soft); }
+.actionbar.is-dirty .actionbar__status { color: #7a5214; }
+.actionbar__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-brass); box-shadow: 0 0 0 3px rgba(227, 181, 63, 0.3); flex-shrink: 0; }
+.actionbar__buttons { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.actionbar .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.actionbar__publish { min-width: 120px; }
+.actionbar__view { text-decoration: none; }
+
+/* toasts sit above the bar; errors can be dismissed */
+.toast { display: flex; align-items: flex-start; gap: var(--space-3); max-width: 440px; line-height: 1.45; }
+.toast__close { margin-left: auto; background: none; border: 0; color: inherit; opacity: 0.8; cursor: pointer; font-size: 0.9rem; padding: 0 2px; }
+.toast-wrap { bottom: calc(var(--space-5) + 64px); }
+
+/* admin home */
+.admin__panel--feature { border: 2px solid var(--color-brass); }
+.homelinks { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-2); }
+.homelinks a { display: grid; gap: 2px; padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-md); text-decoration: none; color: var(--color-ink); background: var(--color-bg); min-height: 44px; }
+.homelinks a:hover { border-color: var(--color-primary); }
+.homelinks span { font-size: var(--text-sm); color: var(--color-ink-soft); }
+.howto { margin: 0; padding-left: 1.2em; display: grid; gap: var(--space-2); }
+
+.admin__scrim { display: none; }
+
+@media (max-width: 820px) {
+  .actionbar { margin: var(--space-5) calc(-1 * var(--space-4)) calc(-1 * var(--space-4)); padding-left: var(--space-4); padding-right: var(--space-4); }
+  .admin__scrim { display: block; position: fixed; inset: 52px 0 0 0; background: rgba(28,24,20,0.4); z-index: 45; }
+  .admin__sidebar { width: min(300px, 86vw); }
+  .admin__navlink { padding: var(--space-3); }
+  .admin__topbar { padding: var(--space-2) var(--space-3); }
+  .admin__title { font-size: var(--text-sm); }
+}
+@media (max-width: 600px) {
+  .actionbar { gap: var(--space-2); }
+  .actionbar__status { width: 100%; }
+  .actionbar__buttons { width: 100%; }
+  .actionbar__buttons .btn { min-height: 44px; }
+  .actionbar__publish { flex: 1; }
+  .admin-list__row { flex-wrap: wrap; }
+  .admin-list__actions { width: 100%; justify-content: flex-start; }
+  .admin-list__actions .btn { min-height: 40px; }
+  .admin-hours input { width: 100%; font-size: 16px; }
+  .admin .field input, .admin .field textarea, .admin .field select { font-size: 16px; }
+  .admin-drawer__foot .btn { flex: 1; min-height: 44px; }
+  .picks-row { grid-template-columns: 1fr; }
+  .toast-wrap { bottom: calc(var(--space-4) + 120px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 600px) {
+  .admin__topbar { gap: var(--space-2); }
+  .admin__viewsite, .admin__topbar .btn { white-space: nowrap; }
+  .admin__title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  /* the topbar already links to the live site; keep the bar to one row of buttons */
+  .actionbar__view { display: none; }
+}
+/* modals can render outside .admin (the leave-page guard sits at the root) */
+.modal .btn--danger { background: var(--color-error); color: #fff; }
+.modal .btn--danger:hover { background: #97321f; color: #fff; }

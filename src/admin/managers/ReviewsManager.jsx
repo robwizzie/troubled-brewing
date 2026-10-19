@@ -7,6 +7,8 @@ import { createRecord, listAll } from '../lib/adminData.js';
 import { bump } from '../../lib/dataVersion.js';
 import ImageField from '../components/ImageField.jsx';
 import { useToast, Spinner, Hint, Empty } from '../components/ui.jsx';
+import { ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
+import { same } from '../lib/publishHelpers.js';
 
 /* Reviews control room.
 
@@ -21,8 +23,11 @@ import { useToast, Spinner, Hint, Empty } from '../components/ui.jsx';
 
    Choices are stored in the `review_settings` content block, keyed by
    author+text (reviewKey) rather than by position, so they stick even as
-   Google shuffles which five reviews it hands back each refresh. Saving a
-   content block goes live immediately — the panel says so out loud. */
+   Google shuffles which five reviews it hands back each refresh.
+
+   Explicit publishing: every choice here (stars, hide, feature, photo,
+   + Favorite) is staged locally; the screen's Publish writes the settings
+   block once and creates any new favourites. */
 
 const RATING_OPTIONS = [
   { value: 5, label: '5★ only — the perfect ones' },
@@ -45,10 +50,11 @@ export default function ReviewsManager({ embedded = false }) {
   const toast = useToast();
   const [reviews, setReviews] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [savedSettings, setSavedSettings] = useState(null);
   const [imported, setImported] = useState(() => new Set());
+  const [newFavorites, setNewFavorites] = useState([]); // staged testimonials
   const [filter, setFilter] = useState('all');
   const [openPhoto, setOpenPhoto] = useState(null); // reviewKey whose photo slot is open
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -67,30 +73,51 @@ export default function ReviewsManager({ embedded = false }) {
         })),
       );
       setSettings(s);
+      setSavedSettings(s);
       setImported(new Set((t || []).map((x) => reviewKey(x.author, x.quote))));
     });
     return () => { alive = false; };
   }, []);
 
-  /* One write per change. The whole block is upserted (it's a handful of
-     small maps), and the canvas is invalidated so any open preview re-renders
-     with the new selection straight away. */
-  async function persist(next) {
-    setSettings(next);
-    if (!isSupabaseConfigured) return;
-    setSaving(true);
-    try {
-      const { error } = await supabase
-        .from('content_blocks')
-        .upsert({ key: REVIEW_SETTINGS_KEY, data: next, status: 'published' }, { onConflict: 'key' });
-      if (error) throw error;
-      bump('content_blocks');
-    } catch (e) {
-      toast(e.message || 'Could not save', 'error');
-    } finally {
-      setSaving(false);
-    }
-  }
+  const settingsDirty = settings !== null && !same(settings, savedSettings);
+  const dirty = settingsDirty || newFavorites.length > 0;
+
+  usePublishUnit('reviews', {
+    dirty,
+    note: dirty ? 'Unsaved review changes — not on the site yet' : undefined,
+    async publish() {
+      if (!isSupabaseConfigured) return;
+      if (settingsDirty) {
+        const { error } = await supabase
+          .from('content_blocks')
+          .upsert({ key: REVIEW_SETTINGS_KEY, data: settings, status: 'published' }, { onConflict: 'key' });
+        if (error) throw error;
+        setSavedSettings(settings);
+        bump('content_blocks');
+      }
+      let remaining = [...newFavorites];
+      try {
+        for (const fav of newFavorites) {
+          await createRecord('testimonials', fav.row);
+          remaining = remaining.filter((f) => f.key !== fav.key);
+        }
+      } finally {
+        setNewFavorites(remaining);
+        if (remaining.length !== newFavorites.length) bump('testimonials');
+      }
+    },
+    discard() {
+      setSettings(savedSettings);
+      setImported((s) => {
+        const next = new Set(s);
+        newFavorites.forEach((f) => next.delete(f.key));
+        return next;
+      });
+      setNewFavorites([]);
+    },
+  });
+
+  const update = (next) => setSettings(next);
 
   const toggleMap = (map, key) => {
     const next = { ...settings, [map]: { ...settings[map] } };
@@ -99,22 +126,23 @@ export default function ReviewsManager({ embedded = false }) {
     return next;
   };
 
-  async function addToFavorites(r) {
-    try {
-      await createRecord('testimonials', {
-        author: r.author,
-        source: 'Google',
-        rating: Math.min(5, Math.round(r.rating || 5)),
-        quote: r.text,
-        image_url: settings.photos[r.key] || '',
-        featured: false,
-      });
-      setImported((s) => new Set(s).add(r.key));
-      bump('testimonials');
-      toast('Added to your hand-picked favorites');
-    } catch (e) {
-      toast(e.message || 'Could not add', 'error');
-    }
+  function addToFavorites(r) {
+    setNewFavorites((list) => [
+      ...list,
+      {
+        key: r.key,
+        row: {
+          author: r.author,
+          source: 'Google',
+          rating: Math.min(5, Math.round(r.rating || 5)),
+          quote: r.text,
+          image_url: settings.photos[r.key] || '',
+          featured: false,
+        },
+      },
+    ]);
+    setImported((s) => new Set(s).add(r.key));
+    toast('Added to your hand-picked quotes — press Publish to put it on the site');
   }
 
   const counts = useMemo(() => {
@@ -138,12 +166,10 @@ export default function ReviewsManager({ embedded = false }) {
   return (
     <div>
       {!embedded && (
-        <>
-          <h1>Reviews</h1>
-          <p className="admin__lead">
-            Every review Google has sent us, and exactly what each one does on your site.
-          </p>
-        </>
+        <ScreenHead
+          title="Reviews"
+          help="Choose which Google reviews appear on the homepage strip and the Reviews page, which lead, and add their photos."
+        />
       )}
 
       <section className="admin__panel">
@@ -156,7 +182,7 @@ export default function ReviewsManager({ embedded = false }) {
           <select
             id="rv-floor"
             value={settings.min_rating}
-            onChange={(e) => persist({ ...settings, min_rating: Number(e.target.value) })}
+            onChange={(e) => update({ ...settings, min_rating: Number(e.target.value) })}
           >
             {RATING_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
@@ -168,7 +194,7 @@ export default function ReviewsManager({ embedded = false }) {
             daily refresh — see <Link to="/admin/google">Google Profile</Link>.
           </p>
         )}
-        <p className="field__hint">{saving ? 'Saving…' : 'Changes here go live right away.'}</p>
+        <p className="field__hint">Nothing here changes the site until you press <strong>Publish</strong>.</p>
       </section>
 
       <section className="admin__panel">
@@ -225,7 +251,7 @@ export default function ReviewsManager({ embedded = false }) {
                       <button
                         type="button"
                         className="btn btn--ghost btn--sm"
-                        onClick={() => persist(toggleMap('hidden', r.key))}
+                        onClick={() => update(toggleMap('hidden', r.key))}
                         disabled={belowFloor}
                         title={belowFloor ? 'Already below your star minimum' : undefined}
                       >
@@ -234,7 +260,7 @@ export default function ReviewsManager({ embedded = false }) {
                       <button
                         type="button"
                         className={`btn btn--sm ${pinned ? 'btn--accent' : 'btn--ghost'}`}
-                        onClick={() => persist(toggleMap('pinned', r.key))}
+                        onClick={() => update(toggleMap('pinned', r.key))}
                       >
                         {pinned ? '★ Featured' : '☆ Feature'}
                       </button>
@@ -264,7 +290,7 @@ export default function ReviewsManager({ embedded = false }) {
                             const next = { ...settings, photos: { ...settings.photos } };
                             if (url) next.photos[r.key] = url;
                             else delete next.photos[r.key];
-                            persist(next);
+                            update(next);
                           }}
                         />
                         <p className="field__hint">

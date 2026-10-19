@@ -1,34 +1,49 @@
 import { Link } from 'react-router-dom';
+import { ScreenHead } from './lib/publishing.jsx';
 
-/* Settings landing — the editor's ⚙ target. Points back at the editor for
-   anything page-shaped; the sidebar covers the rest. */
+/* Admin home — where "☰ Admin menu" in the editor lands. */
+const LINKS = [
+  ['/admin/chalkboard', '📷 Today’s chalkboard', 'Snap the real specials board and put it on the homepage.'],
+  ['/admin/hours', '🕘 Hours & holidays', 'Opening hours and one-off closures.'],
+  ['/admin/quick-blocks', '📣 Banner, links & featured drink', 'The message bar on every page, social links, the featured drink.'],
+  ['/admin/inbox', '✉️ Inbox', 'Contact and catering messages from the site.'],
+  ['/admin/menu', 'Menu', 'Descriptions, photos and dietary tags (prices come from SpotOn).'],
+  ['/admin/reviews', 'Google reviews', 'Which reviews show, which lead, and their photos.'],
+  ['/admin/help', 'Help', 'Plain-English how-tos.'],
+];
+
 export default function SettingsHome() {
   return (
     <div>
-      <h1>Settings</h1>
-      <p className="admin__lead">
-        Everything about how your <em>site looks</em> is edited right on the page — words, photos,
-        sections, the homepage look. This area is for the behind-the-scenes stuff.
-      </p>
+      <ScreenHead
+        title="Admin"
+        help="Pick what you want to change. Nothing you do here goes on the site until you press Publish."
+      />
 
-      <section className="admin__panel">
-        <h2>Want to change the site?</h2>
-        <p>Open the editor, click the thing you want to change, and type. It's that direct.</p>
-        <Link className="btn btn--primary" to="/admin/editor">✏️ Edit your site</Link>
+      <section className="admin__panel admin__panel--feature">
+        <h2>Change words or photos on a page</h2>
+        <p>Open the editor, tap the part of the page you want to change, and type. Press <strong>Publish</strong> when it looks right.</p>
+        <Link className="btn btn--primary" to="/admin/editor">✏️ Edit your pages</Link>
       </section>
 
       <section className="admin__panel">
-        <h2>What lives here</h2>
-        <ul className="kv">
-          <li><Link to="/admin/chalkboard">Today’s chalkboard</Link> <span>snap the real specials board and put it on the homepage</span></li>
-          <li><Link to="/admin/hours">Hours</Link> <span>weekly grid + holiday closures</span></li>
-          <li><Link to="/admin/quick-blocks">Quick Blocks</Link> <span>announcement banner, social links, featured drink</span></li>
-          <li><Link to="/admin/google">Google Profile</Link> <span>live rating + reviews connection</span></li>
-          <li><Link to="/admin/reviews">Reviews</Link> <span>choose which Google reviews show, feature the best, add their photos</span></li>
-          <li><Link to="/admin/inbox">Inbox</Link> <span>contact + catering messages</span></li>
-          <li><Link to="/admin/media">Media Library</Link> <span>every photo you've uploaded</span></li>
-          <li><Link to="/admin/help">Help Center</Link> <span>plain-English how-tos</span></li>
+        <h2>Everything else</h2>
+        <ul className="homelinks">
+          {LINKS.map(([to, label, desc]) => (
+            <li key={to}>
+              <Link to={to}><strong>{label}</strong><span>{desc}</span></Link>
+            </li>
+          ))}
         </ul>
+      </section>
+
+      <section className="admin__panel">
+        <h2>How publishing works</h2>
+        <ol className="howto">
+          <li>Make your changes — they show straight away on your screen only.</li>
+          <li>The bar at the bottom says <strong>Unsaved changes</strong> while anything is waiting.</li>
+          <li>Press <strong>Publish</strong> to put it on the live site, or <strong>Discard</strong> to throw it away.</li>
+        </ol>
       </section>
     </div>
   );

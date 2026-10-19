@@ -119,6 +119,12 @@ export async function publishRecord(table, id, { idCol = 'id' } = {}) {
   return data;
 }
 
+/** Throw away a record's pending server-side draft (never touches live columns). */
+export async function clearDraft(table, id, { idCol = 'id' } = {}) {
+  const { error } = await supabase.from(table).update({ draft_data: null }).eq(idCol, id);
+  if (error) throw error;
+}
+
 export async function setStatus(table, id, status, { idCol = 'id' } = {}) {
   const { data, error } = await supabase.from(table).update({ status }).eq(idCol, id).select().maybeSingle();
   if (error) throw error;
@@ -148,11 +154,10 @@ export async function reorder(table, orderedIds, { idCol = 'id' } = {}) {
    column-based collection tables above. See docs/CMS.md.
    --------------------------------------------------------------------------- */
 
-/** Autosave variant: stage `data` as a draft WITHOUT snapshotting a revision.
-    The on-page editor calls this on a keystroke debounce; snapshotting here
-    would flood `revisions` (four round-trips per save) and the retention cap
-    would erase the owner's real restore history within one session. Callers
-    snapshot once per editing session instead — see snapshotRecord(). */
+/** Stage `data` as a PRIVATE draft (draft_data — the public site never reads
+    it) without snapshotting a revision. The on-page editor's Preview button
+    calls this so ?preview=1 can show unpublished text/photo edits; Publish is
+    what snapshots and writes the live columns. */
 export async function saveDataDraftQuiet(table, id, dataObj) {
   const { data, error } = await supabase.from(table).update({ draft_data: dataObj }).eq('id', id).select().maybeSingle();
   if (error) throw error;

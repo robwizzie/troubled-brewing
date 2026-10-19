@@ -2,9 +2,9 @@ import FieldRenderer from './FieldRenderer.jsx';
 import RevisionHistory from './RevisionHistory.jsx';
 
 /* The schema-driven body of a collection item editor — just fields + history,
-   no chrome — so CollectionManager can render it in its fullscreen drawer AND
-   the on-page editor can render it inline in the docked panel. */
-export default function ItemEditorForm({ fields, form, errors = {}, onField, table, labelKey, recordId, onRestored }) {
+   no chrome — so CollectionManager can render it in its drawer AND the
+   on-page editor can render it inline in the docked panel. */
+export default function ItemEditorForm({ fields, form, errors = {}, onField, table, labelKey, recordId, onLoadVersion }) {
   return (
     <>
       {fields.map((f) => (
@@ -19,8 +19,8 @@ export default function ItemEditorForm({ fields, form, errors = {}, onField, tab
       ))}
       {recordId && (
         <details className="admin-history">
-          <summary>History & restore</summary>
-          <RevisionHistory table={table} recordId={recordId} labelKey={labelKey} onRestored={onRestored} />
+          <summary>Earlier versions</summary>
+          <RevisionHistory table={table} recordId={recordId} labelKey={labelKey} onLoad={onLoadVersion} />
         </details>
       )}
     </>

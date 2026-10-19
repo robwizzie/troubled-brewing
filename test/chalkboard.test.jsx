@@ -189,10 +189,12 @@ describe("admin: Today's chalkboard", () => {
     expect(await screen.findByText(/showing on the homepage/i)).toBeTruthy();
   });
 
-  it('"Remove" goes back to the drawn board (enabled false, photo kept)', async () => {
+  it('"Take it down" goes back to the drawn board on Publish (enabled false, photo kept)', async () => {
     stored = { enabled: true, url: PHOTO, path: 'chalkboard/today.webp', caption: 'Hi', updated_at: iso(), max_age_days: 3 };
     renderAdmin();
     fireEvent.click(await screen.findByRole('button', { name: /go back to the drawn board/i }));
+    expect(upsert).not.toHaveBeenCalled(); // staged, not live
+    fireEvent.click(screen.getByRole('button', { name: /^publish$/i }));
     await waitFor(() => expect(upsert).toHaveBeenCalledTimes(1));
     expect(upsert.mock.calls[0][0]).toMatchObject({ key: 'chalkboard_photo', data: { ...stored, enabled: false } });
     expect(uploadImage).not.toHaveBeenCalled();
@@ -202,7 +204,7 @@ describe("admin: Today's chalkboard", () => {
   it('shows when it was last updated', async () => {
     stored = { enabled: true, url: PHOTO, updated_at: '2026-10-19T13:05:00Z', max_age_days: 7 };
     renderAdmin();
-    const status = await screen.findByRole('status');
+    const status = (await screen.findAllByRole('status'))[0];
     expect(status.textContent).toMatch(/Oct 19/);
     expect(status.textContent).toMatch(/9:05/);
   });
