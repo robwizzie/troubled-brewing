@@ -353,7 +353,7 @@ export const SECTION_EDITOR_SCHEMAS = {
     ],
   },
   pastry_case_hero: {
-    note: 'The chalkboard lists drinks and bakes from your live menu (synced from SpotOn), with their prices — nothing to keep up to date here.',
+    note: 'The chalkboard lists drinks and bakes from your live menu (synced from SpotOn), with their prices — nothing to keep up to date here. To show a photo of the REAL chalkboard instead, use Settings → Today’s chalkboard (it switches back to this drawn board on its own after a few days).',
     fields: [
       { name: 'pch_eyebrow', label: 'Hand-written line', type: 'text', hint: 'The yellow scribble above the heading.' },
       { name: 'pch_title', label: 'Heading', type: 'text', hint: 'Blank = "Fresh out of the case".' },

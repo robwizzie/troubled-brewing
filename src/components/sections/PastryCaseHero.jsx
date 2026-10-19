@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import OrderButton from '../OrderButton.jsx';
 import HoursToday from '../HoursToday.jsx';
 import { asset } from '../../lib/config.js';
 import { getMenu, pickProducts } from '../../lib/menuService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
+import { useChalkboardPhoto, updatedLabel } from '../../lib/chalkboard.js';
+import PhotoLightbox from '../PhotoLightbox.jsx';
 
 /* "Pastry Case" landing concept — the shop's real photograph of the counter
    (the pastry case, the hand-lettered bakery board, the TB letters) as the
@@ -38,9 +40,15 @@ export default function PastryCaseHero({ data = {} }) {
     pch_drinks: drinkNames,
     order_label: orderLabel = 'Order Now',
     pch_menu_label: menuLabel = 'Full menu',
+    pch_chalk_max_days: chalkMaxDays,
   } = data;
   const [menuBoard, setBoard] = useState(null);
   const version = useDataVersion('menu_items');
+  const chalk = useChalkboardPhoto({ maxAgeDays: Number(chalkMaxDays) > 0 ? Number(chalkMaxDays) : undefined });
+  const [failedUrl, setFailedUrl] = useState(null);
+  const [zoomed, setZoomed] = useState(false);
+  const closeZoom = useCallback(() => setZoomed(false), []);
+  const showPhoto = chalk && chalk.url !== failedUrl;
 
   useEffect(() => {
     let alive = true;
@@ -68,27 +76,54 @@ export default function PastryCaseHero({ data = {} }) {
           </div>
         </div>
 
-        <aside className="pch__board" aria-label={boardTitle}>
-          <p className="pch__board-title">{boardTitle}</p>
-          {menuBoard && (
-            <>
-              <p className="pch__board-head">Sips</p>
-              <ul>
-                {menuBoard.drinks.map((d) => (
-                  <li key={d.id || d.name}><span>{d.name}</span><span className="pch__dots" aria-hidden="true" /><span>{money(d.price)}</span></li>
-                ))}
-              </ul>
-              <p className="pch__board-head">From the case</p>
-              <ul>
-                {menuBoard.bakes.map((d) => (
-                  <li key={d.id || d.name}><span>{d.name}</span><span className="pch__dots" aria-hidden="true" /><span>{money(d.price)}</span></li>
-                ))}
-              </ul>
-            </>
-          )}
-          <div className="pch__board-foot"><HoursToday /></div>
-        </aside>
+{showPhoto ? (
+          <aside className="pch__board pch__board--photo" aria-label={boardTitle}>
+            <button type="button" className="pch__chalk" onClick={() => setZoomed(true)} aria-label={`${boardTitle}: open the photo of our chalkboard full-size`}>
+              <img
+                src={chalk.url}
+                alt={chalk.caption ? `Our chalkboard today: ${chalk.caption}` : 'A photo of the chalkboard in the shop, with today\u2019s specials'}
+                decoding="async"
+                onError={() => { setFailedUrl(chalk.url); setZoomed(false); }}
+              />
+              <span className="pch__chalk-zoom" aria-hidden="true">Tap to read</span>
+            </button>
+            <div className="pch__chalk-meta">
+              {chalk.caption && <p className="pch__chalk-caption">{chalk.caption}</p>}
+              <p className="pch__chalk-when">{updatedLabel(chalk.updated_at)}</p>
+            </div>
+            <div className="pch__board-foot"><HoursToday /></div>
+          </aside>
+        ) : (
+          <aside className="pch__board" aria-label={boardTitle}>
+            <p className="pch__board-title">{boardTitle}</p>
+            {menuBoard && (
+              <>
+                <p className="pch__board-head">Sips</p>
+                <ul>
+                  {menuBoard.drinks.map((d) => (
+                    <li key={d.id || d.name}><span>{d.name}</span><span className="pch__dots" aria-hidden="true" /><span>{money(d.price)}</span></li>
+                  ))}
+                </ul>
+                <p className="pch__board-head">From the case</p>
+                <ul>
+                  {menuBoard.bakes.map((d) => (
+                    <li key={d.id || d.name}><span>{d.name}</span><span className="pch__dots" aria-hidden="true" /><span>{money(d.price)}</span></li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <div className="pch__board-foot"><HoursToday /></div>
+          </aside>
+        )}
       </div>
+      {showPhoto && zoomed && (
+        <PhotoLightbox
+          src={chalk.url}
+          alt={chalk.caption ? `Our chalkboard today: ${chalk.caption}` : 'Our chalkboard today'}
+          caption={[chalk.caption, updatedLabel(chalk.updated_at)].filter(Boolean).join(' · ')}
+          onClose={closeZoom}
+        />
+      )}
     </section>
   );
 }
