@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
 
   try {
     // Read the configured place_id from the single google_profile row.
-    const cfgRes = await fetch(`${SUPABASE_URL}/rest/v1/google_profile?id=eq.1&select=place_id,reviews,photos`, {
+    const cfgRes = await fetch(`${SUPABASE_URL}/rest/v1/google_profile?id=eq.1&select=place_id,reviews,photos,maps_url`, {
       headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` },
     });
     const cfg = await cfgRes.json();
@@ -168,7 +168,14 @@ Deno.serve(async (req) => {
       weekday_periods: p.regularOpeningHours?.periods ?? [],
       lat: p.location?.latitude ?? null,
       lng: p.location?.longitude ?? null,
-      maps_url: p.googleMapsUri ?? null,
+      // the "Leave a review" link is the OWNER's setting (admin → Google
+      // Profile) — never overwrite it. Only when none is set, default to
+      // Google's own write-a-review page for this place (not the Maps page).
+      // (A stored link equal to the place's plain Maps page is what older
+      // versions of this function wrote over the owner's — replace that too.)
+      maps_url: cfg?.[0]?.maps_url && cfg[0].maps_url !== p.googleMapsUri && !/[?&]cid=/.test(cfg[0].maps_url)
+        ? cfg[0].maps_url
+        : `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}`,
       fetched_at: new Date().toISOString(),
     };
 
