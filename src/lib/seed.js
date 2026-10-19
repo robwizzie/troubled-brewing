@@ -155,6 +155,9 @@ export const CONTENT_BLOCKS = {
   staff_picks: { items: [ { label: 'Flying off the menu', value: 'Cranberry Walnut Chicken Salad' }, { label: "This week's feature", value: 'Iced Matcha Latte' } ] },
   loyalty_copy: { body_markdown: 'Ask a Troublemaker about loyalty perks. Full program details coming soon.' },
   announcement_banner: { enabled: false, message: '' },
+  /* A staff photo of the shop's real chalkboard (admin → Today's chalkboard).
+     Off by default: the Pastry Case hero draws its board from the live menu. */
+  chalkboard_photo: { url: '', path: '', caption: '', updated_at: null, enabled: false, max_age_days: 3 },
   /* Which Google reviews the site shows + the owner's per-review overrides.
      See src/lib/reviews.js — 4★ is the default floor ("only the good ones"). */
   review_settings: { min_rating: 4, hidden: {}, pinned: {}, photos: {} },
@@ -239,20 +242,24 @@ export const TEAM_MEMBERS = [
   { id: 'tm-1', name: 'Katie', role: 'General Manager', pronouns: '', drink: '', started_label: '', bio: 'Keeps the whole operation running and somehow still remembers your usual.', photo_url: '', fun_facts: { favorite_local_food: '', favorite_movie: '', favorite_book: '', favorite_show: '', favorite_artist: '' }, display_order: 0, active: true },
 ];
 
-/* Real Haddon Heights businesses, checked against their own sites, the borough
-   business directory and local press (Sept 2026). Ordered by street number,
-   which is how the page lays them out — Trouble Brewing's own door at 514 sits
-   between Anthony's and Lula's, which is a nicer fact than any copy we could
-   write. Owners edit all of it in admin → Local Love; `we_love` is theirs to
+/* Real Haddon Heights businesses. Every address re-checked Oct 2026 against
+   the business's own site and the borough business directory (haddonhts.com):
+   Station Ave runs even numbers on our side (512 Anthony's, 514 us, 516 Lula's,
+   520 Ralph's, 602 Jane's, 620 April Robin, 622 John's) and odd across the
+   road (531 South Jersey Special, 603 Cabana). Only businesses with a website
+   are shown (orderBusinesses drops the rest), so Cabana and John's stay here
+   but don't appear. Images are each business's own published ones, hotlinked
+   (see supabase/migrations/2026-10-19-local-love-real.sql for where each came
+   from). Owners edit all of it in admin → Local Love; `we_love` is theirs to
    fill in, since only they know what they actually send people for. */
 export const LOCAL_BUSINESSES = [
-  { id: 'lb-1', name: "Anthony's Creative Italian Cuisine", category: 'restaurant', address: '512 Station Ave', url: 'https://www.anthonysonstation.com/', logo_url: '', photo_url: '', blurb: 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', we_love: '', display_order: 0 },
-  { id: 'lb-2', name: "Lula's Empanadas", category: 'restaurant', address: '516 Station Ave', url: 'https://www.facebook.com/lulasempanadas/', logo_url: '', photo_url: '', blurb: 'Contemporary Dominican empanadas from Yaslyn Lora, named after her mother \u2014 up to eighteen flavors, now from a proper Station Ave storefront. They chipped in prizes for our ninth-birthday raffle.', we_love: '', display_order: 1 },
-  { id: 'lb-3', name: "Ralph's Pizza", category: 'restaurant', address: '520 Station Ave', url: 'https://ralphspizzahaddonheights.com/', logo_url: '', photo_url: '', blurb: 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town. They donated to our ninth-birthday raffle, too.', we_love: '', display_order: 2 },
-  { id: 'lb-4', name: 'South Jersey Special', category: 'retail', address: '531 Station Ave', url: 'https://southjerseyspecial.com/', logo_url: '', photo_url: '', blurb: 'Amy Murphy\u2019s gift shop of South Jersey makers \u2014 cards, prints, jewelry and small-batch things, most of it funny, all of it local. Another of our birthday-raffle donors.', we_love: '', display_order: 3 },
-  { id: 'lb-5', name: "Jane's Tea House", category: 'cafe', address: '602 Station Ave', url: 'https://janesteahouse.com/', logo_url: '', photo_url: '', blurb: 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', we_love: '', display_order: 4 },
+  { id: 'lb-1', name: "Anthony's Creative Italian Cuisine", category: 'restaurant', address: '512 Station Ave', url: 'https://www.anthonysonstation.com/', logo_url: '', photo_url: 'https://www.anthonysonstation.com/wp-content/uploads/2020/03/dish-02.png', blurb: 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', we_love: '', display_order: 0 },
+  { id: 'lb-2', name: "Lula's Empanadas", category: 'restaurant', address: '516 Station Ave', url: 'https://www.lulasempanadas.com/', logo_url: 'https://images.squarespace-cdn.com/content/v1/60b6a9970f75812d3a397812/63a9e7da-d51c-45ee-9179-7ddd2f37242c/Lulas_Empanadas-RGB_01-Full+Color.png?format=750w', photo_url: 'https://images.squarespace-cdn.com/content/v1/60b6a9970f75812d3a397812/1624323609595-C29NVYDNWDR44QV4FISU/FA7A1970_websize.jpg', blurb: 'Contemporary Dominican empanadas from Yaslyn Lora, named after her mother \u2014 up to eighteen flavors, now from a proper Station Ave storefront. They chipped in prizes for our ninth-birthday raffle.', we_love: '', display_order: 1 },
+  { id: 'lb-3', name: "Ralph's Pizza", category: 'restaurant', address: '520 Station Ave', url: 'https://ralphspizzahaddonheights.com/', logo_url: '', photo_url: 'https://d2s742iet3d3t1.cloudfront.net/restaurants/restaurant-20459000000000000/restaurant_list_image_1565297144.jpg?size=xl', blurb: 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town. They donated to our ninth-birthday raffle, too.', we_love: '', display_order: 2 },
+  { id: 'lb-4', name: 'South Jersey Special', category: 'retail', address: '531 Station Ave', url: 'https://southjerseyspecial.com/', logo_url: 'https://southjerseyspecial.com/cdn/shop/files/Logo_Sharing_Website.png?v=1768790395', photo_url: 'https://southjerseyspecial.com/cdn/shop/files/south_jersey_special_garnet_collection-01.jpg?v=1790468286&width=1200', blurb: 'Amy Murphy\u2019s gift shop of South Jersey makers \u2014 cards, prints, jewelry and small-batch things, most of it funny, all of it local. Another of our birthday-raffle donors.', we_love: '', display_order: 3 },
+  { id: 'lb-5', name: "Jane's Tea House", category: 'cafe', address: '602 Station Ave', url: 'https://janesteahouse.com/', logo_url: 'https://janesteahouse.com/wp-content/uploads/2023/11/cropped-JTH-Logo-Round-270x270.png', photo_url: 'https://janesteahouse.com/wp-content/uploads/2025/05/1.png', blurb: 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', we_love: '', display_order: 4 },
   { id: 'lb-6', name: 'Cabana Water Ice Co.', category: 'other', address: '603 Station Ave', url: '', logo_url: '', photo_url: '', blurb: 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', we_love: '', display_order: 5 },
-  { id: 'lb-7', name: 'April Robin Florist & Gift', category: 'retail', address: '620 Station Ave', url: 'https://www.aprilrobinflorist.com/', logo_url: '', photo_url: '', blurb: 'The florist at the top of the avenue \u2014 where the flowers on our counter usually come from.', we_love: '', display_order: 6 },
+  { id: 'lb-7', name: 'April Robin Florist & Gift', category: 'retail', address: '620 Station Ave', url: 'https://www.aprilrobinflorist.com/', logo_url: 'https://assets.eflorist.com/site/EF-12771/Logo/m7701151-centered%20logo%20april%20robins.png', photo_url: 'https://assets.eflorist.com/assets/products/PHR_/T209-3A.jpg', blurb: 'The florist at the top of the avenue \u2014 where the flowers on our counter usually come from.', we_love: '', display_order: 6 },
   { id: 'lb-8', name: "John's Friendly Market", category: 'other', address: '622 Station Ave', url: '', logo_url: '', photo_url: '', blurb: 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', we_love: '', display_order: 7 },
 ];
 

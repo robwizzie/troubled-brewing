@@ -116,9 +116,9 @@ describe('Local Love directions', () => {
   it('adds the town to a bare street address, and prefers a maps_url', async () => {
     const ds = await import('../src/lib/dataService.js');
     const spy = vi.spyOn(ds, 'getLocalBusinesses').mockResolvedValue([
-      { id: 'a', name: 'Next Door', address: '512 Station Ave', display_order: 0 },
-      { id: 'b', name: 'Already Full', address: '520 Station Ave, Haddon Heights, NJ', display_order: 1 },
-      { id: 'c', name: 'Has Link', address: '530 Station Ave', maps_url: 'https://maps.app.goo.gl/abc', display_order: 2 },
+      { id: 'a', name: 'Next Door', address: '512 Station Ave', url: 'https://example.com/0', display_order: 0 },
+      { id: 'b', name: 'Already Full', address: '520 Station Ave, Haddon Heights, NJ', url: 'https://example.com/1', display_order: 1 },
+      { id: 'c', name: 'Has Link', address: '530 Station Ave', maps_url: 'https://maps.app.goo.gl/abc', url: 'https://example.com/2', display_order: 2 },
     ]);
     const Grid = (await import('../src/components/sections/LocalBusinessesGrid.jsx')).default;
     const { container } = render(<Grid data={{ layout: 'grid' }} />);

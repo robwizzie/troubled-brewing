@@ -112,7 +112,7 @@ create table if not exists hours_overrides (
 -- One-off editable content blocks (key/value jsonb)
 -- =============================================================================
 create table if not exists content_blocks (
-  key text primary key,          -- 'featured_drink','staff_picks','loyalty_copy','announcement_banner','homepage_concept'
+  key text primary key,          -- 'featured_drink','staff_picks','loyalty_copy','announcement_banner','homepage_concept','chalkboard_photo', …
   data jsonb not null default '{}',
   draft_data jsonb,
   status text not null default 'published',
