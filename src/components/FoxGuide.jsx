@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaDice, FaEyeSlash, FaGhost, FaHeart, FaLightbulb, FaMedal, FaSnowflake, FaStar, FaWandMagicSparkles, FaXmark } from 'react-icons/fa6';
-import { asset } from '../lib/config.js';
+import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaCircleQuestion, FaEyeSlash, FaGhost, FaHeart, FaLightbulb, FaMedal, FaSnowflake, FaStar, FaWandMagicSparkles, FaXmark } from 'react-icons/fa6';
 import { track } from '../lib/analytics.js';
 import { orderUrlFor } from '../lib/order.js';
 import { SITE } from '../lib/seed.js';
@@ -11,7 +10,7 @@ import { googleWeekly, shopNow } from '../lib/hours.js';
 import { findSection, foxAnswers, hoursAnswer, plainText } from '../lib/foxHelp.js';
 import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
 import { QUICK_MS, backLine, dailyFact, foxMood, registerTap } from '../lib/foxFun.js';
-import { AwardPane, FactPane, FoxFigure, QuizPane, SurprisePane, Tail } from './FoxPlay.jsx';
+import { AwardPane, FactPane, FoxArt, Nightcap, Pumpkin, QuizPane, SurpriseIcon, SurprisePane, Tail } from './FoxPlay.jsx';
 import FoxOutfit, { FoxOutfitLine } from './FoxOutfit.jsx'; // fox-outfits
 import FoxUsual from './FoxUsual.jsx'; // fox-outfits
 import useFoxOutfit from '../lib/useFoxOutfit.js'; // fox-outfits
@@ -37,7 +36,7 @@ import useFoxOutfit from '../lib/useFoxOutfit.js'; // fox-outfits
    it (CSS), leaving only the words.
 
    Games and moods (rules in src/lib/foxFun.js, panes in FoxPlay.jsx):
-   "Surprise me" spins a reel of real available drinks and lands on one;
+   "Surprise me" pours a real available drink into its cup;
    "Pick my drink" is a short quiz (only the questions that narrow today's
    menu, each skippable) ending in a match + two runner-ups that can be
    fine-tuned; "Fox fact" changes daily (a dot on him until you've seen
@@ -399,19 +398,23 @@ export default function FoxGuide() {
       : mood.morning ? 'Good morning! What can I help you with?'
         : 'Hi there! What can I help you with?';
   const PLAY = [
-    { id: 'surprise', label: 'Surprise me', Icon: FaDice },
+    { id: 'surprise', label: 'Surprise me', Icon: SurpriseIcon },
     { id: 'quiz', label: 'Pick my drink', Icon: FaWandMagicSparkles },
     { id: 'fact', label: 'Fox fact', Icon: FaLightbulb, dot: factNew },
   ];
   const isPlay = ['surprise', 'quiz', 'fact', 'award'].includes(picked);
+  // a game result can be tall: while one is up, the chips fold away so the
+  // answer area gets the room (and scrolls on its own if it still needs to)
+  const isGame = Boolean(data) && ['surprise', 'quiz'].includes(picked);
   const moodCls = `${mood.sleepy ? ' is-sleepy' : ''}${mood.morning ? ' is-morning' : ''}${mood.october ? ' is-october' : ''}`;
 
   if (hidden) {
     return (
       <div className="fox-guide is-hidden">
         <button type="button" ref={tabBtn} className="fox-guide__tab" onClick={bringBack} aria-label="Bring back the fox" title="Bring back the fox">
-          {/* his own head and top hat, peeking in from the edge */}
-          <span className="fox-guide__peek" aria-hidden="true" style={{ backgroundImage: `url(${asset('images/brand/fox-sipping.png')})` }} />
+          {/* his own head and top hat, whole and centred in a little framed
+              card (the same frame as his resting card) */}
+          <span className="fox-guide__peek" aria-hidden="true"><FoxArt bust /></span>
         </button>
       </div>
     );
@@ -424,7 +427,7 @@ export default function FoxGuide() {
         <section
           id={panelId}
           ref={panel}
-          className="fox-help"
+          className={`fox-help${isGame ? ' is-game' : ''}`}
           role="dialog"
           aria-labelledby={`${panelId}-title`}
           tabIndex={-1}
@@ -447,7 +450,8 @@ export default function FoxGuide() {
           </header>
 
           {/* the answer sits right under the header and never scrolls away —
-              only the chips below it scroll when the card is short */}
+              only the chips below it scroll when the card is short. While a
+              game (quiz / Surprise) is up, the answer area scrolls instead. */}
           <div className="fox-help__say" aria-live="polite">
             <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
               {picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
@@ -487,9 +491,18 @@ export default function FoxGuide() {
                     </button>
                   </li>
                 ))}
+                {/* while a game is up the question chips fold into this one tile */}
+                {isGame && (
+                  <li>
+                    <button type="button" className="fox-help__tile fox-help__tile--more" onClick={() => setPicked(null)}>
+                      <FaCircleQuestion aria-hidden="true" />
+                      <span>Questions</span>
+                    </button>
+                  </li>
+                )}
               </ul>
             )}
-            {data ? (
+            {isGame ? null : data ? (
               <ul className="fox-help__chips" aria-label="Common questions">
                 {answers.map((a) => (
                   <li key={a.id}>
@@ -529,15 +542,18 @@ export default function FoxGuide() {
           aria-haspopup="dialog"
           aria-label={open ? 'Close the fox’s help' : `Ask the fox: hours, directions, menu and more${factNew ? ' (new fox fact today)' : ''}`}
         >
-          {/* his medallion: a brass ring like the gallery wall's frames, a
-              cream face, and the logo fox (vector) centred inside */}
           <span className="fox-guide__card">
-            <span className="fox-guide__face">
-              <FoxFigure sleepy={mood.sleepy} october={mood.october} />
+            <span className="fox-guide__figure">
+              <FoxArt />
+              <span className="fox-guide__steam" aria-hidden="true"><i /><i /><i /></span>
               <FoxOutfit outfit={outfit} hasPumpkin={mood.october} />{/* fox-outfits */}
-              {mood.sleepy && <span className="fox-guide__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>}
+              {mood.sleepy && <Nightcap />}
             </span>
-            {Badge && <span className="fox-guide__badge" aria-hidden="true"><Badge /></span>}
+            {mood.sleepy && <span className="fox-guide__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>}
+            {mood.october && <Pumpkin />}
+            {Badge && !open && <span className="fox-guide__badge" aria-hidden="true"><Badge /></span>}
+            {/* while the card is open he IS the close button: say so */}
+            {open && <span className="fox-guide__closex" aria-hidden="true"><FaXmark /></span>}
             {factNew && !open && <span className="fox-guide__dot" aria-hidden="true" />}
           </span>
           <Tail />

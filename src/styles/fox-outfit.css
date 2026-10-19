@@ -5,19 +5,12 @@
    appears; prefers-reduced-motion makes all of it static.
    ========================================================================== */
 
-/* The overlay sits exactly over his figure (same box, same viewBox) and
-   copies its facing, lean, sip, wave and hop, so worn pieces move with him. */
+/* The overlay sits inside his figure (.fox-guide__figure), over the drawing
+   in its own coordinates, so it already turns, leans, sips and hops with him. */
 .fox-outfit {
   position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   overflow: visible; pointer-events: none;
-  transform: scaleX(var(--face, -1)) rotate(var(--lean, 0deg));
-  transform-origin: 50% 78%;
-  transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
-  animation: fox-sip 9s ease-in-out 3s infinite;
 }
-.fox-guide.is-wave .fox-outfit { animation: fox-wave 1.4s ease-in-out both; }
-.fox-guide.is-hop .fox-outfit { animation: fox-hop 0.42s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
-.fox-guide.is-wag .fox-outfit, .fox-guide.is-sleepy .fox-outfit { animation: none; }
 /* asleep, the nightcap is over his top hat: nothing in the hat band then */
 .fox-guide.is-sleepy .fox-outfit__hat { display: none; }
 

@@ -1,11 +1,11 @@
 import '../styles/fox-outfit.css';
-import { FOX_VIEW } from './FoxPlay.jsx';
+import { FOX_H, FOX_W } from '../lib/foxArt.js';
 
 /* The fox's outfit (which pieces: src/lib/foxOutfit.js), drawn as small
-   inline SVG over the launcher fox. The overlay uses the drawing's own
-   coordinates (FOX_VIEW) and turns, leans, sips and hops exactly as his
-   figure does (fox-outfit.css), so a scarf stays round his neck and a
-   flower stays in his hat band. Everything sits on the hat band, round the
+   inline SVG over the launcher fox. The overlay sits inside his figure, in
+   the drawing's own coordinates (0 0 FOX_W FOX_H), so it turns, leans,
+   sips and hops with him: a scarf stays round his neck and a flower stays
+   in his hat band. Pieces may overlap the card's padding a little. Everything sits on the hat band, round the
    neck or in the empty corners of the medallion: nothing covers his face,
    and he never gets glasses of any kind.
 
@@ -24,12 +24,12 @@ function Scarf() {
   return (
     <g className="fox-outfit__part fox-outfit__worn fox-outfit__scarf">
       {/* the hanging end, down his chest (behind the wrap) */}
-      <path d="M153 86 L165 85 L167 113 L155 114 Z" fill={RASP} stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M154 95 L165.6 94.2 M154.6 104 L166.2 103.2" stroke={CREAM} strokeWidth="2.6" />
-      <path d="M157 114.5 L157 119 M161 114.2 L161 118.8 M165 114 L165.2 118.6" stroke={INK} strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M166 104 L182 101 L185 131 L169 133 Z" fill={RASP} stroke={INK} strokeWidth="2.6" strokeLinejoin="round" />
+      <path d="M167.4 113 L183 110.6 M168.4 123 L184 120.6" stroke={CREAM} strokeWidth="3.4" />
+      <path d="M172 134 L172 139 M177 133.4 L177.3 138.4 M182 132.6 L182.6 137.6" stroke={INK} strokeWidth="2.2" strokeLinecap="round" />
       {/* the wrap, round his neck from throat to nape */}
-      <path d="M140 80 C153 86 171 83 183 72 L187 82 C175 94 155 97 139 91 Z" fill={RASP} stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M150 85 L149.5 94.5 M162 84.5 L163 94 M174 80 L176.5 89" stroke={CREAM} strokeWidth="2.4" />
+      <path d="M136 98 C156 107 184 99 203 79 L208 93 C188 113 158 119 134 112 Z" fill={RASP} stroke={INK} strokeWidth="2.6" strokeLinejoin="round" />
+      <path d="M150 104 L149 116.5 M166 103 L167 116 M182 97 L186 109 M195 88 L200.5 99.5" stroke={CREAM} strokeWidth="3.2" />
     </g>
   );
 }
@@ -37,7 +37,7 @@ function Scarf() {
 /** Holly: two sage leaves and three raspberry berries tucked in the hat band. */
 function Sprig() {
   return (
-    <g className="fox-outfit__part fox-outfit__worn fox-outfit__hat fox-outfit__sprig" transform="translate(181 27)">
+    <g className="fox-outfit__part fox-outfit__worn fox-outfit__hat fox-outfit__sprig" transform="translate(192 30) scale(1.5)">
       <path d="M0 0 C-2 -6 -8 -10 -15 -10 C-13 -7 -15 -4 -12 -2 C-9 0 -5 1 0 0 Z" fill={SAGE} stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
       <path d="M0 0 C3 -6 9 -11 16 -12 C14 -8 16 -5 13 -2 C10 1 5 1 0 0 Z" fill={SAGE} stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
       <circle cx="-3" cy="2" r="3.4" fill={RASP} stroke={INK} strokeWidth="1.4" />
@@ -50,7 +50,7 @@ function Sprig() {
 /** A small flower in the hat band, with one leaf. */
 function Flower() {
   return (
-    <g className="fox-outfit__part fox-outfit__worn fox-outfit__hat fox-outfit__flower" transform="translate(183 25)">
+    <g className="fox-outfit__part fox-outfit__worn fox-outfit__hat fox-outfit__flower" transform="translate(193 28) scale(1.5)">
       <path d="M0 2 C6 4 11 2 14 -3 C8 -5 3 -3 0 2 Z" fill={SAGE} stroke={INK} strokeWidth="1.4" strokeLinejoin="round" />
       {[0, 72, 144, 216, 288].map((a) => (
         <ellipse key={a} cx="0" cy="-5.6" rx="3.9" ry="5.4" transform={`rotate(${a})`} fill={RASP} stroke={INK} strokeWidth="1.4" />
@@ -68,21 +68,21 @@ const PUMPKIN = (fill, ribs = INK) => (
   </>
 );
 
-/** Pumpkins on the rail beside him. In October his figure already has one
-    (FoxPlay's Pumpkin); then only the little gold one is added. */
+/** Pumpkins on the rail by his cup. In October his card already has one
+    at its corner (FoxPlay's Pumpkin); then only the little gold one is added. */
 function Pumpkins({ hasOne }) {
   return (
     <g className="fox-outfit__part fox-outfit__beside fox-outfit__pumpkins">
-      {!hasOne && <g transform="translate(185 92) scale(0.55)">{PUMPKIN('#e9973f')}</g>}
-      <g transform="translate(165 104) scale(0.42)">{PUMPKIN(GOLD)}</g>
+      {!hasOne && <g transform="translate(28 106) scale(0.8)">{PUMPKIN('#e9973f')}</g>}
+      <g transform={hasOne ? 'translate(42 108) scale(0.78)' : 'translate(60 113) scale(0.62)'}>{PUMPKIN(GOLD)}</g>
     </g>
   );
 }
 
-/** A little sun in the empty corner above his cup. */
+/** A little sun in the empty corner behind his hat. */
 function Sun() {
   return (
-    <g className="fox-outfit__part fox-outfit__beside fox-outfit__sun" transform="translate(100 -2)">
+    <g className="fox-outfit__part fox-outfit__beside fox-outfit__sun" transform="translate(230 28) scale(1.55)">
       <g stroke={GOLD_DEEP} strokeWidth="2.6" strokeLinecap="round">
         {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
           <path key={a} d="M0 -10.5 L0 -14.5" transform={`rotate(${a})`} />
@@ -96,7 +96,7 @@ function Sun() {
 /** An iced drink on the rail beside him: dome lid, raspberry straw, ice. */
 function Iced() {
   return (
-    <g className="fox-outfit__part fox-outfit__beside fox-outfit__iced" transform="translate(196 113)">
+    <g className="fox-outfit__part fox-outfit__beside fox-outfit__iced" transform="translate(218 111) scale(1.25)">
       <path d="M2 -27 L8 -43" stroke={INK} strokeWidth="5" strokeLinecap="round" />
       <path d="M2 -27 L8 -43" stroke={RASP} strokeWidth="2.6" strokeLinecap="round" />
       <path d="M-8.5 -26 L8.5 -26 L6.5 0 L-6.5 0 Z" fill="#fffdf7" />
@@ -110,10 +110,10 @@ function Iced() {
   );
 }
 
-/** A small sage umbrella over the corner by his cup, gold panel seams. */
+/** A small sage umbrella above his snout, gold panel seams. */
 function Umbrella() {
   return (
-    <g className="fox-outfit__part fox-outfit__beside fox-outfit__umbrella" transform="translate(110 5) rotate(14)">
+    <g className="fox-outfit__part fox-outfit__beside fox-outfit__umbrella" transform="translate(116 4) rotate(12) scale(1.3)">
       <path d="M0 -2 L0 18 C0 23 -6 23 -6 19" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" />
       <path d="M-22 0 C-21 -13 -10 -20 0 -20 C10 -20 21 -13 22 0 C19 -3.5 14 -3.5 11 0 C8 -3.5 3 -3.5 0 0 C-3 -3.5 -8 -3.5 -11 0 C-14 -3.5 -19 -3.5 -22 0 Z"
         fill={SAGE} stroke={INK} strokeWidth="2" strokeLinejoin="round" />
@@ -124,12 +124,12 @@ function Umbrella() {
 }
 
 const FLAKES = [
-  { x: 92, y: -10, s: 1.2, d: 0 },
-  { x: 116, y: 10, s: 1, d: 1.6 },
-  { x: 76, y: 8, s: 0.9, d: 3.1 },
-  { x: 199, y: 20, s: 1, d: 0.8 },
-  { x: 128, y: -14, s: 0.85, d: 2.4 },
-  { x: 62, y: 112, s: 0.95, d: 4 },
+  { x: 22, y: 14, s: 1.6, d: 0 },
+  { x: 108, y: 2, s: 1.3, d: 1.6 },
+  { x: 40, y: 44, s: 1.2, d: 3.1 },
+  { x: 228, y: 18, s: 1.5, d: 0.8 },
+  { x: 250, y: 52, s: 1.2, d: 2.4 },
+  { x: 18, y: 84, s: 1.3, d: 4 },
 ];
 
 /** Snowflakes in the empty corners, drifting down slowly. */
@@ -148,10 +148,10 @@ function Snow() {
   );
 }
 
-/** A single autumn leaf drifting into the corner above his cup. */
+/** A single autumn leaf drifting into the corner behind his hat. */
 function Leaf() {
   return (
-    <g className="fox-outfit__part fox-outfit__beside fox-outfit__leaf" transform="translate(104 2) rotate(-24)">
+    <g className="fox-outfit__part fox-outfit__beside fox-outfit__leaf" transform="translate(230 30) rotate(-24) scale(1.9)">
       <path d="M0 -11 C7 -7 9 1 0 11 C-9 1 -7 -7 0 -11 Z" fill={GOLD_DEEP} stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
       <path d="M0 -8 L0 14 M0 -1 L4 -4 M0 4 L-4 1" fill="none" stroke={INK} strokeWidth="1.3" strokeLinecap="round" />
     </g>
@@ -168,7 +168,7 @@ export default function FoxOutfit({ outfit, hasPumpkin = false }) {
   const parts = outfit?.parts || [];
   if (!parts.length) return null;
   return (
-    <svg className={`fox-outfit fox-outfit--${outfit.id}`} viewBox={FOX_VIEW} aria-hidden="true" focusable="false" data-outfit={outfit.id}>
+    <svg className={`fox-outfit fox-outfit--${outfit.id}`} viewBox={`0 0 ${FOX_W} ${FOX_H}`} aria-hidden="true" focusable="false" data-outfit={outfit.id}>
       {parts.map((p) => {
         if (p === 'pumpkins') return <Pumpkins key={p} hasOne={hasPumpkin} />;
         const Part = PARTS[p];
