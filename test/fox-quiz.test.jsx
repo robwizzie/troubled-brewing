@@ -1,15 +1,15 @@
-import { describe, it, expect, beforeEach, afterEach, onTestFinished, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, within, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import FoxGuide from '../src/components/FoxGuide.jsx';
 import {
-  ANY, QUIZ, REEL_OVERSHOOT, REEL_ROWS, classifyDrink, drinkCandidates, matchDrink, matchLine,
-  quizPlan, reelPosition, reelStrip, refineOptions, scoreDrink,
+  ANY, QUIZ, classifyDrink, drinkCandidates, matchDrink, matchLine,
+  quizPlan, refineOptions, scoreDrink,
 } from '../src/lib/foxFun.js';
 import { MENU_ITEMS } from '../src/lib/seed.js';
 import { SPOTON_ORDER_URL } from '../src/lib/config.js';
 
-/* "Pick my drink" and the "Surprise me" reel: the rules (src/lib/foxFun.js)
+/* "Pick my drink": the rules (src/lib/foxFun.js)
    and the panes that draw them (src/components/FoxPlay.jsx). */
 
 const available = MENU_ITEMS.filter((i) => i.available !== false);
@@ -185,43 +185,6 @@ describe('refining a match', () => {
   });
 });
 
-describe('the Surprise reel', () => {
-  it('spins through real drinks and ends on the pick', () => {
-    const final = by('Iced Chai Latte');
-    for (let k = 0; k < 20; k += 1) {
-      const strip = reelStrip(MENU_ITEMS, final, { rand: () => (k * 7 % 20) / 20 });
-      expect(strip).toHaveLength(REEL_ROWS + 1);
-      expect(strip[strip.length - 1]).toBe(final);
-      expect(strip[strip.length - 2].name).not.toBe(final.name);
-      strip.forEach((d, i) => {
-        expect(drinkNames.has(d.name)).toBe(true);
-        if (i) expect(d.name).not.toBe(strip[i - 1].name); // never the same twice in a row
-      });
-    }
-    expect(reelStrip([], null)).toEqual([]);
-  });
-
-  it('decelerates, overshoots by a hair, and settles exactly on the last row', () => {
-    const rows = REEL_ROWS + 1;
-    expect(reelPosition(0, rows)).toBe(0);
-    expect(reelPosition(1, rows)).toBe(rows - 1);
-    expect(reelPosition(1.4, rows)).toBe(rows - 1);
-    let prev = 0;
-    let prevStep = Infinity;
-    let peak = 0;
-    for (let i = 1; i <= 80; i += 1) { // the spin: always forward, always slowing
-      const p = reelPosition(i / 100, rows);
-      expect(p).toBeGreaterThan(prev);
-      expect(p - prev).toBeLessThanOrEqual(prevStep + 1e-9);
-      prevStep = p - prev;
-      prev = p;
-    }
-    for (let i = 80; i <= 100; i += 1) peak = Math.max(peak, reelPosition(i / 100, rows));
-    expect(peak).toBeGreaterThan(rows - 1);
-    expect(peak).toBeLessThanOrEqual(rows - 1 + REEL_OVERSHOOT + 1e-9);
-  });
-});
-
 /* ---- in the card ---------------------------------------------------------- */
 
 const renderFox = () => render(<MemoryRouter><FoxGuide /></MemoryRouter>);
@@ -291,58 +254,5 @@ describe('Pick my drink, in the card', () => {
     expect(taps).toBe(5);
     const name = within(card).getByTestId('fox-quiz-result').querySelector('.fox-match .fox-drink__name').textContent;
     expect(drinkNames.has(name)).toBe(true);
-  });
-});
-
-describe('Surprise me, in the card', () => {
-  it('with reduced motion: no reel, the pick fades straight in', async () => {
-    const card = await openGame('Surprise me');
-    const pane = within(card).getByTestId('fox-surprise');
-    expect(pane.classList.contains('is-instant')).toBe(true);
-    expect(pane.querySelector('.fox-reel__strip')).toBeNull();
-    const name = pane.querySelector('.fox-drink__name').textContent;
-    expect(drinkNames.has(name)).toBe(true);
-    expect(pane.querySelector('.fox-drink__price').textContent).toMatch(/^\$\d+\.\d\d$/);
-    expect(within(pane).getByRole('link', { name: new RegExp(`^Order ${esc(name)}`) }).getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
-    fireEvent.click(within(pane).getByRole('button', { name: /Pick again/ }));
-    expect(pane.querySelector('.fox-drink__name').textContent).not.toBe(name);
-  });
-
-  it('with motion: the reel spins on transforms, lands on an available drink, and ticks once', async () => {
-    // full motion, a hand-cranked animation clock, and a phone that can buzz
-    const realMatchMedia = window.matchMedia;
-    window.matchMedia = (q) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
-    onTestFinished(() => { window.matchMedia = realMatchMedia; });
-    const frames = [];
-    vi.stubGlobal('requestAnimationFrame', (cb) => { frames.push(cb); return frames.length; });
-    vi.stubGlobal('cancelAnimationFrame', () => {});
-    const vibrate = vi.fn();
-    Object.defineProperty(navigator, 'vibrate', { value: vibrate, configurable: true });
-
-    const card = await openGame('Surprise me');
-    const pane = within(card).getByTestId('fox-surprise');
-    expect(pane.classList.contains('is-spinning')).toBe(true);
-    const strips = pane.querySelectorAll('.fox-reel__strip');
-    expect(strips).toHaveLength(2); // sharp + motion-blurred copy
-    const rows = strips[0].querySelectorAll('.fox-reel__name');
-    const final = rows[rows.length - 1].textContent;
-    expect(pane.querySelector('.fox-reel__win').getAttribute('aria-hidden')).toBe('true');
-    expect(within(pane).getByRole('button', { name: /Pick again/ }).disabled).toBe(true);
-
-    let now = 1000;
-    let mid = null;
-    for (let i = 0; i < 200 && frames.length; i += 1) {
-      const cb = frames.shift();
-      act(() => cb(now));
-      if (i === 30) mid = strips[0].style.transform; // ~0.5s in
-      now += 16;
-    }
-    expect(mid).toMatch(/^translate3d\(0, -\d+(\.\d+)?%, 0\)$/); // moved by transform only
-    expect(pane.classList.contains('is-spinning')).toBe(false);
-    expect(pane.querySelector('.fox-drink__name').textContent).toBe(final);
-    expect(drinkNames.has(final)).toBe(true);
-    expect(vibrate).toHaveBeenCalledTimes(1);
-    expect(vibrate).toHaveBeenCalledWith(10);
-    delete navigator.vibrate;
   });
 });
