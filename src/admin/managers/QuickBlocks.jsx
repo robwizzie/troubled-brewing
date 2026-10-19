@@ -20,7 +20,7 @@ async function saveBlock(key, data) {
 export default function QuickBlocks() {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
-  const [featured, setFeatured] = useState({ name: '', description: '', price: '', image_url: '' });
+  const [featured, setFeatured] = useState({ item: '', name: '', description: '', price: '', image_url: '' });
   const [picks, setPicks] = useState({ items: [] });
   const [announce, setAnnounce] = useState({ enabled: false, message: '' });
   const [concept, setConcept] = useState({ concept: DEFAULT_CONCEPT });
@@ -28,7 +28,7 @@ export default function QuickBlocks() {
 
   useEffect(() => {
     Promise.all([
-      loadBlock('featured_drink', { name: '', description: '', price: '', image_url: '' }),
+      loadBlock('featured_drink', { item: '', name: '', description: '', price: '', image_url: '' }),
       loadBlock('staff_picks', { items: [] }),
       loadBlock('announcement_banner', { enabled: false, message: '' }),
       loadBlock('homepage_concept', { concept: DEFAULT_CONCEPT }),
@@ -83,10 +83,16 @@ export default function QuickBlocks() {
       </section>
 
       <section className="admin__panel">
-        <h2>Featured drink <Hint>“This Week’s Trouble” on the homepage.</Hint></h2>
-        <div className="field"><label>Name</label><input value={featured.name} onChange={(e) => setFeatured((f) => ({ ...f, name: e.target.value }))} /></div>
-        <div className="field"><label>Description</label><textarea rows={2} value={featured.description} onChange={(e) => setFeatured((f) => ({ ...f, description: e.target.value }))} /></div>
-        <div className="field"><label>Price</label><input type="number" step="0.01" value={featured.price} onChange={(e) => setFeatured((f) => ({ ...f, price: e.target.value }))} /></div>
+        <h2>Featured drink <Hint>“This Week’s Trouble” on the homepage (and the hero’s “Today’s Special” note).</Hint></h2>
+        <div className="field">
+          <label>Menu item to feature</label>
+          <input value={featured.item || ''} placeholder="e.g. Iced Matcha Latte" onChange={(e) => setFeatured((f) => ({ ...f, item: e.target.value }))} />
+          <p className="field__hint">The exact name as it appears on the menu. Its name, price and photo come live from the menu. If it’s ever switched off in SpotOn, we feature another drink that is on.</p>
+        </div>
+        <div className="field"><label>Description</label><textarea rows={2} value={featured.description} placeholder="Blank uses the menu’s description" onChange={(e) => setFeatured((f) => ({ ...f, description: e.target.value }))} /></div>
+        <p className="field__hint">Only used when no menu item is chosen above:</p>
+        <div className="field"><label>Name</label><input value={featured.name || ''} onChange={(e) => setFeatured((f) => ({ ...f, name: e.target.value }))} /></div>
+        <div className="field"><label>Price</label><input type="number" step="0.01" value={featured.price || ''} onChange={(e) => setFeatured((f) => ({ ...f, price: e.target.value }))} /></div>
         <ImageField label="Photo" value={featured.image_url} preset="card" folder="featured" onChange={(url) => setFeatured((f) => ({ ...f, image_url: url }))} />
         <button className="btn btn--primary" onClick={() => save('featured_drink', featured, 'Featured drink updated')}>Save featured drink</button>
       </section>
@@ -96,7 +102,7 @@ export default function QuickBlocks() {
         {(picks.items || []).map((it, i) => (
           <div key={i} className="picks-row">
             <input placeholder="Label (e.g. Barista's pick)" value={it.label} onChange={(e) => setPicks((p) => ({ items: p.items.map((x, idx) => idx === i ? { ...x, label: e.target.value } : x) }))} />
-            <input placeholder="Value (e.g. Banana Split Coffee)" value={it.value} onChange={(e) => setPicks((p) => ({ items: p.items.map((x, idx) => idx === i ? { ...x, value: e.target.value } : x) }))} />
+            <input placeholder="Value (e.g. Iced Chai Latte)" value={it.value} onChange={(e) => setPicks((p) => ({ items: p.items.map((x, idx) => idx === i ? { ...x, value: e.target.value } : x) }))} />
             <button className="btn btn--ghost btn--sm" onClick={() => setPicks((p) => ({ items: p.items.filter((_, idx) => idx !== i) }))}>✕</button>
           </div>
         ))}

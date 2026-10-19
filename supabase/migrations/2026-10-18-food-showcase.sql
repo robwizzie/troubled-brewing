@@ -11,7 +11,7 @@ update sections set display_order = display_order + 1
    and not exists (select 1 from sections where page_slug = 'menu' and type = 'food_showcase');
 insert into sections (page_slug, type, display_order, data, status, visible)
 select 'menu', 'food_showcase', 0,
-       '{"heading": "Fresh off the counter", "subheading": "Tap anything to find it on the menu."}'::jsonb, 'published', true
+       '{"heading": "Fresh off the counter", "subheading": "Tap anything to order it on SpotOn."}'::jsonb, 'published', true
  where not exists (select 1 from sections where page_slug = 'menu' and type = 'food_showcase');
 
 -- HOME: right after the hero (display_order 0)
@@ -20,7 +20,7 @@ update sections set display_order = display_order + 1
    and not exists (select 1 from sections where page_slug = 'home' and type = 'food_showcase');
 insert into sections (page_slug, type, display_order, data, status, visible)
 select 'home', 'food_showcase', 1,
-       '{"heading": "Fresh off the counter", "subheading": "Tap anything to find it on the menu."}'::jsonb, 'published', true
+       '{"heading": "Fresh off the counter", "subheading": "Tap anything to order it on SpotOn."}'::jsonb, 'published', true
  where not exists (select 1 from sections where page_slug = 'home' and type = 'food_showcase');
 
 commit;

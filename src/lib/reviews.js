@@ -129,6 +129,19 @@ function compare(a, b) {
   return (a.display_order ?? 0) - (b.display_order ?? 0);
 }
 
+/* Newest first, for a complete list: only the owner's pins jump the queue
+   (they are an explicit choice); photos and featured picks don't, or "newest
+   first" would stop being true. */
+function compareNewest(a, b) {
+  if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+  if (a.published_at && b.published_at) return a.published_at < b.published_at ? 1 : a.published_at > b.published_at ? -1 : 0;
+  // a review with a real timestamp is datable; one without (cached by an
+  // older Edge Function) sorts after them, in the order it was cached
+  if (a.published_at) return -1;
+  if (b.published_at) return 1;
+  return 0;
+}
+
 /**
  * Every review the site is allowed to show, best first.
  *
@@ -136,13 +149,24 @@ function compare(a, b) {
  * @param {number}  opts.minLength  drop quotes shorter than this (the homepage
  *                                  frames need something to frame; a bare "5★"
  *                                  with no words is not a card)
- * @param {'all'|'google'|'curated'} opts.only  which source to RETURN. Both
- *        sources are always loaded regardless, because dedupe needs both: a
- *        review the owners imported as a testimonial must disappear from the
- *        Google side, or the same quote hangs twice on the reviews page.
- * @returns {Promise<{rating:number, count:number, mapsUrl:string, photos:object[], reviews:object[]}>}
+ * @param {'all'|'google'|'curated'} opts.only  which source to RETURN.
+ *        'all' (the homepage strip) mixes both, curated first, so a review the
+ *        owners imported as a testimonial shows once — as the testimonial.
+ *        'google' is the COMPLETE Google list (the Reviews page feed): every
+ *        cached Google review that passes the owner's star floor and hidden
+ *        list, INCLUDING ones that were also hand-picked as testimonials —
+ *        the feed is the full record, the favorites wall above it is a
+ *        selection. Google-vs-Google duplicates (same author + text, which a
+ *        merged cache can carry) still collapse to one, so nothing repeats
+ *        within the feed. 'curated' is the testimonials alone.
+ * @param {'best'|'newest'} opts.order  'best' (default): pins, featured picks
+ *        and photo reviews first, then newest. 'newest': pins first, then
+ *        strictly newest first — the order a complete list should read in.
+ *        Reviews with no timestamp keep the cache's own order (the Edge
+ *        Function stores it newest-first).
+ * @returns {Promise<{rating:number, count:number, mapsUrl:string, placeId:string, photos:object[], reviews:object[]}>}
  */
-export async function loadReviews({ minLength = 0, only = 'all' } = {}) {
+export async function loadReviews({ minLength = 0, only = 'all', order = 'best' } = {}) {
   const [profile, testimonials, settings] = await Promise.all([
     getGoogleProfile(),
     getTestimonials(),
@@ -160,13 +184,15 @@ export async function loadReviews({ minLength = 0, only = 'all' } = {}) {
       ? { ...t, avatar: t.avatar || twin.avatar, time: t.time || twin.time, url: t.url || twin.url, published_at: t.published_at || twin.published_at, photos: twin.photos, photo: t.photo || twin.photo }
       : t;
   });
-  const picks = [...curated, ...google];
+  // The Google feed is the complete list, so it is NOT deduped against the
+  // testimonials — only against itself. Everywhere else curated goes first,
+  // so a review the owners imported as a testimonial wins over its Google
+  // twin and the quote never hangs twice on one surface.
+  const picks = only === 'google' ? google : [...curated, ...google];
 
   const seen = new Set();
   const reviews = [];
   for (const r of picks) {
-    // curated first in `picks`, so a review the owners imported as a
-    // testimonial wins over its Google twin and the quote never hangs twice
     if (seen.has(r.key)) continue;
     seen.add(r.key);
     if (settings.hidden[r.key]) continue;
@@ -176,12 +202,14 @@ export async function loadReviews({ minLength = 0, only = 'all' } = {}) {
     if (only === 'curated' && !r.curated) continue;
     reviews.push({ ...r, pinned: Boolean(settings.pinned[r.key]), photo: settings.photos[r.key] || r.photo });
   }
-  reviews.sort(compare);
+  // Array#sort is stable, so untimed reviews keep the order they came in
+  reviews.sort(order === 'newest' ? compareNewest : compare);
 
   return {
     rating: profile?.rating || 5,
     count: profile?.review_count || 0,
     mapsUrl: profile?.maps_url || '',
+    placeId: profile?.place_id || '',
     // guests' photos from Google (food, drinks, the room), newest first
     photos: Array.isArray(profile?.photos) ? profile.photos : [],
     reviews,

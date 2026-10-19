@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { CoffeeCup, Beans, Hare } from './Motifs.jsx';
 import { productImageSources, isCutout, slugifyDrink } from '../lib/productImage.js';
 import { DIETARY_LABELS } from '../lib/menuService.js';
+import { orderUrlFor, orderLabelFor } from '../lib/order.js';
+import { track } from '../lib/analytics.js';
 
 /* ONE product card, shared by the homepage "Signature sips" teaser and the
    Menu page's card layout — so a drink looks the same wherever a visitor meets
@@ -25,7 +27,16 @@ import { DIETARY_LABELS } from '../lib/menuService.js';
    time it scrolls into view (once it has actually loaded, so nothing
    animates an empty frame), then keeps gently bobbing and swaying on its
    own tempo — nothing reacts to the pointer. All of that motion is CSS and
-   switches off under prefers-reduced-motion. */
+   switches off under prefers-reduced-motion.
+
+   The WHOLE card is a link to order the item on SpotOn (orderUrlFor — the
+   store's order page until SpotOn offers per-item links; a row's `order_url`
+   wins when it has one), opening in a new tab and tracked as an
+   order_now_click like every other order button. The only visible cue is a
+   quiet "Order on SpotOn ↗" beside the price. Deliberately NO hover lift or
+   shadow change (the owner asked for hover effects off); keyboard users get a
+   focus-visible ring instead. The card keeps its id="item-<slug>" so
+   /menu#item-<slug> deep links still land on it. */
 
 const FRAME_STYLES = ['gilt-thin', 'black-flat', 'bronze-carved', 'gold-botanical', 'black-mat', 'gold-tapestry'];
 /* the matted styles shrink the picture inside a wide mat — right for a
@@ -100,29 +111,41 @@ export default function ProductCard({ item, index = 0, eager = false, plate = tr
       className={`product${cutout ? ' product--cutout' : ''}${seen ? ' is-in' : ''}`}
       style={cutout ? { '--i': index % 8 } : undefined}
     >
-      <span
-        className={`gw-frame__art gw-frame__art--${frames[index % frames.length]} product__frame`}
-        style={{ '--ar': cutout ? '4 / 3' : '16 / 10', '--tint': 'var(--color-paper)' }}
+      <a
+        className="product__link"
+        href={orderUrlFor(item)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={orderLabelFor(item)}
+        onClick={() => track('order_now_click', { location: 'product_card', item: item.name })}
       >
-        <ProductArt item={item} index={index} eager={eager} />
-        {plate && <h3 className="brass-plate brass-plate--pin">{item.name}</h3>}
-      </span>
-      <div className="product__body">
-        {!plate && <h4 className="product__name">{item.name}</h4>}
-        {/* rendered even when empty — see .product__desc, it's what bottom-aligns
-            the price line across a row of cards */}
-        <p className="product__desc">{item.description || ''}</p>
-        <p className="product__foot">
-          {item.price != null && <span className="product__price">${Number(item.price).toFixed(2)}</span>}
-          {flags.length > 0 && (
-            <span className="product__flags">
-              {flags.map((f) => (
-                <span key={f} className="menu-item__flag" title={f}>{DIETARY_LABELS[f] || f}</span>
-              ))}
+        <span
+          className={`gw-frame__art gw-frame__art--${frames[index % frames.length]} product__frame`}
+          style={{ '--ar': cutout ? '4 / 3' : '16 / 10', '--tint': 'var(--color-paper)' }}
+        >
+          <ProductArt item={item} index={index} eager={eager} />
+          {plate && <h3 className="brass-plate brass-plate--pin">{item.name}</h3>}
+        </span>
+        <div className="product__body">
+          {!plate && <h4 className="product__name">{item.name}</h4>}
+          {/* rendered even when empty — see .product__desc, it's what bottom-aligns
+              the price line across a row of cards */}
+          <p className="product__desc">{item.description || ''}</p>
+          <p className="product__foot">
+            <span className="product__foot-main">
+              {item.price != null && <span className="product__price">${Number(item.price).toFixed(2)}</span>}
+              {flags.length > 0 && (
+                <span className="product__flags">
+                  {flags.map((f) => (
+                    <span key={f} className="menu-item__flag" title={f}>{DIETARY_LABELS[f] || f}</span>
+                  ))}
+                </span>
+              )}
             </span>
-          )}
-        </p>
-      </div>
+            <span className="product__order">Order on SpotOn <span aria-hidden="true">↗</span></span>
+          </p>
+        </div>
+      </a>
     </article>
   );
 }

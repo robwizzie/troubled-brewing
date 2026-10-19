@@ -1,9 +1,14 @@
-/* What the gold fox says, and when.
+/* What the fox says, and when.
+
+   The speaking fox is the dapper top-hatted fox from the logo
+   (images/brand/fox-sipping.png) — not the gold fox-head sculpture on the
+   gallery wall, so nothing here gives him spectacles.
 
    Special days get a bubble that pops up by itself (once per day per
    visitor). Every other day the fox only talks when someone taps him, and
-   then only says true things: what's on the wall, the shop's real hours,
-   the shop's real story. Nothing here invents a promotion or a special.
+   then only says true, useful things: the shop's real hours (FoxGuide.jsx
+   adds that line live) and the facts in QUIPS below. Nothing here invents a
+   promotion or a special.
 
    ?foxday=MM-DD previews a date (e.g. ?foxday=10-13). */
 
@@ -26,19 +31,45 @@ export function specialDay(date = new Date()) {
   }
   if (fri13) return { id: 'fri13', text: 'Friday the 13th. We opened on one of those. Lucky us.' };
   if (m === 10 && d === 31) return { id: 'halloween', text: 'Happy Halloween! Have you spotted the pumpkin house on the wall?' };
-  if (m === 12 && (d === 24 || d === 25)) return { id: 'xmas', text: 'Merry everything, from all of us on the wall.' };
+  if (m === 12 && (d === 24 || d === 25)) return { id: 'xmas', text: 'Merry everything, from all of us at Trouble Brewing.' };
   if (m === 1 && d === 1) return { id: 'newyear', text: 'Happy New Year! Same wall, new year.' };
   if (m === 2 && d === 14) return { id: 'valentine', text: 'Bring your favorite person. Two coffees, one table by the wall.' };
   return null;
 }
 
-/** Everyday lines, for when someone taps the fox. All true. */
+/** Everyday lines, for when someone taps the fox. Every one is checkable
+    against content already in this repo — if the source changes, change the
+    line (or drop it):
+      · order ahead  — the home "Skip the line" CTA ("Order ahead on SpotOn
+                       and we'll have it ready") and the Order Now button
+                       (src/lib/seed.js SECTIONS.home / .menu)
+      · address      — SITE.address and the about-page story, 514 Station Ave
+      · opening day  — about page + TIMELINE_EVENTS: Friday the 13th of
+                       October, 2017
+      · La Colombe / Metolius — about page "What's in the cup"; the menu's
+                       Cappuccino description names La Colombe espresso
+      · breakfast    — "Breakfast is served all day" (home intro_duo); "Bagel/
+                       Breakfast Sandwich" and "No Bread Breakfast Sandwich"
+                       are live items in src/data/spoton-menu.json
+      · chicken salad — the menu's Cranberry Walnut Chicken Salad description
+                       ("our most popular sandwich")
+      · gluten-free  — the "Gluten Free Sweeties" category: Oatmeal Creme Pie
+                       (GF) and Dark Chocolate Brownie (GF) are available
+      · Pup Cup      — the "Pup Cup!" item (Coffee & Espresso Drinks)
+      · parking      — the Location page's Parking block
+      · events       — the Events & Community page (/events)
+    All menu items named here have available !== false in the snapshot. */
 export const QUIPS = [
-  'Yes, I wear glasses. No, I won’t say what for.',
-  'Psst. The brass hare has been watching the espresso machine all day.',
-  'Find the two rubber ducks on the wall. I’ll wait.',
-  'There’s a fox riding a bicycle over there. Not me. I don’t ride.',
-  'Everything on our wall came from somewhere. Ask about it at the counter.',
+  'Skip the line: order ahead on SpotOn with the Order button and it’ll be ready when you get here.',
+  'You’ll find us at 514 Station Ave in Haddon Heights.',
+  'We opened on Friday the 13th of October, 2017. Trouble from day one.',
+  'Our espresso is La Colombe, and our teas are Metolius.',
+  'Breakfast is served all day. Try a breakfast sandwich on a bagel, or the no-bread one.',
+  'The Cranberry Walnut Chicken Salad is our most popular sandwich.',
+  'Gluten-free? Look for the Gluten Free Sweeties, like the Oatmeal Creme Pie and the Dark Chocolate Brownie.',
+  'Bringing your dog? There’s a Pup Cup on the menu just for them.',
+  'Parking: there’s street parking out front and a lot behind the shop. Enter from White Horse Pike or Atlantic Ave.',
+  'Check the Events page to see what’s coming up at the shop.',
 ];
 
 /** The date the fox should think it is (honours ?foxday=MM-DD). */
