@@ -15,7 +15,7 @@ export const MENU_COLLECTION = {
   singular: 'item',
   labelKey: 'name',
   defaultItem: { available: true, category: 'specialty', dietary_flags: [] },
-  summary: (i) => `${i.category}${i.price != null ? ` · $${Number(i.price).toFixed(2)}` : ''}${i.available === false ? ' · hidden' : ''}`,
+  summary: (i) => `${CATEGORIES.find((c) => c.value === i.category)?.label || i.category || 'No category'}${i.price != null ? ` · $${Number(i.price).toFixed(2)}` : ''}${i.available === false ? ' · hidden' : ''}`,
   fields: [
     { name: 'name', label: 'Name', type: 'text', required: true },
     { name: 'description', label: 'Description', type: 'textarea', rows: 2 },
@@ -29,15 +29,18 @@ export const MENU_COLLECTION = {
 
 export default function MenuManager() {
   return (
-    <>
-      {/* the nightly SpotOn sync owns the structural fields — warn before edits
-          quietly bounce back (docs/INTEGRATIONS.md §SpotOn) */}
-      <div className="admin__note" role="note">
-        <strong>Synced with SpotOn ordering.</strong> Names, prices, categories, availability, and
-        order refresh from your SpotOn menu every morning — edit those in SpotOn and the site
-        follows. Descriptions, photos, and dietary tags are yours here and are never overwritten.
-      </div>
-      <CollectionManager {...MENU_COLLECTION} />
-    </>
+    <CollectionManager
+      {...MENU_COLLECTION}
+      help="The drinks and food on the Menu page, and the drinks the homepage pulls from it."
+      intro={
+        /* the nightly SpotOn sync owns the structural fields — warn before edits
+           quietly bounce back (docs/INTEGRATIONS.md §SpotOn) */
+        <div className="admin__note" role="note">
+          <strong>Synced with SpotOn ordering.</strong> Names, prices, categories, availability, and
+          order refresh from your SpotOn menu every morning — edit those in SpotOn and the site
+          follows. Descriptions, photos, and dietary tags are yours here and are never overwritten.
+        </div>
+      }
+    />
   );
 }

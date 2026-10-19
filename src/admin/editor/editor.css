@@ -206,3 +206,15 @@
   .tb-outline__reorder button { min-width: 34px; min-height: 34px; }
   .tb-panel input, .tb-panel select, .tb-panel textarea { font-size: 16px; } /* iOS zooms below 16px */
 }
+
+/* ---- Explicit publishing: the shared action bar along the editor's bottom -- */
+.tb-editor > .actionbar { margin: 0; flex-shrink: 0; position: relative; padding-left: var(--space-4); padding-right: var(--space-4); }
+.tb-editor__pagepick { display: flex; align-items: center; gap: var(--space-2); }
+.tb-editor__pagelabel { font-size: var(--text-xs); color: #b8ad97; }
+.tb-editor__viewsite { margin-left: var(--space-2); }
+@media (max-width: 900px) {
+  .tb-editor__pagelabel { display: none; }
+  .tb-editor__viewsite { margin-left: auto; }
+  .tb-editor > .actionbar { padding: var(--space-2) var(--space-3); padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px)); }
+  .tb-panel { max-height: 50dvh; }
+}

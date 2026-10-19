@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import CollectionManager from '../components/CollectionManager.jsx';
-import { createRecord } from '../lib/adminData.js';
 import { loadReviews } from '../../lib/reviews.js';
-import { bump } from '../../lib/dataVersion.js';
 import { useToast, Hint } from '../components/ui.jsx';
 
 /* One-click import from the cached Google review library: pick a review, it
-   becomes a curated testimonial you can re-word and feature.
+   joins the list below as a NEW quote — it goes on the site with the next
+   Publish, like any other change.
 
    The list comes from loadReviews({ only: 'google' }), which is the same
    selection the public site uses — so it honors the owner's star minimum and
@@ -28,23 +27,17 @@ function GoogleImport({ onAdded }) {
   const remaining = reviews.filter((r) => !added.has(r.key));
   if (remaining.length === 0) return null;
 
-  async function add(r) {
-    try {
-      await createRecord('testimonials', {
-        author: r.author,
-        source: 'Google',
-        rating: Math.min(5, Math.round(r.rating || 5)),
-        quote: r.quote,
-        image_url: r.photo || '',
-        featured: false,
-      });
-      setAdded((s) => new Set(s).add(r.key));
-      bump('testimonials');
-      toast('Added to testimonials');
-      onAdded();
-    } catch (e) {
-      toast(e.message || 'Could not add', 'error');
-    }
+  function add(r) {
+    onAdded({
+      author: r.author,
+      source: 'Google',
+      rating: Math.min(5, Math.round(r.rating || 5)),
+      quote: r.quote,
+      image_url: r.photo || '',
+      featured: false,
+    });
+    setAdded((s) => new Set(s).add(r.key));
+    toast('Added to the list — press Publish to put it on the site');
   }
 
   return (
@@ -52,7 +45,7 @@ function GoogleImport({ onAdded }) {
       <h2 className="admin-import__title">From your Google reviews</h2>
       <Hint>
         Your real Google reviews, filtered exactly the way the site filters them. Click
-        <strong> Add</strong> to hand-pick one as a testimonial you can re-word and feature.
+        <strong> Add</strong> to hand-pick one as a quote you can re-word and feature.
         To change the star minimum, hide a review, or attach its photo, use{' '}
         <Link to="/admin/reviews">Reviews</Link>.
       </Hint>
@@ -64,7 +57,7 @@ function GoogleImport({ onAdded }) {
               <span className="admin-import__stars">{'★'.repeat(Math.min(5, Math.round(r.rating || 5)))}</span>
               <p className="admin-import__text">{r.quote}</p>
             </div>
-            <button type="button" className="btn btn--sm" onClick={() => add(r)}>+ Add</button>
+            <button type="button" className="btn btn--ghost btn--sm" onClick={() => add(r)}>+ Add</button>
           </li>
         ))}
       </ul>
@@ -91,12 +84,16 @@ export const TESTIMONIALS_COLLECTION = {
 };
 
 export default function TestimonialsManager() {
-  // bump remounts the list after a Google import so the new row appears
-  const [bump, setBump] = useState(0);
+  const listRef = useRef(null);
   return (
     <>
-      <CollectionManager key={bump} {...TESTIMONIALS_COLLECTION} />
-      <GoogleImport onAdded={() => setBump((b) => b + 1)} />
+      <CollectionManager
+        ref={listRef}
+        {...TESTIMONIALS_COLLECTION}
+        title="Hand-picked quotes"
+        help="Your favourite quotes, shown above the Google reviews on the Reviews page and in the homepage strip."
+      />
+      <GoogleImport onAdded={(item) => listRef.current?.stageNew(item)} />
     </>
   );
 }

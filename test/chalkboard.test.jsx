@@ -34,6 +34,8 @@ const { isChalkboardLive, updatedLabel, daysAgo } = await import('../src/lib/cha
 const PastryCaseHero = (await import('../src/components/sections/PastryCaseHero.jsx')).default;
 const ChalkboardManager = (await import('../src/admin/managers/ChalkboardManager.jsx')).default;
 const { ToastProvider } = await import('../src/admin/components/ui.jsx');
+const { UnsavedProvider } = await import('../src/admin/lib/publishing.jsx');
+const { chalkStatus } = await import('../src/admin/lib/chalkStatus.js');
 
 const DAY = 86400000;
 const iso = (msAgo = 0) => new Date(Date.now() - msAgo).toISOString();
@@ -139,41 +141,74 @@ describe('Pastry Case hero: real chalkboard photo', () => {
 });
 
 describe("admin: Today's chalkboard", () => {
+  let realImage;
   beforeEach(() => {
     URL.createObjectURL = vi.fn(() => 'blob:preview');
     URL.revokeObjectURL = vi.fn();
+    realImage = window.Image;
+  });
+  afterEach(() => {
+    window.Image = realImage;
+    Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => true });
   });
 
-  const renderAdmin = () => render(<ToastProvider><ChalkboardManager /></ToastProvider>);
+  const renderAdmin = () =>
+    render(
+      <MemoryRouter initialEntries={['/admin/chalkboard']}>
+        <ToastProvider><UnsavedProvider><ChalkboardManager /></UnsavedProvider></ToastProvider>
+      </MemoryRouter>
+    );
+  const camera = () => screen.findByLabelText(/take a photo of the board/i);
+  const putLiveBtn = () => screen.getByRole('button', { name: /put it on the website/i });
+  const photo = (name = 'IMG_2041.jpg', type = 'image/jpeg') => new File(['x'], name, { type });
+  const alertText = async () => (await screen.findByRole('alert')).textContent;
 
-  it('offers the phone camera and a normal file pick', async () => {
+  it('one giant camera button (phone camera) plus a normal photo pick', async () => {
     renderAdmin();
-    const camera = await screen.findByLabelText(/take a photo/i);
-    expect(camera.getAttribute('accept')).toBe('image/*');
-    expect(camera.getAttribute('capture')).toBe('environment');
-    const pick = screen.getByLabelText(/choose a photo/i);
-    expect(pick.getAttribute('accept')).toBe('image/*');
+    const cam = await camera();
+    expect(cam.getAttribute('accept')).toBe('image/*');
+    expect(cam.getAttribute('capture')).toBe('environment');
+    expect(cam.closest('label').className).toMatch(/chalk__camera/);
+    const pick = screen.getByLabelText(/choose a photo you already took/i);
     expect(pick.hasAttribute('capture')).toBe(false);
+    // nothing to publish until there's a photo
+    expect(screen.queryByRole('button', { name: /put it on the website/i })).toBeNull();
+    expect(screen.getByRole('status').textContent).toMatch(/not showing — the drawn menu board is up/i);
   });
 
-  it('previews, compresses + uploads under chalkboard/, and publishes the documented shape', async () => {
-    stored = { enabled: true, url: 'https://cdn.test/media/chalkboard/0-old.webp', path: 'chalkboard/0-old.webp', caption: '', updated_at: iso(DAY), max_age_days: 3 };
+  it('happy path: photo → homepage preview → "Put it on the website" publishes exactly once', async () => {
+    stored = { enabled: true, url: 'https://cdn.test/media/chalkboard/0-old.webp', path: 'chalkboard/0-old.webp', caption: '', updated_at: iso(4 * DAY), max_age_days: 3 };
     renderAdmin();
-    const file = new File(['x'], 'IMG_2041.HEIC.jpg', { type: 'image/jpeg' });
-    fireEvent.change(await screen.findByLabelText(/choose a photo/i), { target: { files: [file] } });
-    expect(screen.getByAltText(/preview of the new chalkboard photo/i).getAttribute('src')).toBe('blob:preview');
-    expect(uploadImage).not.toHaveBeenCalled(); // nothing leaves the phone before Publish
+    const file = photo();
+    fireEvent.change(await camera(), { target: { files: [file] } });
 
+    // the preview is the homepage's own framed, tilted board, marked as not live
+    const img = await screen.findByAltText(/preview of the chalkboard photo on the homepage/i);
+    expect(img.getAttribute('src')).toBe('blob:preview');
+    expect(img.closest('.pch__board--photo')).toBeTruthy();
+    expect(screen.getByText('Updated today')).toBeTruthy();
+    expect(screen.getAllByText(/not on the website yet/i).length).toBeGreaterThan(0);
+    expect(screen.getByLabelText(/retake/i)).toBeTruthy();
+    // nothing has left the phone
+    expect(uploadImage).not.toHaveBeenCalled();
+    expect(upsert).not.toHaveBeenCalled();
+
+    // the optional words are folded away, but work
+    expect(screen.getByText(/add a few words under the photo/i).closest('details').open).toBe(false);
     fireEvent.change(screen.getByLabelText(/a few words/i), { target: { value: '  Pumpkin cold foam is back  ' } });
-    const before = Date.now();
-    fireEvent.click(screen.getByRole('button', { name: /publish this photo/i }));
-    await waitFor(() => expect(upsert).toHaveBeenCalledTimes(1));
+    expect(upsert).not.toHaveBeenCalled();
 
+    const before = Date.now();
+    fireEvent.click(putLiveBtn());
+    fireEvent.click(screen.getByRole('button', { name: /putting it up|put it on the website/i })); // an impatient double tap
+    expect(await screen.findByRole('heading', { name: /it’s on the website/i })).toBeTruthy();
+
+    expect(uploadImage).toHaveBeenCalledTimes(1);
     expect(uploadImage).toHaveBeenCalledWith(file, { preset: 'chalkboard', folder: 'chalkboard' });
+    expect(upsert).toHaveBeenCalledTimes(1);
     const [row, opts] = upsert.mock.calls[0];
     expect(opts).toEqual({ onConflict: 'key' });
-    expect(row.key).toBe('chalkboard_photo');
-    expect(row.status).toBe('published');
+    expect(row).toMatchObject({ key: 'chalkboard_photo', status: 'published' });
     expect(row.data).toEqual({
       url: 'https://cdn.test/media/chalkboard/1-board.webp',
       path: 'chalkboard/1-board.webp',
@@ -182,28 +217,132 @@ describe("admin: Today's chalkboard", () => {
       enabled: true,
       max_age_days: 3,
     });
-    expect(new Date(row.data.updated_at).toISOString()).toBe(row.data.updated_at);
     expect(Date.parse(row.data.updated_at)).toBeGreaterThanOrEqual(before);
-    // yesterday's photo is tidied away
     expect(deleteMedia).toHaveBeenCalledWith('chalkboard/0-old.webp');
-    expect(await screen.findByText(/showing on the homepage/i)).toBeTruthy();
+
+    // success screen: see it, go home, status in plain words
+    const see = screen.getByRole('link', { name: /see it on the website/i });
+    expect(see.getAttribute('target')).toBe('_blank');
+    expect(screen.getByRole('link', { name: /back to admin home/i }).getAttribute('href')).toBe('/admin');
+    expect(screen.getByRole('status').textContent).toMatch(/on the website now — taken this (morning|afternoon|evening) at \d{1,2}:\d{2}, comes down \w+/i);
   });
 
-  it('"Remove" goes back to the drawn board (enabled false, photo kept)', async () => {
+  it('Retake swaps the photo without publishing anything', async () => {
+    renderAdmin();
+    fireEvent.change(await camera(), { target: { files: [photo('a.jpg')] } });
+    const second = photo('b.jpg');
+    fireEvent.change(screen.getByLabelText(/retake/i), { target: { files: [second] } });
+    expect(uploadImage).not.toHaveBeenCalled();
+    fireEvent.click(putLiveBtn());
+    await screen.findByRole('heading', { name: /it’s on the website/i });
+    expect(uploadImage).toHaveBeenCalledWith(second, expect.anything());
+  });
+
+  it('how long it stays up is under "More options", defaulting to 3 days', async () => {
+    renderAdmin();
+    const select = await screen.findByLabelText(/take the photo down after/i);
+    expect(select.closest('details').open).toBe(false);
+    expect(select.value).toBe('3');
+    fireEvent.change(await camera(), { target: { files: [photo()] } });
+    fireEvent.change(select, { target: { value: '1' } });
+    fireEvent.click(putLiveBtn());
+    await screen.findByRole('heading', { name: /it’s on the website/i });
+    expect(upsert.mock.calls[0][0].data.max_age_days).toBe(1);
+  });
+
+  it('"Take the photo down" is staged until the one big button', async () => {
     stored = { enabled: true, url: PHOTO, path: 'chalkboard/today.webp', caption: 'Hi', updated_at: iso(), max_age_days: 3 };
     renderAdmin();
-    fireEvent.click(await screen.findByRole('button', { name: /go back to the drawn board/i }));
-    await waitFor(() => expect(upsert).toHaveBeenCalledTimes(1));
+    fireEvent.click(await screen.findByRole('button', { name: /take the photo down/i }));
+    expect(upsert).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: /take it off the website/i }));
+    await screen.findByRole('heading', { name: /drawn menu board is back/i });
+    expect(upsert).toHaveBeenCalledTimes(1);
     expect(upsert.mock.calls[0][0]).toMatchObject({ key: 'chalkboard_photo', data: { ...stored, enabled: false } });
     expect(uploadImage).not.toHaveBeenCalled();
-    expect(await screen.findByText(/not showing/i)).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toMatch(/not showing — the drawn menu board is up/i);
   });
 
-  it('shows when it was last updated', async () => {
-    stored = { enabled: true, url: PHOTO, updated_at: '2026-10-19T13:05:00Z', max_age_days: 7 };
-    renderAdmin();
-    const status = await screen.findByRole('status');
-    expect(status.textContent).toMatch(/Oct 19/);
-    expect(status.textContent).toMatch(/9:05/);
+  describe('problems are explained in plain words', () => {
+    it('a photo that is too big', async () => {
+      renderAdmin();
+      const big = photo('huge.jpg');
+      Object.defineProperty(big, 'size', { value: 22 * 1024 * 1024 });
+      fireEvent.change(await camera(), { target: { files: [big] } });
+      expect(await alertText()).toMatch(/too big \(22\.0 MB\)/i);
+      expect(screen.queryByRole('button', { name: /put it on the website/i })).toBeNull();
+    });
+
+    it('a file that is not a photo', async () => {
+      renderAdmin();
+      fireEvent.change(await camera(), { target: { files: [new File(['%PDF'], 'menu.pdf', { type: 'application/pdf' })] } });
+      expect(await alertText()).toMatch(/isn’t a photo/i);
+    });
+
+    it('an iPhone HEIC this browser cannot open', async () => {
+      window.Image = class { set src(_) { setTimeout(() => this.onerror?.(), 0); } };
+      renderAdmin();
+      fireEvent.change(await camera(), { target: { files: [photo('IMG_0001.HEIC', 'image/heic')] } });
+      expect(await alertText()).toMatch(/HEIC.*Most Compatible/s);
+      expect(uploadImage).not.toHaveBeenCalled();
+    });
+
+    it('a HEIC the browser CAN open (Safari) goes through as normal', async () => {
+      window.Image = class { set src(_) { setTimeout(() => this.onload?.(), 0); } };
+      renderAdmin();
+      fireEvent.change(await camera(), { target: { files: [photo('IMG_0001.HEIC', 'image/heic')] } });
+      expect(await screen.findByRole('button', { name: /put it on the website/i })).toBeTruthy();
+    });
+
+    it('no connection: keeps the photo and says what to do', async () => {
+      upsert.mockResolvedValueOnce({ error: { message: 'Failed to fetch' } });
+      renderAdmin();
+      fireEvent.change(await camera(), { target: { files: [photo()] } });
+      fireEvent.click(putLiveBtn());
+      expect(await alertText()).toMatch(/no connection.*your photo is still here/i);
+      expect(putLiveBtn().disabled).toBe(false);
+      expect(screen.getByAltText(/preview of the chalkboard photo/i)).toBeTruthy();
+    });
+
+    it('offline before trying: nothing is sent', async () => {
+      Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false });
+      renderAdmin();
+      fireEvent.change(await camera(), { target: { files: [photo()] } });
+      fireEvent.click(putLiveBtn());
+      expect(await alertText()).toMatch(/no connection/i);
+      expect(uploadImage).not.toHaveBeenCalled();
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it('signed out: says so and offers a sign-in link', async () => {
+      uploadImage.mockRejectedValueOnce(new Error('JWT expired'));
+      renderAdmin();
+      fireEvent.change(await camera(), { target: { files: [photo()] } });
+      fireEvent.click(putLiveBtn());
+      expect(await alertText()).toMatch(/signed out/i);
+      expect(screen.getByRole('link', { name: /sign in again/i }).getAttribute('target')).toBe('_blank');
+      expect(upsert).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe('chalkboard status line', () => {
+  // Mon Oct 19 2026, 7:42 AM in NJ
+  const taken = '2026-10-19T11:42:00Z';
+  it('says when it was taken and when it comes down, on the shop clock', () => {
+    const now = new Date('2026-10-19T14:00:00Z');
+    expect(chalkStatus({ enabled: true, url: PHOTO, updated_at: taken, max_age_days: 3 }, now)).toEqual({
+      live: true,
+      text: 'On the website now — taken this morning at 7:42, comes down Thursday',
+    });
+    expect(chalkStatus({ enabled: true, url: PHOTO, updated_at: taken, max_age_days: 1 }, now).text).toMatch(/comes down tomorrow$/);
+    expect(chalkStatus({ enabled: true, url: PHOTO, updated_at: taken, max_age_days: 3 }, new Date('2026-10-20T14:00:00Z')).text)
+      .toBe('On the website now — taken yesterday at 7:42 AM, comes down Thursday');
+  });
+  it('says plainly when the drawn board is up', () => {
+    const now = new Date('2026-10-23T14:00:00Z');
+    expect(chalkStatus({ enabled: false, url: PHOTO, updated_at: taken }, now).text).toBe('Not showing — the drawn menu board is up');
+    expect(chalkStatus({ enabled: true, url: PHOTO, updated_at: taken, max_age_days: 3 }, now).text).toMatch(/^Not showing — the last photo \(taken on Mon at 7:42 AM\) has come down/);
+    expect(chalkStatus({}, now).text).toBe('Not showing — the drawn menu board is up');
   });
 });

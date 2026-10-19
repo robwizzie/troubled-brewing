@@ -6,7 +6,6 @@ import SectionRenderer from '../components/SectionRenderer.jsx';
 import SEO from '../components/SEO.jsx';
 import Ticker from '../components/Ticker.jsx';
 import ConceptSwitcher from '../components/ConceptSwitcher.jsx';
-import { localBusinessJsonLd } from '../lib/jsonld.js';
 import * as seed from '../lib/seed.js';
 
 /* Home is concept-swappable: the hero renders as Immersive Gallery (lead),
@@ -87,7 +86,7 @@ export default function Home() {
 
   return (
     <>
-      <SEO title={page?.title} description={page?.meta_description} path="/" jsonLd={localBusinessJsonLd()} />
+      <SEO title={page?.title} description={page?.meta_description} path="/" />
       {preview && (
         <div className="announce" style={{ background: 'var(--color-accent)', color: 'var(--color-on-accent)' }}>
           Preview mode — showing unpublished drafts. This banner isn't visible to the public.
