@@ -15,6 +15,14 @@ import { asset } from './config.js';
 export const slugifyDrink = (s) =>
   String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+/* A CUTOUT is a product photo with its background removed (a transparent
+   PNG/WebP). It's recognised by "cutout" in the file name — Menu Manager keeps
+   the uploaded file's name in the stored path (…/1729…-iced-latte-cutout.webp),
+   so naming the file is the whole switch. Cutouts are staged on a lit backdrop
+   and shown whole (contain, never cropped); ordinary photos keep filling
+   their frame exactly as before. */
+export const isCutout = (src) => /(^|[/_.-])cutout([/_.-]|$)/i.test(String(src || '').split('?')[0]);
+
 /** Every candidate photo for a menu item, best first. */
 export function productImageSources(item) {
   return [item?.image_url, item?.name ? asset(`images/drinks/${slugifyDrink(item.name)}.jpg`) : null].filter(Boolean);
