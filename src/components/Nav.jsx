@@ -17,6 +17,7 @@ const MORE = [
   { to: '/troublemakers', label: 'Troublemakers' },
   { to: '/timeline', label: 'Our Story So Far' },
   { to: '/neighborhood', label: 'Local Love' },
+  { to: '/gift-cards', label: 'Gift Cards' },
   { to: '/contact', label: 'Contact' },
 ];
 
