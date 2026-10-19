@@ -98,6 +98,29 @@ export function googleWeekly(profile) {
 }
 
 /**
+ * When the shop next opens, on the shop's clock: { inDays, dow, time } where
+ * inDays 0 = later today, 1 = tomorrow…; null if nothing is open in the next
+ * week. Same rows + overrides as computeStatus, so the two always agree.
+ * (computeStatus's own "Closed — opens X" names TODAY's opening time, which is
+ * wrong after closing; this is for answers that need the real next one.)
+ */
+export function nextOpening(hours, overrides = [], now = new Date()) {
+  const today = shopNow(now);
+  for (let k = 0; k < 8; k += 1) {
+    const dow = (today.dow + k) % 7;
+    // the date k days on, read at the shop's noon-ish so DST shifts can't skip a day
+    const iso = k === 0 ? today.isoDate : shopNow(new Date(now.getTime() + k * 86_400_000 + (720 - today.minutes) * 60_000)).isoDate;
+    const override = overrides.find((o) => o.override_date === iso);
+    const row = override || hours.find((h) => h.day_of_week === dow) || {};
+    const o = toMinutes(row.open_time);
+    if (o == null || !row.close_time) continue;
+    if (k === 0 && today.minutes >= o) continue;
+    return { inDays: k, dow, time: row.open_time };
+  }
+  return null;
+}
+
+/**
  * Compute today's status given weekly hours + overrides.
  * Returns { open, label, todayHours, override }.
  */
