@@ -54,7 +54,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `pull_quote` | `{ quote, attribution, source }` — real quotes only; renders nothing without one | data | `PullQuote.jsx` |
 | `photo_mosaic` | `{ eyebrow, heading, intro, badges, images: [{url, alt, caption?}], layout: 'salon'\|'strip', tone }` | data | `PhotoMosaic.jsx` |
 | `visit_panel` | `{ heading, address, embed_url, directions_label, phone_label, phone_url, hours_heading }` — map + live hours letterboard (today highlighted) | data + hours | `VisitPanel.jsx` |
-| `gift_cards` | `{ eyebrow, heading, intro, button_label, button_url, how_it_works, occasions_heading, occasions_hint, occasion_N_label / _note / _art (N = 1–4; art: cake, thanks, apple, fox, cup, heart), show_phone }` — the /gift-cards page: hero + one "Buy an e-gift card" button (new tab) + occasion cards that all open the same link. Blank `button_url` = `SPOTON_GIFT_CARD_URL` (config.js) | data | `GiftCards.jsx` (lazy) |
+| `gift_cards` | `{ eyebrow, heading, intro, button_label, button_url, how_it_works, occasions_heading, occasions_hint, occasion_N_label / _note / _art (N = 1–4; art: cake, thanks, apple, fox, cup, heart), show_phone }` — the /gift-cards page: hero + one "Buy an e-gift card" button (new tab) + occasion cards that all open the same link. Blank `button_url` = `GIFT_CARD_URL` (config.js) | data | `GiftCards.jsx` (lazy) |
 
 ### Future-stub section types (built as no-op/coming-soon placeholders, not in v1 scope)
 
