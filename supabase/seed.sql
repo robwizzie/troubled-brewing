@@ -20,7 +20,8 @@ insert into pages (slug, title, meta_description) values
   ('reviews', 'Reviews | Trouble Brewing Coffee House, Haddon Heights NJ', 'What neighbors say about Trouble Brewing Coffee House in Haddon Heights, NJ: real Google reviews of our coffee, breakfast and crew. Leave your own.'),
   ('gallery-wall', 'The Gallery Wall | Trouble Brewing Coffee House', 'The green gallery wall at Trouble Brewing Coffee House: framed art, a gold fox and the curiosities that make our Haddon Heights café feel like home.'),
   ('troublemakers', 'Meet the Troublemakers | Trouble Brewing Coffee House', 'Meet the Troublemakers, the crew pouring La Colombe coffee and making breakfast all day at Trouble Brewing Coffee House in Haddon Heights, NJ.'),
-  ('neighborhood', 'Local Love: Station Ave Neighbors | Trouble Brewing', 'Our favorite Haddon Heights neighbors on Station Ave: Italian, empanadas, pizza, afternoon tea, flowers and local gifts. Shop small with Trouble Brewing.')
+  ('neighborhood', 'Local Love: Station Ave Neighbors | Trouble Brewing', 'Our favorite Haddon Heights neighbors on Station Ave: Italian, empanadas, pizza, afternoon tea, flowers and local gifts. Shop small with Trouble Brewing.'),
+  ('gift-cards', 'Gift Cards | Trouble Brewing Coffee House, Haddon Heights', 'Give someone Trouble: send an e-gift card for Trouble Brewing Coffee House in Haddon Heights, NJ. Pick an amount, add a note, and it goes by email.')
 on conflict (slug) do nothing;
 
 -- -----------------------------------------------------------------------------
@@ -61,7 +62,7 @@ insert into sections (page_slug, type, display_order, data) values
 insert into sections (page_slug, type, display_order, data) values
 ('menu', 'food_showcase', 0, '{"heading": "Fresh off the counter", "subheading": "Tap anything to order it on SpotOn."}'),
 ('menu', 'menu_block', 1, '{"heading": "The Menu", "categories": ["espresso", "specialty", "food", "pastry", "seasonal"]}'),
-('menu', 'cta', 2, '{"heading": "Ready to order?", "body": "Order ahead on SpotOn for pickup.", "button_label": "Order on SpotOn", "button_url": ""}');
+('menu', 'cta', 2, '{"heading": "Ready to order?", "body": "Order ahead on SpotOn for pickup.", "button_label": "Order on SpotOn", "button_url": "", "secondary_label": "Buying for someone? Send a gift card", "secondary_url": "/gift-cards"}');
 
 -- ABOUT -------------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
@@ -114,6 +115,10 @@ insert into sections (page_slug, type, display_order, data) values
 ('neighborhood', 'hero', 0, '{"heading": "Local Love", "subheading": "The Haddon Heights spots we can''t get enough of.", "background_image_url": "", "cta_label": "", "cta_url": ""}'),
 ('neighborhood', 'local_businesses_grid', 1, '{"heading": "Our neighbors"}'),
 ('neighborhood', 'cta', 2, '{"heading": "Know a great local spot?", "body": "Tell us who we''re missing.", "button_label": "Send a suggestion", "button_url": "/contact"}');
+
+-- GIFT CARDS --------------------------------------------------------
+insert into sections (page_slug, type, display_order, data) values
+('gift-cards', 'gift_cards', 0, '{"eyebrow": "Gift cards", "heading": "Give someone Trouble", "intro": "For the regular, the early riser, the friend who could use a good morning: send a Trouble Brewing e-gift card straight to their inbox.", "button_label": "Buy an e-gift card", "button_url": "", "how_it_works": "Pick an amount, add a note, and we''ll email it.", "occasions_heading": "A little Trouble for…", "occasions_hint": "Tap a card to send one.", "occasion_1_label": "Birthday", "occasion_1_note": "Another lap around the sun calls for a latte.", "occasion_1_art": "cake", "occasion_2_label": "Thank you", "occasion_2_note": "For the neighbor, the sitter, the one who always shows up.", "occasion_2_art": "thanks", "occasion_3_label": "Teacher gift", "occasion_3_note": "Fuel for the people grading papers before first bell.", "occasion_3_art": "apple", "occasion_4_label": "Just because", "occasion_4_note": "No occasion needed. That’s the best kind of Trouble.", "occasion_4_art": "fox", "show_phone": true}');
 
 -- TIMELINE ----------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values

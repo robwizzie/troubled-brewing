@@ -16,6 +16,7 @@ const NAV = [
   { to: '/events', label: 'Events' },
   { to: '/location', label: 'Hours & Location' },
   { to: '/reviews', label: 'Reviews' },
+  { to: '/gift-cards', label: 'Gift Cards' },
   { to: '/contact', label: 'Contact & Catering' },
 ];
 
