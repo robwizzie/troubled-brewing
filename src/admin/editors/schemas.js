@@ -154,6 +154,19 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'button_url', label: 'Button link', type: 'text', hint: 'A page like /menu, or a full URL.' },
     ],
   },
+  food_showcase: {
+    manager: 'menu',
+    note: 'A shelf of your menu photos that gently bob, with hand-lettered price tags. It fills itself from the Menu: every item whose photo is a background-removed cutout (file name ending in "-cutout") shows up automatically, and tapping one jumps to it on the Menu page.',
+    fields: [
+      { name: 'heading', label: 'Heading', type: 'text' },
+      { name: 'subheading', label: 'Line under the heading', type: 'text', hint: 'Optional.' },
+      { name: 'items', label: 'Only these items', type: 'tags', hint: 'Exact menu names, comma separated, in the order you want them. Blank = every item with a cutout photo.' },
+      { name: 'categories', label: 'Only these categories', type: 'tags', hint: 'Any of: espresso, specialty, food, pastry, seasonal. Blank = all.' },
+      { name: 'hide_filters', label: 'Hide the category buttons', type: 'checkbox' },
+      { name: 'hide_prices', label: 'Hide prices on the tags', type: 'checkbox' },
+      { name: 'include_photos', label: 'Include ordinary photos too', type: 'checkbox', hint: 'Off = cutouts only, which look best standing on the shelf.' },
+    ],
+  },
   social_proof: {
     manager: 'reviews',
     note: 'The rating comes from your Google Profile. The quotes are your real Google reviews — featured ones first, then the ones with photos. Manage which ones show below.',
