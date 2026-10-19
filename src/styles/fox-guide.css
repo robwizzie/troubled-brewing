@@ -104,7 +104,9 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
   position: absolute; left: 0; bottom: calc(100% + 14px);
   display: flex; flex-direction: column;
   width: min(384px, calc(100vw - 20px));
-  max-height: min(600px, calc(100svh - var(--header-h, 68px) - var(--fox-b) - var(--fox-h) - 30px));
+  /* --fox-room is measured by FoxGuide (header bottom → just above the fox);
+     the calc is only the first-frame fallback */
+  max-height: min(600px, var(--fox-room, calc(100svh - var(--header-h, 68px) - var(--fox-b) - var(--fox-h) - 30px)));
   background: var(--color-paper); color: var(--color-ink);
   border-radius: 18px;
   box-shadow: 0 0 0 2px var(--color-yellow), 0 18px 44px rgba(30, 22, 8, 0.3);
@@ -135,10 +137,19 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 .fox-help__close:hover { background: var(--color-green-soft); color: var(--color-ink); }
 .fox-help__close:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
 
-.fox-help__body { overflow-y: auto; overscroll-behavior: contain; padding: 14px 16px 6px; }
-.fox-help__say {
-  position: relative; margin: 0 0 14px; padding: 11px 14px 12px;
+.fox-help__say { flex: none; padding: 14px 16px 10px; } /* never scrolls, never shrinks */
+.fox-help__say-in {
+  position: relative; padding: 11px 14px 12px;
   background: var(--color-green-soft); border-radius: 4px 14px 14px 14px;
+  animation: fox-answer 0.22s ease-out both; /* a new answer fades up into place */
+}
+/* only the chips scroll, beneath the answer, when the card is short */
+.fox-help__body {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: 2px 16px 14px;
+  /* a soft fade on the last row says "there's more below" when it scrolls */
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
 }
 .fox-help__q { margin: 0 0 3px; font: 700 0.76rem/1.2 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-green-deep); }
 .fox-help__a { margin: 0; font: 500 0.98rem/1.42 var(--font-body); color: var(--color-ink); }
@@ -184,18 +195,31 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 
 .fox-guide__scrim { display: none; }
 
-/* ---- hidden: a paw tab at the screen edge brings him back --------------- */
+/* ---- hidden: his head peeks in from the screen edge to bring him back --- */
 .fox-guide.is-hidden { left: 0; }
 .fox-guide__tab {
-  pointer-events: auto; display: grid; place-items: center;
-  width: 30px; height: 42px; padding: 0 2px 0 0; border: 0; cursor: pointer;
-  border-radius: 0 21px 21px 0;
-  background: var(--color-cream); color: var(--color-yellow-deep); font-size: 15px;
+  pointer-events: auto; position: relative; display: block; overflow: hidden;
+  width: 44px; height: 44px; padding: 0; border: 0; cursor: pointer;
+  border-radius: 0 22px 22px 0;
+  background: radial-gradient(120% 100% at 30% 0%, #fffdf6, var(--color-cream));
   box-shadow: 0 0 0 1.5px var(--color-yellow), 0 4px 12px rgba(30, 22, 8, 0.2);
   animation: fox-tab 0.35s ease-out both;
 }
-.fox-guide__tab:hover { color: var(--color-ink); }
+/* a crop of the same drawing: just his head and top hat, turned to face in */
+.fox-guide__peek {
+  position: absolute; left: 3px; bottom: 0; width: 38px; height: 38px;
+  background-repeat: no-repeat; background-size: 120px auto; background-position: -47px 2px;
+  transform: scaleX(-1);
+}
 .fox-guide__tab:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+/* ---- coming back: he slides in from the edge he left by, then one small
+   hop to land (~0.4s + a beat). Plays once, when he's put back. */
+.fox-guide.is-back .fox-guide__fox { animation: none; }
+.fox-guide.is-back .fox-guide__body { animation: fox-return-l 0.4s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.fox-guide.is-back .fox-guide__x { animation: fox-fade 0.2s ease-out 0.7s both; } /* × waits till he's landed */
+.fox-guide.is-back .fox-guide__card { animation: fox-land 0.3s ease-out 0.38s both; }
+.fox-guide.is-back .fox-guide__bubble { animation-delay: 0.6s; }
 
 /* ---- phones: a smaller fox, and the card becomes a bottom sheet --------- */
 @media (max-width: 600px) {
@@ -209,7 +233,7 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
   }
   .fox-help {
     position: fixed; left: 0; right: 0; bottom: 0; width: auto;
-    max-height: calc(100svh - var(--header-h, 68px) - 12px);
+    max-height: var(--fox-room, calc(100svh - var(--header-h, 68px) - 12px));
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -2px 0 var(--color-yellow), 0 -12px 40px rgba(30, 22, 8, 0.28);
     animation: fox-sheet 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
@@ -229,14 +253,19 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
    fox steps aside: bottom-right on a laptop, top-left (under the nav) on a phone. */
 body:has(.sih) .fox-guide { left: auto; right: max(64px, env(safe-area-inset-right, 0px)); flex-direction: row-reverse; }
 body:has(.sih) .fox-guide.is-hidden { right: 0; }
-body:has(.sih) .fox-guide__tab { border-radius: 21px 0 0 21px; padding: 0 0 0 2px; }
+body:has(.sih) .fox-guide__tab { border-radius: 22px 0 0 22px; }
+body:has(.sih) .fox-guide__peek { left: auto; right: 3px; transform: none; }
+body:has(.sih) .fox-guide.is-back .fox-guide__body { animation-name: fox-return-r; }
+body:has(.sih) .fox-guide__tab { animation-name: fox-tab-r; }
 body:has(.sih) .fox-guide__bubble { border-radius: 14px 14px 3px 14px; }
 body:has(.sih) .fox-guide__bubble::before { left: auto; right: -7px; box-shadow: 2px -2px 0 0 var(--color-yellow); }
 body:has(.sih) .fox-help { left: auto; right: 0; transform-origin: calc(100% - 30px) 100%; }
 @media (max-width: 600px) {
   body:has(.sih) .fox-guide { right: auto; left: 12px; bottom: auto; top: 86px; flex-direction: row; align-items: flex-start; }
   body:has(.sih) .fox-guide.is-hidden { left: 0; right: auto; }
-  body:has(.sih) .fox-guide__tab { border-radius: 0 21px 21px 0; padding: 0 2px 0 0; }
+  body:has(.sih) .fox-guide__tab { border-radius: 0 22px 22px 0; animation-name: fox-tab; }
+  body:has(.sih) .fox-guide__peek { right: auto; left: 3px; transform: scaleX(-1); }
+  body:has(.sih) .fox-guide.is-back .fox-guide__body { animation-name: fox-return-l; }
   body:has(.sih) .fox-guide__bubble { margin: 6px 0 0; border-radius: 3px 14px 14px 14px; }
   body:has(.sih) .fox-guide__bubble::before { right: auto; left: -7px; top: 12px; bottom: auto; box-shadow: -2px 2px 0 0 var(--color-yellow); }
   body:has(.sih) .fox-help { left: 0; right: 0; }
@@ -248,6 +277,12 @@ body:has(.sih) .fox-help { left: auto; right: 0; transform-origin: calc(100% - 3
 @keyframes fox-sheet { from { transform: translateY(100%); } }
 @keyframes fox-fade { from { opacity: 0; } }
 @keyframes fox-tab { from { transform: translateX(-100%); } }
+@keyframes fox-tab-r { from { transform: translateX(100%); } }
+@keyframes fox-answer { from { opacity: 0; transform: translateY(4px); } }
+/* back in from the edge: a plain slide, no scaling, no overshoot */
+@keyframes fox-return-l { from { transform: translateX(calc(-100% - 20px)); } }
+@keyframes fox-return-r { from { transform: translateX(calc(100% + 80px)); } }
+@keyframes fox-land { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-6px); } }
 /* a sip: he tips back a touch, then settles (rotate is added to his lean) */
 @keyframes fox-sip { 0%, 84%, 100% { translate: 0 0; rotate: 0deg; } 88%, 93% { translate: 0 -2px; rotate: 6deg; } }
 /* hello: a peek up, then a little side-to-side wave of the whole fox */

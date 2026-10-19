@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaEyeSlash, FaGhost, FaHeart, FaPaw, FaSnowflake, FaStar, FaXmark } from 'react-icons/fa6';
+import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaEyeSlash, FaGhost, FaHeart, FaSnowflake, FaStar, FaXmark } from 'react-icons/fa6';
 import { asset } from '../lib/config.js';
 import { track } from '../lib/analytics.js';
 import { orderUrlFor } from '../lib/order.js';
@@ -114,6 +114,7 @@ export default function FoxGuide() {
   const panel = useRef(null);
   const [hidden, setHidden] = useState(() => store.get('localStorage', HIDDEN_KEY) === '1');
   const [open, setOpen] = useState(false);
+  const [back, setBack] = useState(false); // came back from the edge this visit
   const [wanted, setWanted] = useState(false);
   const [picked, setPicked] = useState(null);
   const [line, setLine] = useState(null);
@@ -216,10 +217,31 @@ export default function FoxGuide() {
       if (panel.current?.contains(e.target) || foxBtn.current?.contains(e.target)) return;
       close(false);
     };
+    // the card gets exactly the room between the bottom of the header (or
+    // the top of the screen, once a banner has scrolled away) and the fox,
+    // so it never tucks under the nav on a short laptop
+    let raf = 0;
+    const fit = () => {
+      const el = panel.current;
+      if (!el) return;
+      const nav = document.querySelector('.nav');
+      const top = Math.max(0, nav ? nav.getBoundingClientRect().bottom : 0);
+      const sheet = window.matchMedia?.('(max-width: 600px)').matches;
+      const foxTop = foxBtn.current?.getBoundingClientRect().top ?? window.innerHeight;
+      const room = sheet ? window.innerHeight - top - 12 : foxTop - 14 - top - 12;
+      el.style.setProperty('--fox-room', `${Math.max(240, Math.floor(room))}px`);
+    };
+    const onLayout = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
+    fit();
+    window.addEventListener('resize', onLayout, { passive: true });
+    window.addEventListener('scroll', onLayout, { passive: true });
     const id = setInterval(() => tick((t) => t + 1), 60_000);
     document.addEventListener('keydown', onKey);
     document.addEventListener('pointerdown', onDown);
     return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', onLayout);
+      window.removeEventListener('scroll', onLayout);
       clearInterval(id);
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('pointerdown', onDown);
@@ -242,7 +264,7 @@ export default function FoxGuide() {
     store.del('localStorage', HIDDEN_KEY);
     store.set('localStorage', MET_KEY, '1'); // no first-visit hello on a return
     setLine('I’m back! Tap me any time.');
-    play('wave', 1400);
+    setBack(true); // he slides in from the edge and lands with one small hop (CSS)
     track('fox_show');
     requestAnimationFrame(() => foxBtn.current?.focus());
   };
@@ -256,9 +278,12 @@ export default function FoxGuide() {
   };
 
   const ask = (id) => {
-    setPicked((cur) => (cur === id ? null : id));
-    if (id === 'fun' && picked !== 'fun') {
+    if (id === 'fun') {
+      // tapping it again tells the next one rather than closing it
+      setPicked('fun');
       setQuipN((n) => { store.set('localStorage', QUIP_I_KEY, String(n + 1)); return n + 1; });
+    } else {
+      setPicked((cur) => (cur === id ? null : id));
     }
     track('fox_question', { question: id });
   };
@@ -272,14 +297,15 @@ export default function FoxGuide() {
     return (
       <div className="fox-guide is-hidden">
         <button type="button" ref={tabBtn} className="fox-guide__tab" onClick={bringBack} aria-label="Bring back the fox" title="Bring back the fox">
-          <FaPaw aria-hidden="true" />
+          {/* his own head and top hat, peeking in from the edge */}
+          <span className="fox-guide__peek" aria-hidden="true" style={{ backgroundImage: `url(${asset('images/brand/fox-sipping.png')})` }} />
         </button>
       </div>
     );
   }
 
   return (
-    <div className={`fox-guide${open ? ' is-open' : ''}${move ? ` is-${move}` : ''}`}>
+    <div className={`fox-guide${open ? ' is-open' : ''}${back ? ' is-back' : ''}${move ? ` is-${move}` : ''}`}>
       {open && <div className="fox-guide__scrim" aria-hidden="true" />}
       {open && (
         <section
@@ -304,8 +330,10 @@ export default function FoxGuide() {
             </button>
           </header>
 
-          <div className="fox-help__body">
-            <div className="fox-help__say" aria-live="polite">
+          {/* the answer sits right under the header and never scrolls away —
+              only the chips below it scroll when the card is short */}
+          <div className="fox-help__say" aria-live="polite">
+            <div className="fox-help__say-in" key={chosen ? `${chosen.id}-${chosen.id === 'fun' ? quipN : ''}` : 'hello'}>
               {chosen ? (
                 <>
                   <p className="fox-help__q">{chosen.q}</p>
@@ -320,7 +348,9 @@ export default function FoxGuide() {
                 <p className="fox-help__a">{day ? day.text : 'Hi there! What can I help you with?'}</p>
               )}
             </div>
+          </div>
 
+          <div className="fox-help__body">
             {data ? (
               <ul className="fox-help__chips" aria-label="Common questions">
                 {answers.map((a) => (
