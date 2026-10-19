@@ -18,6 +18,7 @@ import LocalBusinessManager from './managers/LocalBusinessManager.jsx';
 import TimelineManager from './managers/TimelineManager.jsx';
 import HoursEditor from './managers/HoursEditor.jsx';
 import QuickBlocks from './managers/QuickBlocks.jsx';
+import PairingsManager from './managers/PairingsManager.jsx';
 import ChalkboardManager from './managers/ChalkboardManager.jsx';
 import GoogleProfileSettings from './managers/GoogleProfileSettings.jsx';
 import Inbox from './managers/Inbox.jsx';
@@ -57,6 +58,7 @@ export default function AdminApp() {
               <Route index element={<AdminHome />} />
               <Route path="settings" element={<Navigate to="/admin" replace />} />
               <Route path="menu" element={screen(<MenuManager />, 'menu', 'View the live Menu page ↗')} />
+              <Route path="pairings" element={screen(<PairingsManager />, 'menu', 'View the live Menu page ↗')} />
               <Route path="events" element={screen(<EventsManager />, 'events', 'View the live Events page ↗')} />
               <Route path="testimonials" element={screen(<TestimonialsManager />, 'reviews', 'View the live Reviews page ↗')} />
               <Route path="reviews" element={screen(<ReviewsManager />, 'reviews', 'View the live Reviews page ↗')} />
