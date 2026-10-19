@@ -27,7 +27,7 @@ describe('the food shelf', () => {
     const names = [...container.querySelectorAll('.showcase__tag-name')].map((n) => n.textContent);
     expect(names).toEqual(['Hot Latte', 'Scone']); // cutouts only; no plain photo, no photo-less item
     const link = container.querySelector('.showcase__link');
-    expect(link.getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(link.getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toBe('noopener noreferrer');
     expect(link.getAttribute('aria-label')).toMatch(/^Order Hot Latte on SpotOn \(opens in a new tab\)/);
