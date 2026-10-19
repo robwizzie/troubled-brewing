@@ -112,6 +112,12 @@ Sidebar → **Messages** — contact and catering submissions land here. Filter 
 ### The announcement banner
 Admin home → **Post an announcement banner** — type a short message ("Closed early Sat for a private event"), tick **Show the banner** and press **Publish**. It shows at the top of every page until you untick it and Publish again.
 
+### Ask a "This or that" poll in the fox
+Admin → **This or that polls**. Write a question and two answers (pick an icon for each if you like), or tap one of the ideas from your menu. Then choose when it shows: *Not yet*, *Now, until I end it*, or *Between two dates*. Press **Publish**. Visitors tap an answer in the fox's card and see how everyone voted; you see the totals on the same page. **End now** stops it; **Archive** tidies it away.
+
+### See how the site is doing
+Admin → **Site stats**. Pick 7, 30 or 90 days. The line at the top says the headline in plain words; below are pages opened per day, the top pages, where Order clicks came from (menu, fox quiz, Surprise me, homepage, pairings), how people use the fox, and gift-card and event clicks. These are simple daily totals: no cookies and nothing about who anyone is.
+
 ## Photos: keep them snappy
 Upload straight from your phone — the site automatically shrinks large photos so your pages stay fast. Landscape shots usually look best for heroes and cards.
 
