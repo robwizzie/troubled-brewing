@@ -61,7 +61,6 @@ export default function FeaturedDrink({ data = {} }) {
                 ) : (
                   <CoffeeCup className="featured__cup" size={104} color="var(--color-yellow-deep)" />
                 )}
-                {drink?.name && <span className="brass-plate brass-plate--pin">{drink.name}</span>}
               </span>
             )}
           </div>
