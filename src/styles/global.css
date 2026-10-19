@@ -7,6 +7,13 @@
 *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
+/* Never let anything widen the page sideways: phones (iOS Safari especially)
+   let the whole page pan left/right when one element pokes past the edge.
+   `clip` (unlike `hidden`) doesn't make html/body a scroll container, so the
+   sticky header keeps working; older browsers get `hidden` on html, which
+   propagates to the viewport and is equally safe for sticky. */
+html { overflow-x: hidden; }
+@supports (overflow: clip) { html, body { overflow-x: clip; } }
 
 body {
   margin: 0;

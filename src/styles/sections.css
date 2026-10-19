@@ -242,6 +242,34 @@
   .social-proof__text { max-width: 30ch; font-size: 0.98rem; line-height: 1.5; }
   .social-proof__quote--photo .social-proof__text { font-size: 0.9rem; }
 }
+@media (max-width: 560px) {
+  /* phones: the score sits on one compact line, and each note is only as tall
+     as its own words — no stretched-blank note with the byline far below */
+  .social-proof { padding: var(--space-4) 0 var(--space-4); gap: var(--space-2); }
+  .social-proof__rating {
+    display: grid; grid-template-columns: auto 1fr; align-items: center; justify-items: start;
+    column-gap: var(--space-3); row-gap: 2px; text-align: left;
+    padding: 0 var(--space-4) var(--space-4); margin-inline: var(--space-2);
+  }
+  .social-proof__eyebrow { grid-column: 1 / -1; margin: 0 0 var(--space-1); }
+  .social-proof__num { grid-row: 2 / span 3; font-size: 3rem; }
+  .social-proof__label { max-width: none; font-size: 0.95rem; }
+  .social-proof__count { font-size: 0.8rem; }
+  .social-proof__link { grid-column: 1 / -1; margin-top: var(--space-2); }
+  .social-proof__quotes { align-items: flex-start; padding-top: 16px; padding-bottom: 22px; }
+  .social-proof__quote, .social-proof__quote--photo { padding: 22px 18px 16px; text-align: left; }
+  .social-proof__quote > div { align-items: stretch; gap: var(--space-2); }
+  /* the visit photo hangs in the note as a print, not off its corner */
+  .social-proof__photo {
+    position: static; order: -1; width: 100%; aspect-ratio: 4 / 3;
+    border-width: 6px; border-bottom-width: 6px; transform: rotate(-1.2deg);
+    margin: 0 0 var(--space-2); box-shadow: 0 4px 12px rgba(40, 30, 12, 0.2);
+  }
+  .social-proof__quote--photo .social-proof__who { margin-right: 0; }
+  .social-proof__text, .social-proof__quote--photo .social-proof__text { max-width: none; font-size: 1rem; line-height: 1.55; margin-top: 2px; }
+  .social-proof__more { align-self: flex-start; }
+  .social-proof__author { margin-top: var(--space-2); font-size: 0.7rem; }
+}
 
 /* ---- Products: the shared drink/food card ----------------------------------
    ONE card design (src/components/ProductCard.jsx) drawn by both the homepage
@@ -596,17 +624,22 @@
   box-shadow: 0 6px 14px rgba(40, 30, 12, 0.18); transform: rotate(var(--tilt));
   transition: transform 0.25s ease;
 }
-.guest-photos__list li:hover { transform: rotate(0) scale(1.06); z-index: 1; }
 .guest-photos__list img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
 .guest-photos__list span { display: block; font-family: var(--font-hand); font-size: 1.05rem; padding: 4px 0 6px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 560px) {
-  /* a swipeable row on phones instead of a tall stack */
+  /* phones: a little pinned-up collage — two tilted snapshots a row, four at
+     most — instead of a swipe row that bled past the page edge */
+  .guest-photos { margin-top: var(--space-5); }
+  .guest-photos__heading { font-size: 1.45rem; line-height: 1.15; margin-bottom: var(--space-4); padding-inline: var(--space-2); }
   .guest-photos__list {
-    display: flex; overflow-x: auto; padding: 10px 6px 18px; scroll-snap-type: x mandatory;
-    scrollbar-width: none; margin-inline: calc(-1 * var(--space-5)); padding-inline: var(--space-5);
+    grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 14px;
+    padding: 4px 6px 8px; max-width: 360px;
   }
-  .guest-photos__list::-webkit-scrollbar { display: none; }
-  .guest-photos__list li { flex: 0 0 44%; scroll-snap-align: start; }
+  .guest-photos__list li:nth-child(n + 5) { display: none; }
+  .guest-photos__list li:nth-child(even) { margin-top: 14px; }
+  .guest-photos__list li { padding: 5px 5px 0; }
+  .guest-photos__list span { font-size: 0.98rem; padding: 3px 2px 5px; }
+  .guest-photos__list li:hover { transform: rotate(var(--tilt)); }
 }
 
 /* ---- Gallery Wall hero (signature) ---------------------------------------
