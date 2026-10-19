@@ -1794,3 +1794,57 @@
 
 /* holds the hero's space while the saved homepage look loads (no flash) */
 .home-hero-pending { min-height: min(78vh, 720px); background: var(--color-ink); }
+
+/* =============================================================================
+   Featured drink — CUTOUT staging, sized by height (2026-10-19)
+   On phones the Iced Matcha cutout rendered as a speck inside a big gilt oval:
+   the old `padding: 8%` on the <img> resolved against the frame's grid area,
+   not the image, and ate almost all of its box (≈51px each side of a 105px
+   image). A transparent cutout doesn't need a mat at all — so it's now
+   positioned by HEIGHT instead: it stands on the oval's lower curve, fills
+   most of a portrait oval, and its top (straw, garnish) breaks slightly out
+   over the gilt for depth. Kept at the end of the file so these two-class
+   rules win over the base + phone rules above without touching them.
+   ============================================================================= */
+.featured__media:has(.featured__frame--cutout) {
+  /* head-room for the part of the drink that rises above the frame */
+  padding-top: clamp(56px, 14vw, 72px);
+}
+.featured__frame.featured__frame--cutout {
+  width: min(340px, 100%);
+  aspect-ratio: 4 / 5;          /* a portrait oval suits a cup (inline --ar is 1/1) */
+  padding: 0;
+  overflow: visible;            /* let the drink break the frame line */
+}
+/* a soft pool of shadow where the cup stands — sits under the image */
+.featured__frame.featured__frame--cutout::before {
+  content: '';
+  position: absolute;
+  left: 50%; bottom: 7%;
+  width: 46%; height: 7%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(58, 40, 14, 0.3), rgba(58, 40, 14, 0));
+  pointer-events: none;
+}
+.featured__frame.featured__frame--cutout .gw-frame__img.featured__cutout {
+  position: absolute;
+  left: 50%; bottom: 8%;
+  height: 104%;                 /* most of the oval's height, top ≈12% above it */
+  width: auto;
+  max-width: 116%;              /* a wide cutout (a plate) is capped… */
+  max-height: none;
+  object-fit: contain;
+  object-position: 50% 100%;    /* …and still stands on the same line */
+  padding: 0;
+  /* the frame hangs at -2deg; the drink stands upright */
+  transform: translateX(-50%) rotate(2deg);
+  transform-origin: 50% 100%;
+}
+
+@media (max-width: 720px) {
+  /* 360–430px phones: the oval takes ~3/4 of the width (274–300px wide,
+     ~340–375px tall) so the drink is the first thing you see */
+  .featured__frame.featured__frame--cutout { width: min(300px, 76vw); }
+  .featured__media:has(.featured__frame--cutout) { padding-bottom: var(--space-6); }
+}
