@@ -19,5 +19,5 @@ export const EVENTS_COLLECTION = {
 };
 
 export default function EventsManager() {
-  return <CollectionManager {...EVENTS_COLLECTION} />;
+  return <CollectionManager {...EVENTS_COLLECTION} help="The events list on the Events page and the homepage. Past events drop off by themselves." />;
 }

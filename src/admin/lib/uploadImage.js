@@ -1,11 +1,13 @@
 import imageCompression from 'browser-image-compression';
 import { supabase } from '../../lib/supabase.js';
+import { IMAGE_MESSAGES, isHeic, isImageFile, tooBig } from './imageFile.js';
 
 /* Client-side image pipeline (build plan §5.9). Owners upload big phone photos;
    we compress/resize BEFORE upload to protect performance and the 1GB Storage
    cap. Strips EXIF, prefers WebP, enforces a friendly max size. */
 
-const MAX_INPUT_MB = 15;
+const SAFE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
 
 export const PRESETS = {
   hero: { maxWidthOrHeight: 2000, maxSizeMB: 0.4 },
@@ -28,10 +30,8 @@ export function formatBytes(bytes) {
  */
 export async function uploadImage(file, { preset = 'card', folder = 'uploads' } = {}) {
   if (!file) throw new Error('No file selected.');
-  if (!file.type.startsWith('image/')) throw new Error('Please choose an image file.');
-  if (file.size > MAX_INPUT_MB * 1024 * 1024) {
-    throw new Error(`That image is large (${formatBytes(file.size)}). Please pick one under ${MAX_INPUT_MB} MB.`);
-  }
+  if (!isImageFile(file)) throw new Error(IMAGE_MESSAGES.notImage);
+  if (tooBig(file)) throw new Error(IMAGE_MESSAGES.tooBig(file));
 
   const opts = {
     ...(PRESETS[preset] || PRESETS.card),
@@ -45,16 +45,21 @@ export async function uploadImage(file, { preset = 'card', folder = 'uploads' } 
   try {
     compressed = await imageCompression(file, opts);
   } catch {
-    compressed = file; // fall back to original if compression fails
+    // The browser couldn't decode it. A JPEG/PNG can still go up as-is (just
+    // bigger); anything else — usually an iPhone HEIC on a non-Safari browser —
+    // would upload but never show on the site, so say so instead.
+    if (!SAFE_TYPES.has(file.type)) throw new Error(isHeic(file) ? IMAGE_MESSAGES.heic : IMAGE_MESSAGES.unreadable);
+    compressed = file;
   }
 
+  const type = compressed === file ? file.type : 'image/webp';
   const safeName = (file.name || 'image').replace(/\.[^.]+$/, '').replace(/[^a-z0-9-_]+/gi, '-').toLowerCase();
-  const path = `${folder}/${Date.now()}-${safeName}.webp`;
+  const path = `${folder}/${Date.now()}-${safeName}.${EXT[type] || 'webp'}`;
 
   const { error } = await supabase.storage.from('media').upload(path, compressed, {
     cacheControl: '31536000',
     upsert: false,
-    contentType: 'image/webp',
+    contentType: type,
   });
   if (error) throw new Error(error.message);
 

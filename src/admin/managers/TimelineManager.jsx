@@ -18,5 +18,5 @@ export const TIMELINE_COLLECTION = {
 };
 
 export default function TimelineManager() {
-  return <CollectionManager {...TIMELINE_COLLECTION} />;
+  return <CollectionManager {...TIMELINE_COLLECTION} help="The milestones on the Timeline page." />;
 }
