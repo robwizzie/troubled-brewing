@@ -38,6 +38,11 @@ import GalleryPiecesGrid from './GalleryPiecesGrid.jsx';
 import TroublemakersGrid from './TroublemakersGrid.jsx';
 import LocalBusinessesGrid from './LocalBusinessesGrid.jsx';
 import TimelineGrid from './TimelineGrid.jsx';
+import PhotoHero from './PhotoHero.jsx';
+import PhotoStory from './PhotoStory.jsx';
+import PullQuote from './PullQuote.jsx';
+import PhotoMosaic from './PhotoMosaic.jsx';
+import VisitPanel from './VisitPanel.jsx';
 import { FlavorVoting, DrinkSuggestions } from './Stubs.jsx';
 
 export const SECTION_RENDERERS = {
@@ -78,6 +83,13 @@ export const SECTION_RENDERERS = {
   troublemakers_grid: TroublemakersGrid,
   local_businesses_grid: LocalBusinessesGrid,
   timeline_grid: TimelineGrid,
+  // Photo-led page building blocks (About, Location, Events, Troublemakers,
+  // Timeline) — the shop's own photographs in gallery-wall frames
+  photo_hero: PhotoHero,
+  photo_story: PhotoStory,
+  pull_quote: PullQuote,
+  photo_mosaic: PhotoMosaic,
+  visit_panel: VisitPanel,
   // Future stubs (not added to pages in v1)
   flavor_voting: FlavorVoting,
   drink_suggestions: DrinkSuggestions,
@@ -112,6 +124,11 @@ export const ADDABLE_SECTION_TYPES = [
   'troublemakers_grid',
   'local_businesses_grid',
   'timeline_grid',
+  'photo_hero',
+  'photo_story',
+  'pull_quote',
+  'photo_mosaic',
+  'visit_panel',
 ];
 
 export const SECTION_LABELS = {
@@ -152,6 +169,11 @@ export const SECTION_LABELS = {
   troublemakers_grid: 'Troublemakers',
   local_businesses_grid: 'Local businesses',
   timeline_grid: 'TB Timeline',
+  photo_hero: 'Photo banner (framed or full-width photo)',
+  photo_story: 'Story chapter (text + framed photo)',
+  pull_quote: 'Pull quote',
+  photo_mosaic: 'Photo wall (a few framed photos)',
+  visit_panel: 'Visit us (map + hours + parking)',
   flavor_voting: 'Flavor voting (coming soon)',
   drink_suggestions: 'Drink suggestions (coming soon)',
 };
