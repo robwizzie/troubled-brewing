@@ -147,7 +147,7 @@ export const HOURS = [
 export const HOURS_OVERRIDES = [];
 
 export const CONTENT_BLOCKS = {
-  homepage_concept: { concept: 'immersive_gallery' },
+  homepage_concept: { concept: 'pastry_case' },
   featured_drink: { name: 'Banana Split Coffee', description: 'Our signature dessert-in-a-cup. If you only try one thing, make it this.', price: '6.50', image_url: '' },
   staff_picks: { items: [ { label: 'Flying off the menu', value: 'Cranberry Walnut Chicken Salad Panini' }, { label: "Barista's pick", value: 'Banana Split Coffee' } ] },
   loyalty_copy: { body_markdown: 'Ask a Troublemaker about loyalty perks. Full program details coming soon.' },
