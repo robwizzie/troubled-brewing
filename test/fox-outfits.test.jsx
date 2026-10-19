@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -158,6 +160,58 @@ describe('?foxOutfit= preview', () => {
     cleanup();
     const b = render(<svg><FoxOutfit outfit={o} /></svg>);
     expect(b.container.querySelectorAll('.fox-outfit__pumpkins > g')).toHaveLength(2);
+  });
+
+  it('draws the scarf in both layers inside the figure, so it wraps his neck and moves with him', () => {
+    window.history.replaceState(null, '', '/?foxOutfit=winter');
+    const { container } = render(<MemoryRouter><FoxGuide /></MemoryRouter>);
+    const figure = container.querySelector('.fox-guide__figure');
+    const back = figure.querySelector(':scope > .fox-outfit--back');
+    const front = figure.querySelector(':scope > .fox-outfit--front');
+    const art = figure.querySelector(':scope > .fox-guide__art');
+    expect(back && front && art).toBeTruthy();
+    // back layer before his drawing (under his lines), front layer after it
+    const kids = [...figure.children];
+    expect(kids.indexOf(back)).toBeLessThan(kids.indexOf(art));
+    expect(kids.indexOf(front)).toBeGreaterThan(kids.indexOf(art));
+    // the far side, clipped to behind his neck; the near side, knot and tails in front
+    expect(back.querySelector('.fox-outfit__scarf-back [clip-path]')).not.toBeNull();
+    const scarf = front.querySelector('.fox-outfit__scarf');
+    expect(scarf.querySelector('.fox-outfit__tails')).not.toBeNull();
+    expect(scarf.classList.contains('fox-outfit__hat')).toBe(false); // stays on under the nightcap
+  });
+
+  it('marks every hat-band piece so the nightcap hides it, and swaps the leaf to the rail', () => {
+    const parts = (look) => render(<svg><FoxOutfit outfit={resolveOutfit({ season: 'september', override: look })} /></svg>).container;
+    expect(parts('holiday').querySelector('.fox-outfit__sprig').classList.contains('fox-outfit__hat')).toBe(true);
+    cleanup();
+    expect(parts('spring').querySelector('.fox-outfit__flower').classList.contains('fox-outfit__hat')).toBe(true);
+    cleanup();
+    expect(parts('snow').querySelector('.fox-outfit__hatsnow').classList.contains('fox-outfit__hat')).toBe(true);
+    cleanup();
+    const leaf = parts('september');
+    expect(leaf.querySelector('.fox-outfit__leaf-brim').classList.contains('fox-outfit__hat')).toBe(true);
+    expect(leaf.querySelector('.fox-outfit__leaf-rail')).not.toBeNull();
+    const css = readFileSync(resolve(__dirname, '../src/styles/fox-outfit.css'), 'utf8');
+    expect(css).toMatch(/\.fox-guide\.is-sleepy \.fox-outfit__hat \{ display: none; \}/);
+    expect(css).toMatch(/\.fox-guide\.is-sleepy \.fox-outfit__leaf-rail \{ display: inline; \}/);
+    expect(css).toMatch(/\.fox-outfit--back \{ z-index: -1; \}/);
+  });
+
+  it('clamps the umbrella to the rail: pole and canopy behind him, brass clamp in front', () => {
+    const o = resolveOutfit({ season: 'september', override: 'rain' });
+    const { container } = render(<svg><FoxOutfit outfit={o} layer="back" /><FoxOutfit outfit={o} /></svg>);
+    const [back, front] = container.querySelectorAll('svg > svg');
+    expect(back.querySelector('.fox-outfit__umbrella .fox-outfit__canopy')).not.toBeNull();
+    expect(back.querySelectorAll('.fox-outfit__drop').length).toBeGreaterThan(4);
+    expect(front.querySelector('.fox-outfit__umbrella-clamp')).not.toBeNull();
+    expect(front.querySelector('.fox-outfit__canopy')).toBeNull();
+  });
+
+  it('draws no back layer for looks with nothing behind him', () => {
+    const o = resolveOutfit({ season: 'summer' });
+    const { container } = render(<svg><FoxOutfit outfit={o} layer="back" /></svg>);
+    expect(container.querySelector('.fox-outfit')).toBeNull();
   });
 });
 

@@ -5,42 +5,67 @@
    appears; prefers-reduced-motion makes all of it static.
    ========================================================================== */
 
-/* The overlay sits inside his figure (.fox-guide__figure), over the drawing
-   in its own coordinates, so it already turns, leans, sips and hops with him. */
+/* Two overlays sit inside his figure (.fox-guide__figure), in the drawing's
+   own coordinates, so they turn, lean, sip and hop with him. The back layer
+   goes UNDER the line art (the scarf's far side behind his neck, the
+   umbrella); the front layer over it. The figure is its own stacking
+   context, so z-index -1 only ever means "behind his lines". */
+.fox-guide__figure { isolation: isolate; }
 .fox-outfit {
   position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   overflow: visible; pointer-events: none;
 }
-/* asleep, the nightcap is over his top hat: nothing in the hat band then */
+.fox-outfit--back { z-index: -1; }
+/* asleep, the nightcap is over his top hat: nothing in the hat band, no snow
+   on the brim, and a September leaf lands on the rail instead */
 .fox-guide.is-sleepy .fox-outfit__hat { display: none; }
+.fox-outfit__leaf-rail { display: none; }
+.fox-guide.is-sleepy .fox-outfit__leaf-rail { display: inline; }
 
-.fox-outfit__part { transform-box: fill-box; transform-origin: 50% 100%; }
-
-/* the one motion as it appears (after he has risen into the corner) */
-.fox-outfit__worn, .fox-outfit__pumpkins, .fox-outfit__sun, .fox-outfit__iced {
-  animation: fox-outfit-in 0.6s ease-out 1.6s both;
+.fox-outfit__part, .fox-outfit__tails, .fox-outfit__canopy, .fox-outfit__leaf-brim {
+  transform-box: fill-box; transform-origin: 50% 100%;
 }
-.fox-outfit__umbrella { animation: fox-outfit-settle 0.9s cubic-bezier(0.25, 1.3, 0.5, 1) 1.6s both; }
-.fox-outfit__leaf { animation: fox-outfit-leaf 2.6s ease-in-out 1.6s both; }
+
+/* one gentle entrance per look (after he has risen into the corner) */
+.fox-outfit__worn { animation: fox-outfit-in 0.6s ease-out 1.6s both; }
+.fox-outfit__hat { transform-origin: 50% 90%; animation: fox-outfit-pop 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) 1.7s both; }
+.fox-outfit__pumpkins, .fox-outfit__iced { animation: fox-outfit-drop 0.6s cubic-bezier(0.3, 1.4, 0.5, 1) 1.6s both; }
+.fox-outfit__sun { transform-origin: 50% 50%; animation: fox-outfit-sun 0.9s ease-out 1.6s both; }
+.fox-outfit__umbrella, .fox-outfit__umbrella-clamp { animation: fox-outfit-fade 0.4s ease-out 1.6s both; }
+.fox-outfit__canopy { transform-origin: 50% 0%; animation: fox-outfit-open 0.7s cubic-bezier(0.3, 1.35, 0.5, 1) 1.7s both; }
+.fox-outfit__leaf-brim { animation: fox-outfit-leaf 2.6s ease-in-out 1.6s both; }
+
+/* idle: only the scarf tails, the snow and the rain move, all slowly */
+.fox-outfit__tails { transform-origin: 50% 0%; animation: fox-outfit-sway 5.5s ease-in-out 2.4s infinite; }
 .fox-outfit__flake {
   transform-box: fill-box; transform-origin: 50% 50%;
-  animation: fox-outfit-snow 7s linear infinite;
+  animation: fox-outfit-snow 8s linear infinite;
 }
+.fox-outfit__drop { animation: fox-outfit-rain 1.3s linear infinite; }
+.fox-outfit__drip { transform-box: fill-box; animation: fox-outfit-drip 1.8s ease-in 2.4s infinite; }
 
-@keyframes fox-outfit-in { from { opacity: 0; scale: 0.6; } }
-@keyframes fox-outfit-settle { 0% { opacity: 0; translate: 0 -10px; rotate: -10deg; } 60% { opacity: 1; rotate: 4deg; } 100% { translate: 0 0; rotate: 0deg; } }
+@keyframes fox-outfit-in { from { opacity: 0; translate: 0 -3px; } }
+@keyframes fox-outfit-fade { from { opacity: 0; } }
+@keyframes fox-outfit-pop { from { opacity: 0; scale: 0.3; } }
+@keyframes fox-outfit-drop { 0% { opacity: 0; translate: 0 -9px; } 60% { opacity: 1; translate: 0 0.6px; } 100% { translate: 0 0; } }
+@keyframes fox-outfit-sun { from { opacity: 0; scale: 0.5; } }
+@keyframes fox-outfit-open { from { scale: 0.15 0.6; opacity: 0; } 40% { opacity: 1; } }
 @keyframes fox-outfit-leaf {
-  0% { opacity: 0; translate: -6px -24px; rotate: 30deg; }
+  0% { opacity: 0; translate: 26px -38px; rotate: 40deg; }
   15% { opacity: 1; }
-  45% { translate: 5px -12px; rotate: -18deg; }
-  75% { translate: -3px -4px; rotate: 10deg; }
+  40% { translate: 10px -24px; rotate: -16deg; }
+  70% { translate: 4px -8px; rotate: 12deg; }
   100% { translate: 0 0; rotate: 0deg; }
 }
+@keyframes fox-outfit-sway { 0%, 100% { rotate: 0deg; } 30% { rotate: 2.4deg; } 70% { rotate: -1.6deg; } }
 @keyframes fox-outfit-snow {
-  0% { opacity: 0; translate: 0 -9px; rotate: 0deg; }
+  0% { opacity: 0; translate: 0 -8px; rotate: 0deg; }
   15%, 75% { opacity: 1; }
-  100% { opacity: 0; translate: 3px 12px; rotate: 90deg; }
+  50% { translate: 3px 3px; }
+  100% { opacity: 0; translate: -1px 14px; rotate: 60deg; }
 }
+@keyframes fox-outfit-rain { 0% { opacity: 0; translate: 0.6px -6px; } 25%, 70% { opacity: 1; } 100% { opacity: 0; translate: -1.4px 8px; } }
+@keyframes fox-outfit-drip { 0%, 40% { opacity: 0; translate: 0 0; } 50% { opacity: 1; } 100% { opacity: 0; translate: 0 9px; } }
 
 /* his line about it, under the greeting */
 .fox-outfit__line { margin: 4px 0 0; font: 500 0.86rem/1.35 var(--font-body); color: var(--color-green-deep); }
