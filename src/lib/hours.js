@@ -101,8 +101,7 @@ export function googleWeekly(profile) {
  * When the shop next opens, on the shop's clock: { inDays, dow, time } where
  * inDays 0 = later today, 1 = tomorrow…; null if nothing is open in the next
  * week. Same rows + overrides as computeStatus, so the two always agree.
- * (computeStatus's own "Closed — opens X" names TODAY's opening time, which is
- * wrong after closing; this is for answers that need the real next one.)
+ * computeStatus uses it for its "Closed — opens …" label after closing.
  */
 export function nextOpening(hours, overrides = [], now = new Date()) {
   const today = shopNow(now);
@@ -146,10 +145,19 @@ export function computeStatus(hours, overrides = [], now = new Date()) {
   const open = o != null && c != null && minutes >= o && minutes < c;
   const closingSoon = open && c - minutes <= 30;
 
+  // closed: name the REAL next opening — today's time only before opening;
+  // after closing it's tomorrow's (or a later day's) time
+  let closedLabel = `Closed — opens ${row.open_time}`;
+  if (!open && o != null && minutes >= o) {
+    const next = nextOpening(hours, overrides, now);
+    const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    if (next) closedLabel = `Closed — opens ${next.inDays === 1 ? 'tomorrow' : DAYS[next.dow]} ${next.time}`;
+  }
+
   return {
     open,
     closingSoon,
-    label: open ? (closingSoon ? `Open — closing at ${row.close_time}` : `Open until ${row.close_time}`) : `Closed — opens ${row.open_time}`,
+    label: open ? (closingSoon ? `Open — closing at ${row.close_time}` : `Open until ${row.close_time}`) : closedLabel,
     todayHours: `${row.open_time} – ${row.close_time}`,
     override: Boolean(override),
     overrideLabel: override?.label,

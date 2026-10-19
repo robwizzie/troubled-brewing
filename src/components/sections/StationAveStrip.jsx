@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { track } from '../../lib/analytics.js';
 import { asset } from '../../lib/config.js';
 import { SITE } from '../../lib/seed.js';
-import { categoryLabel, directionsUrl, initials, streetName, streetNumber } from '../../lib/localBusinesses.js';
+import { categoryLabel, directionsUrl, initials, logoFor, mediaUrl, streetName, streetNumber } from '../../lib/localBusinesses.js';
 import { awningFor, buildWalk } from '../../lib/stationAve.js';
 
 /* Local Love as a walk down Station Ave.
@@ -26,8 +26,9 @@ import { awningFor, buildWalk } from '../../lib/stationAve.js';
      End walk between them, and the prev/next buttons page the street.
 
    Everything a row might lack degrades: no photo → a lit, drawn shop window;
-   no logo → a painted monogram on the hanging sign. (No website → not listed
-   at all; see orderBusinesses.) */
+   a logo → it IS the shop's sign board (LogoSign); no logo, or one that fails
+   to load → the name painted on the board plus a monogram on a round hanging
+   sign. (No website → not listed at all; see orderBusinesses.) */
 
 const reduceMotion = () =>
   typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -104,10 +105,49 @@ function Umbrellas() {
   );
 }
 
+/* The shop's own logo as its sign: a painted board in the logo's ground
+   colour (so the artwork sits flush, like a printed sign) with a dark frame,
+   sized to the logo's shape — wide logos get a long fascia board, squarish
+   ones a taller square panel. Logos we don't host are measured as they load. */
+const SQUARE_BELOW = 1.45;
+function LogoSign({ logo, name, onFail }) {
+  const [measured, setMeasured] = useState(null);
+  const ratio = logo.ratio || measured || 2.4;
+  const shape = ratio < SQUARE_BELOW ? 'square' : 'wide';
+  const onLoad = (e) => {
+    const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+    if (!logo.ratio && w > 0 && h > 0) setMeasured(w / h);
+  };
+  return (
+    <span
+      className={`shop__sign shop__sign--logo shop__sign--${shape}${logo.bg ? '' : ' shop__sign--plain'}`}
+      style={{ '--logo-bg': logo.bg || '#fffdf7', '--logo-ink': logo.ink || '#2c2722', '--logo-ar': ratio.toFixed(4) }}
+    >
+      <span className="shop__board">
+        <picture>
+          {logo.webp && <source srcSet={logo.webp} type="image/webp" />}
+          <img
+            className="shop__logo"
+            src={logo.src}
+            alt={`${name} logo`}
+            draggable="false"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            onLoad={onLoad}
+            onError={onFail}
+          />
+        </picture>
+      </span>
+    </span>
+  );
+}
+
 function Storefront({ stop, index, selected, onSelect }) {
   const { b, n } = stop;
   const [logoOk, setLogoOk] = useState(true);
   const [photoOk, setPhotoOk] = useState(true);
+  const logo = logoOk ? logoFor(b.logo_url) : null;
+  const photo = photoOk ? mediaUrl(b.photo_url) : '';
   const { look, roof, tall, awning = 'stripe', umbrellas, sign } = stop.building;
   const [awn, awnAlt] = awningFor(b.category);
   const cat = categoryLabel(b.category);
@@ -131,20 +171,19 @@ function Storefront({ stop, index, selected, onSelect }) {
         <span className="shop__roof" aria-hidden="true" />
         <span className="shop__upper" aria-hidden="true">
           <i /><i />
-          <span className="shop__blade">
-            {b.logo_url && logoOk ? (
-              <img src={b.logo_url} alt="" draggable="false" loading="lazy" referrerPolicy="no-referrer" onError={() => setLogoOk(false)} />
-            ) : (
-              <span className="shop__mono">{initials(b.name)}</span>
-            )}
-          </span>
+          {/* the round hanging sign: only when there's no logo board to read */}
+          {!logo && <span className="shop__blade"><span className="shop__mono">{initials(b.name)}</span></span>}
         </span>
-        <span className="shop__sign" aria-hidden="true"><span>{sign || b.name}</span></span>
+        {logo ? (
+          <LogoSign key={logo.src} logo={logo} name={b.name} onFail={() => setLogoOk(false)} />
+        ) : (
+          <span className="shop__sign" aria-hidden="true"><span className="shop__name">{sign || b.name}</span></span>
+        )}
         {awning !== 'none' && <span className="shop__awning" aria-hidden="true" />}
         <span className="shop__ground" aria-hidden="true">
-          <span className={`shop__window${b.photo_url && photoOk ? ' has-photo' : ''}`}>
-            {b.photo_url && photoOk ? (
-              <img src={b.photo_url} alt="" draggable="false" loading="lazy" referrerPolicy="no-referrer" onError={() => setPhotoOk(false)} />
+          <span className={`shop__window${photo ? ' has-photo' : ''}`}>
+            {photo ? (
+              <img src={photo} alt="" draggable="false" loading="lazy" referrerPolicy="no-referrer" onError={() => setPhotoOk(false)} />
             ) : (
               <Glyph category={b.category} />
             )}
@@ -350,15 +389,16 @@ function Detail({ stop, onClose, onStep, hasPrev, hasNext }) {
   const { b } = stop;
   const mapsUrl = directionsUrl(b);
   const cat = categoryLabel(b.category);
-  const photo = b.photo_url && photoOk;
+  const photo = photoOk ? mediaUrl(b.photo_url) : '';
+  const logo = logoOk ? logoFor(b.logo_url) : null;
   const side = stop.side === 'across' ? 'Across the street' : '';
   return (
     <div className="ave-detail__card">
       <div className={`ave-detail__media${photo ? '' : ' ave-detail__media--mono'}`} style={{ '--awn': awningFor(b.category)[0] }}>
         {photo ? (
-          <img src={b.photo_url} alt="" referrerPolicy="no-referrer" onError={() => setPhotoOk(false)} />
-        ) : b.logo_url && logoOk ? (
-          <img className="ave-detail__logo" src={b.logo_url} alt={`${b.name} logo`} referrerPolicy="no-referrer" onError={() => setLogoOk(false)} />
+          <img src={photo} alt="" referrerPolicy="no-referrer" onError={() => setPhotoOk(false)} />
+        ) : logo ? (
+          <img className="ave-detail__logo" src={logo.src} alt={`${b.name} logo`} referrerPolicy="no-referrer" onError={() => setLogoOk(false)} />
         ) : (
           <span className="ave-detail__mono" aria-hidden="true">{initials(b.name)}</span>
         )}
