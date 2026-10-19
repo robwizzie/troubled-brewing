@@ -193,9 +193,9 @@ describe('Hours & holidays', () => {
     fireEvent.change(screen.getByLabelText('Label'), { target: { value: 'Thanksgiving' } });
     fireEvent.click(screen.getByRole('button', { name: /add holiday/i }));
     // remove Christmas (the saved one); rows are sorted by date, so it's second
-    fireEvent.click(screen.getAllByRole('button', { name: /^remove$/i })[1]);
+    fireEvent.click(screen.getAllByRole('button', { name: /^delete$/i })[1]);
     // destructive → confirm first
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /^remove$/i }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /^delete$/i }));
     expect(contentWrites()).toHaveLength(0);
     expect(screen.getByText(/will be removed/i)).toBeTruthy();
 

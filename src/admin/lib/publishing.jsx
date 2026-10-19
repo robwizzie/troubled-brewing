@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useNavigate } from 'react-router-dom';
 import { ConfirmModal, useToast } from '../components/ui.jsx';
 import { friendlyError, publishedTime } from './publishHelpers.js';
+import { recordPublish, currentAdminPath } from './nav.js';
 
 /* =============================================================================
    Explicit publishing — the one rule the whole admin follows:
@@ -172,6 +173,7 @@ export function PublishScope({ children, id = 'screen' }) {
       for (const u of todo) await u.publish();
       const at = new Date();
       setLastPublished(at);
+      recordPublish(currentAdminPath(), at);
       toast(`Published — live on the site now (${publishedTime(at)})`, 'success');
     } catch (e) {
       const msg = friendlyError(e);

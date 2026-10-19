@@ -51,7 +51,7 @@ export default function GoogleProfileSettings() {
       toast(`Refreshed from Google — ${data.reviews ?? 0} reviews cached`);
       load();
     } catch (e) {
-      toast(`Refresh failed: ${e.message || 'the google-profile function may not be deployed — see the docs'}`, 'error');
+      toast('Couldn’t fetch from Google just now. It’ll try again by itself tonight — if this keeps happening, contact your developer.', 'error');
       // eslint-disable-next-line no-console
       console.warn(e);
     } finally {
@@ -65,11 +65,39 @@ export default function GoogleProfileSettings() {
     <div>
       <ScreenHead
         title="Google connection"
-        help="Connects your Google rating, reviews, hours and address to the site. The “Leave a review” buttons use the link below."
+        help="Connects your Google rating, reviews, hours and address to the site. It fills itself in every day — you rarely need to touch this screen."
       />
 
       <section className="admin__panel">
-        <h2>Connection</h2>
+        <h2>Fetch the latest from Google</h2>
+        <p className="panel-help">
+          This happens by itself every day. Press it to pull new reviews, your rating and hours right
+          now — they update on the site straight away, because they come from Google, not from here.
+        </p>
+        <button className="btn btn--primary" onClick={refreshNow} disabled={refreshing || dirty} title={dirty ? 'Publish your connection changes first' : undefined}>
+          {refreshing ? 'Fetching…' : 'Fetch from Google now'}
+        </button>
+      </section>
+
+      <section className="admin__panel">
+        <h2>What the site has from Google</h2>
+        <ul className="kv">
+          <li><span>Rating</span><strong>{profile.rating ?? '—'}</strong></li>
+          <li><span>Number of reviews on Google</span><strong>{profile.review_count ?? '—'}</strong></li>
+          <li><span>Reviews saved on the site</span><strong>{(profile.reviews?.length) ?? 0}</strong></li>
+          <li><span>Address</span><strong>{profile.formatted_address || '—'}</strong></li>
+          <li><span>Last fetched</span><strong>{profile.fetched_at ? new Date(profile.fetched_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '—'}</strong></li>
+        </ul>
+        <p className="field__hint">
+          Google sends its 5 most relevant reviews each time; new ones are added to the site’s
+          collection, so it grows over time. Choose which of them show in{' '}
+          <Link to="/admin/reviews">Google reviews</Link>. Hand-picked{' '}
+          <Link to="/admin/testimonials">quotes</Link> are optional and appear above them.
+        </p>
+      </section>
+
+      <details className="admin__panel advanced" open={dirty || undefined}>
+        <summary>Advanced: connection details <small>(set up once — you shouldn’t need to change these)</small></summary>
         <div className="field">
           <label htmlFor="gp-place">Google Place ID <Hint>Find it via Google’s Place ID finder, or send us your business name + address and we’ll fill it in.</Hint></label>
           <input id="gp-place" value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="ChIJ…" />
@@ -79,36 +107,7 @@ export default function GoogleProfileSettings() {
           <input id="gp-review" value={mapsUrl} onChange={(e) => setMapsUrl(e.target.value)} placeholder="https://g.page/r/…/review" />
         </div>
         {dirty && <p className="field__hint">Press <strong>Publish</strong> at the bottom to save the connection.</p>}
-      </section>
-
-      <section className="admin__panel">
-        <h2>Fetch the latest from Google</h2>
-        <p className="panel-help">
-          This happens by itself every day. Press it to pull new reviews, your rating and hours right
-          now — they update on the site straight away, because they come from Google, not from here.
-        </p>
-        <button className="btn btn--accent" onClick={refreshNow} disabled={refreshing || dirty} title={dirty ? 'Publish your connection changes first' : undefined}>
-          {refreshing ? 'Fetching…' : 'Fetch from Google now'}
-        </button>
-      </section>
-
-      <section className="admin__panel">
-        <h2>Currently cached</h2>
-        <ul className="kv">
-          <li><span>Rating</span><strong>{profile.rating ?? '—'}</strong></li>
-          <li><span>Review count</span><strong>{profile.review_count ?? '—'}</strong></li>
-          <li><span>Reviews cached</span><strong>{(profile.reviews?.length) ?? 0}</strong></li>
-          <li><span>Address</span><strong>{profile.formatted_address || '—'}</strong></li>
-          <li><span>Last refreshed</span><strong>{profile.fetched_at ? new Date(profile.fetched_at).toLocaleString() : '—'}</strong></li>
-        </ul>
-        <p className="field__hint">
-          Google returns its 5 most relevant reviews per refresh (an API cap); each refresh adds
-          unseen ones to the site’s library, so it grows over time. Choose which of them show —
-          the star minimum, hiding one, featuring one, attaching its photo — in{' '}
-          <Link to="/admin/reviews">Reviews</Link>. Hand-picked{' '}
-          <Link to="/admin/testimonials">quotes</Link> are optional and appear above the Google feed.
-        </p>
-      </section>
+      </details>
     </div>
   );
 }

@@ -32,7 +32,7 @@ export default function Inbox() {
   }
   async function del(id) {
     await supabase.from('submissions').delete().eq('id', id);
-    toast('Deleted');
+    toast('Message deleted');
     setConfirmDel(null);
     load();
   }
@@ -52,7 +52,7 @@ export default function Inbox() {
       </div>
 
       {filtered.length === 0 ? (
-        <Empty>{filter === 'all' ? 'No messages yet. When someone uses the Contact or Catering form, it lands here.' : 'No messages match that filter.'}</Empty>
+        <Empty>{filter === 'all' ? 'No messages yet. When someone uses the Contact or Catering form, it lands here.' : 'No messages match that filter. Tap “all” to see every message.'}</Empty>
       ) : (
         <ul className="admin-list">
           {filtered.map((m) => (

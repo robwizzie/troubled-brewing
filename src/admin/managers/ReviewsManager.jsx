@@ -201,8 +201,8 @@ export default function ReviewsManager({ embedded = false }) {
         <h2>The reviews</h2>
         {reviews.length === 0 ? (
           <Empty>
-            No reviews cached yet. Connect your Place ID and press “Refresh now” on the{' '}
-            <Link to="/admin/google">Google Profile</Link> page.
+            No Google reviews here yet. Open{' '}
+            <Link to="/admin/google">Google connection</Link> and press “Fetch from Google now” — they’ll show up here to choose from.
           </Empty>
         ) : (
           <>
@@ -304,7 +304,7 @@ export default function ReviewsManager({ embedded = false }) {
                 );
               })}
             </ul>
-            {visible.length === 0 && <Empty>No reviews match that filter.</Empty>}
+            {visible.length === 0 && <Empty>No reviews match that filter. Tap “All” above to see every review.</Empty>}
           </>
         )}
       </section>
