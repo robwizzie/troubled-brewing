@@ -5,10 +5,8 @@
 -- Mirrors src/lib/seed.js, which is what the site shows until this runs.
 --
 -- The button link is left BLANK in the section on purpose: blank means "use
--- the site default" (SPOTON_GIFT_CARD_URL in src/lib/config.js, which falls
--- back to the shop's SpotOn order page and its "Purchase gift cards" link).
--- Paste the exact SpotOn e-gift card URL into the section's "Button link" in
--- the editor once it's confirmed.
+-- the site default" (GIFT_CARD_URL in src/lib/config.js: the shop's SecureTree
+-- e-gift card store).
 --
 -- Also gives the Menu page's "Ready to order?" band a small "Buying for
 -- someone? Send a gift card" link under its button, only when that row still
