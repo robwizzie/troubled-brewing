@@ -121,7 +121,7 @@ describe('Local Love directions', () => {
       { id: 'c', name: 'Has Link', address: '530 Station Ave', maps_url: 'https://maps.app.goo.gl/abc', display_order: 2 },
     ]);
     const Grid = (await import('../src/components/sections/LocalBusinessesGrid.jsx')).default;
-    const { container } = render(<Grid />);
+    const { container } = render(<Grid data={{ layout: 'grid' }} />);
     await screen.findByText('Next Door');
     const hrefs = [...container.querySelectorAll('.neighbor__map')].map((a) => decodeURIComponent(a.getAttribute('href')));
     expect(hrefs).toContain('https://www.google.com/maps/search/?api=1&query=Next Door 512 Station Ave, Haddon Heights, NJ 08035');

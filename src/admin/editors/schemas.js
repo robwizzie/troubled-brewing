@@ -406,6 +406,17 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'intro', label: 'Line under the heading', type: 'textarea', rows: 2, hint: 'Optional. A sentence about your block.' },
       {
+        name: 'layout',
+        label: 'Show them as',
+        type: 'select',
+        placeholderOption: false,
+        options: [
+          { value: 'street', label: 'A drawn Station Ave you scroll along' },
+          { value: 'grid', label: 'A grid of cards' },
+        ],
+        hint: 'The street draws each business as a little storefront in street-number order. Tap one to see its details.',
+      },
+      {
         name: 'order_by',
         label: 'Order them by',
         type: 'select',
