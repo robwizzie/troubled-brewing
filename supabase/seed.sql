@@ -47,19 +47,21 @@ insert into sections (page_slug, type, display_order, data) values
   "specials_label": "Current Drink Specials",
   "specials_link": "/menu#specials"
 }'),
-('home', 'social_proof', 1, '{"label": "Loved by the neighborhood"}'),
-('home', 'featured_drink', 2, '{"heading": "This Week''s Trouble"}'),
-('home', 'signature_drinks', 3, '{"heading": "Signature sips", "button_label": "See the full menu"}'),
-('home', 'hours', 4, '{"heading": "Today at Trouble Brewing"}'),
-('home', 'cta', 5, '{"heading": "Skip the line", "body": "Order ahead on SpotOn and we''ll have it ready.", "button_label": "Order Now", "button_url": ""}'),
-('home', 'intro_duo', 6, '{"heading_a": "Good coffee, real food", "body_a": "We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options. Breakfast is served all day.", "heading_b": "More than a coffee shop", "body_b": "Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That''s the good kind of Trouble."}'),
-('home', 'instagram', 7, '{"embed_handle": "troublebrewingcoffee"}'),
-('home', 'newsletter', 8, '{"heading": "Stay in the loop", "body": "New drinks, events, and the occasional bit of Trouble — straight to your inbox.", "mailchimp_action_url": ""}');
+('home', 'food_showcase', 1, '{"heading": "Fresh off the counter", "subheading": "Tap anything to find it on the menu."}'),
+('home', 'social_proof', 2, '{"label": "Loved by the neighborhood"}'),
+('home', 'featured_drink', 3, '{"heading": "This Week''s Trouble"}'),
+('home', 'signature_drinks', 4, '{"heading": "Signature sips", "button_label": "See the full menu"}'),
+('home', 'hours', 5, '{"heading": "Today at Trouble Brewing"}'),
+('home', 'cta', 6, '{"heading": "Skip the line", "body": "Order ahead on SpotOn and we''ll have it ready.", "button_label": "Order Now", "button_url": ""}'),
+('home', 'intro_duo', 7, '{"heading_a": "Good coffee, real food", "body_a": "We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options. Breakfast is served all day.", "heading_b": "More than a coffee shop", "body_b": "Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That''s the good kind of Trouble."}'),
+('home', 'instagram', 8, '{"embed_handle": "troublebrewingcoffee"}'),
+('home', 'newsletter', 9, '{"heading": "Stay in the loop", "body": "New drinks, events, and the occasional bit of Trouble — straight to your inbox.", "mailchimp_action_url": ""}');
 
 -- MENU --------------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
-('menu', 'menu_block', 0, '{"heading": "The Menu", "categories": ["espresso", "specialty", "food", "pastry", "seasonal"]}'),
-('menu', 'cta', 1, '{"heading": "Ready to order?", "body": "Order ahead on SpotOn for pickup.", "button_label": "Order on SpotOn", "button_url": ""}');
+('menu', 'food_showcase', 0, '{"heading": "Fresh off the counter", "subheading": "Tap anything to find it on the menu."}'),
+('menu', 'menu_block', 1, '{"heading": "The Menu", "categories": ["espresso", "specialty", "food", "pastry", "seasonal"]}'),
+('menu', 'cta', 2, '{"heading": "Ready to order?", "body": "Order ahead on SpotOn for pickup.", "button_label": "Order on SpotOn", "button_url": ""}');
 
 -- ABOUT -------------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values

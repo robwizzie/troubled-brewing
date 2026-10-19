@@ -1545,3 +1545,180 @@
   .product--cutout .product__cutout,
   .product--cutout .product__frame::after { animation: none !important; }
 }
+
+/* ===========================================================================
+   FOOD SHOWCASE — "the shelf" (FoodShowcase.jsx). The shop's sage wall with
+   one long walnut shelf across it: cutout photos stand on the shelf and bob,
+   hand-lettered paper price tags swing beneath on twine. The shelf itself is
+   one strip (.showcase__ledge) that never scrolls; the row of items scrolls
+   over it, so every item always stands on the same plank.
+   ======================================================================== */
+.showcase {
+  --stage-h: 230px;        /* how tall an item may stand */
+  --item-w: 210px;
+  --wall-pad: 56px;        /* wall above the tallest item */
+  --ledge-h: 18px;
+  --string: 26px;          /* twine from the shelf to a tag */
+  --wall-pad-b: 30px;      /* wall below the tags (the tags are part of each item) */
+  padding-bottom: 0;
+}
+.showcase__head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-5);
+}
+.showcase__title {
+  font-family: var(--font-display); font-weight: 600; margin: 0;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.1rem); line-height: 1.05; letter-spacing: -0.01em;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+.showcase__sub { margin: var(--space-2) 0 0; color: var(--color-text-soft); max-width: 46ch; }
+.showcase__filters { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.showcase__filter {
+  font: inherit; font-size: var(--text-sm); cursor: pointer;
+  padding: 6px 14px; border-radius: 999px;
+  background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.showcase__filter.is-on { background: var(--color-green-deep); border-color: var(--color-green-deep); color: var(--color-on-primary); }
+.showcase__filter:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+/* the wall: the shop's sage paint, a little darker toward the floor */
+.showcase__wall {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(80% 70% at 50% 18%, rgba(255, 246, 214, 0.22), transparent 70%),
+    linear-gradient(180deg, #86955b 0%, var(--color-green) 55%, #6f7c48 100%);
+  box-shadow: inset 0 14px 22px -16px rgba(30, 24, 10, 0.45), inset 0 -14px 22px -16px rgba(30, 24, 10, 0.4);
+}
+/* the walnut shelf: a top surface catching the light, a front lip, a cast shadow */
+.showcase__ledge {
+  position: absolute; left: 0; right: 0; z-index: 0;
+  top: calc(var(--wall-pad) + var(--stage-h) - 6px);
+  height: calc(var(--ledge-h) + 6px);
+  background:
+    linear-gradient(180deg, #c4935e 0 6px, #9a6638 6px, #7d4f2a 60%, #5d381b 100%);
+  box-shadow: 0 14px 18px -6px rgba(28, 18, 6, 0.45), 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+.showcase__ledge::after { /* wood grain, very faint */
+  content: ''; position: absolute; inset: 6px 0 0;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 23px, rgba(0, 0, 0, 0.06) 23px 24px, transparent 24px 61px);
+}
+.showcase__row {
+  position: relative; z-index: 1;
+  list-style: none; margin: 0;
+  display: flex; gap: clamp(18px, 3vw, 44px);
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  /* line the first item up with the heading's container edge */
+  padding: var(--wall-pad) calc((100vw - min(var(--container), 100vw - 2 * var(--space-5))) / 2) var(--wall-pad-b);
+  scroll-padding-inline: calc((100vw - min(var(--container), 100vw - 2 * var(--space-5))) / 2);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+}
+.showcase__row::-webkit-scrollbar { display: none; }
+.showcase__item { flex: 0 0 var(--item-w); scroll-snap-align: start; }
+.showcase__item--loading { height: var(--stage-h); }
+.showcase__link { display: block; text-decoration: none; color: var(--color-ink); border-radius: 6px; }
+.showcase__link:focus-visible { outline: 3px solid var(--color-yellow); outline-offset: 6px; }
+
+/* where the item stands — its shadow sits on the shelf top */
+.showcase__stage { position: relative; display: block; height: var(--stage-h); }
+.showcase__stage::after {
+  content: ''; position: absolute; left: 18%; right: 18%; bottom: -4px; height: 14px;
+  background: radial-gradient(closest-side, rgba(40, 24, 8, 0.5), rgba(40, 24, 8, 0.15) 60%, transparent);
+  filter: blur(2px);
+}
+.showcase__img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; object-position: 50% 100%;
+  padding-top: 8%; box-sizing: border-box;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 6px 8px rgba(30, 18, 6, 0.28));
+}
+
+/* the price tag, hung from the shelf on twine */
+.showcase__tag {
+  position: relative; display: block; width: max-content; max-width: 92%;
+  margin: calc(var(--ledge-h) + var(--string)) auto 0;
+  padding: 16px 14px 9px;
+  background: var(--color-paper);
+  color: var(--color-ink); text-align: center;
+  /* a luggage-tag shape: clipped top corners, punched hole */
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%, 0 14px);
+  -webkit-mask: radial-gradient(circle 3.5px at 50% 8px, transparent 98%, #000);
+          mask: radial-gradient(circle 3.5px at 50% 8px, transparent 98%, #000);
+  box-shadow: 0 6px 10px -4px rgba(30, 20, 6, 0.4);
+  transform-origin: 50% calc(-1 * var(--string));
+}
+.showcase__item { position: relative; }
+.showcase__link { position: relative; }
+/* twine lives outside the clipped tag, so draw it on the link instead */
+.showcase__link::after {
+  content: ''; position: absolute; left: calc(50% - 0.75px);
+  top: calc(var(--stage-h) + var(--ledge-h)); height: calc(var(--string) + 8px); width: 1.5px;
+  background: linear-gradient(#cdb98f, #e9dcc0);
+  transform-origin: 50% 0;
+}
+.showcase__tag-name { display: block; font-family: var(--font-hand); font-size: 1.45rem; line-height: 1; font-weight: 600; }
+.showcase__tag-price { display: block; margin-top: 3px; font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: var(--color-green-deep); }
+
+/* arrows (desktop) — small brass buttons beside the filters */
+.showcase__tools { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.showcase__nudges { display: flex; gap: var(--space-2); }
+.showcase__nudge {
+  width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--color-yellow); color: var(--color-black);
+  font: 600 1.5rem/1 var(--font-display); padding-bottom: 3px;
+  box-shadow: 0 3px 0 var(--color-yellow-deep);
+  transition: opacity var(--dur) var(--ease);
+}
+.showcase__nudge:disabled { opacity: 0.35; cursor: default; }
+.showcase__nudge:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+/* MOTION — one entrance, then a quiet idle life */
+.showcase__wall:not(.is-in) .showcase__img,
+.showcase__wall:not(.is-in) .showcase__tag,
+.showcase__wall:not(.is-in) .showcase__link::after { opacity: 0; }
+.showcase__wall.is-in .showcase__img {
+  animation:
+    shelf-in 900ms cubic-bezier(0.22, 1.25, 0.36, 1) backwards,
+    cutout-float-a calc(5.4s + var(--i, 0) * 0.37s) ease-in-out calc(var(--i, 0) * 110ms + 900ms) infinite;
+  animation-delay: calc(var(--i, 0) * 110ms), calc(var(--i, 0) * 110ms + 900ms);
+}
+.showcase__wall.is-in .showcase__item--b .showcase__img { animation-name: shelf-in, cutout-float-b; }
+.showcase__wall.is-in .showcase__tag {
+  animation:
+    tag-drop 700ms cubic-bezier(0.3, 1.6, 0.5, 1) backwards,
+    tag-sway calc(3.6s + var(--i, 0) * 0.29s) ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * 110ms + 350ms), calc(var(--i, 0) * 110ms + 1050ms);
+}
+.showcase__wall.is-in .showcase__link::after { animation: tag-drop 700ms ease backwards; animation-delay: calc(var(--i, 0) * 110ms + 350ms); }
+@keyframes shelf-in {
+  from { opacity: 0; transform: translateY(-22%) scale(0.92); }
+  55%  { opacity: 1; transform: translateY(2%) scaleY(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes tag-drop {
+  from { opacity: 0; transform: rotate(-14deg) translateY(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes tag-sway {
+  from { transform: rotate(-3deg); }
+  to   { transform: rotate(3deg); }
+}
+
+@media (max-width: 720px) {
+  .showcase { --stage-h: 160px; --item-w: 38vw; --wall-pad: 36px; --string: 18px; --wall-pad-b: 22px; }
+  .showcase__head { align-items: flex-start; }
+  .showcase__row { padding-left: var(--space-4); padding-right: var(--space-4); scroll-padding-inline: var(--space-4); }
+  .showcase__filters { margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .showcase__filter { white-space: nowrap; }
+  .showcase__tag-name { font-size: 1.25rem; }
+  .showcase__nudge { display: none; }
+}
+@media (hover: none) { .showcase__nudge { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .showcase__img, .showcase__tag, .showcase__link::after { animation: none !important; }
+}
+/* a card the shelf just sent you to glows for a moment */
+.product[data-spotlit] { box-shadow: 0 0 0 3px var(--color-yellow), 0 14px 34px rgba(95, 70, 35, 0.2); transition: box-shadow 400ms var(--ease); }
