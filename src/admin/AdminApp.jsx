@@ -16,6 +16,7 @@ import LocalBusinessManager from './managers/LocalBusinessManager.jsx';
 import TimelineManager from './managers/TimelineManager.jsx';
 import HoursEditor from './managers/HoursEditor.jsx';
 import QuickBlocks from './managers/QuickBlocks.jsx';
+import ChalkboardManager from './managers/ChalkboardManager.jsx';
 import GoogleProfileSettings from './managers/GoogleProfileSettings.jsx';
 import Inbox from './managers/Inbox.jsx';
 import MediaLibrary from './managers/MediaLibrary.jsx';
@@ -52,6 +53,7 @@ export default function AdminApp() {
             <Route path="timeline" element={<TimelineManager />} />
             <Route path="hours" element={<HoursEditor />} />
             <Route path="quick-blocks" element={<QuickBlocks />} />
+            <Route path="chalkboard" element={<ChalkboardManager />} />
             <Route path="google" element={<GoogleProfileSettings />} />
             <Route path="inbox" element={<Inbox />} />
             <Route path="media" element={<MediaLibrary />} />

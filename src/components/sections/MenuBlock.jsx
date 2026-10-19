@@ -4,6 +4,7 @@ import Reveal from '../Reveal.jsx';
 import OrderButton from '../OrderButton.jsx';
 import { SkeletonCards } from '../Skeleton.jsx';
 import ProductCard from '../ProductCard.jsx';
+import ChalkboardStrip from '../ChalkboardStrip.jsx';
 import {
   getMenu, groupByCategory, hasProductPhotos,
   DIETARY_LABELS, MENU_CATEGORY_LABELS, MENU_CATEGORY_ORDER,
@@ -44,7 +45,7 @@ function catFromHash(hash, allowed) {
    SpotOn (ProductCard), and in the price list each item's NAME is that same
    link (orderUrlFor — new tab, tracked as order_now_click / 'menu_list'). */
 export default function MenuBlock({ data = {} }) {
-  const { heading = 'The Menu', categories, layout = 'auto' } = data;
+  const { heading = 'The Menu', categories, layout = 'auto', show_chalkboard: showChalkboard = true } = data;
   const allowedCats = useMemo(() => (categories?.length ? categories : MENU_CATEGORY_ORDER), [categories]);
   const [items, setItems] = useState(null);
   const [activeCat, setActiveCat] = useState(() => catFromHash(window.location.hash, categories?.length ? categories : MENU_CATEGORY_ORDER) ?? 'all');
@@ -135,6 +136,9 @@ export default function MenuBlock({ data = {} }) {
       {/* id + scroll-margin let #specials land here below the sticky nav */}
       <div className="container" id="specials" ref={containerRef} style={{ scrollMarginTop: 'calc(var(--header-h) + 8px)' }}>
         <h2 className="section-heading">{heading}</h2>
+
+        {/* the real specials board, when staff have snapped a fresh one */}
+        {showChalkboard !== false && <ChalkboardStrip />}
 
         {/* Category tabs */}
         <div className="menu-tabs" role="tablist" aria-label="Menu categories">

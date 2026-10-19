@@ -9,6 +9,7 @@ import { publicUrl } from '../lib/config.js';
 const NAV = [
   { to: '/admin/editor', label: '✏️ Edit your site' },
   { section: 'Shop settings' },
+  { to: '/admin/chalkboard', label: '📷 Today’s chalkboard' },
   { to: '/admin/hours', label: 'Hours' },
   { to: '/admin/quick-blocks', label: 'Quick Blocks' },
   { to: '/admin/google', label: 'Google Profile' },
