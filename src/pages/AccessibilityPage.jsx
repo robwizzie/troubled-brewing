@@ -4,7 +4,7 @@ import { SITE } from '../lib/seed.js';
 export default function AccessibilityPage() {
   return (
     <>
-      <SEO title="Accessibility — Trouble Brewing Coffee House" description="Our commitment to an accessible website and how to reach us about accessibility." path="/accessibility" />
+      <SEO path="/accessibility" />
       <article className="section container-narrow legal">
         <h1>Accessibility Statement</h1>
         <p>We want everyone to feel welcome — online and in the shop. We aim to meet <strong>WCAG 2.1 AA</strong> on this website: semantic structure, keyboard navigation, visible focus, alt text on images, sufficient color contrast, and respect for reduced-motion preferences.</p>
