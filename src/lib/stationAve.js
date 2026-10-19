@@ -74,7 +74,11 @@ const blockOf = (n) => Math.floor(n / 100) * 100;
    'end'. Rows that aren't on Station Ave go under "Around town" at the end.
    `walk.cols` is the column count and `walk.across` whether the far side has
    anyone on it (if not, the far-side row isn't drawn at all). */
-export function buildWalk(ordered, { showUs = true, ourNumber = streetNumber(SITE.address) } = {}) {
+/* `twoSided`: draw the odd-numbered side as a second row across the road.
+   Off by default — with only one odd-side business that row was mostly empty
+   filler buildings (a big blank band on phones), so every shop walks along
+   one sidewalk in true address order instead. */
+export function buildWalk(ordered, { showUs = true, ourNumber = streetNumber(SITE.address), twoSided = false } = {}) {
   const ourSide = parity(ourNumber) || 'even';
   const onAve = [];
   const elsewhere = [];
@@ -86,7 +90,7 @@ export function buildWalk(ordered, { showUs = true, ourNumber = streetNumber(SIT
   }
   if (showUs && ourNumber != null) onAve.push({ kind: 'us', id: 'us', n: ourNumber });
   onAve.sort((a, b) => a.n - b.n);
-  const hasAcross = onAve.some((s) => parity(s.n) !== ourSide);
+  const hasAcross = twoSided && onAve.some((s) => parity(s.n) !== ourSide);
 
   /* columns: { main, across } door pairs, or a decoration */
   const cols = [];
@@ -95,11 +99,11 @@ export function buildWalk(ordered, { showUs = true, ourNumber = streetNumber(SIT
   blocks.forEach((block, bi) => {
     if (bi > 0) cols.push({ decor: { kind: 'cross', id: `cross-${block}`, block } });
     const inBlock = onAve.filter((s) => blockOf(s.n) === block);
-    const row = inBlock.filter((s) => parity(s.n) === ourSide).map((s) => ({ main: s, n: s.n }));
+    const row = inBlock.filter((s) => !twoSided || parity(s.n) === ourSide).map((s) => ({ main: s, n: s.n }));
     // each far-side shop goes under the nearest door on our side it can face,
     // never out of order with the far-side shop before it
     let lastAcross = -1;
-    for (const a of inBlock.filter((s) => parity(s.n) !== ourSide)) {
+    for (const a of inBlock.filter((s) => twoSided && parity(s.n) !== ourSide)) {
       let best = -1;
       row.forEach((c, i) => {
         if (i <= lastAcross || !c.main || c.across) return;
