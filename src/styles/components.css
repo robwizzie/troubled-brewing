@@ -463,7 +463,7 @@
   backdrop-filter: blur(6px);
 }
 .concept-switcher__label { flex: 0 0 auto; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-yellow); }
-.concept-switcher__list { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.concept-switcher__list { display: flex; gap: 6px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .concept-switcher__list::-webkit-scrollbar { display: none; }
 .concept-switcher__pill {
   flex: 0 0 auto; padding: 6px 12px; border-radius: 999px;
@@ -487,85 +487,4 @@
 }
 .frame-portal__ground { position: absolute; inset: 0; opacity: 0; }
 
-/* ---- The fox guide (FoxGuide.jsx) — the logo's coffee-sipping fox --------- */
-.fox-guide {
-  position: fixed; z-index: 400;
-  left: max(10px, env(safe-area-inset-left, 0px)); bottom: max(10px, env(safe-area-inset-bottom, 0px));
-  display: flex; align-items: flex-end; gap: 8px;
-  pointer-events: none;
-  /* he slides up into the corner once the page has settled */
-  animation: fox-rise 0.9s cubic-bezier(0.3, 1.4, 0.5, 1) 0.8s both;
-}
-body:has(.concept-switcher) .fox-guide { bottom: 76px; }
-body:has(.consent) .fox-guide { bottom: 120px; }
-.fox-guide__fox { pointer-events: auto; padding: 0; border: 0; background: none; cursor: pointer; }
-.fox-guide__fox:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; border-radius: 16px; }
-.fox-guide__card { /* a little cream sticker with a brass rim, so the line art reads over anything */
-  display: block; width: 132px; padding: 10px 8px 6px;
-  background: radial-gradient(120% 100% at 30% 0%, #fffdf6, var(--color-cream));
-  border-radius: 18px;
-  box-shadow: 0 0 0 2px var(--color-yellow), 0 0 0 4px var(--color-paper), 0 8px 20px rgba(30, 22, 8, 0.28);
-  transition: transform 0.2s ease;
-}
-.fox-guide__fox:hover .fox-guide__card { transform: translateY(-3px) rotate(-2deg); }
-.fox-guide__figure {
-  position: relative; display: block;
-  transform: scaleX(var(--face, -1)) rotate(var(--lean, 0deg));
-  transform-origin: 50% 90%;
-  transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
-  animation: fox-sip 9s ease-in-out 3s infinite;
-}
-.fox-guide__figure img { display: block; width: 100%; height: auto; }
-/* steam curling up from his cup (the cup sits ~22% across, 30% down the drawing) */
-.fox-guide__steam { position: absolute; left: 18%; top: 4%; width: 18%; height: 30%; }
-.fox-guide__steam i {
-  position: absolute; bottom: 0; width: 3px; height: 14px; border-radius: 3px;
-  background: linear-gradient(transparent, rgba(25, 21, 18, 0.45), transparent);
-  opacity: 0; animation: fox-steam 9s ease-out 3s infinite;
-}
-.fox-guide__steam i:nth-child(1) { left: 10%; animation-delay: 3.3s; }
-.fox-guide__steam i:nth-child(2) { left: 45%; animation-delay: 3.5s; height: 18px; }
-.fox-guide__steam i:nth-child(3) { left: 80%; animation-delay: 3.7s; }
-.fox-guide__bubble {
-  pointer-events: auto; position: relative; order: 2;
-  max-width: min(260px, calc(100vw - 140px)); margin: 0 0 40px;
-  padding: 0.65em 1.9em 0.65em 0.9em; border-radius: 14px 14px 14px 3px;
-  background: var(--color-paper); color: var(--color-ink);
-  font: 600 1.05rem/1.3 var(--font-body);
-  box-shadow: 0 8px 24px rgba(30, 22, 8, 0.25), 0 0 0 2px var(--color-yellow);
-  animation: fox-say 0.35s cubic-bezier(0.3, 1.5, 0.5, 1) both;
-}
-.fox-guide__bubble::before { /* the tail, pointing back at him */
-  content: ''; position: absolute; left: -9px; bottom: 10px; width: 14px; height: 14px;
-  background: var(--color-paper); transform: rotate(45deg);
-  box-shadow: -2px 2px 0 0 var(--color-yellow);
-}
-.fox-guide__away {
-  position: absolute; top: 4px; right: 6px; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%;
-  background: transparent; color: var(--color-ink-soft); font-size: 1.1rem; line-height: 1; cursor: pointer;
-}
-.fox-guide__away:hover { background: var(--color-green-soft); color: var(--color-ink); }
-@keyframes fox-rise { from { transform: translateY(140%); opacity: 0; } }
-@keyframes fox-say { from { opacity: 0; transform: translateY(8px) scale(0.92); } }
-/* a sip: he tips back a touch, then settles (rotate is added to his lean) */
-@keyframes fox-sip { 0%, 84%, 100% { translate: 0 0; rotate: 0deg; } 88%, 93% { translate: 0 -2px; rotate: 6deg; } }
-@keyframes fox-steam { 0%, 30% { opacity: 0; transform: translateY(0) scaleY(0.6); } 36% { opacity: 1; } 55% { opacity: 0; transform: translateY(-16px) scaleY(1.2) translateX(3px); } 100% { opacity: 0; } }
-@media (max-width: 600px) {
-  .fox-guide__card { width: 104px; padding: 8px 6px 5px; border-radius: 15px; }
-  .fox-guide__bubble { margin-bottom: 30px; font-size: 0.98rem; }
-  body:has(.concept-switcher) .fox-guide { bottom: 128px; }
-}
-/* On Step Inside the chapter cards own the left/bottom of the screen, so the
-   fox steps aside: bottom-right on a laptop, top-left (under the nav) on a phone. */
-body:has(.sih) .fox-guide { left: auto; right: max(64px, env(safe-area-inset-right, 0px)); flex-direction: row-reverse; }
-body:has(.sih) .fox-guide__bubble { border-radius: 14px 14px 3px 14px; }
-body:has(.sih) .fox-guide__bubble::before { left: auto; right: -9px; box-shadow: 2px -2px 0 0 var(--color-yellow); }
-@media (max-width: 600px) {
-  body:has(.sih) .fox-guide { right: auto; left: 12px; bottom: auto; top: 86px; flex-direction: row; align-items: flex-start; }
-  body:has(.sih) .fox-guide__bubble { margin: 6px 0 0; border-radius: 3px 14px 14px 14px; }
-  body:has(.sih) .fox-guide__bubble::before { right: auto; left: -9px; top: 12px; bottom: auto; box-shadow: -2px 2px 0 0 var(--color-yellow); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fox-guide, .fox-guide__figure, .fox-guide__bubble, .fox-guide__steam i { animation: none; transition: none; }
-}
-@media print { .fox-guide { display: none; } }
+/* ---- The fox guide lives in fox-guide.css ---------------------------------- */
