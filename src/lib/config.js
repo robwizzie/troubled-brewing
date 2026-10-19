@@ -10,15 +10,10 @@ export const SPOTON_ORDER_URL =
   import.meta.env.VITE_SPOTON_ORDER_URL ||
   'https://order.spoton.com/so-trouble-brewing-coffee-house-26471/haddon-heights-nj/BL-BBE4-95CF-80CD';
 
-/* Where "Buy an e-gift card" goes. SpotOn sells this shop's e-gift cards: the
-   order page above carries a "Purchase gift cards" link to SpotOn's e-gift
-   checkout (path /26471/BL-BBE4-95CF-80CD on SpotOn's e-gift host). That host
-   couldn't be confirmed from SpotOn's own pages when this was built, so the
-   default is the order page itself, one tap from the real "Purchase gift
-   cards" link, and never a guessed address. Once the exact e-gift URL is
-   confirmed, set VITE_SPOTON_GIFT_CARD_URL (or the gift-card section's
-   "Button link" in the editor, which wins over both). */
-export const SPOTON_GIFT_CARD_URL = import.meta.env.VITE_SPOTON_GIFT_CARD_URL || SPOTON_ORDER_URL;
+/* Where "Buy an e-gift card" goes: the shop's e-gift card store (SecureTree),
+   confirmed by the owner, Oct 2026. Env-overridable with VITE_GIFT_CARD_URL;
+   the gift-card section's "Button link" in the editor wins over both. */
+export const GIFT_CARD_URL = import.meta.env.VITE_GIFT_CARD_URL || 'https://troublebrewingcoffeehouse.shop.securetree.com';
 
 export const CONSENT_KEY = 'tbch-consent-v1';
 
