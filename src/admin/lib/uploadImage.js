@@ -11,6 +11,9 @@ export const PRESETS = {
   hero: { maxWidthOrHeight: 2000, maxSizeMB: 0.4 },
   card: { maxWidthOrHeight: 1200, maxSizeMB: 0.28 },
   avatar: { maxWidthOrHeight: 600, maxSizeMB: 0.15 },
+  // a phone shot of the shop's chalkboard: big enough to read the chalk
+  // full-screen, small enough that a daily photo costs ~300 KB
+  chalkboard: { maxWidthOrHeight: 1600, maxSizeMB: 0.45 },
 };
 
 export function formatBytes(bytes) {

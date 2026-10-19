@@ -92,6 +92,9 @@ Click the **Signature sips** row on the homepage. Either name the drinks you wan
 ### Read messages from customers
 **⚙ Settings → Inbox** — contact and catering submissions land here. Filter by type, mark read/unread. (An unread count shows on the Inbox link.)
 
+### Put today's chalkboard on the website
+**⚙ Settings → 📷 Today's chalkboard** — on your phone, tap **Take a photo**, snap the chalkboard, add a few words if you like, and tap **Publish this photo**. It replaces the drawn board on the homepage (and shows on the Menu page) right away. After 3 days (you can change that) it comes down by itself and the homepage goes back to the drawn board of your live menu, so old specials never linger. Board hasn't changed? Tap **Re-publish** to keep it up longer. Tap **Remove** to take it down now.
+
 ### The announcement banner
 **⚙ Settings → Quick Blocks → Announcement banner** — type a short message ("Closed early Sat for a private event") and turn it on. It shows at the top of every page until you turn it off.
 

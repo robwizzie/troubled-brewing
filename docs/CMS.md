@@ -12,7 +12,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `rich_text` | `{ heading, body_markdown, variant: ''\|'lead'\|'alt' }` — `lead` is the centered opening paragraph with the cup motif, `alt` sits on a sage band | data | `RichText.jsx` |
 | `image` | `{ image_url, alt, caption }` | data | `ImageBlock.jsx` |
 | `gallery` | `{ heading, images: [{url, alt}] }` | data | `Gallery.jsx` |
-| `menu_block` | `{ heading, categories: [..], layout: 'auto'\|'cards'\|'list' }` — `auto` (default) draws photo cards as soon as any item has an `image_url`, the classic price list until then; `cards` uses the shared `ProductCard`, the same card the homepage drinks teaser draws | `menu_items` | `MenuBlock.jsx` |
+| `menu_block` | `{ heading, categories: [..], layout: 'auto'\|'cards'\|'list', show_chalkboard }` — `show_chalkboard` (default true) adds a small "Today's chalkboard" thumbnail under the heading while `chalkboard_photo` is live (`ChalkboardStrip.jsx`); nothing renders otherwise. `auto` (default) draws photo cards as soon as any item has an `image_url`, the classic price list until then; `cards` uses the shared `ProductCard`, the same card the homepage drinks teaser draws | `menu_items` | `MenuBlock.jsx` |
 | `hours` | `{ heading, intro }` | `hours`+`hours_overrides`/Google | `HoursSection.jsx` |
 | `cta` | `{ heading, body, button_label, button_url }` | data | `CTA.jsx` |
 | `events_list` | `{ heading, intro, empty_message }` | `events` | `EventsList.jsx` |
@@ -34,7 +34,7 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 | `scrapbook_hero` | `{ sbh_eyebrow, sbh_title, sbh_sub, sbh_hours_label, sbh_menu_label, sbh_photo_url }` — the real wall photo taped into a scrapbook with hand-written notes on what's visibly in it, plus linked snapshots of the shop | data | `ScrapbookHero.jsx` |
 | `wall_tour_hero` | `{ wth_eyebrow, wth_title, wth_sub, wth_menu_label, wth_photo_url }` — the real wall in a gilt frame, panning frame to frame (same `viewFor()` math as /gallery-wall) | data | `WallTourHero.jsx` |
 | `step_inside_hero` | `{ sih_title, sih_sub, sih_photo_url }` — sticky real-wall photo that zooms frame to frame as the page scrolls, one live chapter per frame; lighting follows the shop's hours (`?lights=on\|off` to preview) | `menu_items`, `google_profile`, `testimonials`, `hours` | `StepInsideHero.jsx` |
-| `pastry_case_hero` | `{ pch_eyebrow, pch_title, pch_sub, pch_board_title, pch_menu_label, pch_photo_url, pch_drinks }` — the real counter photo with a chalkboard of live menu items + prices | `menu_items` | `PastryCaseHero.jsx` |
+| `pastry_case_hero` | `{ pch_eyebrow, pch_title, pch_sub, pch_board_title, pch_menu_label, pch_photo_url, pch_drinks, pch_chalk_max_days }` — the real counter photo with a chalkboard of live menu items + prices. When `content_blocks.chalkboard_photo` is live (see below) the drawn board is replaced by the staff photo of the real chalkboard, in the same frame; `pch_chalk_max_days` (optional, not in the editor) overrides the block's `max_age_days` | `menu_items` + `content_blocks.chalkboard_photo` | `PastryCaseHero.jsx` |
 | `gallery_wall_room` | `{ heading, intro, hint, image_url }` — the shop's own photograph of the wall with a hotspot over every piece in it; opening one pans and magnifies the photograph under a spotlight and raises a card with the credits and the story. Hotspot geometry lives in `src/lib/galleryWall.js` and is **measured against `public/images/wall/gallery-wall.jpg`** — a different `image_url` still renders, but the hotspots have to be re-measured in code to match it. A `gallery_pieces` row claims a frame with its `wall_spot` | `gallery_pieces` | `GalleryWallRoom.jsx` |
 | `gallery_pieces_grid` | `{ heading, intro }` — each piece hangs in a real molding with a museum label: title, **artist** (linked via `artist_url`), medium and date | `gallery_pieces` | `GalleryPiecesGrid.jsx` |
 | `troublemakers_grid` | `{ heading, intro }` | `team_members` | `TroublemakersGrid.jsx` |
@@ -57,6 +57,22 @@ The CMS is **section-based**: each editable page is an ordered list of typed `se
 > **Section editors are schema-driven.** Rather than one editor file per type, the on-page editor's `SectionPanel` renders forms from declarative schemas in `src/admin/editors/schemas.js` via the shared `FieldRenderer` (field types: text, textarea, markdown, image, select, number, price, date, checkbox, tags, `frames`, `wallpieces`, `images`, `funfacts`). Adding a type = add a renderer + a schema entry. Collection-backed types (`menu_block`, `timeline_grid`, …) carry a `manager` key so the panel shows a "Manage —" button that embeds the right collection manager in place (`src/admin/editor/sectionMeta.js`). A manager entry is normally a `CollectionManager` config (a table + fields); it may instead be `{ title, component }`, which the panel renders as-is — that's how `social_proof` / `google_reviews_feed` reach the Reviews control room, which edits a cached library plus a settings block rather than a row-per-item collection.
 
 > **`content_blocks` keys:** `homepage_concept`, `featured_drink`, `staff_picks`, `loyalty_copy`, `announcement_banner`, `social_links` (Instagram/Facebook/TikTok/X/YouTube URLs — surfaced in footer + contact/community), `review_settings`.
+
+### Today's chalkboard (`content_blocks.chalkboard_photo`)
+
+Staff photograph the shop's real chalkboard from **Settings → 📷 Today's chalkboard** (`/admin/chalkboard`, `src/admin/managers/ChalkboardManager.jsx`). Phone-first: a "Take a photo" button (`accept="image/*" capture="environment"` — opens the rear camera) beside a normal "Choose a photo"; a local preview (nothing uploads until **Publish**); an optional caption; and "Take it down after" (1/2/3/5/7 days). Publishing compresses in the browser (`uploadImage` preset `chalkboard`: ≤1600px long edge, WebP q≈0.82, ≤~450 KB), uploads to the public `media` bucket at `chalkboard/<timestamp>-<name>.webp`, deletes the previous `chalkboard/` photo (best effort), and upserts:
+
+```json
+{ "url": "https://…/storage/v1/object/public/media/chalkboard/…webp",
+  "path": "chalkboard/…webp", "caption": "Pumpkin cold foam is back",
+  "updated_at": "2026-10-19T13:05:00.000Z", "enabled": true, "max_age_days": 3 }
+```
+
+"Re-publish" (no new photo) bumps `updated_at` when the board hasn't changed; **Remove — go back to the drawn board** sets `enabled: false` (the photo/url are kept).
+
+The site (`src/lib/chalkboard.js` → `useChalkboardPhoto`, `isChalkboardLive`) shows the photo only when `enabled === true`, `url` is set and the photo is fresh: its age in calendar days on the shop's clock (America/New_York, upload day = 0) is below `max_age_days` (default 3 → shown the upload day and the next two days). Stale, disabled, url-less, missing, a failed fetch, or an image that fails to load → the drawn live-menu board, always. The hero labels it "Updated today / yesterday / Tue" and opens it full-size in `PhotoLightbox` (Esc / ✕ / backdrop to close, focus returned, native pinch-zoom on phones).
+
+Storage/RLS: no new policy — the existing bucket-wide `media` policies (public read, authenticated insert/update/delete) and `content_blocks` policies cover it. `supabase/migrations/2026-10-19-chalkboard-photo.sql` only inserts the row (switched off) if it's missing; the admin's upsert creates it anyway on first publish.
 
 ### Reviews: one selection rule, every surface
 
@@ -113,6 +129,7 @@ The sidebar layout survives as a slim **Settings** area for everything that isn'
 | Surface | Manages |
 |---|---|
 | **Hours Editor** | `hours` weekly grid + `hours_overrides` holidays |
+| **Today's chalkboard** (`/admin/chalkboard`) | `content_blocks.chalkboard_photo` — snap/upload the real chalkboard, caption, publish / remove (see above) |
 | **Quick Blocks** | `content_blocks`: featured drink, staff picks, announcement banner, social links |
 | **Google Profile Settings** | Place ID + GBP review URL + "refresh now" |
 | **Reviews** (`/admin/reviews`) | every cached Google review: the star floor, hide/feature per review, attach a review photo, promote one to a hand-picked favorite. Writes `content_blocks.review_settings`; also embeddable in the editor panel from the homepage reviews strip |

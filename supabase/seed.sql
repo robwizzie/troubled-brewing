@@ -163,7 +163,10 @@ insert into content_blocks (key, data) values
 -- Which Google reviews the site shows + the owner's per-review overrides
 -- (hidden / pinned / attached photo), keyed by author+text. See src/lib/reviews.js
 -- and admin -> Reviews. 4 stars is the default floor: only the good ones.
-('review_settings', '{"min_rating": 4, "hidden": {}, "pinned": {}, "photos": {}}')
+('review_settings', '{"min_rating": 4, "hidden": {}, "pinned": {}, "photos": {}}'),
+-- A staff photo of the real chalkboard (admin -> Today's chalkboard); off until
+-- they publish one. See src/lib/chalkboard.js.
+('chalkboard_photo', '{"url": "", "path": "", "caption": "", "updated_at": null, "enabled": false, "max_age_days": 3}')
 on conflict (key) do nothing;
 
 -- -----------------------------------------------------------------------------
