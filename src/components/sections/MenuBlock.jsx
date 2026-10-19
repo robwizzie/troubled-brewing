@@ -5,6 +5,7 @@ import OrderButton from '../OrderButton.jsx';
 import { SkeletonCards } from '../Skeleton.jsx';
 import ProductCard from '../ProductCard.jsx';
 import ChalkboardStrip from '../ChalkboardStrip.jsx';
+import { PairLine, PairingsStrip } from '../Pairings.jsx';
 import {
   getMenu, groupByCategory, hasProductPhotos,
   DIETARY_LABELS, MENU_CATEGORY_LABELS, MENU_CATEGORY_ORDER,
@@ -12,6 +13,7 @@ import {
 import { useDataVersion } from '../../lib/dataVersion.js';
 import { track } from '../../lib/analytics.js';
 import { orderUrlFor, orderLabelFor } from '../../lib/order.js';
+import { pairingsFor, resolvePairings, usePairingsBlock } from '../../lib/pairings.js';
 
 /* URL-hash → category tab: /menu#specials lands on the Specialty tab (the
    homepage "Current Drink Specials" link), and any exact category key works
@@ -43,7 +45,13 @@ function catFromHash(hash, allowed) {
 
    Every item leads to ordering it, consistently: a card is one big link to
    SpotOn (ProductCard), and in the price list each item's NAME is that same
-   link (orderUrlFor — new tab, tracked as order_now_click / 'menu_list'). */
+   link (orderUrlFor — new tab, tracked as order_now_click / 'menu_list').
+
+   Staff pairings (content_blocks.pairings, src/lib/pairings.js): a drink with
+   one gets a small "Goes great with: …" line, and 2+ pairings add an "Our
+   pairings" strip above the tabs. Both only appear once the owner has
+   published a pairing, and a pairing whose drink or treat is off the menu is
+   left out. */
 export default function MenuBlock({ data = {} }) {
   const { heading = 'The Menu', categories, layout = 'auto', show_chalkboard: showChalkboard = true } = data;
   const allowedCats = useMemo(() => (categories?.length ? categories : MENU_CATEGORY_ORDER), [categories]);
@@ -52,6 +60,9 @@ export default function MenuBlock({ data = {} }) {
   const [diet, setDiet] = useState(new Set());
   const location = useLocation();
   const containerRef = useRef(null);
+
+  const pairBlock = usePairingsBlock();
+  const pairings = useMemo(() => (items && pairBlock ? resolvePairings(pairBlock, items) : []), [items, pairBlock]);
 
   const version = useDataVersion('menu_items');
   useEffect(() => {
@@ -140,6 +151,8 @@ export default function MenuBlock({ data = {} }) {
         {/* the real specials board, when staff have snapped a fresh one */}
         {showChalkboard !== false && <ChalkboardStrip />}
 
+        <PairingsStrip pairings={pairings} />
+
         {/* Category tabs */}
         <div className="menu-tabs" role="tablist" aria-label="Menu categories">
           <button role="tab" aria-selected={activeCat === 'all'} className={`menu-tab ${activeCat === 'all' ? 'active' : ''}`} onClick={() => setActiveCat('all')}>
@@ -188,7 +201,13 @@ export default function MenuBlock({ data = {} }) {
                 </h3>
                 {framed.length > 0 && (
                   <div className={`products products--menu ${listed.length ? 'products--framed' : ''}`}>
-                    {framed.map((item, i) => <ProductCard key={item.id} item={item} index={i} plate={false} />)}
+                    {framed.map((item, i) => {
+                      const pairs = pairingsFor(item.name, pairings);
+                      const card = <ProductCard key={item.id} item={item} index={i} plate={false} />;
+                      return pairs.length ? (
+                        <div key={item.id} className="menu-paired">{card}<PairLine pairs={pairs} /></div>
+                      ) : card;
+                    })}
                   </div>
                 )}
                 {listed.length > 0 && (
@@ -217,6 +236,7 @@ export default function MenuBlock({ data = {} }) {
                             {item.price != null && <span className="menu-item__price">${Number(item.price).toFixed(2)}</span>}
                           </div>
                           {item.description && <p className="menu-item__desc">{item.description}</p>}
+                          <PairLine pairs={pairingsFor(item.name, pairings)} />
                         </div>
                       </li>
                     ))}

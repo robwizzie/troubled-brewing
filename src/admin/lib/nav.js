@@ -30,6 +30,7 @@ export const SCREENS = [
   { to: '/admin/quick-blocks', icon: '📣', label: 'Banner & links', nav: 'Every day' },
   { to: '/admin/inbox', icon: '✉️', label: 'Messages', nav: 'Every day', badge: 'inbox' },
   { to: '/admin/menu', icon: '☕', label: 'Menu', nav: 'Lists on the site' },
+  { to: '/admin/pairings', icon: '🥐', label: 'Drink pairings', nav: 'Lists on the site' },
   { to: '/admin/events', icon: '📅', label: 'Events', nav: 'Lists on the site' },
   { to: '/admin/reviews', icon: '⭐', label: 'Google reviews', nav: 'Lists on the site' },
   { to: '/admin/testimonials', icon: '💬', label: 'Hand-picked quotes', nav: 'more' },
@@ -90,6 +91,12 @@ export const TASKS = [
     title: 'Edit the menu descriptions or photos',
     desc: 'What each drink and bite says, its photo and dietary tags.',
     keywords: 'menu drink drinks food item items latte coffee espresso tea pastry pastries bagel description describe photo picture vegan gluten dairy dietary allergy sold out',
+  },
+  {
+    id: 'pairings', to: '/admin/pairings', icon: '🥐',
+    title: 'Pair a drink with a treat',
+    desc: '“Goes great with…” under a drink on the Menu page — your staff’s picks.',
+    keywords: 'pair pairs pairing pairings goes great with treat treats combo combos match together muffin scone cookie croissant bakery snack recommend recommendation suggestion',
   },
   {
     id: 'event', to: '/admin/events', icon: '📅',
