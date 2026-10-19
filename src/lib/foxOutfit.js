@@ -16,7 +16,8 @@
    A failed or slow (3s) weather call just means season-only, silently.
 
    ?foxOutfit=rain|snow|hot|october|winter|holiday|spring|summer|september
-   forces a look, so the owner can preview it. Temperatures are only ever
+   forces a look, so the owner can preview it (?weather=rain|snow, the
+   rainy-day banner's preview, dresses him to match). Temperatures are only ever
    quoted from live data, never from a preview. */
 
 export const SHOP = { lat: 39.8773, lon: -75.0646 }; // 514 Station Ave, Haddon Heights NJ
@@ -68,6 +69,14 @@ export function outfitFromUrl(search = typeof window !== 'undefined' ? window.lo
   let v = '';
   try { v = String(new URLSearchParams(search || '').get('foxOutfit') || '').trim().toLowerCase(); } catch { return null; }
   return LOOKS.includes(v) ? v : null;
+}
+
+/** The forced wet weather from ?weather=rain|snow (the rainy-day banner's
+    preview), or null. Anything else is ignored. */
+export function weatherPreviewFromUrl(search = typeof window !== 'undefined' ? window.location.search : '') {
+  let v = '';
+  try { v = String(new URLSearchParams(search || '').get('weather') || '').trim().toLowerCase(); } catch { return null; }
+  return v === 'rain' || v === 'snow' ? v : null;
 }
 
 // what he WEARS for a season (stays on in any weather) and what sits BESIDE him
