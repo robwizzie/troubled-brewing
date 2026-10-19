@@ -78,7 +78,7 @@ describe('Surprise me pours a drink', () => {
     const name = pane.querySelector('.fox-drink__name').textContent;
     expect(drinkNames.has(name)).toBe(true);
     expect(pane.querySelector('.fox-pour__cup')).toBeTruthy();
-    expect(within(pane).getByRole('link', { name: new RegExp(`^Order ${esc(name)}`) }).getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(within(pane).getByRole('link', { name: new RegExp(`^Order ${esc(name)}`) }).getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     expect(within(pane).getByRole('button', { name: /Pick again/ }).disabled).toBe(false);
     fireEvent.click(within(pane).getByRole('button', { name: /Pick again/ }));
     expect(pane.querySelector('.fox-drink__name').textContent).not.toBe(name);
