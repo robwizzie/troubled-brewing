@@ -40,7 +40,7 @@ describe('the Station Ave walk', () => {
   });
 
   it('puts the odd numbers across the road, under the door they face', () => {
-    const walk = buildWalk(orderBusinesses(ROWS, 'street'));
+    const walk = buildWalk(orderBusinesses(ROWS, 'street'), { twoSided: true });
     const by = (id) => walk.find((s) => s.id === id);
     expect(walk.across).toBe(true);
     expect(by('next').side).toBe('main');
@@ -156,5 +156,14 @@ describe('the Station Ave walk', () => {
     fireEvent.click(within(document.getElementById('ave-detail')).getByRole('button', { name: /Previous door/ }));
     expect(scrollTo).toHaveBeenLastCalledWith({ left: 0, behavior: 'auto' });
     expect(shop.closest('li').className).toContain('is-selected');
+  });
+});
+
+describe('the default Station Ave walk', () => {
+  it('walks every shop along one sidewalk in true address order', () => {
+    const walk = buildWalk(orderBusinesses(ROWS, 'street'));
+    expect(walk.some((s) => s.side === 'across')).toBe(false);
+    const nums = walk.filter((s) => s.kind === 'shop' || s.kind === 'us').filter((s) => s.kind === 'us' || /station/i.test(s.b?.address || '')).map((s) => s.n);
+    expect(nums).toEqual([...nums].sort((a, b) => a - b));
   });
 });

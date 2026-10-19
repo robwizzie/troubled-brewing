@@ -570,6 +570,20 @@ export default function StationAveStrip({ ordered, showUs = true }) {
     else el.scrollLeft = left;
   }, []);
 
+  /* On a phone the opening view only fits one storefront, so start the walk
+     on our own door (instantly — no glide on page load) instead of the sign. */
+  const openedOnUs = useRef(false);
+  useLayoutEffect(() => {
+    const el = scroller.current;
+    const us = el?.querySelector('[data-stop="us"]');
+    if (openedOnUs.current || !el || !us || el.clientWidth >= 700) return;
+    openedOnUs.current = true;
+    const box = el.getBoundingClientRect();
+    const r = us.getBoundingClientRect();
+    const max = el.scrollWidth - el.clientWidth;
+    el.scrollLeft = Math.max(0, Math.min(max, el.scrollLeft + (r.left - box.left) - (el.clientWidth - r.width) / 2));
+  }, [doors.length]);
+
   /* arrow keys / Home / End walk between storefronts */
   const onKeyDown = (e) => {
     const idx = doors.findIndex((d) => d.id === e.target?.dataset?.stop);
