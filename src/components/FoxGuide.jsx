@@ -12,6 +12,9 @@ import { findSection, foxAnswers, hoursAnswer, plainText } from '../lib/foxHelp.
 import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
 import { QUICK_MS, backLine, dailyFact, foxMood, registerTap } from '../lib/foxFun.js';
 import { AwardPane, FactPane, FoxFigure, QuizPane, SurprisePane, Tail } from './FoxPlay.jsx';
+import FoxOutfit, { FoxOutfitLine } from './FoxOutfit.jsx'; // fox-outfits
+import FoxUsual from './FoxUsual.jsx'; // fox-outfits
+import useFoxOutfit from '../lib/useFoxOutfit.js'; // fox-outfits
 
 /* The Trouble Brewing fox — the dapper top-hatted fox from the logo, cup in
    hand (public/images/brand/fox-sipping.png). He's the logo fox, so no
@@ -168,6 +171,7 @@ export default function FoxGuide() {
   const pointerType = useRef('mouse');
   useEffect(() => () => { clearTimeout(openTimer.current); clearTimeout(moveTimer.current); }, []);
   const base = useFoxHours();
+  const outfit = useFoxOutfit(); // fox-outfits: seasonal / weather accessories
   const data = useFoxData(wanted || open, base);
   const day = specialDay(foxToday());
   const Badge = day ? BADGES[day.id] : null;
@@ -461,7 +465,12 @@ export default function FoxGuide() {
                   )}
                 </>
               ) : (
-                <p className="fox-help__a">{greeting}</p>
+                <>
+                  {/* fox-outfits: your usual, then his line about the outfit */}
+                  {data && <FoxUsual menu={data.menu} onSomethingDifferent={() => ask('quiz')} />}
+                  <p className="fox-help__a">{greeting}</p>
+                  <FoxOutfitLine outfit={outfit} />
+                </>
               )}
             </div>
           </div>
@@ -525,6 +534,7 @@ export default function FoxGuide() {
           <span className="fox-guide__card">
             <span className="fox-guide__face">
               <FoxFigure sleepy={mood.sleepy} october={mood.october} />
+              <FoxOutfit outfit={outfit} hasPumpkin={mood.october} />{/* fox-outfits */}
               {mood.sleepy && <span className="fox-guide__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>}
             </span>
             {Badge && <span className="fox-guide__badge" aria-hidden="true"><Badge /></span>}
