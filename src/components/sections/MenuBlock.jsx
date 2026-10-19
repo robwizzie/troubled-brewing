@@ -10,6 +10,7 @@ import {
 } from '../../lib/menuService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 import { track } from '../../lib/analytics.js';
+import { orderUrlFor, orderLabelFor } from '../../lib/order.js';
 
 /* URL-hash → category tab: /menu#specials lands on the Specialty tab (the
    homepage "Current Drink Specials" link), and any exact category key works
@@ -37,7 +38,11 @@ function catFromHash(hash, allowed) {
             under them. Photos arrive a few at a time (a SpotOn upload here, a
             Menu Manager one there), and this way every photo gets shown off
             while nothing without one stands in a frame of drawn placeholders
-            — a menu with no photos at all is simply the handsome list. */
+            — a menu with no photos at all is simply the handsome list.
+
+   Every item leads to ordering it, consistently: a card is one big link to
+   SpotOn (ProductCard), and in the price list each item's NAME is that same
+   link (orderUrlFor — new tab, tracked as order_now_click / 'menu_list'). */
 export default function MenuBlock({ data = {} }) {
   const { heading = 'The Menu', categories, layout = 'auto' } = data;
   const allowedCats = useMemo(() => (categories?.length ? categories : MENU_CATEGORY_ORDER), [categories]);
@@ -190,7 +195,16 @@ export default function MenuBlock({ data = {} }) {
                         <div className="menu-item__main">
                           <div className="menu-item__head">
                             <span className="menu-item__name">
-                              {item.name}
+                              <a
+                                className="menu-item__link"
+                                href={orderUrlFor(item)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={orderLabelFor(item)}
+                                onClick={() => track('order_now_click', { location: 'menu_list', item: item.name })}
+                              >
+                                {item.name}
+                              </a>
                               {(item.dietary_flags || []).map((f) => (
                                 <span key={f} className="menu-item__flag" title={f}>{DIETARY_LABELS[f] || f}</span>
                               ))}
