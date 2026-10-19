@@ -23,8 +23,9 @@ import { DIETARY_LABELS } from '../lib/menuService.js';
    instead of a crop: a warm lit backdrop, a contact shadow on the "table",
    the whole item shown, and a little life — it rises into place the first
    time it scrolls into view (once it has actually loaded, so nothing
-   animates an empty frame) and lifts off the table on hover/focus. All of
-   that motion is CSS and switches off under prefers-reduced-motion. */
+   animates an empty frame), then keeps gently bobbing and swaying on its
+   own tempo — nothing reacts to the pointer. All of that motion is CSS and
+   switches off under prefers-reduced-motion. */
 
 const FRAME_STYLES = ['gilt-thin', 'black-flat', 'bronze-carved', 'gold-botanical', 'black-mat', 'gold-tapestry'];
 /* the matted styles shrink the picture inside a wide mat — right for a
