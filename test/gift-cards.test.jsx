@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 vi.mock('../src/lib/analytics.js', async (orig) => ({ ...(await orig()), track: vi.fn() }));
 
 const App = (await import('../src/App.jsx')).default;
-const { SPOTON_GIFT_CARD_URL, SPOTON_ORDER_URL } = await import('../src/lib/config.js');
+const { GIFT_CARD_URL } = await import('../src/lib/config.js');
 const { SECTIONS, PAGES } = await import('../src/lib/seed.js');
 const seo = await import('../src/lib/seo.js');
 const jsonld = await import('../src/lib/jsonld.js');
@@ -30,21 +30,20 @@ const seedData = () => SECTIONS['gift-cards'][0].data;
 afterEach(cleanup);
 
 describe('the purchase link', () => {
-  it('defaults to the SpotOn order page (it has the "Purchase gift cards" link) until the e-gift URL is confirmed', () => {
-    expect(SPOTON_GIFT_CARD_URL).toBe(SPOTON_ORDER_URL);
-    expect(SPOTON_GIFT_CARD_URL).toMatch(/^https:\/\/order\.spoton\.com\/.*26471.*BL-BBE4-95CF-80CD$/);
+  it("goes to the shop's e-gift card store", () => {
+    expect(GIFT_CARD_URL).toBe('https://troublebrewingcoffeehouse.shop.securetree.com');
   });
 
   it('the button and every occasion card open that link in a new tab', () => {
     ui(<GiftCards data={seedData()} />);
     const buy = screen.getByRole('link', { name: /^buy an e-gift card/i });
-    expect(buy.getAttribute('href')).toBe(SPOTON_GIFT_CARD_URL);
+    expect(buy.getAttribute('href')).toBe(GIFT_CARD_URL);
     expect(buy.getAttribute('target')).toBe('_blank');
     expect(buy.getAttribute('rel')).toMatch(/noopener/);
     const cards = screen.getAllByRole('listitem').map((li) => within(li).getByRole('link'));
     expect(cards).toHaveLength(4);
     for (const a of cards) {
-      expect(a.getAttribute('href')).toBe(SPOTON_GIFT_CARD_URL);
+      expect(a.getAttribute('href')).toBe(GIFT_CARD_URL);
       expect(a.getAttribute('target')).toBe('_blank');
     }
   });
@@ -54,7 +53,7 @@ describe('the purchase link', () => {
     expect(screen.getByRole('link', { name: /^buy an e-gift card/i }).getAttribute('href')).toBe('https://example.com/egift');
     cleanup();
     ui(<GiftCards data={{ ...seedData(), button_url: 'javascript:alert(1)' }} />);
-    expect(screen.getByRole('link', { name: /^buy an e-gift card/i }).getAttribute('href')).toBe(SPOTON_GIFT_CARD_URL);
+    expect(screen.getByRole('link', { name: /^buy an e-gift card/i }).getAttribute('href')).toBe(GIFT_CARD_URL);
   });
 });
 
