@@ -67,6 +67,7 @@ create table if not exists menu_items (
   category text not null,        -- 'espresso'|'specialty'|'food'|'pastry'|'seasonal'
   dietary_flags text[] default '{}',
   image_url text,
+  order_url text,                -- SpotOn deep link for this item (sync-filled; empty = store page)
   available boolean default true,
   display_order int default 0,
   status text not null default 'published',
