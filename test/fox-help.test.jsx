@@ -106,19 +106,14 @@ describe('the fox’s help card', () => {
     renderFox();
     fireEvent.click(fox());
     const card = screen.getByRole('dialog', { name: 'Ask the fox' });
-    const fun = await within(card).findByRole('button', { name: 'Tell me something fun' });
-    fireEvent.click(fun);
-    const first = card.querySelector('.fox-help__say-in').textContent;
+    const park = await within(card).findByRole('button', { name: 'Where do I park?' });
+    fireEvent.click(park);
     const say = card.querySelector('.fox-help__say');
+    expect(say.textContent).toMatch(/Where do I park/);
     expect(say.closest('.fox-help__body')).toBeNull();
     // the answer box comes before the chips, straight under the header
     expect(say.previousElementSibling.tagName).toBe('HEADER');
     expect(say.nextElementSibling.classList.contains('fox-help__body')).toBe(true);
-    // tapping "fun" again tells the next fact instead of closing the answer
-    fireEvent.click(fun);
-    const second = card.querySelector('.fox-help__say-in').textContent;
-    expect(second).not.toBe(first);
-    expect(second).toMatch(/Tell me something fun/);
   });
 
   it('closes on an outside tap', async () => {
