@@ -4,7 +4,7 @@ import { computeStatus, dayName, nextOpening, shopNow } from './hours.js';
    tested (test/fox-fun.test.js) and FoxGuide.jsx only draws the result.
 
      · drinkCandidates / pickSurprise   — "Surprise me"
-     · reelStrip + reelPosition         — its slot-machine reel
+     · drinkLook                        — how its pour looks
      · DAILY + dailyFact                — one fox fact or riddle per day
      · foxMood                          — sleepy / morning / October
      · registerTap                      — petting, and the 10th-tap badge
@@ -184,45 +184,60 @@ export function registerTap(state, t) {
 }
 
 /* ---------------------------------------------------------------------------
-   The "Surprise me" reel
-   A slot-machine strip of real drinks that spins down and lands on the pick.
-   The strip and the easing are pure so they're tested; FoxPlay only paints
-   them (transform + opacity, one requestAnimationFrame loop).
+   The "Surprise me" pour
+   The fox pours the pick into its cup: a mug for a hot drink, a glass (with
+   ice, or a whipped top for a frozen one) for a cold one, filled in the
+   drink's colour. drinkLook decides the cup from what the drink IS
+   (classifyDrink — name, SpotOn category, description), so a matcha pours
+   green and an iced drink gets ice; FoxPlay only draws it.
    ------------------------------------------------------------------------ */
 
-export const REEL_MS = 1300;      // the whole spin, settle included
-export const REEL_ROWS = 14;      // names that fly past before the pick
+export const POUR_MS = 1500; // the whole pour, settle and card included
 
-/** The names on the reel: `count` random real drinks (never the same twice
-    in a row), ending on `final`. */
-export function reelStrip(menu, final, { count = REEL_ROWS, rand = Math.random } = {}) {
-  let pool = drinkCandidates(menu);
-  if (!pool.length) pool = anyOrderable(menu);
-  if (!final || !pool.length) return final ? [final] : [];
-  const strip = [];
-  for (let i = 0; i < count; i += 1) {
-    const prev = strip[i - 1];
-    const next = i === count - 1 ? final : null; // the last flyer must differ from the pick too
-    const options = pool.length > 2 ? pool.filter((d) => d.name !== prev?.name && d.name !== next?.name) : pool;
-    strip.push(options[Math.floor(rand() * options.length) % options.length]);
+const LOOKS = [
+  // [what the name / description says, colour]
+  [/matcha/i, '#8daa58'],
+  [/turmeric|golden/i, '#e2a73a'],
+  [/chai/i, '#c99360'],
+  [/london fog|earl grey/i, '#c9b49b'],
+  [/chocolate|cocoa|mocha/i, '#5e3826'],
+  [/steamer/i, '#f4ecdc'],
+  [/lemonade/i, '#f2da6a'],
+  [/refresher/i, '#e2647f'],
+  [/cider|apple/i, '#c27a2e'],
+  [/frapp?e|vanilla|cookies/i, '#eee2c9'],
+];
+const ESPRESSO = '#3d2517';
+const LATTE = '#c9a27a';
+const CORTADO = '#a8784f';
+const TEA_TONE = '#b4692a';
+
+/** How the pour should look: { vessel: 'mug'|'glass', fill, ice, frozen,
+    steam, heart }. Purely a drawing — it says nothing the classification
+    doesn't (hot → mug + steam; iced → ice; frozen → whipped top; a hot
+    milky espresso or tea latte gets a heart on top). */
+export function drinkLook(item) {
+  const c = classifyDrink(item);
+  const name = String(item?.name || '');
+  const text = `${name} ${item?.description || ''}`;
+  let fill = LOOKS.find(([re]) => re.test(name))?.[1] || LOOKS.find(([re]) => re.test(text))?.[1];
+  if (!fill) {
+    if (c.base.includes('coffee')) {
+      if (c.milk === 'yes') fill = /cortado|macc?h?iato|machiatto|flat white/i.test(name) ? CORTADO : LATTE;
+      else fill = c.temp === 'frozen' ? '#b48a63' : ESPRESSO;
+    } else if (c.base.includes('tea')) fill = TEA_TONE;
+    else fill = '#8a5a36';
   }
-  return [...strip, final];
-}
-
-// a gentle ease-out: the last two or three names visibly tick past before it stops
-const easeOut = (t) => 1 - (1 - t) ** 2.2;
-const easeInOutSine = (t) => -(Math.cos(Math.PI * t) - 1) / 2;
-export const REEL_OVERSHOOT = 0.16; // rows past the pick before it settles back
-const SETTLE_AT = 0.8;              // share of the spin spent decelerating
-
-/** How far the reel has travelled, in rows, at progress t (0…1) for a strip
-    of `rows` rows: it decelerates past the pick by a hair, then settles back
-    onto it — ending exactly on the last row, at rest. */
-export function reelPosition(t, rows) {
-  const end = rows - 1;
-  const c = Math.min(1, Math.max(0, t));
-  if (c < SETTLE_AT) return (end + REEL_OVERSHOOT) * easeOut(c / SETTLE_AT);
-  return end + REEL_OVERSHOOT * (1 - easeInOutSine((c - SETTLE_AT) / (1 - SETTLE_AT)));
+  const hot = c.temp === 'hot';
+  const latte = /\b(latte|cappuccino|flat white|cortado|au lait)\b/i.test(name) && !/chocolate|steamer/i.test(name);
+  return {
+    vessel: hot ? 'mug' : 'glass',
+    fill,
+    ice: c.temp === 'iced',
+    frozen: c.temp === 'frozen',
+    steam: hot,
+    heart: hot && c.milk === 'yes' && latte,
+  };
 }
 
 /* ---------------------------------------------------------------------------
