@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { readFileSync } from 'node:fs';
 
 /* The wish, beyond the fox's card: the /wish page, the Menu page's "Don't
    see your favorite?", the 404's hat, the footer link and the "Wish list"
@@ -79,6 +80,17 @@ describe('small hat moments', () => {
     at('/about');
     const nav = await screen.findByRole('navigation', { name: 'Footer navigation' });
     expect(within(nav).getByRole('link', { name: 'Make a Wish' }).getAttribute('href')).toBe('/wish');
+  });
+});
+
+describe('the fox stays off the wish on phones', () => {
+  it('on /wish he steps aside like on Step Inside, and the menu block leaves room under its button', () => {
+    const fox = readFileSync('src/styles/fox-guide.css', 'utf8');
+    const phone = fox.slice(fox.indexOf('@media (max-width: 600px) {\n  body:has(.sih) .fox-guide'));
+    expect(phone).toMatch(/body:has\(\.wish-page\) \.fox-guide \{ right: auto; left: 12px; bottom: auto; top: 86px;/);
+    const wish = readFileSync('src/styles/fox-wish.css', 'utf8');
+    expect(wish).toMatch(/@media \(max-width: 600px\) \{\s*\.wish-page \{ padding-top: 84px; \}/);
+    expect(wish).toMatch(/@media \(max-width: 600px\) \{\s*\.section\.wish-section \{ padding-bottom:/);
   });
 });
 
