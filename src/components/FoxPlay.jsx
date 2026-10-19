@@ -5,6 +5,7 @@ import { orderUrlFor, orderLabelFor } from '../lib/order.js';
 import { productImageSources, isCutout } from '../lib/productImage.js';
 import { track } from '../lib/analytics.js';
 import { FOX_H, FOX_PATH, FOX_W } from '../lib/foxArt.js';
+import { saveUsual } from '../lib/yourUsual.js'; // fox-outfits: "your usual"
 import {
   ANY, POUR_MS, QUIZ, closedOrderNote, drinkLook, fmtPrice, matchDrink, pickSurprise,
   quizPlan, refineOptions,
@@ -37,7 +38,7 @@ export function DrinkPhoto({ item, small = false }) {
 function OrderLink({ item, small = false, where = 'fox' }) {
   return (
     <a className={`fox-help__link${small ? ' fox-help__link--small' : ''}`} href={orderUrlFor(item)} target="_blank" rel="noopener noreferrer" aria-label={orderLabelFor(item)}
-      onClick={() => track('order_now_click', { location: where, item: item.name })}>
+      onClick={() => { saveUsual(item); /* fox-outfits: your usual */ track('order_now_click', { location: where, item: item.name }); }}>
       Order <FaArrowUpRightFromSquare aria-hidden="true" />
     </a>
   );
@@ -132,6 +133,7 @@ export function SurprisePane({ menu, hours, overrides }) {
     const done = setTimeout(() => setPouring(false), POUR_MS);
     return () => { clearTimeout(tick); clearTimeout(done); };
   }, [pouring, pour.n]);
+  useEffect(() => { if (!pouring && pour.item) saveUsual(pour.item); }, [pouring, pour]); // fox-outfits: a poured pick is "your usual"
 
   const again = () => {
     const next = pickSurprise(menu, { not: pour.item?.name });
@@ -207,6 +209,7 @@ export function QuizPane({ menu, hours, overrides }) {
 
   // keyboard users stay with the quiz: focus moves to each new question
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [at, result]);
+  useEffect(() => { if (result?.r?.item) saveUsual(result.r.item); }, [result]); // fox-outfits: a match is "your usual"
 
   const finish = (ans) => {
     setResult({ r: matchDrink(menu, ans), refine: [], aside: [] });
