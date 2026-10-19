@@ -57,7 +57,7 @@ function GoogleImport({ onAdded }) {
               <span className="admin-import__stars">{'★'.repeat(Math.min(5, Math.round(r.rating || 5)))}</span>
               <p className="admin-import__text">{r.quote}</p>
             </div>
-            <button type="button" className="btn btn--sm" onClick={() => add(r)}>+ Add</button>
+            <button type="button" className="btn btn--ghost btn--sm" onClick={() => add(r)}>+ Add</button>
           </li>
         ))}
       </ul>

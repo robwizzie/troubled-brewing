@@ -37,23 +37,31 @@ export default function ImageField({ label = 'Image', value, onChange, preset = 
           {value ? <img src={mediaUrl(value)} alt="" /> : <span className="imagefield__empty" aria-hidden="true">No image</span>}
         </div>
         <div className="imagefield__controls">
-          <input ref={inputRef} type="file" accept="image/*" onChange={onFile} disabled={busy} />
-          {busy && <span className="field__hint">Compressing & uploading…</span>}
+          <div className="imagefield__buttons">
+            <label className={`btn btn--ghost btn--sm imagefield__pick ${busy ? 'is-busy' : ''}`}>
+              {busy ? 'Shrinking & uploading…' : value ? '📷 Change photo' : '📷 Choose a photo'}
+              <input ref={inputRef} type="file" accept="image/*" onChange={onFile} disabled={busy} className="sr-only" />
+            </label>
+            {value && (
+              <button type="button" className="btn btn--ghost btn--sm" onClick={() => { onChange(''); setStats(null); }}>
+                Remove photo
+              </button>
+            )}
+          </div>
           {stats && (
-            <span className="field__hint">Optimized: {formatBytes(stats.before)} → <strong>{formatBytes(stats.after)}</strong></span>
+            <span className="field__hint">Shrunk to keep the site fast: {formatBytes(stats.before)} → <strong>{formatBytes(stats.after)}</strong></span>
           )}
-          {value && (
-            <button type="button" className="btn btn--ghost btn--sm" onClick={() => { onChange(''); setStats(null); }}>
-              Remove
-            </button>
-          )}
-          <input
-            type="text"
-            placeholder="…or paste an image URL"
-            value={value || ''}
-            onChange={(e) => onChange(e.target.value)}
-            className="imagefield__url"
-          />
+          <details className="advanced imagefield__advanced">
+            <summary>Advanced: use a link instead</summary>
+            <input
+              type="text"
+              aria-label={`${label}: link to a photo`}
+              placeholder="Paste a link to a photo"
+              value={value || ''}
+              onChange={(e) => onChange(e.target.value)}
+              className="imagefield__url"
+            />
+          </details>
         </div>
       </div>
     </div>

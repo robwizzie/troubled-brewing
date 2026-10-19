@@ -15,7 +15,7 @@ export const MENU_COLLECTION = {
   singular: 'item',
   labelKey: 'name',
   defaultItem: { available: true, category: 'specialty', dietary_flags: [] },
-  summary: (i) => `${i.category}${i.price != null ? ` · $${Number(i.price).toFixed(2)}` : ''}${i.available === false ? ' · hidden' : ''}`,
+  summary: (i) => `${CATEGORIES.find((c) => c.value === i.category)?.label || i.category || 'No category'}${i.price != null ? ` · $${Number(i.price).toFixed(2)}` : ''}${i.available === false ? ' · hidden' : ''}`,
   fields: [
     { name: 'name', label: 'Name', type: 'text', required: true },
     { name: 'description', label: 'Description', type: 'textarea', rows: 2 },

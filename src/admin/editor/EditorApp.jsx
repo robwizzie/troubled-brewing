@@ -14,21 +14,7 @@ import Canvas from './Canvas.jsx';
 import SectionPanel from './SectionPanel.jsx';
 import PagePanel from './PagePanel.jsx';
 import './editor.css';
-
-/* Friendly page names for the switcher — the owner picks "Menu", never a slug. */
-const PAGE_NAMES = {
-  home: 'Home',
-  menu: 'Menu',
-  about: 'Our Story',
-  events: 'Events',
-  location: 'Hours & Location',
-  contact: 'Contact',
-  reviews: 'Reviews',
-  'gallery-wall': 'Gallery Wall',
-  troublemakers: 'Troublemakers',
-  neighborhood: 'Local Love',
-  timeline: 'Timeline',
-};
+import { PAGE_NAMES } from '../lib/nav.js';
 
 /* Seed fallback mirrors dataService's synthetic ids (read-only mode). */
 const seedSections = (slug) =>
@@ -386,7 +372,7 @@ function Editor() {
   return (
     <div className="admin tb-editor">
       <header className="tb-editor__topbar">
-        <Link to="/admin/settings" className="tb-editor__back" title="Hours, chalkboard, inbox & more">☰ Admin menu</Link>
+        <Link to="/admin" className="tb-editor__back" title="Chalkboard, hours, menu, events & more">← Admin home</Link>
         <label className="tb-editor__pagepick">
           <span className="tb-editor__pagelabel">Editing page</span>
           <select value={slug} onChange={(e) => goToPage(e.target.value)} aria-label="Page to edit">

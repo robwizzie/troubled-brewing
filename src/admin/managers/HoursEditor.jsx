@@ -11,6 +11,12 @@ import { dayName } from '../../lib/hours.js';
 
 const toRows = (hours) =>
   hours.map((r) => ({ day_of_week: r.day_of_week, open_time: r.open_time || null, close_time: r.close_time || null }));
+/* "2026-12-25" → "Fri, Dec 25, 2026" (no timezone drift: it's a calendar date). */
+function prettyDate(iso) {
+  const d = new Date(`${iso}T12:00:00Z`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+}
 const BLANK_OVERRIDE = { override_date: '', label: '', open_time: '', close_time: '', closed: false };
 
 export default function HoursEditor() {
@@ -132,30 +138,30 @@ export default function HoursEditor() {
       <section className="admin__panel">
         <h2>Holiday closures & special hours {holidaysDirty && <span className="badge badge--draft panel-badge">Changed — not live yet</span>}</h2>
         {overrides.length === 0 && removed.length === 0 ? (
-          <p className="field__hint">None set. Add one below for a holiday or special event.</p>
+          <p className="admin-empty admin-empty--left">No holidays or special hours yet. Pick a date below, give it a name like “Thanksgiving”, then press <strong>+ Add holiday</strong>.</p>
         ) : (
           <ul className="admin-list">
             {overrides.map((o) => (
               <li key={o.override_date} className="admin-list__row">
                 <div className="admin-list__body">
-                  <strong>{o.override_date}</strong>
+                  <strong>{prettyDate(o.override_date)}</strong>
                   <div className="admin-list__meta">{o.label || ''} — {o.open_time && o.close_time ? `${o.open_time}–${o.close_time}` : 'Closed all day'}</div>
                 </div>
                 {isNew(o) && <span className="badge badge--draft">New — not live yet</span>}
                 <div className="admin-list__actions">
-                  <button className="btn btn--danger btn--sm" onClick={() => setConfirmDel(o.override_date)}>Remove</button>
+                  <button className="btn btn--danger btn--sm" onClick={() => setConfirmDel(o.override_date)}>Delete</button>
                 </div>
               </li>
             ))}
             {removed.filter((o) => !overrides.some((x) => x.override_date === o.override_date)).map((o) => (
               <li key={`rm-${o.override_date}`} className="admin-list__row is-removed">
                 <div className="admin-list__body">
-                  <strong>{o.override_date}</strong>
+                  <strong>{prettyDate(o.override_date)}</strong>
                   <div className="admin-list__meta">{o.label || ''}</div>
                 </div>
                 <span className="badge badge--remove">Will be removed</span>
                 <div className="admin-list__actions">
-                  <button className="btn btn--ghost btn--sm" onClick={() => setOverrides((list) => [...list, o].sort((a, b) => a.override_date.localeCompare(b.override_date)))}>Undo</button>
+                  <button className="btn btn--ghost btn--sm" onClick={() => setOverrides((list) => [...list, o].sort((a, b) => a.override_date.localeCompare(b.override_date)))}>Undo remove</button>
                 </div>
               </li>
             ))}
@@ -172,15 +178,15 @@ export default function HoursEditor() {
               <div className="field"><label htmlFor="ho-close">Closes</label><input id="ho-close" placeholder="2:00 PM" value={newOverride.close_time} onChange={(e) => setNewOverride((s) => ({ ...s, close_time: e.target.value }))} /></div>
             </>
           )}
-          <button className="btn btn--accent" onClick={addOverride}>+ Add holiday</button>
+          <button className="btn btn--primary" onClick={addOverride}>+ Add holiday</button>
         </div>
       </section>
 
       <ConfirmModal
         open={Boolean(confirmDel)}
-        title="Remove this holiday?"
-        body="Your normal weekly hours will apply on that date again once you press Publish."
-        confirmLabel="Remove"
+        title="Delete this holiday?"
+        body="Your normal weekly hours will apply on that date again once you press Publish. Until then you can undo it."
+        confirmLabel="Delete"
         onConfirm={() => { setOverrides((list) => list.filter((o) => o.override_date !== confirmDel)); setConfirmDel(null); }}
         onCancel={() => setConfirmDel(null)}
       />

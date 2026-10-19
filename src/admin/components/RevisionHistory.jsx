@@ -28,7 +28,7 @@ export default function RevisionHistory({ table, recordId, labelKey = 'name', on
           <li key={rev.id}>
             <span>
               <strong>{new Date(rev.created_at).toLocaleString()}</strong>
-              <span className="field__hint"> — {rev.snapshot?.[labelKey] || 'record'} · {rev.edited_by}</span>
+              <span className="field__hint"> — {rev.snapshot?.[labelKey] || 'this item'}{rev.edited_by && rev.edited_by !== 'unknown' ? ` · ${rev.edited_by}` : ''}</span>
             </span>
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => onLoad?.(rev.snapshot || {})}>
               Use this version
