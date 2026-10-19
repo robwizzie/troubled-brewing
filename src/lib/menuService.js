@@ -49,7 +49,7 @@ export async function getMenu({ includeUnavailable = false } = {}) {
     const { data, error } = await query;
     if (error) throw error;
     if (!data || data.length === 0) return normalize(MENU_ITEMS, { includeUnavailable });
-    return normalize(data);
+    return normalize(data, { includeUnavailable });
   } catch (err) {
     // eslint-disable-next-line no-console
     if (import.meta.env.DEV) console.warn('[menuService] live fetch failed, falling back to snapshot:', err.message);

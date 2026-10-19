@@ -47,7 +47,7 @@ export const SECTIONS = {
       { label: 'The Journey', link: '/timeline', frame_style: 'bronze-carved', image_url: asset('images/wall/our-story-so-far.jpg') },
       { label: 'Our Story', link: '/about', frame_style: 'brass-chain', image_url: asset('images/wall/our-story.jpg') },
     ] } },
-    { type: 'food_showcase', data: { heading: 'Fresh off the counter', subheading: 'Tap anything to find it on the menu.' } },
+    { type: 'food_showcase', data: { heading: 'Fresh off the counter', subheading: 'Tap anything to order it on SpotOn.' } },
     { type: 'social_proof', data: { label: 'Loved by the neighborhood', count: 6 } },
     { type: 'featured_drink', data: { heading: "This Week's Trouble" } },
     { type: 'signature_drinks', data: { heading: 'Signature sips', category: 'specialty', count: 3, button_label: 'See the full menu', button_url: '/menu' } },
@@ -63,7 +63,7 @@ export const SECTIONS = {
     { type: 'newsletter', data: { heading: 'Stay in the loop', body: 'New drinks, events, and the occasional bit of Trouble — straight to your inbox.', mailchimp_action_url: '' } },
   ],
   menu: [
-    { type: 'food_showcase', data: { heading: 'Fresh off the counter', subheading: 'Tap anything to find it on the menu.' } },
+    { type: 'food_showcase', data: { heading: 'Fresh off the counter', subheading: 'Tap anything to order it on SpotOn.' } },
     { type: 'menu_block', data: { heading: 'The Menu', categories: ['espresso', 'specialty', 'food', 'pastry', 'seasonal'], layout: 'auto' } },
     { type: 'cta', data: { heading: 'Ready to order?', body: 'Order ahead on SpotOn for pickup.', button_label: 'Order on SpotOn', button_url: '' } },
   ],
@@ -147,9 +147,12 @@ export const HOURS = [
 export const HOURS_OVERRIDES = [];
 
 export const CONTENT_BLOCKS = {
-  homepage_concept: { concept: 'immersive_gallery' },
-  featured_drink: { name: 'Banana Split Coffee', description: 'Our signature dessert-in-a-cup. If you only try one thing, make it this.', price: '6.50', image_url: '' },
-  staff_picks: { items: [ { label: 'Flying off the menu', value: 'Cranberry Walnut Chicken Salad Panini' }, { label: "Barista's pick", value: 'Banana Split Coffee' } ] },
+  homepage_concept: { concept: 'pastry_case' },
+  // `item` = an exact menu name, resolved live (src/lib/featured.js)
+  featured_drink: { item: 'Iced Matcha Latte', description: 'Iced matcha over cold milk, finished with a fresh strawberry.' },
+  // real, available menu items only — the chicken salad's own menu
+  // description calls it "our most popular sandwich"
+  staff_picks: { items: [ { label: 'Flying off the menu', value: 'Cranberry Walnut Chicken Salad' }, { label: "This week's feature", value: 'Iced Matcha Latte' } ] },
   loyalty_copy: { body_markdown: 'Ask a Troublemaker about loyalty perks. Full program details coming soon.' },
   announcement_banner: { enabled: false, message: '' },
   /* Which Google reviews the site shows + the owner's per-review overrides.

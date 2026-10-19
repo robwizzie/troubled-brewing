@@ -3,7 +3,7 @@
    only the renderer swaps). Shared by Home, the on-page editor, and admin. */
 
 /** The concept the site falls back to before/without a stored choice. */
-export const DEFAULT_CONCEPT = 'immersive_gallery';
+export const DEFAULT_CONCEPT = 'pastry_case';
 
 export const CONCEPT_TO_TYPE = {
   gallery_wall: 'gallery_wall_hero',

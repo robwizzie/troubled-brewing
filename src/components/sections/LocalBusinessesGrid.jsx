@@ -46,16 +46,31 @@ const initials = (name) =>
     .join('')
     .toUpperCase();
 
+/* The directions link. A row's own maps_url (if the table ever gains one)
+   wins; otherwise a Google Maps search for name + address. The addresses are
+   typed as just the street ("512 Station Ave"), which Maps would resolve to
+   whichever Station Ave it fancies, so the town is appended unless the
+   address already names it. No address and no maps_url → no link. */
+const TOWN = ', Haddon Heights, NJ 08035';
+function directionsUrl(b) {
+  if (b.maps_url) return b.maps_url;
+  if (!b.address) return null;
+  const where = /haddon heights/i.test(b.address) ? b.address : `${b.address}${TOWN}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${where}`)}`;
+}
+
 function Card({ b }) {
+  // the images are hotlinked from each business's own site — if one moves,
+  // fall back to the monogram / no photo instead of a broken-image icon
+  const [logoOk, setLogoOk] = useState(true);
+  const [photoOk, setPhotoOk] = useState(true);
   const number = streetNumber(b.address);
-  const mapsUrl = b.address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address}`)}`
-    : null;
+  const mapsUrl = directionsUrl(b);
   return (
     <article className="neighbor">
       <div className="neighbor__head">
-        {b.logo_url ? (
-          <img className="neighbor__logo" src={b.logo_url} alt={`${b.name} logo`} loading="lazy" />
+        {b.logo_url && logoOk ? (
+          <img className="neighbor__logo" src={b.logo_url} alt={`${b.name} logo`} loading="lazy" referrerPolicy="no-referrer" onError={() => setLogoOk(false)} />
         ) : (
           /* a drawn monogram beats an empty logo box, and beats hotlinking a
              logo nobody gave us permission to use */
@@ -70,7 +85,7 @@ function Card({ b }) {
         </div>
       </div>
 
-      {b.photo_url && <img className="neighbor__photo" src={b.photo_url} alt="" loading="lazy" />}
+      {b.photo_url && photoOk && <img className="neighbor__photo" src={b.photo_url} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setPhotoOk(false)} />}
 
       {b.blurb && <p className="neighbor__blurb">{b.blurb}</p>}
 

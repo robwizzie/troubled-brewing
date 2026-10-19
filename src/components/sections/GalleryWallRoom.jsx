@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Reveal from '../Reveal.jsx';
-import { asset } from '../../lib/config.js';
+import { WALL_PHOTO, WALL_PHOTO_LARGE, wallPhotoProps } from '../../lib/wallPhoto.js';
 import { track } from '../../lib/analytics.js';
 import { getGalleryPieces } from '../../lib/dataService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
@@ -24,13 +24,22 @@ import {
    the layer's own box, the math is pure percentages of the photograph and
    never needs a measured pixel (see viewFor()).
 
-   The photograph is 934px wide, so viewFor() caps the zoom where an
-   enlargement still looks like a photograph rather than porridge. The card
-   carries the real detail instead: the owner's own straight-on shot of the
-   piece when the collection has one, otherwise a native-resolution crop of the
-   wall itself. */
+   The photograph is the photographer's full-resolution frame, served at the
+   size the screen needs (src/lib/wallPhoto.js). Zooming asks for more: the
+   `sizes` hint grows with the magnification, so the browser swaps in a bigger
+   copy as the room walks up to a piece and a close-up stays crisp instead of
+   going soft. The card carries the detail too: the owner's own straight-on
+   shot of the piece when the collection has one, otherwise a crop of the wall
+   cut from the largest copy.
 
-const WALL_PHOTO = 'images/wall/gallery-wall.jpg';
+   The room spans the full width of the page: the wall itself is centred as
+   large as the screen allows, and a softly blurred extension of the same wall
+   fills out to the edges, so a wide monitor gets a room rather than a framed
+   print on a cream page. On a phone it runs edge to edge. */
+
+/* How wide the room's stage can get on a wide screen (px) — mirrors
+   `.gwr__body` in gallery-room.css, so the `sizes` hint matches the layout. */
+const STAGE_MAX = 1180;
 
 /* Where a chosen piece lands in the stage, as a share of it. Wide screens hold
    the card over the right of the room, so the art sits left of center and takes
@@ -40,6 +49,27 @@ const WALL_PHOTO = 'images/wall/gallery-wall.jpg';
    to. */
 const FIT_WIDE = { cx: 0.27, cy: 0.5, w: 0.46, h: 0.74 };
 const FIT_NARROW = { cx: 0.5, cy: 0.5, w: 0.86, h: 0.86 };
+/* A wide window has wall to spare either side of the room: the card hangs out
+   there, beside the photograph, and the piece gets the middle of the stage. */
+const FIT_SIDE = { cx: 0.5, cy: 0.5, w: 0.8, h: 0.8 };
+const SIDE_CARD_MIN = 300; // px of free band beside the room before the card moves out
+
+/* true when the band has room for the card beside the stage */
+function useSideRoom(bandRef, bodyRef) {
+  const [side, setSide] = useState(false);
+  useEffect(() => {
+    const band = bandRef.current;
+    const body = bodyRef.current;
+    if (!band || !body || typeof ResizeObserver === 'undefined') return undefined;
+    const check = () => setSide((band.clientWidth - body.clientWidth) / 2 >= SIDE_CARD_MIN + 32);
+    const ro = new ResizeObserver(check);
+    ro.observe(band);
+    ro.observe(body);
+    check();
+    return () => ro.disconnect();
+  }, [bandRef, bodyRef]);
+  return side;
+}
 
 function useMediaQuery(query) {
   const [matches, setMatches] = useState(() => {
@@ -84,7 +114,8 @@ export default function GalleryWallRoom({ data = {} }) {
     image_url: imageOverride,
   } = data;
 
-  const photo = imageOverride || asset(WALL_PHOTO);
+  const photo = imageOverride || WALL_PHOTO;
+  const cropPhoto = imageOverride || WALL_PHOTO_LARGE;
 
   const [pieces, setPieces] = useState(null);
   const version = useDataVersion('gallery_pieces');
@@ -104,7 +135,14 @@ export default function GalleryWallRoom({ data = {} }) {
   const open = openIndex >= 0 ? art[openIndex] : null;
 
   const wide = useMediaQuery('(min-width: 860px)');
-  const view = open ? viewFor(open, wide ? FIT_WIDE : FIT_NARROW) : REST_VIEW;
+  const bandRef = useRef(null);
+  const bodyRef = useRef(null);
+  const side = useSideRoom(bandRef, bodyRef) && wide;
+  const view = open ? viewFor(open, side ? FIT_SIDE : wide ? FIT_WIDE : FIT_NARROW) : REST_VIEW;
+  /* the rendered width of the photograph AFTER magnification — what decides
+     which copy is sharp enough */
+  const zoom = Math.max(1, view.scale);
+  const sizes = `(min-width: 860px) min(${Math.round(STAGE_MAX * zoom)}px, ${Math.round(86 * zoom)}vh), ${Math.round(100 * zoom)}vw`;
 
   const closeRef = useRef(null);
   const returnRef = useRef(null);
@@ -168,14 +206,16 @@ export default function GalleryWallRoom({ data = {} }) {
   );
 
   return (
-    <Reveal as="section" className={`section gwr${open ? ' gwr--open' : ''}`}>
+    <Reveal as="section" className={`section gwr${open ? ' gwr--open' : ''}${side ? ' gwr--side' : ''}`}>
       <div className="container">
         <header className="gwr__head">
           <h2 className="section-heading">{heading}</h2>
           {intro && <p className="section-sub">{intro}</p>}
         </header>
+      </div>
 
-        <div className="gwr__body" style={{ '--gwr-ratio': WALL_STAGE_RATIO }}>
+      <div className="gwr__band" ref={bandRef} style={{ '--gwr-ambient': `url("${photo}")` }}>
+        <div className="gwr__body" ref={bodyRef} style={{ '--gwr-ratio': WALL_STAGE_RATIO }}>
           <div className="gwr__room">
             <div className="gwr__stage">
               <div
@@ -187,7 +227,8 @@ export default function GalleryWallRoom({ data = {} }) {
               >
                 <img
                   className="gwr__photo"
-                  src={photo}
+                  {...wallPhotoProps(imageOverride, sizes)}
+                  fetchpriority="high"
                   alt="The gallery wall at Trouble Brewing — dozens of framed pictures hung together on a green wall"
                   width={WALL_IMAGE.w}
                   height={WALL_IMAGE.h}
@@ -257,7 +298,7 @@ export default function GalleryWallRoom({ data = {} }) {
                   {open.photo ? (
                     <img className="gwr-card__photo" src={open.photo} alt={open.title} decoding="async" />
                   ) : (
-                    <WallCrop art={open} photo={photo} />
+                    <WallCrop art={open} photo={cropPhoto} />
                   )}
                 </div>
 
@@ -318,7 +359,10 @@ export default function GalleryWallRoom({ data = {} }) {
               </aside>
             )}
           </div>
+        </div>
+      </div>
 
+      <div className="container">
           {/* The wall's contents as plain text, always in the document. A screen
               reader — or a crawler — gets the whole collection without operating
               a zooming photograph, and every hotspot above is a shortcut into
@@ -337,7 +381,6 @@ export default function GalleryWallRoom({ data = {} }) {
               </li>
             ))}
           </ul>
-        </div>
       </div>
     </Reveal>
   );

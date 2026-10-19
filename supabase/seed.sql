@@ -47,7 +47,7 @@ insert into sections (page_slug, type, display_order, data) values
   "specials_label": "Current Drink Specials",
   "specials_link": "/menu#specials"
 }'),
-('home', 'food_showcase', 1, '{"heading": "Fresh off the counter", "subheading": "Tap anything to find it on the menu."}'),
+('home', 'food_showcase', 1, '{"heading": "Fresh off the counter", "subheading": "Tap anything to order it on SpotOn."}'),
 ('home', 'social_proof', 2, '{"label": "Loved by the neighborhood"}'),
 ('home', 'featured_drink', 3, '{"heading": "This Week''s Trouble"}'),
 ('home', 'signature_drinks', 4, '{"heading": "Signature sips", "button_label": "See the full menu"}'),
@@ -59,7 +59,7 @@ insert into sections (page_slug, type, display_order, data) values
 
 -- MENU --------------------------------------------------------------
 insert into sections (page_slug, type, display_order, data) values
-('menu', 'food_showcase', 0, '{"heading": "Fresh off the counter", "subheading": "Tap anything to find it on the menu."}'),
+('menu', 'food_showcase', 0, '{"heading": "Fresh off the counter", "subheading": "Tap anything to order it on SpotOn."}'),
 ('menu', 'menu_block', 1, '{"heading": "The Menu", "categories": ["espresso", "specialty", "food", "pastry", "seasonal"]}'),
 ('menu', 'cta', 2, '{"heading": "Ready to order?", "body": "Order ahead on SpotOn for pickup.", "button_label": "Order on SpotOn", "button_url": ""}');
 
@@ -155,8 +155,8 @@ on conflict (day_of_week) do nothing;
 -- -----------------------------------------------------------------------------
 insert into content_blocks (key, data) values
 ('homepage_concept', '{"concept": "immersive_gallery"}'),
-('featured_drink', '{"name": "Banana Split Coffee", "description": "Our signature dessert-in-a-cup. If you only try one thing, make it this.", "price": "6.50", "image_url": ""}'),
-('staff_picks', '{"items": [{"label": "Flying off the menu", "value": "Cranberry Walnut Chicken Salad Panini"}, {"label": "Barista''s pick", "value": "Banana Split Coffee"}]}'),
+('featured_drink', '{"item": "Iced Matcha Latte", "description": "Iced matcha over cold milk, finished with a fresh strawberry."}'),
+('staff_picks', '{"items": [{"label": "Flying off the menu", "value": "Cranberry Walnut Chicken Salad"}, {"label": "This week''s feature", "value": "Iced Matcha Latte"}]}'),
 ('loyalty_copy', '{"body_markdown": "Ask a Troublemaker about loyalty perks. Full program details coming soon."}'),
 ('announcement_banner', '{"enabled": false, "message": ""}'),
 ('social_links', '{"instagram": "https://instagram.com/troublebrewingcoffee", "facebook": "https://www.facebook.com/tbcoffeehouse", "tiktok": "https://www.tiktok.com/@troublebrewingcoffee", "x": "", "youtube": ""}'),
