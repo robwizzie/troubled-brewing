@@ -13,7 +13,9 @@ import ActionLink from '../ActionLink.jsx';
    inside pages: a deep-sage panel, the ask on one side, the photo hung in a
    gallery frame on the other, an optional second button. Same section type on
    purpose — other parts of the site (the fox's "can I host something?"
-   answer) read these rows by type, so the look changes but the row doesn't. */
+   answer) read these rows by type, so the look changes but the row doesn't.
+   Without a photo, a second label + link shows as a small text link under
+   the button. */
 function PhotoPanel({ data }) {
   const {
     eyebrow = '',
@@ -49,7 +51,7 @@ function PhotoPanel({ data }) {
 
 export default function CTA({ data = {} }) {
   if (data.image_url) return <PhotoPanel data={data} />;
-  const { heading, body, button_label = 'Order Now', button_url } = data;
+  const { heading, body, button_label = 'Order Now', button_url, secondary_label: label2 = '', secondary_url: url2 = '' } = data;
   const looksLikeOrder =
     !button_url || /spoton|order/i.test(button_url) || /order/i.test(button_label);
   const internal = button_url && button_url.startsWith('/');
@@ -70,6 +72,13 @@ export default function CTA({ data = {} }) {
               <Link className="btn btn--primary btn--lg" to={button_url}>{button_label}</Link>
             ) : (
               <a className="btn btn--primary btn--lg" href={button_url}>{button_label}</a>
+            )}
+            {/* the plain band's second action is a quiet text link under the
+                button (e.g. the menu's "Send a gift card"), not a rival button */}
+            {label2 && url2 && (
+              <p className="cta-band__aside">
+                <ActionLink label={label2} url={url2} className="cta-band__link" location="cta-aside" />
+              </p>
             )}
           </div>
         </div>

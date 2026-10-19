@@ -163,3 +163,20 @@ export function computeStatus(hours, overrides = [], now = new Date()) {
     overrideLabel: override?.label,
   };
 }
+
+/**
+ * Split a computeStatus() result into a bold headline and a detail so the
+ * two never repeat each other ("Closed · Closed — opens 7:30 AM" →
+ * "Closed · opens 7:30 AM"; "Open now · Open until 7 PM" → "Open now · until 7 PM").
+ */
+export function statusParts(status) {
+  if (!status) return { head: '', detail: '' };
+  if (status.open) {
+    const detail = String(status.label || '').replace(/^open\s*(?:—|-|–)?\s*/i, '');
+    return { head: 'Open now', detail };
+  }
+  const label = String(status.label || '');
+  if (/^closed today$/i.test(label)) return { head: 'Closed today', detail: '' };
+  const detail = label.replace(/^closed\s*(?:—|-|–)?\s*/i, '');
+  return { head: 'Closed', detail };
+}
