@@ -179,7 +179,7 @@ export default function StepInsideHero({ data = {} }) {
   const photoSizes = pos ? `${Math.ceil(pos.coverW * pos.s)}px` : '100vw';
   const quote = reviews?.reviews?.[0];
   const backAt = status && !status.open
-    ? (status.label.startsWith('Closed — opens') ? status.label.replace('Closed — opens', 'Back at') : 'Back tomorrow')
+    ? (status.label.startsWith('Closed — opens') ? status.label.replace(/^Closed — opens (?:(tomorrow|\w+day) )?/, (m, day) => (day ? `Back ${day} at ` : 'Back at ')) : 'Back tomorrow')
     : '';
 
   const card = (i) => {

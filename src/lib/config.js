@@ -16,6 +16,17 @@ export const CONSENT_KEY = 'tbch-consent-v1';
    static asset in public/ so it works on the project-page subpath. */
 export const asset = (p) => `${import.meta.env.BASE_URL}${String(p).replace(/^\//, '')}`;
 
+/* An image url from the database: absolute ones (http(s):, protocol-relative,
+   data:, blob: — hotlinks and admin uploads) pass through untouched;
+   site-relative paths to files in public/ ("/images/neighbors/x.png") go
+   through asset() so they still resolve under the GitHub Pages base path. */
+export function mediaUrl(u) {
+  const s = String(u ?? '').trim();
+  if (!s) return '';
+  if (/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(s)) return s;
+  return asset(s);
+}
+
 /* Absolute-path URL for a public page slug, honoring the deploy base. Use for
    raw <a href> / iframe src (react-router Links get the basename for free).
    publicUrl() or publicUrl('home') → the home page; publicUrl('menu') → /menu. */
