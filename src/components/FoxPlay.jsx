@@ -4,6 +4,7 @@ import { CoffeeCup } from './Motifs.jsx';
 import { orderUrlFor, orderLabelFor } from '../lib/order.js';
 import { productImageSources, isCutout } from '../lib/productImage.js';
 import { track } from '../lib/analytics.js';
+import { saveUsual } from '../lib/yourUsual.js'; // fox-outfits: "your usual"
 import { FOX_PATH } from '../lib/foxArt.js';
 import {
   ANY, QUIZ, REEL_MS, classifyDrink, closedOrderNote, fmtPrice, matchDrink, pickSurprise,
@@ -37,7 +38,7 @@ export function DrinkPhoto({ item, small = false }) {
 function OrderLink({ item, small = false, where = 'fox' }) {
   return (
     <a className={`fox-help__link${small ? ' fox-help__link--small' : ''}`} href={orderUrlFor(item)} target="_blank" rel="noopener noreferrer" aria-label={orderLabelFor(item)}
-      onClick={() => track('order_now_click', { location: where, item: item.name })}>
+      onClick={() => { saveUsual(item); /* fox-outfits: your usual */ track('order_now_click', { location: where, item: item.name }); }}>
       Order <FaArrowUpRightFromSquare aria-hidden="true" />
     </a>
   );
@@ -123,6 +124,8 @@ export function SurprisePane({ menu, hours, overrides }) {
     raf.current = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf.current);
   }, [spin]);
+
+  useEffect(() => { if (!spin && item) saveUsual(item); }, [spin, item]); // fox-outfits: a landed pick is "your usual"
 
   if (!item) return <p className="fox-help__a">Hmm, I can’t see any drinks on the menu right now.</p>;
   const note = closedOrderNote(hours, overrides);
@@ -213,6 +216,7 @@ export function QuizPane({ menu, hours, overrides }) {
 
   // keyboard users stay with the quiz: focus moves to each new question
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [at, result]);
+  useEffect(() => { if (result?.r?.item) saveUsual(result.r.item); }, [result]); // fox-outfits: a match is "your usual"
 
   const finish = (ans) => {
     setResult({ r: matchDrink(menu, ans), refine: [], aside: [] });

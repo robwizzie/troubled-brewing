@@ -1,0 +1,71 @@
+/* ==========================================================================
+   The fox's outfits (src/components/FoxOutfit.jsx) and "your usual"
+   (src/components/FoxUsual.jsx). Kept apart from fox-guide.css on purpose.
+   No hover lifts (the owner dislikes them). One gentle motion when an outfit
+   appears; prefers-reduced-motion makes all of it static.
+   ========================================================================== */
+
+/* The overlay sits exactly over his figure (same box, same viewBox) and
+   copies its facing, lean, sip, wave and hop, so worn pieces move with him. */
+.fox-outfit {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  overflow: visible; pointer-events: none;
+  transform: scaleX(var(--face, -1)) rotate(var(--lean, 0deg));
+  transform-origin: 50% 78%;
+  transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
+  animation: fox-sip 9s ease-in-out 3s infinite;
+}
+.fox-guide.is-wave .fox-outfit { animation: fox-wave 1.4s ease-in-out both; }
+.fox-guide.is-hop .fox-outfit { animation: fox-hop 0.42s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+.fox-guide.is-wag .fox-outfit, .fox-guide.is-sleepy .fox-outfit { animation: none; }
+/* asleep, the nightcap is over his top hat: nothing in the hat band then */
+.fox-guide.is-sleepy .fox-outfit__hat { display: none; }
+
+.fox-outfit__part { transform-box: fill-box; transform-origin: 50% 100%; }
+
+/* the one motion as it appears (after he has risen into the corner) */
+.fox-outfit__worn, .fox-outfit__pumpkins, .fox-outfit__sun, .fox-outfit__iced {
+  animation: fox-outfit-in 0.6s ease-out 1.6s both;
+}
+.fox-outfit__umbrella { animation: fox-outfit-settle 0.9s cubic-bezier(0.25, 1.3, 0.5, 1) 1.6s both; }
+.fox-outfit__leaf { animation: fox-outfit-leaf 2.6s ease-in-out 1.6s both; }
+.fox-outfit__flake {
+  transform-box: fill-box; transform-origin: 50% 50%;
+  animation: fox-outfit-snow 7s linear infinite;
+}
+
+@keyframes fox-outfit-in { from { opacity: 0; scale: 0.6; } }
+@keyframes fox-outfit-settle { 0% { opacity: 0; translate: 0 -10px; rotate: -10deg; } 60% { opacity: 1; rotate: 4deg; } 100% { translate: 0 0; rotate: 0deg; } }
+@keyframes fox-outfit-leaf {
+  0% { opacity: 0; translate: -6px -24px; rotate: 30deg; }
+  15% { opacity: 1; }
+  45% { translate: 5px -12px; rotate: -18deg; }
+  75% { translate: -3px -4px; rotate: 10deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
+@keyframes fox-outfit-snow {
+  0% { opacity: 0; translate: 0 -9px; rotate: 0deg; }
+  15%, 75% { opacity: 1; }
+  100% { opacity: 0; translate: 3px 12px; rotate: 90deg; }
+}
+
+/* his line about it, under the greeting */
+.fox-outfit__line { margin: 4px 0 0; font: 500 0.86rem/1.35 var(--font-body); color: var(--color-green-deep); }
+
+/* ---- your usual --------------------------------------------------------- */
+.fox-usual {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 8px 12px;
+  margin: 0 0 12px; padding: 10px 12px; border-radius: 14px;
+  background: var(--color-cream); box-shadow: inset 0 0 0 1.5px var(--color-yellow);
+}
+.fox-usual .fox-drink__photo { width: 52px; height: 52px; border-radius: 10px; }
+.fox-usual__info { min-width: 0; }
+.fox-usual__q { margin: 0; font: 600 1rem/1.25 var(--font-display); color: var(--color-ink); overflow-wrap: anywhere; }
+.fox-usual__price { margin: 2px 0 0; font: 600 0.82rem/1.2 var(--font-body); color: var(--color-yellow-deep); }
+.fox-usual__actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
+.fox-usual__actions .fox-help__link { margin: 0; }
+.fox-usual__note { grid-column: 1 / -1; margin: 0; font: 400 0.74rem/1.3 var(--font-body); color: var(--color-ink-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fox-outfit, .fox-outfit *, .fox-usual, .fox-usual * { animation: none !important; transition: none !important; }
+}
