@@ -143,7 +143,7 @@ describe('?foxOutfit= preview', () => {
   it('draws the forced look over the launcher fox and says its line', () => {
     window.history.replaceState(null, '', '/?foxOutfit=rain');
     const { container } = render(<MemoryRouter><FoxGuide /></MemoryRouter>);
-    const svg = container.querySelector('.fox-guide__face .fox-outfit');
+    const svg = container.querySelector('.fox-guide__figure .fox-outfit');
     expect(svg).not.toBeNull();
     expect(svg.getAttribute('data-outfit')).toBe('rain');
     expect(svg.querySelector('.fox-outfit__umbrella')).not.toBeNull();
