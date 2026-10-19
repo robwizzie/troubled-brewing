@@ -6,7 +6,7 @@
    ============================================================================= */
 import {
   LuAtSign, LuCalendarDays, LuCamera, LuChartLine, LuCircleHelp, LuClock, LuCoffee, LuCroissant, LuFrame, LuHistory, LuHouse,
-  LuImages, LuInbox, LuLink, LuMegaphone, LuPanelsTopLeft, LuQuote, LuSquarePen, LuStar, LuStore, LuUsers, LuVote,
+  LuImages, LuInbox, LuLink, LuMegaphone, LuPanelsTopLeft, LuQuote, LuSquarePen, LuStar, LuStore, LuUsers, LuVote, LuWandSparkles,
 } from 'react-icons/lu';
 
 /* Friendly page names — the owner picks "Menu", never a slug. */
@@ -41,6 +41,7 @@ export const SCREENS = [
   { to: '/admin/quick-blocks', icon: LuMegaphone, label: 'Banner & links', nav: 'Every day' },
   { to: '/admin/inbox', icon: LuInbox, label: 'Messages', nav: 'Every day', badge: 'inbox' },
   { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'Every day' },
+  { to: '/admin/wishes', icon: LuWandSparkles, label: 'Wish list', nav: 'Every day' },
   { to: '/admin/menu', icon: LuCoffee, label: 'Menu', nav: 'On the site' },
   { to: '/admin/pairings', icon: LuCroissant, label: 'Drink pairings', nav: 'On the site' },
   { to: '/admin/events', icon: LuCalendarDays, label: 'Events', nav: 'On the site' },
@@ -163,6 +164,7 @@ export const MORE_TASKS = [
   { id: 'google', to: '/admin/google', icon: LuLink, title: 'Google connection', desc: 'Where your rating, reviews and address come from.', keywords: 'google connection connect rating maps address place refresh fetch' },
   { id: 'polls', to: '/admin/polls', icon: LuVote, title: 'Ask a “This or that” poll in the fox', desc: 'A one-tap question like “Iced or hot today?”, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
   { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'See site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visit visits visitors traffic views pages numbers clicks orders dashboard report how many people busy' },
+  { id: 'wishes', to: '/admin/wishes', icon: LuWandSparkles, title: 'Read the menu wishes', desc: 'Drinks and treats people wished for with the fox.', keywords: 'wish wishes wishlist suggestion suggestions idea ideas request requests feedback customer customers want menu new drink fox' },
   { id: 'help', to: '/admin/help', icon: LuCircleHelp, title: 'Help', desc: 'Plain-English how-tos.', keywords: 'help how stuck guide tutorial question undo mistake' },
 ];
 

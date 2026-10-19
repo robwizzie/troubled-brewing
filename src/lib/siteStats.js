@@ -68,7 +68,8 @@ export function orderSource(location, path) {
 }
 
 /* The ONLY events counted, and the one small key each may carry. Keep in
-   step with the whitelist in increment_stat() (the migration). */
+   step with the whitelist in increment_stat() (2026-10-19-polls-and-stats.sql,
+   extended by 2026-10-19-stats-events-wishes.sql). */
 export const STAT_EVENTS = {
   page_view: (p) => statPath(p.path),
   order_now_click: (p, path) => orderSource(p.location, path),
@@ -87,6 +88,12 @@ export const STAT_EVENTS = {
   outbound_click: (p) => token(p.dest),
   specials_click: () => '',
   rainy_order: (p) => token(p.kind),
+  // wishes-tricks: the wish list, the fox's hidden tricks, and his deep links
+  // (QR table cards: key 'table:quiz' = a table card that opened the quiz;
+  // 'table:page' = a table-card link to a page, e.g. /menu?src=table)
+  wish_submitted: (p) => token(p.category, 'other'),
+  fox_trick: (p) => token(p.name, 'other'),
+  fox_deeplink: (p) => `${token(p.src, 'direct')}:${token(p.to, 'other')}`,
 };
 
 /* ---- may we count at all? ---------------------------------------------------- */

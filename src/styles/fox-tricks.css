@@ -1,0 +1,87 @@
+/* ==========================================================================
+   The fox's hidden tricks (src/components/FoxTricks.jsx). Scoped to
+   .fox-guide / .fox-trick*; kept apart from fox-guide.css on purpose.
+   Transform + opacity only, no hover lifts, and prefers-reduced-motion
+   leaves every trick as a still reward.
+   ========================================================================== */
+
+/* ---- the hat tip: lift, tip forward toward his snout, settle ------------- */
+.fox-tip__hat {
+  transform-box: view-box;
+  transform-origin: 156px 40px; /* the middle of the brim, in the drawing's own units */
+  animation: fox-tip 1.7s cubic-bezier(0.3, 1.2, 0.5, 1) both;
+}
+@keyframes fox-tip {
+  0% { transform: none; }
+  20% { transform: translate(-3px, -10px) rotate(-30deg); }
+  34% { transform: translate(-3px, -9px) rotate(-26deg); }
+  58% { transform: translate(-3px, -10px) rotate(-30deg); }
+  82% { transform: translate(0, 1.5px) rotate(3deg); }
+  92% { transform: translate(0, -0.5px) rotate(-1deg); }
+  100% { transform: none; }
+}
+.fox-tip { overflow: visible; }
+/* the season's hat-band pieces step aside while the hat is off */
+.fox-guide.is-tip .fox-outfit__hat { opacity: 0; transition: opacity 0.12s; }
+/* asleep, it's the nightcap he lifts */
+.fox-guide.is-tip.is-sleepy .fox-acc--nightcap { animation: fox-tip-cap 1.7s cubic-bezier(0.3, 1.2, 0.5, 1) both; transform-origin: 40% 100%; }
+@keyframes fox-tip-cap {
+  0%, 100% { transform: rotate(-6deg); }
+  20%, 58% { transform: translate(-2px, -10px) rotate(-22deg); }
+  82% { transform: translate(0, 1px) rotate(-4deg); }
+}
+
+/* his tiny "Why, thank you." — beside him, so it never covers his card */
+.fox-trick__say { position: absolute; left: calc(100% + 10px); bottom: 34px; z-index: 3; pointer-events: none; }
+.fox-trick__bubble {
+  display: block; width: max-content; max-width: 170px;
+  padding: 0.45em 0.8em; border-radius: 12px 12px 12px 3px;
+  background: var(--color-paper); color: var(--color-ink);
+  font: italic 600 0.92rem/1.25 var(--font-body);
+  box-shadow: 0 6px 18px rgba(30, 22, 8, 0.22), 0 0 0 2px var(--color-yellow);
+  animation: fox-trick-say 2.8s ease-out both;
+}
+@keyframes fox-trick-say {
+  0% { opacity: 0; transform: translateY(6px) scale(0.9); }
+  10%, 82% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+body:has(.sih) .fox-trick__say { left: auto; right: calc(100% + 10px); }
+body:has(.sih) .fox-trick__bubble { border-radius: 12px 12px 3px 12px; }
+@media (max-width: 600px) {
+  .fox-trick__say { bottom: 22px; }
+  .fox-trick__bubble { font-size: 0.85rem; }
+}
+
+/* ---- late at night: a crescent moon and stars in his card ---------------- */
+.fox-guide.is-night .fox-guide__card {
+  background: radial-gradient(130% 110% at 20% 0%, #fbf6ea, #ece6d6);
+}
+.fox-trick__sky { position: absolute; inset: 0; z-index: 0; pointer-events: none; border-radius: inherit; }
+.fox-guide.is-night .fox-guide__figure { z-index: 1; }
+.fox-trick__moon { position: absolute; left: 7px; top: 6px; width: 19px; height: 19px; animation: fox-moon 6s ease-in-out infinite; }
+.fox-trick__star {
+  position: absolute; width: calc(11px * var(--s, 1) + 3px); height: auto;
+  transform-origin: 50% 50%;
+  animation: fox-twinkle 2.7s ease-in-out var(--d, 0s) infinite;
+}
+@keyframes fox-twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.7) rotate(20deg); } }
+@keyframes fox-moon { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@media (max-width: 600px) {
+  .fox-trick__moon { left: 5px; top: 4px; width: 14px; height: 14px; }
+}
+
+/* ---- the shop's birthday: a party hat on his top hat --------------------- */
+.fox-trick--figure { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.fox-trick__party { animation: fox-party-in 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) 1.8s both; transform-box: fill-box; transform-origin: 50% 100%; }
+.fox-trick__party-spark { animation: fox-twinkle 2.4s ease-in-out 2.4s infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+@keyframes fox-party-in { from { opacity: 0; transform: translateY(-8px) scale(0.6); } }
+/* the party hat rides along on a hat tip, and naps under the nightcap */
+.fox-guide.is-tip .fox-trick--figure { opacity: 0; }
+.fox-guide.is-sleepy .fox-trick--figure { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fox-tip__hat, .fox-trick__bubble, .fox-trick__moon, .fox-trick__star, .fox-trick__party, .fox-trick__party-spark,
+  .fox-guide.is-tip.is-sleepy .fox-acc--nightcap { animation: none !important; }
+  .fox-guide.is-tip .fox-outfit__hat, .fox-guide.is-tip .fox-trick--figure { opacity: 1; }
+}
