@@ -3,7 +3,9 @@ import { LuEye, LuEyeOff, LuInfinity, LuSearch } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 import { bump } from '../../lib/dataVersion.js';
 import { publicUrl } from '../../lib/config.js';
+import { LuCamera, LuCircleCheck, LuExternalLink, LuPartyPopper, LuPencilLine, LuRefreshCw } from 'react-icons/lu';
 import { Spinner } from '../components/ui.jsx';
+import { Icon } from '../components/Icon.jsx';
 import { PublishScope, ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
 import { uploadImage, listMedia } from '../lib/uploadImage.js';
 import { IMAGE_MESSAGES, canDisplay, checkPickedImage, isHeic } from '../lib/imageFile.js';
@@ -349,7 +351,7 @@ function ChalkboardScreen() {
       />
 
       <p className={`chalk__status ${status.live ? 'is-live' : ''}`} role="status">
-        <span aria-hidden="true">{status.live ? '✅' : '🖍️'}</span> {status.text}
+        <Icon icon={status.live ? LuCircleCheck : LuPencilLine} size={20} /> {status.text}
       </p>
 
       {loadFailed && (
@@ -362,13 +364,13 @@ function ChalkboardScreen() {
       {error && (
         <div className="chalk__error" role="alert">
           <p>{error}</p>
-          {signedOut && <a className="btn btn--ghost chalk__btn" href={`${import.meta.env.BASE_URL}admin/login`} target="_blank" rel="noreferrer">Sign in again ↗</a>}
+          {signedOut && <a className="btn btn--ghost chalk__btn" href={`${import.meta.env.BASE_URL}admin/login`} target="_blank" rel="noreferrer"><Icon icon={LuExternalLink} size={16} />Sign in again</a>}
         </div>
       )}
 
       {done ? (
         <section className="chalk__done" aria-labelledby="chalk-done-title">
-          <p className="chalk__done-icon" aria-hidden="true">{done === 'down' ? '🖍️' : '🎉'}</p>
+          <p className="chalk__done-icon" aria-hidden="true"><Icon icon={done === 'down' ? LuPencilLine : LuPartyPopper} size={44} /></p>
           <h2 id="chalk-done-title">
             {done === 'up' && 'It’s on the website!'}
             {done === 'kept' && 'Done — the photo stays up.'}
@@ -388,7 +390,7 @@ function ChalkboardScreen() {
                   : 'Saved.'}
           </p>
           <div className="chalk__done-actions">
-            <a className="btn btn--primary chalk__big" href={publicUrl()} target="_blank" rel="noreferrer">See it on the website ↗</a>
+            <a className="btn btn--primary chalk__big" href={publicUrl()} target="_blank" rel="noreferrer"><Icon icon={LuExternalLink} size={20} />See it on the website</a>
             <Link className="btn btn--ghost chalk__btn" to="/admin">Back to admin home</Link>
             <button type="button" className="btn btn--ghost chalk__btn" onClick={() => setDone(null)}>Take another photo</button>
           </div>
@@ -405,16 +407,16 @@ function ChalkboardScreen() {
                 onError={() => { setFile(null); setError(isHeic(file) ? IMAGE_MESSAGES.heic : IMAGE_MESSAGES.unreadable); }}
               />
               <button type="button" className="btn btn--primary chalk__big chalk__publish" onClick={putLive} disabled={busy}>
-                {busy ? 'Putting it up…' : `✅ ${publishLabel}`}
+                {!busy && <Icon icon={LuCircleCheck} size={22} />}{busy ? 'Putting it up…' : publishLabel}
               </button>
               <div className="chalk__row">
-                <CameraButton label="🔄 Retake" onPick={onPick} />
+                <CameraButton label={<><Icon icon={LuRefreshCw} size={18} />Retake</>} onPick={onPick} />
                 <button type="button" className="btn btn--ghost chalk__btn" onClick={discard} disabled={busy}>Cancel</button>
               </div>
             </section>
           ) : (
             <section className="chalk__step" aria-label="Take a photo">
-              <CameraButton big label="📷 Take a photo of the board" onPick={onPick} />
+              <CameraButton big label={<><Icon icon={LuCamera} size={26} />Take a photo of the board</>} onPick={onPick} />
               <CameraButton label="or choose a photo you already took" onPick={onPick} capture={false} />
 
               {staged && staged !== 'history' && (
@@ -472,7 +474,7 @@ function ChalkboardScreen() {
 
           {(file || (block.url && !takeDown)) && (
             <details className="chalk__opt">
-              <summary>✏️ Add a few words under the photo <small>(optional)</small></summary>
+              <summary><Icon icon={LuPencilLine} size={16} /> Add a few words under the photo <small>(optional)</small></summary>
               <div className="field">
                 <label htmlFor="chalk-caption">A few words</label>
                 <input

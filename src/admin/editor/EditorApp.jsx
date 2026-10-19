@@ -7,7 +7,10 @@ import { ActionBar, PublishScope, usePublishScope, usePublishUnit, useUnsaved } 
 import { same } from '../lib/publishHelpers.js';
 import { publicUrl } from '../../lib/config.js';
 import { bump } from '../../lib/dataVersion.js';
-import { CONCEPT_TO_TYPE, DEFAULT_CONCEPT, HERO_TYPES, CONCEPTS } from '../../lib/concepts.js';
+import { CONCEPT_TO_TYPE, DEFAULT_CONCEPT, HERO_TYPES } from '../../lib/concepts.js';
+import { LuArrowLeft, LuExternalLink, LuMonitor, LuSmartphone } from 'react-icons/lu';
+import { Icon } from '../components/Icon.jsx';
+import ConceptPicker from '../components/ConceptPicker.jsx';
 import * as seed from '../../lib/seed.js';
 import { useToast, Spinner } from '../components/ui.jsx';
 import Canvas from './Canvas.jsx';
@@ -372,7 +375,7 @@ function Editor() {
   return (
     <div className="admin tb-editor">
       <header className="tb-editor__topbar">
-        <Link to="/admin" className="tb-editor__back" title="Chalkboard, hours, menu, events & more">← Admin home</Link>
+        <Link to="/admin" className="tb-editor__back" title="Chalkboard, hours, menu, events & more"><Icon icon={LuArrowLeft} size={16} />Admin home</Link>
         <label className="tb-editor__pagepick">
           <span className="tb-editor__pagelabel">Editing page</span>
           <select value={slug} onChange={(e) => goToPage(e.target.value)} aria-label="Page to edit">
@@ -383,11 +386,11 @@ function Editor() {
         </label>
 
         <div className="tb-editor__viewports" role="group" aria-label="Preview width">
-          <button className={`tb-editor__vp ${viewport === 'desktop' ? 'is-active' : ''}`} onClick={() => setViewport('desktop')} title="Desktop width" aria-label="Desktop width">🖥</button>
-          <button className={`tb-editor__vp ${viewport === 'mobile' ? 'is-active' : ''}`} onClick={() => setViewport('mobile')} title="Phone width" aria-label="Phone width">📱</button>
+          <button className={`tb-editor__vp ${viewport === 'desktop' ? 'is-active' : ''}`} onClick={() => setViewport('desktop')} title="Desktop width" aria-label="Desktop width" aria-pressed={viewport === 'desktop'}><Icon icon={LuMonitor} /></button>
+          <button className={`tb-editor__vp ${viewport === 'mobile' ? 'is-active' : ''}`} onClick={() => setViewport('mobile')} title="Phone width" aria-label="Phone width" aria-pressed={viewport === 'mobile'}><Icon icon={LuSmartphone} /></button>
         </div>
 
-        <a className="tb-editor__viewsite" href={publicUrl(slug)} target="_blank" rel="noreferrer">Live site ↗</a>
+        <a className="tb-editor__viewsite" href={publicUrl(slug)} target="_blank" rel="noreferrer"><Icon icon={LuExternalLink} size={16} /><span>Live site</span></a>
       </header>
 
       {!isSupabaseConfigured && (
@@ -449,15 +452,8 @@ function Editor() {
                 <p className="tb-panel__grouplabel">
                   Homepage look {conceptDirty && <span className="badge badge--draft">Changed — not live yet</span>}
                 </p>
-                <div className="concept-picker concept-picker--panel">
-                  {CONCEPTS.map((c) => (
-                    <label key={c.value} className={`concept-option ${concept === c.value ? 'is-active' : ''}`}>
-                      <input type="radio" name="tb-concept" value={c.value} checked={concept === c.value} onChange={() => setConcept(c.value)} />
-                      <strong>{c.label}</strong>
-                      <span>{c.desc}</span>
-                    </label>
-                  ))}
-                </div>
+                <p className="tb-panel__help">Tap a picture to preview a look full-size. Choosing one swaps it here; it goes live when you publish.</p>
+                <ConceptPicker compact value={concept} live={savedConcept} onChoose={setConcept} />
               </div>
             )}
           </SectionPanel>

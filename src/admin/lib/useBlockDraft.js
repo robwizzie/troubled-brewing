@@ -50,5 +50,5 @@ export function useBlockDraft(key, fallback, { normalize = (v) => v, label } = {
     },
   });
 
-  return { value, set: setValue, loaded: saved !== null, dirty, error };
+  return { value, saved, set: setValue, loaded: saved !== null, dirty, error };
 }

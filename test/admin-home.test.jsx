@@ -27,7 +27,7 @@ const { UnsavedProvider } = await import('../src/admin/lib/publishing.jsx');
 const { ToastProvider } = await import('../src/admin/components/ui.jsx');
 const AdminLayout = (await import('../src/admin/AdminLayout.jsx')).default;
 const AdminHome = (await import('../src/admin/AdminHome.jsx')).default;
-const { TASKS, searchTasks, recordPublish, describePath } = await import('../src/admin/lib/nav.js');
+const { TASKS, SCREENS, searchTasks, recordPublish, describePath } = await import('../src/admin/lib/nav.js');
 
 function Where() {
   return <p data-testid="where">{useLocation().pathname}</p>;
@@ -144,7 +144,7 @@ describe('admin home', () => {
     renderAdmin();
     const waiting = await screen.findByRole('link', { name: /our story page/i });
     expect(waiting.getAttribute('href')).toBe('/admin/editor/about');
-    expect(screen.queryByRole('link', { name: /✏️ menu page/i })).toBeNull();
+    expect(screen.queryByRole('link', { name: /^menu page$/i })).toBeNull();
     expect(within(main()).getByRole('link', { name: 'Hours & holidays' }).getAttribute('href')).toBe('/admin/hours');
     expect(screen.getByText('5 min ago')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Edit your pages · Menu' })).toBeTruthy();
@@ -215,5 +215,43 @@ describe('sidebar and breadcrumbs', () => {
     fireEvent.click(within(crumbs).getByRole('link', { name: /admin home/i }));
     await waitFor(() => expect(where()).toBe('/admin'));
     expect(screen.queryByRole('navigation', { name: /breadcrumb/i })).toBeNull();
+  });
+});
+
+describe('getting around', () => {
+  it('every screen is one tap from Admin home (a card, a link or the sidebar)', () => {
+    renderAdmin();
+    const hrefs = new Set(screen.getAllByRole('link').map((a) => a.getAttribute('href')));
+    fireEvent.click(within(screen.getByRole('navigation', { name: /admin sections/i })).getByRole('button', { name: /more/i }));
+    screen.getAllByRole('link').forEach((a) => hrefs.add(a.getAttribute('href')));
+    for (const s of SCREENS) expect(hrefs.has(s.to)).toBe(true);
+  });
+
+  it('"Find a screen" (or the / key) jumps anywhere by the words people use', () => {
+    renderAdmin('/admin/menu');
+    fireEvent.keyDown(document, { key: '/' });
+    const dialog = screen.getByRole('dialog', { name: /find a screen/i });
+    // empty: every screen is listed
+    expect(within(dialog).getAllByRole('option')).toHaveLength(SCREENS.length);
+    const box = within(dialog).getByRole('combobox');
+    fireEvent.change(box, { target: { value: 'closed for snow' } });
+    expect(within(dialog).getAllByRole('option')[0].textContent).toMatch(/change hours/i);
+    fireEvent.keyDown(box, { key: 'Enter' });
+    expect(where()).toBe('/admin/hours');
+    expect(screen.queryByRole('dialog', { name: /find a screen/i })).toBeNull();
+  });
+
+  it('the button opens it too, and Escape closes it', () => {
+    renderAdmin();
+    fireEvent.click(screen.getByRole('button', { name: /find a screen/i }));
+    const box = within(screen.getByRole('dialog', { name: /find a screen/i })).getByRole('combobox');
+    fireEvent.keyDown(box, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: /find a screen/i })).toBeNull();
+  });
+
+  it('screens show the same names in the breadcrumb as in the sidebar, under their group', () => {
+    renderAdmin('/admin/look');
+    const crumbs = screen.getByRole('navigation', { name: /breadcrumb/i });
+    expect(crumbs.textContent).toMatch(/Admin home.*On the site.*Homepage look/);
   });
 });

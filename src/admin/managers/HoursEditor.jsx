@@ -4,6 +4,8 @@ import { useToast, ConfirmModal, Spinner } from '../components/ui.jsx';
 import { ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
 import { same } from '../lib/publishHelpers.js';
 import { dayName } from '../../lib/hours.js';
+import { LuCircleCheck, LuPlus } from 'react-icons/lu';
+import { Icon } from '../components/Icon.jsx';
 
 /* Weekly hours grid + holiday overrides. Google Business hours win when they're
    connected (this grid is the fallback); holiday closures always apply. Both
@@ -111,10 +113,11 @@ export default function HoursEditor() {
       <section className="admin__panel">
         <h2>Weekly hours {weekDirty && <span className="badge badge--draft panel-badge">Changed — not live yet</span>}</h2>
         {googleLive && (
-          <p className="field__hint">
-            ✅ <strong>Your Google Business hours are live on the site.</strong> This grid is only the
+          <p className="field__hint callout callout--ok">
+            <Icon icon={LuCircleCheck} size={18} />
+            <span><strong>Your Google Business hours are live on the site.</strong> This grid is only the
             backup if Google is ever unavailable — to change your regular hours, update them on your
-            Google Business Profile (they refresh here daily). Holiday closures below always apply.
+            Google Business Profile (they refresh here daily). Holiday closures below always apply.</span>
           </p>
         )}
         <p className="field__hint">Leave both blank for a day you’re closed. Use a consistent format like “7:30 AM”.</p>
@@ -178,7 +181,7 @@ export default function HoursEditor() {
               <div className="field"><label htmlFor="ho-close">Closes</label><input id="ho-close" placeholder="2:00 PM" value={newOverride.close_time} onChange={(e) => setNewOverride((s) => ({ ...s, close_time: e.target.value }))} /></div>
             </>
           )}
-          <button className="btn btn--primary" onClick={addOverride}>+ Add holiday</button>
+          <button className="btn btn--primary" onClick={addOverride}><Icon icon={LuPlus} size={16} />Add holiday</button>
         </div>
       </section>
 

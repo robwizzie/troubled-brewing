@@ -234,7 +234,7 @@ export const SECTION_EDITOR_SCHEMAS = {
   },
   gallery_wall_hero: {
     fields: [
-      { name: 'eyebrow', label: 'Eyebrow line', type: 'text', hint: 'The little line above the heading, between the ✦ marks.' },
+      { name: 'eyebrow', label: 'Eyebrow line', type: 'text', hint: 'The little line above the heading, between the little star marks.' },
       { name: 'heading', label: 'Heading', type: 'text' },
       { name: 'subheading', label: 'Subheading', type: 'textarea', rows: 2 },
       { name: 'order_label', label: 'Order button text', type: 'text', hint: 'Blank = "Order Now". Shared by every homepage look.' },
@@ -309,7 +309,7 @@ export const SECTION_EDITOR_SCHEMAS = {
     fields: [
       { name: 'mch_eyebrow', label: 'Eyebrow line', type: 'text', hint: 'The little line above the big word.' },
       { name: 'mch_word', label: 'Big word', type: 'text', hint: 'The oversized headline word (TROUBLE).' },
-      { name: 'mch_brand', label: 'Line under the word', type: 'text', hint: 'Shown between the ✦ marks (Brewing).' },
+      { name: 'mch_brand', label: 'Line under the word', type: 'text', hint: 'Shown between the little star marks (Brewing).' },
       { name: 'mch_lead', label: 'Intro paragraph', type: 'textarea', rows: 3 },
       { name: 'mch_drink_image_url', label: 'Drink photo', type: 'image', preset: 'card' },
       { name: 'mch_stats', label: 'Stat row', type: 'textarea', rows: 3, hint: 'One per line, "Big | Little label" — e.g. 20+ | Signature drinks' },

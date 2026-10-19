@@ -7,6 +7,8 @@ import {
   BY_MAX, EMPTY_PAIRINGS, NOTE_MAX, PAIRINGS_KEY,
   addPair, isDrink, isTreat, missingFromMenu, movePair, pairingIdeas, removePair, spotonCategoryOf,
 } from '../../lib/pairings.js';
+import { LuArrowDown, LuArrowUp } from 'react-icons/lu';
+import { Icon } from '../components/Icon.jsx';
 
 /* "Pair a drink with a treat" — the staff's own "goes great with" picks.
 
@@ -187,8 +189,8 @@ export default function PairingsManager() {
               {pairs.map((p, i) => (
                 <li key={`${p.drink}|${p.with}`} className={`admin-list__row${gone.has(p) || !block.value.enabled ? ' is-hidden' : ''}`}>
                   <span className="admin-list__reorder">
-                    <button type="button" className="iconbtn" aria-label={`Move ${p.drink} + ${p.with} up`} disabled={i === 0} onClick={() => setPairs(movePair(pairs, i, -1))}>↑</button>
-                    <button type="button" className="iconbtn" aria-label={`Move ${p.drink} + ${p.with} down`} disabled={i === pairs.length - 1} onClick={() => setPairs(movePair(pairs, i, 1))}>↓</button>
+                    <button type="button" className="iconbtn" aria-label={`Move ${p.drink} + ${p.with} up`} disabled={i === 0} onClick={() => setPairs(movePair(pairs, i, -1))}><Icon icon={LuArrowUp} size={16} /></button>
+                    <button type="button" className="iconbtn" aria-label={`Move ${p.drink} + ${p.with} down`} disabled={i === pairs.length - 1} onClick={() => setPairs(movePair(pairs, i, 1))}><Icon icon={LuArrowDown} size={16} /></button>
                   </span>
                   <span className="admin-list__body">
                     <strong>{p.drink}</strong> <span aria-hidden="true">+</span><span className="sr-only">goes great with</span> <strong>{p.with}</strong>
