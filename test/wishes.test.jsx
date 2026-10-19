@@ -16,7 +16,7 @@ vi.mock('../src/lib/supabase.js', () => ({
 const { track } = await import('../src/lib/analytics.js');
 const W = await import('../src/lib/wishes.js');
 const FoxWish = (await import('../src/components/FoxWish.jsx')).default;
-const { FOLD_MS, DROP_MS } = await import('../src/components/FoxWish.jsx');
+const { FOLD_MS, DROP_MS, WishFlow } = await import('../src/components/FoxWish.jsx');
 
 const ok = (over = {}) => W.checkWish({ category: 'drink', text: 'Lavender honey latte', elapsedMs: 5000, ...over });
 
@@ -184,6 +184,12 @@ const motion = (on) => {
 describe('the wish pane', () => {
   it('is an accessible form: illustrated kind chips, labelled fields, limits, no email or phone', () => {
     renderWish();
+    // "why" and the first name stay folded until asked for
+    expect(screen.queryByLabelText(/Why you’d love it/)).toBeNull();
+    expect(screen.queryByLabelText(/First name/)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Say why' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sign it' }));
+    expect(screen.queryByRole('button', { name: 'Say why' })).toBeNull();
     const kinds = screen.getAllByRole('radio');
     expect(kinds.map((r) => r.closest('label').textContent)).toEqual(['Drink', 'Pastry & treats', 'Food', 'Something else']);
     expect(kinds[0].checked).toBe(true);
@@ -191,7 +197,7 @@ describe('the wish pane', () => {
     const wish = screen.getByLabelText('Your wish');
     expect(wish.maxLength).toBe(80);
     expect(wish.placeholder).toBe('A maple oat latte…');
-    expect(screen.getByLabelText(/Why\?/).maxLength).toBe(140);
+    expect(screen.getByLabelText(/Why you’d love it/).maxLength).toBe(140);
     expect(screen.getByLabelText(/First name/).maxLength).toBe(30);
     expect(document.querySelector('input[type="email"], input[type="tel"]')).toBeNull();
     const hp = document.querySelector('input[name="website"]');
@@ -237,13 +243,14 @@ describe('the wish pane', () => {
     renderWish();
     now.mockReturnValue(10_000);
     fireEvent.change(screen.getByLabelText('Your wish'), { target: { value: 'Latte' } });
-    fireEvent.change(screen.getByLabelText(/Why\?/), { target: { value: 'see www.example.com' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Say why' }));
+    fireEvent.change(screen.getByLabelText(/Why you’d love it/), { target: { value: 'see www.example.com' } });
     fireEvent.click(screen.getByRole('button', { name: 'Drop it in the hat' }));
     now.mockRestore();
     expect(screen.getByRole('alert').textContent).toMatch(/doesn’t take links, emails or phone numbers/);
-    expect(screen.getByLabelText(/Why\?/).getAttribute('aria-invalid')).toBe('true');
+    expect(screen.getByLabelText(/Why you’d love it/).getAttribute('aria-invalid')).toBe('true');
     await act(() => new Promise((r) => requestAnimationFrame(r)));
-    expect(document.activeElement).toBe(screen.getByLabelText(/Why\?/));
+    expect(document.activeElement).toBe(screen.getByLabelText(/Why you’d love it/));
     expect(rpc.fn).not.toHaveBeenCalled();
   });
 
@@ -271,6 +278,47 @@ describe('the wish pane', () => {
       expect(document.querySelector('.fox-wish__note')).toBe(note);
       expect(document.querySelectorAll('.fox-wish__spark').length).toBeGreaterThanOrEqual(6);
       act(() => { vi.advanceTimersByTime(DROP_MS); });
+      expect(screen.getByTestId('fox-wish').dataset.stage).toBe('thanks');
+    } finally {
+      restore();
+    }
+  });
+});
+
+describe('the same flow on a page (variant "split")', () => {
+  it('sends, tracks and thanks exactly like the fox’s card, with the hat beside the form', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    const now = vi.spyOn(Date, 'now');
+    now.mockReturnValue(1_000_000);
+    render(<MemoryRouter><WishFlow variant="split" intro={<h2>Make a wish</h2>} /></MemoryRouter>);
+    expect(document.querySelector('.fox-wish__stage .fox-wish__hat--front')).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('radio')[2]); // Food
+    fireEvent.change(screen.getByLabelText('Your wish'), { target: { value: 'Caprese panini' } });
+    now.mockReturnValue(1_005_000);
+    fireEvent.click(screen.getByRole('button', { name: 'Drop it in the hat' }));
+    now.mockRestore();
+    expect(screen.getByTestId('fox-wish').dataset.stage).toBe('thanks');
+    expect(rpc.fn).toHaveBeenCalledWith('submit_wish', expect.objectContaining({ p_text: 'Caprese panini', p_category: 'food' }));
+    expect(track).toHaveBeenCalledWith('wish_submitted', { category: 'food' });
+    expect(W.wishedToday()).toBe(true);
+  });
+
+  it('with motion, the note flies into the page’s own hat (the form stays, faded)', () => {
+    const restore = motion(true);
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
+    vi.setSystemTime(new Date('2026-10-19T15:00:00Z'));
+    try {
+      render(<MemoryRouter><WishFlow variant="split" /></MemoryRouter>);
+      const hat = document.querySelector('.fox-wish__stage .fox-wish__hat--back');
+      fireEvent.change(screen.getByLabelText('Your wish'), { target: { value: 'Maple oat latte' } });
+      act(() => { vi.advanceTimersByTime(4000); });
+      fireEvent.click(screen.getByRole('button', { name: 'Drop it in the hat' }));
+      act(() => { vi.advanceTimersByTime(130); });
+      expect(screen.getByTestId('fox-wish').dataset.stage).toBe('fold');
+      expect(document.querySelector('.fox-wish__stage .fox-wish__note-text').textContent).toBe('Maple oat latte');
+      expect(document.querySelector('.fox-wish__stage .fox-wish__hat--back')).toBe(hat); // the same hat
+      expect(document.querySelector('.fox-wish__form').hasAttribute('inert')).toBe(true);
+      act(() => { vi.advanceTimersByTime(FOLD_MS + DROP_MS); });
       expect(screen.getByTestId('fox-wish').dataset.stage).toBe('thanks');
     } finally {
       restore();

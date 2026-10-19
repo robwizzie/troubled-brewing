@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaCircleQuestion, FaEyeSlash, FaGhost, FaHeart, FaLightbulb, FaSnowflake, FaStar, FaWandMagicSparkles, FaXmark } from 'react-icons/fa6';
+import { FaArrowLeft, FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaCircleQuestion, FaEyeSlash, FaGhost, FaHeart, FaLightbulb, FaSnowflake, FaStar, FaWandMagicSparkles, FaXmark } from 'react-icons/fa6';
 import { track } from '../lib/analytics.js';
 import { orderUrlFor } from '../lib/order.js';
 import { SITE } from '../lib/seed.js';
@@ -295,12 +295,16 @@ export default function FoxGuide() {
     };
     const onLayout = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
     fit();
+    // a deep link opens the card while the page is still settling (the
+    // header's entrance, fonts, a banner): measure again once it has
+    const settle = [setTimeout(onLayout, 350), setTimeout(onLayout, 1000)];
     window.addEventListener('resize', onLayout, { passive: true });
     window.addEventListener('scroll', onLayout, { passive: true });
     document.addEventListener('keydown', onKey);
     document.addEventListener('pointerdown', onDown);
     return () => {
       cancelAnimationFrame(raf);
+      settle.forEach(clearTimeout);
       window.removeEventListener('resize', onLayout);
       window.removeEventListener('scroll', onLayout);
       document.removeEventListener('keydown', onKey);
@@ -396,7 +400,14 @@ export default function FoxGuide() {
   const isPlay = ['surprise', 'quiz', 'fact', 'wish'].includes(picked); // wishes-tricks: + wish
   // a game result can be tall: while one is up, the chips fold away so the
   // answer area gets the room (and scrolls on its own if it still needs to)
-  const isGame = (Boolean(data) && ['surprise', 'quiz'].includes(picked)) || picked === 'wish'; // wishes-tricks: + wish
+  const isGame = Boolean(data) && ['surprise', 'quiz'].includes(picked);
+  // the wish owns the whole card: its own title and a back button in the
+  // header, no game tiles, chips or footer underneath
+  const isWish = picked === 'wish';
+  const backFromWish = () => {
+    setPicked(null);
+    requestAnimationFrame(() => panel.current?.querySelector('.fox-wish-btn')?.focus());
+  };
   const moodCls = `${mood.sleepy ? ' is-sleepy' : ''}${mood.morning ? ' is-morning' : ''}${mood.october ? ' is-october' : ''}`;
 
   if (hidden) {
@@ -418,17 +429,24 @@ export default function FoxGuide() {
         <section
           id={panelId}
           ref={panel}
-          className={`fox-help${isGame ? ' is-game' : ''}`}
+          className={`fox-help${isGame ? ' is-game' : ''}${isWish ? ' is-wish' : ''}`}
           role="dialog"
           aria-labelledby={`${panelId}-title`}
           tabIndex={-1}
         >
           <header className="fox-help__head">
-            <div>
+            {isWish && (
+              <button type="button" className="fox-help__back" onClick={backFromWish} aria-label="Back to Ask the fox" title="Back to Ask the fox">
+                <FaArrowLeft aria-hidden="true" />
+              </button>
+            )}
+            <div className="fox-help__titles">
               <h2 className="fox-help__title" id={`${panelId}-title`}>
-                Ask the fox
+                {isWish ? 'Make a wish' : 'Ask the fox'}
               </h2>
-              {status && (
+              {isWish ? (
+                <p className="fox-help__sub">Tom and Cat read every one.</p>
+              ) : status && (
                 <p className={`fox-help__status${status.open ? ' is-open' : ''}`}>
                   <span className="fox-help__dot" aria-hidden="true" />{status.short}
                 </p>
@@ -443,8 +461,8 @@ export default function FoxGuide() {
               only the chips below it scroll when the card is short. While a
               game (quiz / Surprise) is up, the answer area scrolls instead. */}
           <div className="fox-help__say" aria-live="polite">
-            <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
-              {picked === 'wish' ? <FoxWish onDone={() => setPicked(null)} /> /* wishes-tricks */
+            <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}${isWish ? ' is-wish' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
+              {isWish ? <FoxWish onDone={backFromWish} /> /* wishes-tricks */
                 : (picked === 'quiz' || picked === 'surprise') && !data ? <p className="fox-help__a" aria-busy="true">One sec, checking today’s menu…</p> /* wishes-tricks: a deep link before the menu loads */
                 : picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
                 : picked === 'quiz' && data ? <QuizPane menu={data.menu} hours={data.hours} overrides={data.overrides} />
@@ -471,6 +489,7 @@ export default function FoxGuide() {
             </div>
           </div>
 
+          {!isWish && (
           <div className="fox-help__body">
             {data && (
               <ul className="fox-help__play" aria-label="Fox games">
@@ -513,7 +532,9 @@ export default function FoxGuide() {
               <p className="fox-help__loading">One sec, checking the shop…</p>
             )}
           </div>
+          )}
 
+          {!isWish && (
           <footer className="fox-help__foot">
             <Link to="/contact" className="fox-help__else" onClick={() => close(false)}>
               Ask something else <FaArrowRight aria-hidden="true" /> <span>Contact us</span>
@@ -522,6 +543,7 @@ export default function FoxGuide() {
               <FaEyeSlash aria-hidden="true" /> Hide the fox
             </button>
           </footer>
+          )}
         </section>
       )}
 

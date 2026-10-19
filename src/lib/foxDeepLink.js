@@ -2,9 +2,9 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { track } from './analytics.js';
 
-/* Fox deep links — for the printed QR table cards (and the Menu page's
-   "Wish for something new?" link). Any page can open the fox's card
-   straight to a view:
+/* Fox deep links — for the printed QR table cards. Any page can open the
+   fox's card straight to a view (a table card can also point at the /wish
+   page itself, e.g. /wish?src=table, which is counted the same way):
 
      ?fox=open      his card, home view
      ?fox=quiz      "Pick my drink"

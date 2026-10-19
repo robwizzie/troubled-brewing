@@ -182,6 +182,18 @@ export const SEO_ROUTES = [
     priority: '0.5',
   },
   {
+    path: '/wish',
+    slug: 'wish',
+    label: 'Make a Wish',
+    title: 'Make a Wish for the Menu | Trouble Brewing Coffee House',
+    description:
+      'Wish for a drink, pastry or dish you’d love to see at Trouble Brewing Coffee House in Haddon Heights, NJ. Tom and Cat read every wish.',
+    og: 'menu',
+    ogAlt: 'An iced mocha topped with whipped cream at Trouble Brewing Coffee House',
+    changefreq: 'monthly',
+    priority: '0.5',
+  },
+  {
     path: '/privacy',
     slug: 'privacy',
     label: 'Privacy Policy',
