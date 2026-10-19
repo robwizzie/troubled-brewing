@@ -1,0 +1,35 @@
+# Pulls the shop's latest Google rating + reviews into the site every day by
+# calling the `google-profile` Supabase Edge Function (it merges new reviews
+# into the cached library, so the library grows past Google's 5-per-call cap).
+# Also runnable by hand: Actions → "Refresh Google reviews" → Run workflow.
+name: Refresh Google reviews
+
+on:
+  schedule:
+    - cron: '17 10 * * *'   # daily, ~6am Eastern
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the google-profile function
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_URL}" ] || [ -z "${SERVICE_KEY}" ]; then
+            echo "::error::VITE_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY secrets are not set"; exit 1
+          fi
+          body=$(curl -sS --fail-with-body -X POST "${SUPABASE_URL%/}/functions/v1/google-profile" \
+            -H "Authorization: Bearer ${SERVICE_KEY}" -H "apikey: ${SERVICE_KEY}" \
+            -H "Content-Type: application/json" -d '{"cron":true}')
+          echo "$body"
+          # the function answers 200 with {"ok":false,...} on a Google/config error
+          echo "$body" | jq -e '.ok == true' > /dev/null || { echo "::error::Refresh failed: $body"; exit 1; }
+          echo "### Google reviews refreshed" >> "$GITHUB_STEP_SUMMARY"
+          echo "$body" | jq -r '"Rating \(.rating) · \(.reviews) reviews cached"' >> "$GITHUB_STEP_SUMMARY"

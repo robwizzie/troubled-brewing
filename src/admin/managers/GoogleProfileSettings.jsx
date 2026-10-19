@@ -5,7 +5,7 @@ import { useToast, Spinner, Hint } from '../components/ui.jsx';
 
 /* Settings for the cached Google Business Profile (reviews + hours/location).
    Store the Place ID + review URL; "Refresh now" invokes the google-profile
-   Edge Function on demand (it also runs daily via cron). See docs/INTEGRATIONS.md. */
+   Edge Function on demand (it also runs daily — .github/workflows/google-reviews-refresh.yml). See docs/INTEGRATIONS.md. */
 export default function GoogleProfileSettings() {
   const toast = useToast();
   const [profile, setProfile] = useState(null);
@@ -35,12 +35,15 @@ export default function GoogleProfileSettings() {
   async function refreshNow() {
     setRefreshing(true);
     try {
-      const { error } = await supabase.functions.invoke('google-profile', { body: { manual: true } });
+      const { data, error } = await supabase.functions.invoke('google-profile', { body: { manual: true } });
       if (error) throw error;
-      toast('Refreshed from Google');
+      // the function answers 200 with { ok: false, error } when Google or the
+      // config fails — that's a failed refresh, not a success
+      if (!data?.ok) throw new Error(data?.error || 'Google returned nothing');
+      toast(`Refreshed from Google — ${data.reviews ?? 0} reviews cached`);
       load();
     } catch (e) {
-      toast('Refresh needs the google-profile function deployed. See the docs.', 'error');
+      toast(`Refresh failed: ${e.message || 'the google-profile function may not be deployed — see the docs'}`, 'error');
       // eslint-disable-next-line no-console
       console.warn(e);
     } finally {
