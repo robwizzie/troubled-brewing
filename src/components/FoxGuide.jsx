@@ -13,6 +13,7 @@ import { QUICK_MS, backLine, dailyFact, foxMood, registerTap } from '../lib/foxF
 import { AwardPane, FactPane, FoxArt, Nightcap, Pumpkin, QuizPane, SurpriseIcon, SurprisePane, Tail } from './FoxPlay.jsx';
 import FoxOutfit, { FoxOutfitLine } from './FoxOutfit.jsx'; // fox-outfits
 import FoxUsual from './FoxUsual.jsx'; // fox-outfits
+import FoxPoll from './FoxPoll.jsx'; // poll-insights: "This or that"
 import useFoxOutfit from '../lib/useFoxOutfit.js'; // fox-outfits
 
 /* The Trouble Brewing fox — the dapper top-hatted fox from the logo, cup in
@@ -502,6 +503,9 @@ export default function FoxGuide() {
                 )}
               </ul>
             )}
+            {/* poll-insights: today's "This or that" poll, on the home view
+                only, under the game tiles (renders nothing when none runs) */}
+            {data && !picked && <FoxPoll />}
             {isGame ? null : data ? (
               <ul className="fox-help__chips" aria-label="Common questions">
                 {answers.map((a) => (

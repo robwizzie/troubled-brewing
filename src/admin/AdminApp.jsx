@@ -24,6 +24,8 @@ import GoogleProfileSettings from './managers/GoogleProfileSettings.jsx';
 import Inbox from './managers/Inbox.jsx';
 import MediaLibrary from './managers/MediaLibrary.jsx';
 import HelpCenter from './HelpCenter.jsx';
+import PollsManager from './managers/PollsManager.jsx'; // poll-insights
+import SiteStats from './managers/SiteStats.jsx'; // poll-insights
 import './admin.css';
 
 /* /admin is a task launcher ("Update the chalkboard", "Change hours"…); the
@@ -73,6 +75,8 @@ export default function AdminApp() {
               <Route path="inbox" element={<Inbox />} />
               <Route path="media" element={<MediaLibrary />} />
               <Route path="help" element={<HelpCenter />} />
+              <Route path="polls" element={screen(<PollsManager />, 'home', 'View the live site ↗')} />
+              <Route path="stats" element={<SiteStats />} />
             </Route>
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
