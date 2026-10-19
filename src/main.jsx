@@ -5,6 +5,7 @@ import App from './App.jsx';
 import './styles/tokens.css';
 import './styles/global.css';
 import './styles/components.css';
+import './styles/fox-guide.css';
 import './styles/sections.css';
 import './styles/immersive-gallery.css';
 import './styles/gallery-room.css';
