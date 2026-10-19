@@ -47,6 +47,7 @@ export const SECTIONS = {
       { label: 'The Journey', link: '/timeline', frame_style: 'bronze-carved', image_url: asset('images/wall/our-story-so-far.jpg') },
       { label: 'Our Story', link: '/about', frame_style: 'brass-chain', image_url: asset('images/wall/our-story.jpg') },
     ] } },
+    { type: 'food_showcase', data: { heading: 'Fresh off the counter', subheading: 'Tap anything to find it on the menu.' } },
     { type: 'social_proof', data: { label: 'Loved by the neighborhood', count: 6 } },
     { type: 'featured_drink', data: { heading: "This Week's Trouble" } },
     { type: 'signature_drinks', data: { heading: 'Signature sips', category: 'specialty', count: 3, button_label: 'See the full menu', button_url: '/menu' } },
@@ -62,6 +63,7 @@ export const SECTIONS = {
     { type: 'newsletter', data: { heading: 'Stay in the loop', body: 'New drinks, events, and the occasional bit of Trouble — straight to your inbox.', mailchimp_action_url: '' } },
   ],
   menu: [
+    { type: 'food_showcase', data: { heading: 'Fresh off the counter', subheading: 'Tap anything to find it on the menu.' } },
     { type: 'menu_block', data: { heading: 'The Menu', categories: ['espresso', 'specialty', 'food', 'pastry', 'seasonal'], layout: 'auto' } },
     { type: 'cta', data: { heading: 'Ready to order?', body: 'Order ahead on SpotOn for pickup.', button_label: 'Order on SpotOn', button_url: '' } },
   ],
