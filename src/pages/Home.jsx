@@ -13,7 +13,7 @@ import * as seed from '../lib/seed.js';
    content_blocks.homepage_concept, so the client can review them and lock one
    in. The chosen concept reuses the seeded hero section's data; the rest of
    the page renders normally. */
-import { CONCEPT_TO_TYPE, DEFAULT_CONCEPT, HERO_TYPES } from '../lib/concepts.js';
+import { CONCEPTS, CONCEPT_TO_TYPE, DEFAULT_CONCEPT, HERO_TYPES } from '../lib/concepts.js';
 
 /* The hero's content ships in the bundle (seed), so the top of the page can paint
    — and run its entrance animation — immediately, instead of behind a loading
@@ -41,7 +41,12 @@ export default function Home() {
   const [sections, setSections] = useState(null);
   // Preview override: visit /?concept=warm_storefront or ?concept=cozy_editorial
   // to see a concept without changing the saved choice (admin → Quick Blocks).
-  const previewConcept = params.get('concept');
+  // ?previewConcept=… is the admin's "Preview" of a look before it's chosen:
+  // the same harmless override (it only changes what THIS browser shows and
+  // never saves anything), plus a "Preview, not live" banner and no switcher.
+  const adminLook = params.get('previewConcept');
+  const lookPreview = !!CONCEPT_TO_TYPE[adminLook];
+  const previewConcept = lookPreview ? adminLook : params.get('concept');
   const isPreview = !!CONCEPT_TO_TYPE[previewConcept];
   // Don't draw a hero until we know which one is saved — otherwise the default
   // paints first and visibly swaps when the stored choice lands. The last
@@ -92,6 +97,11 @@ export default function Home() {
           Preview mode — showing unpublished drafts. This banner isn't visible to the public.
         </div>
       )}
+      {lookPreview && !canvas && (
+        <div className="announce concept-preview-banner" role="status">
+          Preview, not live — this is how the homepage would look as “{CONCEPTS.find((c) => c.value === adminLook)?.label}”. Nobody else can see it.
+        </div>
+      )}
       {conceptType ? (
         <SectionRenderer section={{ id: 'home-hero', data: {}, ...heroSection, type: conceptType }} />
       ) : (
@@ -121,7 +131,7 @@ export default function Home() {
       {rest.map((s) => (
         <SectionRenderer key={s.id} section={s} />
       ))}
-      {isPreview && !canvas && <ConceptSwitcher current={effConcept} />}
+      {isPreview && !lookPreview && !canvas && <ConceptSwitcher current={effConcept} />}
     </>
   );
 }

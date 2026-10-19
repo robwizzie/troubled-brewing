@@ -107,19 +107,19 @@ export function checkWish({ category, text, why = '', name = '', honeypot = '', 
     name: cleanText(name).slice(0, LIMITS.name),
   };
   const fields = [['text', wish.text], ['why', wish.why], ['name', wish.name]];
-  if (!wish.text) return { ok: false, field: 'text', code: 'empty', message: 'Tell the fox what you’re wishing for.' };
+  if (!wish.text) return { ok: false, field: 'text', code: 'empty', message: 'My hat’s still empty! What are you wishing for?' };
   for (const [field, v] of fields) {
     if (v && (hasLink(v) || hasEmail(v) || hasPhone(v))) {
-      return { ok: false, field, code: 'contact', message: 'The hat only takes menu wishes: no links, emails or phone numbers, please.' };
+      return { ok: false, field, code: 'contact', message: 'Just the wish, please. My hat doesn’t take links, emails or phone numbers.' };
     }
   }
   for (const [field, v] of fields) {
-    if (v && isRude(v)) return { ok: false, field, code: 'rude', message: 'Let’s keep it sweet. Try different words?' };
+    if (v && isRude(v)) return { ok: false, field, code: 'rude', message: 'Let’s keep my hat sweet. Try different words?' };
   }
-  if (isGibberish(wish.text)) return { ok: false, field: 'text', code: 'gibberish', message: 'Hmm, the fox couldn’t read that one. A few real words?' };
-  if (wish.why && /(.)\1{5,}/.test(wish.why)) return { ok: false, field: 'why', code: 'gibberish', message: 'Hmm, the fox couldn’t read that one. A few real words?' };
+  if (isGibberish(wish.text)) return { ok: false, field: 'text', code: 'gibberish', message: 'Hmm, I can’t quite read that one. A few real words?' };
+  if (wish.why && /(.)\1{5,}/.test(wish.why)) return { ok: false, field: 'why', code: 'gibberish', message: 'Hmm, I can’t quite read that one. A few real words?' };
   if (wish.name && (!/[a-z]/i.test(wish.name) || /(.)\1{3,}/.test(wish.name))) {
-    return { ok: false, field: 'name', code: 'gibberish', message: 'Just a first name is perfect (or leave it blank).' };
+    return { ok: false, field: 'name', code: 'gibberish', message: 'Just a first name is perfect, or leave it blank. I won’t mind.' };
   }
   return { ok: true, wish };
 }

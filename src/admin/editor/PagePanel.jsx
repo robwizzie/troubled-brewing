@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { ADDABLE_SECTION_TYPES, SECTION_LABELS } from '../../components/sections/registry.js';
 import { ConfirmModal } from '../components/ui.jsx';
+import { LuArrowDown, LuArrowUp, LuEye, LuEyeOff, LuTrash2 } from 'react-icons/lu';
+import { Icon } from '../components/Icon.jsx';
 
 /* The default docked panel (nothing selected): what this page IS. The section
    outline — the keyboard-friendly way to select, reorder, hide, add and
@@ -40,8 +42,8 @@ export default function PagePanel({
             return (
               <li key={s.id} className={`tb-outline__row ${s.visible === false ? 'is-hidden' : ''} ${String(selectedId) === String(s.id) ? 'is-selected' : ''}`}>
                 <div className="tb-outline__reorder">
-                  <button className="iconbtn" aria-label={`Move ${name} up`} disabled={i === 0} onClick={() => onMove(i, -1)}>▲</button>
-                  <button className="iconbtn" aria-label={`Move ${name} down`} disabled={i === sections.length - 1} onClick={() => onMove(i, 1)}>▼</button>
+                  <button className="iconbtn" aria-label={`Move ${name} up`} disabled={i === 0} onClick={() => onMove(i, -1)}><Icon icon={LuArrowUp} size={16} /></button>
+                  <button className="iconbtn" aria-label={`Move ${name} down`} disabled={i === sections.length - 1} onClick={() => onMove(i, 1)}><Icon icon={LuArrowDown} size={16} /></button>
                 </div>
                 <button className="tb-outline__label" onClick={() => onSelect(s.id)}>
                   <strong>{name}</strong>
@@ -56,9 +58,9 @@ export default function PagePanel({
                     aria-pressed={s.visible === false}
                     onClick={() => onToggleVisible(s.id)}
                   >
-                    {s.visible === false ? '🙈' : '👁'}
+                    <Icon icon={s.visible === false ? LuEyeOff : LuEye} size={16} />
                   </button>
-                  <button className="iconbtn" title="Remove this section" aria-label={`Remove ${name}`} onClick={() => setConfirmDel(s)}>🗑</button>
+                  <button className="iconbtn" title="Remove this section" aria-label={`Remove ${name}`} onClick={() => setConfirmDel(s)}><Icon icon={LuTrash2} size={16} /></button>
                 </div>
               </li>
             );

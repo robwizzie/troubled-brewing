@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { LuPlus } from 'react-icons/lu';
 import CollectionManager from '../components/CollectionManager.jsx';
+import { Icon } from '../components/Icon.jsx';
 import { loadReviews } from '../../lib/reviews.js';
 import { useToast, Hint } from '../components/ui.jsx';
 
@@ -54,10 +56,10 @@ function GoogleImport({ onAdded }) {
           <li key={r.id} className="admin-import__row">
             <div className="admin-import__meta">
               <strong>{r.author}</strong>
-              <span className="admin-import__stars">{'★'.repeat(Math.min(5, Math.round(r.rating || 5)))}</span>
+              <span className="admin-import__stars">{Math.min(5, Math.round(r.rating || 5))} stars</span>
               <p className="admin-import__text">{r.quote}</p>
             </div>
-            <button type="button" className="btn btn--ghost btn--sm" onClick={() => add(r)}>+ Add</button>
+            <button type="button" className="btn btn--ghost btn--sm" onClick={() => add(r)}><Icon icon={LuPlus} size={16} />Add</button>
           </li>
         ))}
       </ul>
@@ -72,7 +74,7 @@ export const TESTIMONIALS_COLLECTION = {
   singular: 'testimonial',
   labelKey: 'author',
   defaultItem: { source: 'Google', featured: false },
-  summary: (t) => `${t.rating ? '★'.repeat(t.rating) + ' · ' : ''}${t.source || ''}${t.featured ? ' · featured' : ''}${t.image_url ? ' · 📷' : ''}`,
+  summary: (t) => `${t.rating ? `${t.rating} stars · ` : ''}${t.source || ''}${t.featured ? ' · featured' : ''}${t.image_url ? ' · has a photo' : ''}`,
   fields: [
     { name: 'quote', label: 'Quote', type: 'textarea', required: true, hint: 'Paste the review text. Pick your best!' },
     { name: 'author', label: 'Name', type: 'text', required: true, hint: "First name + last initial, e.g. 'Sarah M.'" },

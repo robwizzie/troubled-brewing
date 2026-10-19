@@ -30,7 +30,7 @@ vi.mock('../src/lib/supabase.js', () => {
 const { ToastProvider } = await import('../src/admin/components/ui.jsx');
 const { UnsavedProvider } = await import('../src/admin/lib/publishing.jsx');
 const WishList = (await import('../src/admin/managers/WishList.jsx')).default;
-const { SCREENS } = await import('../src/admin/lib/nav.js');
+const { SCREENS, searchTasks } = await import('../src/admin/lib/nav.js');
 
 const ago = (h) => new Date(Date.now() - h * 3600000).toISOString();
 const SAMPLE = () => [
@@ -53,7 +53,13 @@ describe('admin Wish list', () => {
   it('is in the sidebar (one line, a Lucide icon, no emoji)', () => {
     const s = SCREENS.find((x) => x.to === '/admin/wishes');
     expect(s).toMatchObject({ label: 'Wish list', nav: 'Every day' });
-    expect(typeof s.icon).toBe('object'); // a react-icons element, not an emoji string
+    expect(s.icon.name).toBe('LuWandSparkles'); // a Lucide component, not an emoji string
+  });
+
+  it('Find-a-screen finds it by "wish", "suggestions" and "ideas"', () => {
+    for (const q of ['wish', 'suggestions', 'ideas']) {
+      expect(searchTasks(q).map((t) => t.to), q).toContain('/admin/wishes');
+    }
   });
 
   it('says changes save straight away (no Publish), and groups the top wishes', async () => {

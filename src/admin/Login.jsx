@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './lib/auth.jsx';
+import { LuArrowLeft, LuCircleAlert } from 'react-icons/lu';
+import { Icon } from './components/Icon.jsx';
+import { publicUrl } from '../lib/config.js';
+
+/* Supabase's sign-in errors, in plain words with what to do next. */
+function friendlyLogin(msg) {
+  if (/invalid login credentials/i.test(msg)) return 'That email and password don’t match. Check for typos and try again.';
+  if (/email not confirmed/i.test(msg)) return 'This email hasn’t been confirmed yet. Open the confirmation email, then try again.';
+  if (/fetch|network/i.test(msg)) return 'We couldn’t reach the server. Check your internet connection and try again.';
+  return msg;
+}
 
 export default function Login() {
   const { signIn, configured } = useAuth();
@@ -23,12 +34,12 @@ export default function Login() {
   return (
     <div className="login">
       <form className="login__card" onSubmit={onSubmit}>
-        <div className="login__brand">Trouble Brewing</div>
-        <h1>Owner login</h1>
-        <p className="field__hint">Sign in to edit your website.</p>
+        <div className="login__brand"><span className="admin__mark" aria-hidden="true">TB</span>Trouble Brewing</div>
+        <h1>Sign in</h1>
+        <p className="field__hint">Sign in to update your website — hours, menu, chalkboard and more.</p>
 
         {!configured && (
-          <p className="login__error">Supabase isn't configured yet — see the deployment docs.</p>
+          <p className="login__error" role="alert"><Icon icon={LuCircleAlert} size={16} />Sign-in isn’t set up on this copy of the site yet. Ask your developer to connect it.</p>
         )}
 
         <div className="field">
@@ -40,12 +51,12 @@ export default function Login() {
           <input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
 
-        {error && <p className="login__error">{error}</p>}
+        {error && <p className="login__error" role="alert"><Icon icon={LuCircleAlert} size={16} />{friendlyLogin(error)}</p>}
 
         <button className="btn btn--primary btn--block" type="submit" disabled={busy || !configured}>
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
-        <a className="login__back" href="/">← Back to the site</a>
+        <a className="login__back" href={publicUrl()}><Icon icon={LuArrowLeft} size={16} />Back to the website</a>
       </form>
     </div>
   );

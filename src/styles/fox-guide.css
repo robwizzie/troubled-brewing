@@ -675,3 +675,56 @@ body:has(.sih) .fox-acc--tail { right: auto; left: -44px; transform-origin: 94% 
   .fox-photo::after { animation: none !important; }
 }
 @media print { .fox-guide { display: none; } }
+
+/* ==========================================================================
+   poll-insights · "This or that" poll in the fox's card (FoxPoll.jsx)
+   Compact on purpose: under the game tiles, about 100px tall, so the tiles
+   and the first questions still fit a small phone's sheet. Hover only
+   changes colour; the result bars grow in once (stilled for reduced motion).
+   ========================================================================== */
+.fox-poll {
+  margin: 0 0 10px; padding: 8px 10px 10px; border-radius: 12px;
+  background: var(--color-green-soft); box-shadow: inset 0 0 0 1.5px rgba(84, 95, 51, 0.22);
+  animation: fox-answer 0.3s ease-out both;
+}
+.fox-poll__kicker { margin: 0; font: 700 0.66rem/1.2 var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-pink-deep); }
+.fox-poll__q { margin: 1px 0 7px; font: 700 0.95rem/1.25 var(--font-body); color: var(--color-ink); }
+.fox-poll__opts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.fox-poll__opt {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 44px; padding: 6px 8px; border: 0; border-radius: 10px; cursor: pointer;
+  background: var(--color-paper); color: var(--color-ink);
+  box-shadow: inset 0 0 0 1.5px var(--color-green-deep);
+  font: 700 0.9rem/1.1 var(--font-body); text-align: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.fox-poll__opt:hover { background: var(--color-green-deep); color: var(--color-on-primary); }
+.fox-poll__opt:hover .fox-poll__ico { color: var(--color-yellow); }
+.fox-poll__opt:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.fox-poll__opt:disabled { opacity: 0.6; cursor: default; }
+.fox-poll__ico { flex: none; font-size: 1.05rem; color: var(--color-green-deep); }
+.fox-poll__note { margin: 6px 0 0; font-size: 0.8rem; color: var(--color-error); }
+
+.fox-poll__bars { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.fox-poll__bar {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  min-height: 32px; padding: 4px 10px; border-radius: 9px; overflow: hidden;
+  background: var(--color-paper); box-shadow: inset 0 0 0 1px rgba(84, 95, 51, 0.18);
+  font: 600 0.86rem/1.15 var(--font-body); color: var(--color-ink);
+}
+.fox-poll__fill {
+  position: absolute; inset: 0 auto 0 0; width: var(--pct, 0%);
+  background: #dde3c4; transform-origin: left center;
+  animation: fox-poll-grow 0.7s cubic-bezier(0.25, 0.9, 0.3, 1) 0.05s both;
+}
+.fox-poll__bar.is-mine .fox-poll__fill { background: var(--color-yellow-soft); box-shadow: inset -3px 0 0 var(--color-yellow); }
+.fox-poll__label, .fox-poll__pct { position: relative; display: inline-flex; align-items: center; gap: 5px; }
+.fox-poll__pct { font-weight: 800; font-variant-numeric: tabular-nums; }
+.fox-poll__you { font-weight: 500; color: var(--color-ink-soft); font-size: 0.76rem; }
+.fox-poll__count { margin: 5px 0 0; font-size: 0.74rem; color: var(--color-ink-soft); }
+.fox-poll__line { margin: 2px 0 0; font-size: 0.84rem; font-style: italic; color: var(--color-green-deep); }
+@keyframes fox-poll-grow { from { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .fox-poll, .fox-poll__fill { animation: none; }
+  .fox-poll__opt { transition: none; }
+}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LuCheck, LuDownload, LuEyeOff, LuSearch, LuStickyNote, LuWandSparkles, LuX } from 'react-icons/lu';
 import { supabase } from '../../lib/supabase.js';
-import { useToast, Spinner } from '../components/ui.jsx';
+import { useToast, Spinner, StatusChip } from '../components/ui.jsx';
 import { ScreenHead } from '../lib/publishing.jsx';
 import {
   CATEGORIES, STATUSES, categoryLabel, countByCategory, groupWishes, relativeDate, statusLabel, wishTokens, wishesToCsv,
@@ -208,7 +208,9 @@ export default function WishList() {
 
   const head = (
     <ScreenHead
+      icon={LuWandSparkles}
       title="Wish list"
+      chip={<StatusChip state="private">Only you can see this · saves as you go</StatusChip>}
       help="Menu wishes from the fox on the website: a drink, a pastry, anything people would love to see. Changes here save straight away; there’s nothing to Publish, because none of this is shown on the site."
     />
   );

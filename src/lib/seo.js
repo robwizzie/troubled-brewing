@@ -243,7 +243,7 @@ export function ogImageUrl(siteUrl, key = 'home') {
    homepage concept switcher, the editor canvas. */
 export function isPreviewSearch(search) {
   const q = new URLSearchParams(String(search || '').replace(/^\?/, ''));
-  return q.get('preview') === '1' || q.has('concept') || q.has('canvas');
+  return q.get('preview') === '1' || q.has('concept') || q.has('previewConcept') || q.has('canvas');
 }
 
 /**

@@ -5,6 +5,11 @@ import { same } from '../lib/publishHelpers.js';
 import { ConfirmModal, useToast, Empty, Spinner } from './ui.jsx';
 import { coerceFieldValue } from './FieldRenderer.jsx';
 import ItemEditorForm from './ItemEditorForm.jsx';
+import { LuArrowDown, LuArrowLeft, LuArrowUp, LuInbox, LuPlus, LuSearch, LuX } from 'react-icons/lu';
+
+/* Lists longer than this get a "Find an item" box (the menu has 100+). */
+const FIND_AFTER = 12;
+import { Icon } from './Icon.jsx';
 
 /* Schema-driven manager for a structured table (Menu, Events, Troublemakers…).
 
@@ -40,6 +45,7 @@ const CollectionManager = forwardRef(function CollectionManager(
   const [work, setWork] = useState(null); //  working copy, in working order; flags: _remove
   const [editing, setEditing] = useState(null); // row id being edited, or 'new'
   const [form, setForm] = useState({});
+  const [find, setFind] = useState(''); // the "Find an item" box on long lists
   const [formBase, setFormBase] = useState(null);
   const { setSource, guard } = useUnsaved();
   const [confirmDelete, setConfirmDelete] = useState(null);
@@ -243,22 +249,44 @@ const CollectionManager = forwardRef(function CollectionManager(
   const editingItem = editing && editing !== 'new' ? work.find((r) => r.id === editing) : null;
   const wasHidden = Boolean(editingItem && liveById.get(String(editingItem.id))?.status === 'draft');
 
+  const needle = find.trim().toLowerCase();
+  const filtering = Boolean(needle) && Boolean(work);
+  const shown = filtering ? work.filter((r) => String(r[labelKey] || '').toLowerCase().includes(needle)) : work || [];
+
   const list =
     work === null ? (
       <Spinner />
     ) : work.length === 0 ? (
-      <Empty>
-        Nothing here yet. Press <strong>+ Add {singular}</strong> to create the first one — it goes on
+      <Empty icon={LuInbox}>
+        Nothing here yet. Press <strong>Add {singular}</strong> to create the first one — it goes on
         the site when you press Publish.
       </Empty>
     ) : (
+      <>
+      {work.length > FIND_AFTER && (
+        <div className="admin-find">
+          <Icon icon={LuSearch} size={18} className="admin-find__icon" />
+          <input
+            type="search"
+            className="admin-find__input"
+            value={find}
+            placeholder={`Find a ${singular} by name`}
+            aria-label={`Find a ${singular}`}
+            onChange={(e) => setFind(e.target.value)}
+          />
+          {find.trim() && <span className="admin-find__count">{shown.length} of {work.length}</span>}
+        </div>
+      )}
+      {find.trim() && shown.length === 0 && (
+        <Empty icon={LuSearch}>Nothing called “{find.trim()}”. Check the spelling, or clear the box to see everything.</Empty>
+      )}
       <ul className="admin-list">
-        {work.map((item, i) => (
+        {shown.map((item) => { const i = work.indexOf(item); return (
           <li key={item.id} className={`admin-list__row ${item._remove ? 'is-removed' : ''}`}>
             {orderable && (
               <div className="admin-list__reorder">
-                <button className="iconbtn" aria-label={`Move ${item[labelKey] || singular} up`} disabled={i === 0 || item._remove} onClick={() => move(i, -1)}>▲</button>
-                <button className="iconbtn" aria-label={`Move ${item[labelKey] || singular} down`} disabled={i === work.length - 1 || item._remove} onClick={() => move(i, 1)}>▼</button>
+                <button className="iconbtn" aria-label={`Move ${item[labelKey] || singular} up`} disabled={i === 0 || item._remove || filtering} onClick={() => move(i, -1)}><Icon icon={LuArrowUp} size={16} /></button>
+                <button className="iconbtn" aria-label={`Move ${item[labelKey] || singular} down`} disabled={i === work.length - 1 || item._remove || filtering} onClick={() => move(i, 1)}><Icon icon={LuArrowDown} size={16} /></button>
               </div>
             )}
             {item.image_url || item.photo_url ? (
@@ -280,8 +308,9 @@ const CollectionManager = forwardRef(function CollectionManager(
               )}
             </div>
           </li>
-        ))}
+        ); })}
       </ul>
+      </>
     );
 
   const editorForm = editing && (
@@ -339,7 +368,7 @@ const CollectionManager = forwardRef(function CollectionManager(
         {editing ? (
           <div>
             <div className="cm-embedded__head">
-              <button className="btn btn--ghost btn--sm" onClick={requestClose}>← All {title.toLowerCase()}</button>
+              <button className="btn btn--ghost btn--sm" onClick={requestClose}><Icon icon={LuArrowLeft} size={16} />All {title.toLowerCase()}</button>
               <strong>{editing === 'new' ? `Add ${singular}` : `Edit ${singular}`}</strong>
             </div>
             {editorForm}
@@ -350,7 +379,7 @@ const CollectionManager = forwardRef(function CollectionManager(
           <div>
             <div className="cm-embedded__head">
               <strong>{title}</strong>
-              <button className="btn btn--primary btn--sm" onClick={() => openEditor(null)}>+ Add {singular}</button>
+              <button className="btn btn--primary btn--sm" onClick={() => openEditor(null)}><Icon icon={LuPlus} size={16} />Add {singular}</button>
             </div>
             {list}
           </div>
@@ -363,7 +392,7 @@ const CollectionManager = forwardRef(function CollectionManager(
   return (
     <div>
       <ScreenHead title={title} help={help}>
-        <button className="btn btn--primary" onClick={() => openEditor(null)}>+ Add {singular}</button>
+        <button className="btn btn--primary" onClick={() => openEditor(null)}><Icon icon={LuPlus} size={16} />Add {singular}</button>
       </ScreenHead>
       {intro}
 
@@ -374,7 +403,7 @@ const CollectionManager = forwardRef(function CollectionManager(
           <aside className="admin-drawer" role="dialog" aria-label={editing === 'new' ? `Add ${singular}` : `Edit ${singular}`} onClick={(e) => e.stopPropagation()}>
             <div className="admin-drawer__head">
               <h2>{editing === 'new' ? `Add ${singular}` : `Edit ${singular}`}</h2>
-              <button className="iconbtn" aria-label="Close" onClick={requestClose}>✕</button>
+              <button className="iconbtn" aria-label="Close" onClick={requestClose}><Icon icon={LuX} /></button>
             </div>
             <div className="admin-drawer__body">
               {editorForm}

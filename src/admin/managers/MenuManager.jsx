@@ -22,7 +22,7 @@ export const MENU_COLLECTION = {
     { name: 'price', label: 'Price', type: 'price', hint: 'Just the number — the $ is added automatically.' },
     { name: 'category', label: 'Category', type: 'select', options: CATEGORIES, required: true },
     { name: 'dietary_flags', label: 'Dietary tags', type: 'tags', hint: 'e.g. gluten-free, vegan — comma separated.' },
-    { name: 'image_url', label: 'Photo', type: 'image', preset: 'card' },
+    { name: 'image_url', label: 'Photo', type: 'image', preset: 'card', hint: 'A drink with a photo also gets a shareable “drink personality” card after the fox’s quiz — add photos to unlock more of them.' },
     { name: 'available', label: 'Available (show on the menu)', type: 'checkbox', hint: 'Turn off to temporarily hide (e.g. sold out).' },
   ],
 };

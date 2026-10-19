@@ -240,7 +240,7 @@ describe('the wish pane', () => {
     fireEvent.change(screen.getByLabelText(/Why\?/), { target: { value: 'see www.example.com' } });
     fireEvent.click(screen.getByRole('button', { name: 'Drop it in the hat' }));
     now.mockRestore();
-    expect(screen.getByRole('alert').textContent).toMatch(/no links, emails or phone numbers/);
+    expect(screen.getByRole('alert').textContent).toMatch(/doesn’t take links, emails or phone numbers/);
     expect(screen.getByLabelText(/Why\?/).getAttribute('aria-invalid')).toBe('true');
     await act(() => new Promise((r) => requestAnimationFrame(r)));
     expect(document.activeElement).toBe(screen.getByLabelText(/Why\?/));
@@ -256,11 +256,20 @@ describe('the wish pane', () => {
       fireEvent.change(screen.getByLabelText('Your wish'), { target: { value: 'Maple oat latte' } });
       act(() => { vi.advanceTimersByTime(4000); });
       fireEvent.click(screen.getByRole('button', { name: 'Drop it in the hat' }));
+      // the button presses down first…
+      expect(screen.getByRole('button', { name: 'Drop it in the hat' }).className).toMatch(/is-pressed/);
+      act(() => { vi.advanceTimersByTime(130); });
+      // …then the note (with the wish on it) folds
       expect(screen.getByTestId('fox-wish').dataset.stage).toBe('fold');
-      expect(document.querySelector('.fox-wish__note').textContent).toBe('Maple oat latte');
+      const note = document.querySelector('.fox-wish__note');
+      expect(note.querySelector('.fox-wish__note-text').textContent).toBe('Maple oat latte');
+      expect(document.querySelector('.fox-wish__hat--back')).toBeTruthy();
+      expect(document.querySelector('.fox-wish__hat--front')).toBeTruthy();
       act(() => { vi.advanceTimersByTime(FOLD_MS); });
+      // the same note flies on into the hat (not a new element), sparkles ready
       expect(screen.getByTestId('fox-wish').dataset.stage).toBe('drop');
-      expect(document.querySelector('.fox-wish__dropnote')).toBeTruthy();
+      expect(document.querySelector('.fox-wish__note')).toBe(note);
+      expect(document.querySelectorAll('.fox-wish__spark').length).toBeGreaterThanOrEqual(6);
       act(() => { vi.advanceTimersByTime(DROP_MS); });
       expect(screen.getByTestId('fox-wish').dataset.stage).toBe('thanks');
     } finally {
