@@ -46,6 +46,9 @@
 }
 .cta-band h2 { font-size: var(--text-2xl); }
 .cta-band__action { flex-shrink: 0; }
+.cta-band__aside { margin: var(--space-3) 0 0; text-align: center; font-size: var(--text-sm); }
+.cta-band__link { color: var(--color-green-deep); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.cta-band__link:hover { color: var(--color-pink-deep); }
 @media (max-width: 640px) {
   .cta-band { flex-direction: column; text-align: center; padding: var(--space-6) var(--space-5); }
   .cta-band__action .btn { width: 100%; justify-content: center; }

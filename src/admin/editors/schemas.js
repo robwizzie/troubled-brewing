@@ -12,6 +12,14 @@ const LAYOUTS = [{ value: 'masonry', label: 'Masonry' }, { value: 'grid', label:
 const FRAMES = FRAME_STYLE_OPTIONS;
 const PHOTO_HINT = 'Blank = no photo. The shop photos we ship live in /images/pages/ — upload your own to replace one.';
 const ALT_HINT = 'Describe the photo for someone who can’t see it (and for Google), e.g. “The black front door at 514 Station Ave under the Trouble Brewing sign”.';
+const GIFT_ART = [
+  { value: 'cake', label: 'Birthday cake' },
+  { value: 'thanks', label: 'Envelope with a heart' },
+  { value: 'apple', label: 'Apple (teacher)' },
+  { value: 'fox', label: 'The fox with his coffee' },
+  { value: 'cup', label: 'Steaming cup' },
+  { value: 'heart', label: 'Heart' },
+];
 const MENU_CATEGORIES = MENU_CATEGORY_ORDER.map((c) => ({ value: c, label: MENU_CATEGORY_LABELS[c] || c }));
 
 export const SECTION_EDITOR_SCHEMAS = {
@@ -94,7 +102,7 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'image_url', label: 'Photo', type: 'image', preset: 'card', hint: 'Optional. ' + PHOTO_HINT },
       { name: 'image_alt', label: 'Photo alt text', type: 'text', hint: ALT_HINT },
       { name: 'frame_style', label: 'Frame', type: 'select', options: FRAMES },
-      { name: 'secondary_label', label: 'Second button label', type: 'text', hint: 'Optional. Shows on the photo panel.' },
+      { name: 'secondary_label', label: 'Second button label', type: 'text', hint: 'Optional. A second button on the photo panel; without a photo, a small link under the button.' },
       { name: 'secondary_url', label: 'Second button link', type: 'text' },
     ],
   },
@@ -560,6 +568,32 @@ export const SECTION_EDITOR_SCHEMAS = {
       { name: 'phone_url', label: 'Call button link', type: 'text', hint: 'tel:+18566176638' },
       { name: 'hours_heading', label: 'Hours sign title', type: 'text', hint: 'Blank = “This week”.' },
       { name: 'embed_url', label: 'Custom map embed URL', type: 'text', hint: 'Optional — leave blank to build the map from the address above.' },
+    ],
+  },
+  gift_cards: {
+    note: 'The Gift Cards page. Every button and every occasion card opens the same SpotOn gift-card page in a new tab. Keep the copy to what’s true for every card (no amounts or expiry rules: SpotOn’s checkout shows those).',
+    fields: [
+      { name: 'eyebrow', label: 'Little line above the heading', type: 'text', hint: 'Blank = none. We ship “Gift cards”.' },
+      { name: 'heading', label: 'Heading', type: 'text', hint: 'Blank = “Give someone Trouble”.' },
+      { name: 'intro', label: 'A line under the heading', type: 'textarea', rows: 2, hint: 'Optional.' },
+      { name: 'button_label', label: 'Button label', type: 'text', hint: 'Blank = “Buy an e-gift card”.' },
+      { name: 'button_url', label: 'Button link (SpotOn gift-card page)', type: 'text', hint: 'The full https:// address of your SpotOn e-gift card page. Leave blank to use the site default (your SpotOn order page, which has a “Purchase gift cards” link).' },
+      { name: 'how_it_works', label: 'How it works (one line)', type: 'text', hint: 'Keep it true for every card, e.g. “Pick an amount, add a note, and we’ll email it.”' },
+      { name: 'occasions_heading', label: 'Occasion cards heading', type: 'text', hint: 'Blank = “A little Trouble for…”.' },
+      { name: 'occasions_hint', label: 'Line under that heading', type: 'text', hint: 'Blank = “Tap a card to send one.”' },
+      { name: 'occasion_1_label', label: 'Card 1: occasion', type: 'text', hint: 'Blank hides this card.' },
+      { name: 'occasion_1_note', label: 'Card 1: short line', type: 'text' },
+      { name: 'occasion_1_art', label: 'Card 1: drawing', type: 'select', options: GIFT_ART },
+      { name: 'occasion_2_label', label: 'Card 2: occasion', type: 'text', hint: 'Blank hides this card.' },
+      { name: 'occasion_2_note', label: 'Card 2: short line', type: 'text' },
+      { name: 'occasion_2_art', label: 'Card 2: drawing', type: 'select', options: GIFT_ART },
+      { name: 'occasion_3_label', label: 'Card 3: occasion', type: 'text', hint: 'Blank hides this card.' },
+      { name: 'occasion_3_note', label: 'Card 3: short line', type: 'text' },
+      { name: 'occasion_3_art', label: 'Card 3: drawing', type: 'select', options: GIFT_ART },
+      { name: 'occasion_4_label', label: 'Card 4: occasion', type: 'text', hint: 'Blank hides this card.' },
+      { name: 'occasion_4_note', label: 'Card 4: short line', type: 'text' },
+      { name: 'occasion_4_art', label: 'Card 4: drawing', type: 'select', options: GIFT_ART },
+      { name: 'show_phone', label: 'Show “Questions? Call us” under the cards', type: 'checkbox' },
     ],
   },
 };
