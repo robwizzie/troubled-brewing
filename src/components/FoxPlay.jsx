@@ -55,7 +55,6 @@ function ReelStrip({ strip, refEl, blur }) {
   return (
     <div className={`fox-reel__strip${blur ? ' is-blur' : ''}`} ref={refEl} style={blur ? { filter: `url(#${blur})` } : undefined}>
       {strip.map((d, i) => (
-        // eslint-disable-next-line react/no-array-index-key -- a drink can come round twice
         <div className="fox-reel__row" key={i}>
           <span className="fox-reel__name">{d.name}</span>
           <span className="fox-reel__price">{fmtPrice(d.price)}</span>
