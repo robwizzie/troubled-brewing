@@ -1,15 +1,21 @@
 import { SPOTON_ORDER_URL } from './config.js';
 
-/* Where tapping a product takes you: the shop's SpotOn ordering page.
+/* Where tapping a product takes you: that item on SpotOn when we know its
+   link, otherwise the store's SpotOn order page.
 
-   SpotOn has no per-item deep links today, so every product goes to the
-   store's order page (SPOTON_ORDER_URL — env-overridable, see config.js).
-   The day per-item links exist, put them in a menu row's `order_url` and
-   every product card, shelf item and menu row follows — no component needs
-   to change. */
+   The per-item link is a menu row's `order_url` (menu_items.order_url, and
+   the bundled src/data/spoton-menu.json). The daily SpotOn sync fills it
+   ONLY from evidence — a link in SpotOn's own data, the URL the live order
+   page opened for that item, or a confirmed pattern
+   (SPOTON_ITEM_URL_TEMPLATE in scripts/sync-spoton-menu.mjs). Every product
+   card, shelf item and menu row follows it; no component needs to change.
+
+   Only an http(s) link is trusted; anything else (blank, a stray slug, a
+   javascript: URL) falls back to the store page (SPOTON_ORDER_URL —
+   env-overridable, see config.js), so a bad row can never strand a customer. */
 export function orderUrlFor(item) {
   const own = String(item?.order_url || '').trim();
-  return own || SPOTON_ORDER_URL;
+  return /^https?:\/\/[^\s/]+/i.test(own) ? own : SPOTON_ORDER_URL;
 }
 
 /* The accessible name every product order link shares, so a screen reader

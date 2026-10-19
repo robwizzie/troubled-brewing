@@ -42,5 +42,5 @@ export const GALLERY_COLLECTION = {
 };
 
 export default function GalleryManager() {
-  return <CollectionManager {...GALLERY_COLLECTION} />;
+  return <CollectionManager {...GALLERY_COLLECTION} help="The art on the Gallery Wall page — titles, artists, stories and which frame each piece hangs in." />;
 }

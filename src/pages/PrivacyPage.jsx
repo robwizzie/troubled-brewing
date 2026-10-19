@@ -6,7 +6,7 @@ import { SITE } from '../lib/seed.js';
 export default function PrivacyPage() {
   return (
     <>
-      <SEO title="Privacy Policy — Trouble Brewing Coffee House" description="How Trouble Brewing Coffee House collects and uses information from our website." path="/privacy" />
+      <SEO path="/privacy" />
       <article className="section container-narrow legal">
         <h1>Privacy Policy</h1>
         <p><em>Last updated: {new Date().getFullYear()}</em></p>

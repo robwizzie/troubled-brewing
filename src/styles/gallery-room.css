@@ -2,41 +2,34 @@
    THE GALLERY WALL ROOM  (.gwr — src/components/sections/GalleryWallRoom.jsx)
 
    The shop's photograph of its own wall, hung as a room you walk around in.
-   Everything below serves one move: the photograph and its hotspots are a
-   single transformed layer, and choosing a piece pans and magnifies that layer
-   while a spotlight closes around the frame.
+   The photograph and its hotspots are a single transformed layer; choosing a
+   piece pans and magnifies that layer while a spotlight closes around the
+   frame, and the panel beside it says what it is.
 
-   Two rules keep it honest at any zoom:
+   Three rules keep it calm:
      • only `.gwr__art` is transformed — every hotspot is its child, so nothing
-       can drift off its frame;
-     • anything that must stay a readable SIZE (the nameplate, the spotlight's
-       gold ring) divides by `--gwr-scale`, which the component sets alongside
-       the transform.
+       can drift off its frame; anything that must stay a readable SIZE (the
+       nameplate, the spotlight's ring) divides by `--gwr-scale`;
+     • the room — stage AND panel — is sized to fit the window under the
+       sticky header, and the panel is always there, so choosing, stepping or
+       going back never changes the layout and nothing on the page jumps;
+     • the panel never overlaps the stage: beside it on a wide screen, a sheet
+       under it on a phone.
    ========================================================================== */
 
 .gwr__head { margin-bottom: var(--space-5); }
 
-/* ---- the room ------------------------------------------------------------ */
+/* ---- the band ------------------------------------------------------------ */
 
-/* The photograph is very nearly square, so at full container width the room
-   would stand a thousand pixels tall. The width is capped by what a screen's
-   HEIGHT can show at once — never by setting a height, which would break the
-   ratio the pan math depends on, but by shrinking the width until the ratio
-   puts the whole room on screen. The checklist underneath shares that width,
-   so the two read as one hang rather than a picture with a page-wide list
-   loose beneath it. The card is positioned against `.gwr__room`, so it can
-   hang inside the room on a wide screen and drop below it on a phone without
-   moving in the markup. */
-/* THE BAND: the room runs the full width of the page. The real wall sits in
-   the middle as large as the screen allows; beyond its edges, the same
-   photograph — enlarged, blurred and dimmed — carries the green wall out to
-   the sides of the window, so a wide monitor gets a room, not a print on a
+/* The room runs the full width of the page. Beyond the real wall's edges the
+   same photograph — enlarged, blurred and dimmed — carries the green wall out
+   to the sides of the window, so a wide monitor gets a room, not a print on a
    cream page. (The blurred copy is the small 934px file: it's a backdrop.) */
 .gwr__band {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding-block: var(--space-6);
+  padding-block: var(--space-5);
   background: #2c2d1c;
 }
 .gwr__band::before {
@@ -58,16 +51,54 @@
   background: radial-gradient(75% 90% at 50% 50%, transparent 40%, rgba(18, 16, 9, 0.55) 100%);
 }
 
-/* The wall stands as tall as the window allows (never taller than the
-   window, so the whole room is in view at once) and as wide as that height
-   implies. Width is derived from height via the ratio — never a set height,
-   which would break the ratio the pan math depends on. */
-.gwr__body {
-  width: min(100% - 2 * var(--space-5), calc(var(--gwr-ratio, 1) * min(86vh, 1180px)), 1180px);
-  margin-inline: auto;
+/* ---- the room: stage + panel, sized to the window ------------------------- */
+
+/* Height is the scarce dimension (the photograph is nearly square), so
+   everything starts from the height left under the sticky header. The stage's
+   WIDTH is derived from that through the ratio — never a set height, which
+   would break the ratio the pan math depends on. */
+.gwr__room {
+  --gwr-top: calc(var(--header-h, 68px) + 6px);
+  --gwr-ease: cubic-bezier(0.45, 0, 0.2, 1);
+  --gwr-move: 450ms;
+  position: relative;
 }
 
-.gwr__room { position: relative; }
+/* Wide: photograph left/centre, a fixed-width panel beside it. */
+@media (min-width: 860px) {
+  .gwr__room {
+    --gwr-panel-w: 340px;
+    --gwr-gap: var(--space-5);
+    --gwr-avail-h: calc(100vh - var(--gwr-top) - 2 * var(--space-5));
+    --gwr-avail-h: calc(100svh - var(--gwr-top) - 2 * var(--space-5));
+    --gwr-stage-w: min(
+      calc(var(--gwr-ratio, 1) * min(var(--gwr-avail-h), 780px)),
+      calc(100vw - var(--gwr-panel-w) - var(--gwr-gap) - 2 * var(--space-6))
+    );
+    display: grid;
+    grid-template-columns: var(--gwr-stage-w) var(--gwr-panel-w);
+    gap: var(--gwr-gap);
+    justify-content: center;
+    align-items: stretch; /* the panel is exactly as tall as the stage */
+  }
+}
+
+/* Narrow: photograph on top, edge to edge, and a sheet below it that takes
+   the rest of the window. On a short phone the photograph gives up a little
+   width so the sheet keeps enough height to read. */
+@media (max-width: 859px) {
+  .gwr__band { padding-block: 0 var(--space-4); }
+  .gwr__room {
+    --gwr-sheet-min: 250px;
+    --gwr-stage-h: min(calc(100vw / var(--gwr-ratio, 1)), calc(100vh - var(--gwr-top) - var(--gwr-sheet-min)));
+    --gwr-stage-h: min(calc(100vw / var(--gwr-ratio, 1)), calc(100svh - var(--gwr-top) - var(--gwr-sheet-min)));
+    --gwr-sheet-h: clamp(var(--gwr-sheet-min), calc(100vh - var(--gwr-top) - var(--gwr-stage-h)), 440px);
+    --gwr-sheet-h: clamp(var(--gwr-sheet-min), calc(100svh - var(--gwr-top) - var(--gwr-stage-h)), 440px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
 
 .gwr__stage {
   position: relative;
@@ -75,36 +106,55 @@
   aspect-ratio: var(--gwr-ratio, 1);
   overflow: hidden;
   border-radius: var(--radius-md);
-  /* the colour the wall itself becomes under the spotlight's shadow, so a
-     zoom that pans past the edge of the photograph shows no seam */
+  /* the colour the wall becomes under the spotlight's shadow, so a zoom that
+     pans past the edge of the photograph shows no seam */
   background: #262619;
   box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255, 253, 247, 0.08);
   isolation: isolate;
-  /* the room is a picture of a room: no scrollbars, no rubber-banding */
   touch-action: manipulation;
+}
+/* zoomed: vertical drags still scroll the page; sideways ones are swipes */
+.gwr--open .gwr__stage { touch-action: pan-y; }
+
+@media (max-width: 859px) {
+  .gwr__stage {
+    width: calc(var(--gwr-stage-h) * var(--gwr-ratio, 1));
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 
 /* The photograph plus every hotspot, as one transformed plane. Width 100% of
    the stage makes translate percentages resolve against the photograph's own
-   box, which is what makes the pan math in galleryWall.js pixel-free. */
+   box, which is what makes the pan math in galleryWall.js pixel-free. One
+   eased transform, nothing else moving with it. */
 .gwr__art {
   position: absolute;
   inset: 0 0 auto 0;
   width: 100%;
   transform-origin: 0 0;
-  will-change: transform;
-  transition: transform 900ms cubic-bezier(0.22, 0.9, 0.24, 1);
+  /* no `will-change: transform` on purpose: Chrome keeps a will-change layer
+     rasterised at the scale it was first painted, so a 4× close-up would be a
+     blown-up 1× bitmap. Without it the layer is promoted for the tween and
+     re-rasterised sharp the moment it lands. */
+  transition: transform var(--gwr-move) var(--gwr-ease);
 }
 
 .gwr__photo {
   display: block;
   width: 100%;
   height: auto;
-  /* a hair of warmth as the room magnifies, so a soft enlargement reads as
-     candlelight rather than a stretched JPEG */
-  transition: filter var(--dur-slow) var(--ease);
+  user-select: none;
+  -webkit-user-drag: none;
 }
-.gwr--open .gwr__photo { filter: saturate(1.06) contrast(1.04); }
+/* the full-resolution copy, laid exactly over the photograph once it has
+   loaded and decoded — the picture underneath is never taken away */
+.gwr__photo--hi {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  pointer-events: none;
+}
 
 /* ---- a piece on the wall ------------------------------------------------- */
 
@@ -116,8 +166,11 @@
   border-radius: 3px;
   cursor: zoom-in;
   -webkit-tap-highlight-color: transparent;
+  /* subtle but discoverable: a faint brass hairline on every frame at rest */
+  box-shadow: inset 0 0 0 1px rgba(247, 220, 140, 0.24);
 }
 .gwr__spot--oval { border-radius: 50%; }
+.gwr--open .gwr__spot { box-shadow: none; cursor: default; }
 
 /* the hover ring is drawn INSIDE the box so it hugs the molding rather than
    spilling onto the neighbouring frame */
@@ -136,11 +189,11 @@
   opacity: 1;
   box-shadow: inset 0 0 0 2px rgba(247, 220, 140, 0.95);
 }
+.gwr--open .gwr__spot::after { opacity: 0; }
 .gwr__spot:focus-visible { outline: none; }
-.gwr--open .gwr__spot { cursor: default; }
 
-/* The engraved nameplate, same brass as the rest of the site's frames. It
-   counter-scales so a label reads the same at 1× and at 3×. */
+/* The engraved nameplate — whole-wall view only, on hover or focus. It
+   counter-scales so a label reads the same size at any zoom. */
 .gwr__plate {
   position: absolute;
   left: 50%;
@@ -162,19 +215,16 @@
   pointer-events: none;
   transition: opacity var(--dur) var(--ease);
 }
-/* hung low on the wall: the plate goes above the frame instead of off the
-   bottom of the stage */
 .gwr__plate--above { top: 0; bottom: auto; --plate-y: -130%; --plate-oy: 100%; }
-/* hung near the right-hand edge: the plate hangs back from the frame's right
-   corner rather than off the side */
 .gwr__plate--right { left: auto; right: 0; --plate-x: 0%; --plate-ox: 100%; }
 
 .gwr__spot:hover .gwr__plate,
 .gwr__spot:focus-visible .gwr__plate { opacity: 1; }
-.gwr--open .gwr__plate { opacity: 0 !important; }
+/* zoomed: no labels at all — the panel says what you're looking at */
+.gwr--open .gwr__plate { display: none; }
 
-/* Touch has no hover, so the wall shows where its pieces are: a small brass
-   stud on each frame, breathing gently. */
+/* Touch has no hover, so the whole wall shows where its pieces are: a small
+   brass stud on each frame, breathing gently. Gone while zoomed. */
 @media (hover: none) {
   .gwr__spot::before {
     content: '';
@@ -189,7 +239,7 @@
     box-shadow: 0 0 0 3px rgba(40, 32, 20, 0.35), 0 0 10px rgba(255, 236, 178, 0.7);
     animation: gwr-stud 3.4s ease-in-out infinite;
   }
-  .gwr--open .gwr__spot::before { opacity: 0; }
+  .gwr--open .gwr__spot::before { display: none; }
 }
 @keyframes gwr-stud {
   0%, 100% { transform: scale(1); opacity: 0.75; }
@@ -199,8 +249,8 @@
 /* ---- the spotlight ------------------------------------------------------- */
 
 /* One box on the chosen frame whose shadow swallows the rest of the room. It
-   rides inside the art layer, so it tracks the frame through the whole move —
-   and its ring divides by the scale to stay a hairline. */
+   rides inside the art layer, so it tracks the frame through the whole move,
+   and glides to the next frame on the same clock as the pan. */
 .gwr__spotlight {
   position: absolute;
   border-radius: 4px;
@@ -209,8 +259,11 @@
   box-shadow:
     0 0 0 calc(2px / var(--gwr-scale, 1)) rgba(247, 220, 140, 0.85),
     0 0 calc(30px / var(--gwr-scale, 1)) calc(6px / var(--gwr-scale, 1)) rgba(255, 226, 160, 0.28),
-    0 0 0 100vmax rgba(16, 13, 10, 0.82);
-  animation: gwr-lightup var(--dur-slow) var(--ease) both;
+    0 0 0 100vmax rgba(16, 13, 10, 0.8);
+  transition:
+    left var(--gwr-move) var(--gwr-ease), top var(--gwr-move) var(--gwr-ease),
+    width var(--gwr-move) var(--gwr-ease), height var(--gwr-move) var(--gwr-ease);
+  animation: gwr-lightup var(--gwr-move) var(--gwr-ease) both;
 }
 .gwr__spotlight--oval { border-radius: 50%; }
 @keyframes gwr-lightup {
@@ -218,20 +271,16 @@
   to { opacity: 1; }
 }
 
-/* ---- back to the wall ---------------------------------------------------- */
-
-.gwr__dismiss {
+/* Zoomed, the room is shadow: taps on it do nothing (and never reach a
+   half-visible hotspot), so a stray tap can't lose the picture. */
+.gwr__veil {
   position: absolute;
   inset: 0;
   z-index: 2;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  cursor: zoom-out;
+  cursor: default;
 }
-.gwr__dismiss:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -4px; }
 
-/* ---- the standing invitation --------------------------------------------- */
+/* ---- the first-visit hint ------------------------------------------------ */
 
 .gwr__hint {
   position: absolute;
@@ -253,73 +302,195 @@
   pointer-events: none;
 }
 
-/* ---- the card ------------------------------------------------------------ */
+/* ---- the panel ----------------------------------------------------------- */
 
-.gwr-card {
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  background: linear-gradient(180deg, var(--color-paper), var(--color-cream));
+/* Always present. Its content sits in an absolutely-filled inner box, so the
+   panel takes the stage's height (wide) or the sheet height (narrow) and a
+   long story scrolls INSIDE it rather than growing the page. */
+.gwr-panel {
+  position: relative;
+  min-width: 0;
   border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--color-paper), var(--color-cream));
   box-shadow: var(--shadow-lg), 0 0 0 1px rgba(43, 36, 26, 0.14);
-  padding: var(--space-4);
-  /* the card holds its shape; only its body scrolls, so the buttons never get
-     pushed off the bottom of a long story */
-  overflow: hidden;
-  animation: gwr-card-in var(--dur-slow) var(--ease) both;
+  color: var(--color-text);
 }
-
-/* wide: a plate hung inside the room, on its right-hand third */
-@media (min-width: 860px) {
-  .gwr-card {
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-    bottom: var(--space-4);
-    width: min(360px, 42%);
+@media (max-width: 859px) {
+  .gwr-panel {
+    width: 100%;
+    height: var(--gwr-sheet-h);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: none;
   }
 }
-/* Narrow: the card leaves the room and sits under it in the page. A sheet over
-   the bottom half of a square stage would leave a strip too short to magnify a
-   portrait into — dropping the card out gives the piece the whole stage, which
-   is the difference between a phone zooming in and a phone pretending to. */
-@media (max-width: 859px) {
-  .gwr-card { margin-top: var(--space-3); }
+.gwr-panel__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-@keyframes gwr-card-in {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.gwr-card__media {
+.gwr-panel__bar {
   flex: 0 0 auto;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+.gwr-panel__count {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--color-text-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gwr-panel__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.gwr-panel__foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+.gwr-panel__foot .gwr-btn--back { flex: 1 1 auto; }
+
+.gwr-panel__rest {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-5);
+}
+.gwr-panel__rest .gwr-card__eyebrow,
+.gwr-panel__rest .gwr-card__title { margin: 0; }
+.gwr-panel__lede { margin: 0; color: var(--color-text-soft); }
+
+/* ---- controls ------------------------------------------------------------ */
+
+.gwr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+  min-height: 42px;
+  padding: 0.5em 1em;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.gwr-btn:hover { background: var(--color-surface-alt); }
+.gwr-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.gwr-btn--step { min-width: 88px; }
+.gwr-btn--step > [aria-hidden] { font-size: 1.3em; line-height: 1; }
+.gwr-btn--back {
+  background: var(--color-accent);
+  border-color: var(--color-yellow-deep);
+  color: var(--color-on-accent);
+}
+.gwr-btn--back:hover { background: var(--color-accent-hover); }
+
+/* ---- the mini-map -------------------------------------------------------- */
+
+.gwr-map {
+  position: relative;
+  flex: 0 0 auto;
+  width: 84px;
+  aspect-ratio: var(--gwr-ratio, 1);
+  overflow: hidden;
+  border-radius: 4px;
+  background: #262619;
+  box-shadow: 0 0 0 1px rgba(43, 36, 26, 0.35);
+  cursor: pointer;
+}
+.gwr-map__photo {
+  position: absolute;
+  inset: 0 0 auto 0;
+  width: 100%;
+  height: auto;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.gwr-map__dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: rgba(250, 235, 190, 0.85);
+  pointer-events: none;
+}
+.gwr-map__dot.is-here {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  background: var(--color-pink-deep);
+  box-shadow: 0 0 0 2px #fff7e6;
+}
+.gwr-map__view {
+  position: absolute;
+  border: 1.5px solid #f7dc8c;
+  border-radius: 2px;
+  box-shadow: 0 0 0 100vmax rgba(16, 13, 10, 0.35);
+  pointer-events: none;
+  transition:
+    left var(--gwr-move) var(--gwr-ease), top var(--gwr-move) var(--gwr-ease),
+    width var(--gwr-move) var(--gwr-ease), height var(--gwr-move) var(--gwr-ease);
+}
+@media (max-width: 859px) {
+  .gwr-map { width: 60px; }
+  /* The site's fox guide sits fixed in the bottom-left corner of a phone, which
+     is exactly where the sheet's last row lands when the room fills the
+     window — so that row leaves him his corner and keeps its controls clear. */
+  body:has(.fox-guide) .gwr-panel__foot { padding-left: 116px; }
+}
+
+/* ---- the story ----------------------------------------------------------- */
+
+.gwr-card__media {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-3);
 }
 .gwr-card__photo,
 .gwr-card__crop {
   display: block;
   width: auto;
   max-width: 100%;
-  max-height: 190px;
+  max-height: 140px;
   border-radius: 3px;
   background-color: #2a2419;
   box-shadow: var(--shadow-frame), 0 0 0 4px #1d1913, 0 0 0 6px rgba(214, 180, 106, 0.75);
 }
 .gwr-card__crop {
-  /* sized by aspect-ratio + max-height: the box lands near the piece's real
-     pixel footprint in the source, which is the size it stays sharp at */
-  height: 140px;
+  height: 120px;
   background-repeat: no-repeat;
 }
-@media (max-width: 859px) {
-  .gwr-card__photo, .gwr-card__crop { max-height: 128px; }
-  .gwr-card__crop { height: 128px; }
+/* On a phone the zoomed photograph right above IS the close-up; the sheet's
+   height goes to the words. Same on a short desktop window. */
+@media (max-width: 859px), (max-height: 640px) {
+  .gwr-card__media { display: none; }
 }
-
-.gwr-card__body { flex: 1 1 auto; min-height: 0; overflow: auto; }
 
 .gwr-card__eyebrow {
   margin: 0 0 var(--space-1);
@@ -335,6 +506,8 @@
   font-size: var(--text-xl);
   line-height: 1.15;
 }
+.gwr-card__title:focus { outline: none; }
+.gwr-card__title:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 2px; }
 .gwr-card__artist {
   margin: var(--space-2) 0 0;
   font-family: var(--font-body);
@@ -362,106 +535,60 @@
   color: var(--color-pink-deep);
 }
 
-.gwr-card__nav {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-border);
-}
-.gwr-card__step,
-.gwr-card__back {
-  font-family: var(--font-body);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
-}
-.gwr-card__step {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 auto;
-  font-size: var(--text-lg);
-  line-height: 1;
-}
-.gwr-card__back {
-  flex: 1 1 auto;
-  padding: 0.6em 1em;
-  font-weight: 600;
-  background: var(--color-accent);
-  border-color: var(--color-yellow-deep);
-  color: var(--color-on-accent);
-}
-.gwr-card__step:hover { background: var(--color-surface-alt); }
-.gwr-card__back:hover { background: var(--color-accent-hover); }
-
 /* ---- the index ----------------------------------------------------------- */
 
-/* The same collection as prose, under the room. It is the accessible path
-   through the wall, and it reads as a gallery checklist rather than an
-   apology for one. */
+/* The same collection as a numbered checklist, in the same walking order as
+   Prev / Next — so "7 of 19" up there is number 7 down here. */
 .gwr__index {
   list-style: none;
+  counter-reset: gwr-index;
   margin: var(--space-6) 0 0;
-  padding: 0;
+  padding: var(--space-4) 0 0;
   display: grid;
   gap: var(--space-1) var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   border-top: 1px solid var(--color-border);
-  padding-top: var(--space-4);
 }
 .gwr__index-item {
+  counter-increment: gwr-index;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0 var(--space-2);
   font-size: var(--text-sm);
 }
+.gwr__index-item::before {
+  content: counter(gwr-index);
+  min-width: 1.6em;
+  color: var(--color-text-soft);
+  font-variant-numeric: tabular-nums;
+}
 .gwr__index-link {
-  padding: 2px 0;
+  padding: 3px 6px;
+  margin-left: -6px;
   border: 0;
+  border-radius: var(--radius-sm);
   background: none;
   font: inherit;
   font-weight: 600;
   color: var(--color-text);
   text-align: left;
   cursor: pointer;
-  border-bottom: 1px solid transparent;
+  box-shadow: inset 0 -1px 0 transparent;
 }
-.gwr__index-link:hover,
-.gwr__index-link.is-open { border-bottom-color: var(--color-accent); }
+.gwr__index-link:hover { box-shadow: inset 0 -2px 0 var(--color-accent); }
+.gwr__index-link.is-open { background: var(--color-accent); color: var(--color-on-accent); }
+.gwr__index-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
 .gwr__index-artist { color: var(--color-text-soft); }
 .gwr__index-artist::before { content: '— '; }
 
-/* ---- the band, at its extremes (kept last so they win) ------------------- */
-
-/* A phone gets the wall edge to edge — every pixel goes to the art. */
-@media (max-width: 859px) {
-  .gwr__band { padding-block: 0 var(--space-4); }
-  .gwr__body { width: 100%; }
-  .gwr__stage { border-radius: 0; box-shadow: none; }
-  .gwr-card { margin-inline: var(--space-4); }
-}
-/* A wide window: the card hangs on the wall BESIDE the room, not over the
-   art (the component switches to this once there's room — see useSideRoom),
-   and the chosen piece takes the middle of the stage. */
-.gwr--side .gwr-card {
-  top: 0;
-  bottom: auto;
-  right: auto;
-  left: calc(100% + var(--space-5));
-  width: min(340px, calc((100vw - 100%) / 2 - var(--space-6)));
-  max-height: 100%;
-}
-
 /* ---- reduced motion ------------------------------------------------------ */
 
-/* The global rule in tokens.css already flattens transitions; these are the
-   two effects that exist only to move, so they stop existing. */
+/* Every move happens instantly: the room cuts to the piece. */
 @media (prefers-reduced-motion: reduce) {
-  .gwr__art { transition: none; }
+  .gwr__art,
+  .gwr__spotlight,
+  .gwr-map__view { transition: none; }
+  .gwr__spotlight { animation: none; }
   .gwr__spot::before { animation: none; }
 }

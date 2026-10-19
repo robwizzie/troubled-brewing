@@ -122,14 +122,20 @@ Rows merge **by `id`, not by position**: matching by index meant that adding or 
 
 ## Admin surfaces (`/admin`)
 
-**The front door is the on-page editor** (`/admin` → `/admin/editor/:slug`, `src/admin/editor/`): the real site renders in an iframe canvas (`?canvas=1`, `src/canvas/CanvasApp.jsx`); hovering outlines and names each section; clicking opens a docked panel whose fields update the page live and autosave as a private draft; one **Publish** button pushes the page's drafts live. With nothing selected the panel shows the page outline (reorder ▲▼, hide 👁, delete 🗑, add section) + SEO fields. The home hero's panel includes the **Homepage look** concept switcher. Collection-backed sections embed their manager behind a "Manage —" button.
+**The front door is a task launcher** (`/admin`, `src/admin/AdminHome.jsx`): a big "📷 Update today's chalkboard" card first (with the board's current status), a dismissible three-step "First time here?" tip (`localStorage` `tb-admin-tip-dismissed-v1`, wrapped in try/catch), a **"What do you want to change?"** search box, big cards for the common jobs in plain words, **Waiting to publish** (pages whose `sections.draft_data` holds a previewed-but-unpublished draft) and **Recently published** (this device only — `localStorage` `tb-admin-recent-v1`, written by `PublishScope` on every successful publish).
 
-The sidebar layout survives as a slim **Settings** area for everything that isn't page content:
+`src/admin/lib/nav.js` is the single map of the admin: `SCREENS` (sidebar placement, icons, names — also the breadcrumb on every screen), `TASKS` / `MORE_TASKS` (home cards + search keywords; `searchTasks()` does word/prefix matching with simple plural stemming), `PAGE_NAMES`, and the recent-publish log. Add a screen there and it appears in the sidebar, search and breadcrumbs with the same name. The sidebar shows Home, Today's chalkboard, Edit your pages, then *Every day* and *Lists on the site*; rarer screens fold under **More** (opened automatically on those screens). On a phone the sidebar is a slide-in menu behind **☰ Menu** with 52px rows; it closes on navigation or Escape. `/admin/settings` redirects to `/admin`.
+
+**The on-page editor** (`/admin/editor/:slug`, `src/admin/editor/`): the real site renders in an iframe canvas (`?canvas=1`, `src/canvas/CanvasApp.jsx`); hovering outlines and names each section; clicking opens a docked panel whose fields update the page live; nothing is written until **Publish** (Preview writes a private `draft_data` copy). With nothing selected the panel shows the page outline (reorder ▲▼, hide 👁, delete 🗑, add section) + SEO fields. Collection-backed sections embed their manager behind a "Manage —" button. "← Admin home" returns to the launcher.
+
+**Today's chalkboard** (`/admin/chalkboard`, `ChalkboardManager.jsx`) is three taps: one giant **Take a photo of the board** (`capture="environment"`), an instant preview rendered with the homepage's own `.pch__board--photo` markup (framed, tilted, "Updated today"), and one **Put it on the website** button that does the upload + the single `content_blocks.chalkboard_photo` upsert (guarded against double taps). Caption and "take it down after" (default 3 days) are folded away; "keep it up" / "take it down" are staged the same way. The status line reads like "On the website now — taken this morning at 7:42, comes down Thursday" (`lib/chalkStatus.js`, shop clock). Picked files are checked first (`lib/imageFile.js`): not an image, over 15 MB, or a HEIC this browser can't decode (browser-image-compression decodes via the browser, so HEIC works in Safari only) each get a plain-words message; `uploadImage()` no longer uploads an undecodable original. Upload/save errors are mapped to "No connection…", "You've been signed out…" (with a sign-in link) etc.
+
+Technical fields (Google Place ID, pasted image links) sit under **Advanced** disclosures.
 
 | Surface | Manages |
 |---|---|
 | **Hours Editor** | `hours` weekly grid + `hours_overrides` holidays |
-| **Today's chalkboard** (`/admin/chalkboard`) | `content_blocks.chalkboard_photo` — snap/upload the real chalkboard, caption, publish / remove (see above) |
+| **Today's chalkboard** (`/admin/chalkboard`) | `content_blocks.chalkboard_photo` — photo → preview → Put it on the website (see above) |
 | **Quick Blocks** | `content_blocks`: featured drink, staff picks, announcement banner, social links |
 | **Google Profile Settings** | Place ID + GBP review URL + "refresh now" |
 | **Reviews** (`/admin/reviews`) | every cached Google review: the star floor, hide/feature per review, attach a review photo, promote one to a hand-picked favorite. Writes `content_blocks.review_settings`; also embeddable in the editor panel from the homepage reviews strip |
@@ -141,7 +147,7 @@ The sidebar layout survives as a slim **Settings** area for everything that isn'
 ## Content governance (§5.7)
 
 - **Draft/Publish:** governed records carry `status` + `draft_data`. Public reads published `data`; admin preview (`?preview=1`) reads `draft_data`. For `sections`, `draft_data` is a whole-object REPLACEMENT of `data` (resolution rule: `draft_data ?? data`); for collection tables it's a partial-changes merge.
-- **Autosave:** the on-page editor debounces edits (~700 ms) into `draft_data` via `saveDataDraftQuiet` — no revision churn (see below), no localStorage.
+- **Explicit publishing:** nothing is written on change anywhere in the admin; every screen's Publish (the chalkboard's "Put it on the website") is the only write. See `src/admin/lib/publishing.jsx`.
 - **Revisions:** the on-page editor snapshots once per section per editing session + once on publish (`snapshotRecord`); explicit saves elsewhere snapshot per save. Per-record History with one-click Restore; retention capped ~20/record.
 - **Guardrails:** confirm modals on delete/restore, required-field validation.
 

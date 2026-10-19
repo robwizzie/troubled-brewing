@@ -1,11 +1,13 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './lib/auth.jsx';
 import { ToastProvider } from './components/ui.jsx';
+import { UnsavedProvider, EditScreen } from './lib/publishing.jsx';
+import { publicUrl } from '../lib/config.js';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import AdminLayout from './AdminLayout.jsx';
 import EditorApp from './editor/EditorApp.jsx';
 import Login from './Login.jsx';
-import SettingsHome from './SettingsHome.jsx';
+import AdminHome from './AdminHome.jsx';
 import MenuManager from './managers/MenuManager.jsx';
 import EventsManager from './managers/EventsManager.jsx';
 import TestimonialsManager from './managers/TestimonialsManager.jsx';
@@ -23,44 +25,56 @@ import MediaLibrary from './managers/MediaLibrary.jsx';
 import HelpCenter from './HelpCenter.jsx';
 import './admin.css';
 
-/* The on-page editor is the front door (/admin → editor). The sidebar layout
-   survives as a slim settings area for everything that isn't page content. */
+/* /admin is a task launcher ("Update the chalkboard", "Change hours"…); the
+   on-page editor (/admin/editor) is full-bleed, and the sidebar layout covers
+   everything else. Every screen's name comes from lib/nav.js.
+
+   Explicit publishing everywhere: every editing screen is an <EditScreen>
+   (or, for the editor and the chalkboard, its own PublishScope) with the same
+   sticky action bar, and <UnsavedProvider> warns before unpublished changes
+   are lost — closing the tab, a sidebar link, switching pages. */
+const screen = (el, slug, viewLabel) => (
+  <EditScreen viewHref={slug !== undefined ? publicUrl(slug) : undefined} viewLabel={viewLabel}>{el}</EditScreen>
+);
+
 export default function AdminApp() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <Routes>
-          <Route path="login" element={<Login />} />
-          <Route index element={<Navigate to="/admin/editor" replace />} />
-          {/* On-page editor — full-bleed, outside the sidebar layout */}
-          <Route path="editor" element={<ProtectedRoute><EditorApp /></ProtectedRoute>} />
-          <Route path="editor/:slug" element={<ProtectedRoute><EditorApp /></ProtectedRoute>} />
-          <Route
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="settings" element={<SettingsHome />} />
-            <Route path="menu" element={<MenuManager />} />
-            <Route path="events" element={<EventsManager />} />
-            <Route path="testimonials" element={<TestimonialsManager />} />
-            <Route path="reviews" element={<ReviewsManager />} />
-            <Route path="gallery" element={<GalleryManager />} />
-            <Route path="troublemakers" element={<TroublemakersManager />} />
-            <Route path="neighborhood" element={<LocalBusinessManager />} />
-            <Route path="timeline" element={<TimelineManager />} />
-            <Route path="hours" element={<HoursEditor />} />
-            <Route path="quick-blocks" element={<QuickBlocks />} />
-            <Route path="chalkboard" element={<ChalkboardManager />} />
-            <Route path="google" element={<GoogleProfileSettings />} />
-            <Route path="inbox" element={<Inbox />} />
-            <Route path="media" element={<MediaLibrary />} />
-            <Route path="help" element={<HelpCenter />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/admin" replace />} />
-        </Routes>
+        <UnsavedProvider>
+          <Routes>
+            <Route path="login" element={<Login />} />
+            {/* On-page editor — full-bleed, outside the sidebar layout */}
+            <Route path="editor" element={<ProtectedRoute><EditorApp /></ProtectedRoute>} />
+            <Route path="editor/:slug" element={<ProtectedRoute><EditorApp /></ProtectedRoute>} />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<AdminHome />} />
+              <Route path="settings" element={<Navigate to="/admin" replace />} />
+              <Route path="menu" element={screen(<MenuManager />, 'menu', 'View the live Menu page ↗')} />
+              <Route path="events" element={screen(<EventsManager />, 'events', 'View the live Events page ↗')} />
+              <Route path="testimonials" element={screen(<TestimonialsManager />, 'reviews', 'View the live Reviews page ↗')} />
+              <Route path="reviews" element={screen(<ReviewsManager />, 'reviews', 'View the live Reviews page ↗')} />
+              <Route path="gallery" element={screen(<GalleryManager />, 'gallery-wall', 'View the live Gallery Wall ↗')} />
+              <Route path="troublemakers" element={screen(<TroublemakersManager />, 'troublemakers', 'View the live Troublemakers page ↗')} />
+              <Route path="neighborhood" element={screen(<LocalBusinessManager />, 'neighborhood', 'View the live Local Love page ↗')} />
+              <Route path="timeline" element={screen(<TimelineManager />, 'timeline', 'View the live Timeline ↗')} />
+              <Route path="hours" element={screen(<HoursEditor />, 'location', 'View the live Hours page ↗')} />
+              <Route path="quick-blocks" element={screen(<QuickBlocks />, 'home', 'View the live site ↗')} />
+              <Route path="chalkboard" element={<ChalkboardManager />} />
+              <Route path="google" element={screen(<GoogleProfileSettings />, 'reviews', 'View the live Reviews page ↗')} />
+              <Route path="inbox" element={<Inbox />} />
+              <Route path="media" element={<MediaLibrary />} />
+              <Route path="help" element={<HelpCenter />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/admin" replace />} />
+          </Routes>
+        </UnsavedProvider>
       </ToastProvider>
     </AuthProvider>
   );

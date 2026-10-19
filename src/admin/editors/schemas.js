@@ -128,11 +128,11 @@ export const SECTION_EDITOR_SCHEMAS = {
   featured_drink: {
     fields: [{ name: 'heading', label: 'Heading', type: 'text', hint: 'The little line above the drink name.' }],
     /* The drink itself lives in content_blocks.featured_drink — the panel
-       renders these fields with an explicit Save (block saves go live at once). */
+       renders these fields; they publish with the rest of the page. */
     block: {
       key: 'featured_drink',
       title: 'Featured drink',
-      note: 'Saving the featured drink updates the live site right away.',
+      note: 'The featured drink goes live with the rest of the page when you press Publish.',
       fields: [
         { name: 'item', label: 'Menu item to feature', type: 'text', hint: 'The exact name as it appears on the menu, e.g. Iced Matcha Latte. Its name, price and photo come live from the menu; if it’s ever switched off, another available drink is featured instead.' },
         { name: 'description', label: 'Description', type: 'textarea', rows: 2, hint: 'Blank uses the menu’s description.' },
