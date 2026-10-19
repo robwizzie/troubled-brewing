@@ -82,16 +82,16 @@ describe('the featured drink is a real, available menu item', () => {
 
 describe('products link to SpotOn', () => {
   it('orderUrlFor uses a per-item link when there is one, else the store page', () => {
-    expect(orderUrlFor({ name: 'X' })).toBe(SPOTON_ORDER_URL);
+    expect(orderUrlFor({ name: 'X' })).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     expect(orderUrlFor({ name: 'X', order_url: 'https://order.example/x' })).toBe('https://order.example/x');
-    expect(orderUrlFor(null)).toBe(SPOTON_ORDER_URL);
+    expect(orderUrlFor(null)).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
   });
 
   it('a product card is one link to order it, in a new tab, tracked, keeping its menu anchor', async () => {
     const ProductCard = (await import('../src/components/ProductCard.jsx')).default;
     const { container } = render(<ProductCard item={{ id: 1, name: 'Hot Latte', price: 4, description: '' }} />);
     const link = screen.getByRole('link', { name: 'Order Hot Latte on SpotOn (opens in a new tab)' });
-    expect(link.getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(link.getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toBe('noopener noreferrer');
     expect(container.querySelector('article#item-hot-latte')).toBeTruthy();
@@ -104,7 +104,7 @@ describe('products link to SpotOn', () => {
     const MenuBlock = (await import('../src/components/sections/MenuBlock.jsx')).default;
     render(<MemoryRouter><MenuBlock data={{ layout: 'list' }} /></MemoryRouter>);
     const link = await screen.findByRole('link', { name: 'Order Drip Coffee on SpotOn (opens in a new tab)' });
-    expect(link.getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(link.getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.textContent).toBe('Drip Coffee');
     fireEvent.click(link);

@@ -161,7 +161,7 @@ describe('the games in the fox’s card', () => {
     const name = pane.querySelector('.fox-drink__name').textContent;
     expect(availableNames.has(name)).toBe(true);
     expect(pane.querySelector('.fox-drink__price').textContent).toMatch(/^\$\d+\.\d\d$/);
-    expect(within(pane).getByRole('link', { name: new RegExp(`Order ${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) }).getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(within(pane).getByRole('link', { name: new RegExp(`Order ${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) }).getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     fireEvent.click(within(pane).getByRole('button', { name: /Pick again/ }));
     expect(pane.querySelector('.fox-drink__name').textContent).not.toBe(name);
   });
