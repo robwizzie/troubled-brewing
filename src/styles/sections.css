@@ -472,9 +472,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.neighbor:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(95, 70, 35, 0.16); }
 .neighbor__head { display: flex; align-items: center; gap: var(--space-3); }
 .neighbor__logo { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; border-radius: var(--radius-sm); background: var(--color-paper); }
 /* a drawn monogram beats an empty logo box — and beats using a logo nobody
