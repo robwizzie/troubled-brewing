@@ -21,6 +21,17 @@ import { CONCEPT_TO_TYPE, DEFAULT_CONCEPT, HERO_TYPES } from '../lib/concepts.js
    skeleton. Any owner edits from Supabase reconcile in once the fetch resolves. */
 const SEED_HERO = (seed.SECTIONS.home || []).find((s) => HERO_TYPES.has(s.type)) || null;
 
+const CONCEPT_CACHE_KEY = 'tb_home_concept';
+function readCachedConcept() {
+  try {
+    const v = window.localStorage.getItem(CONCEPT_CACHE_KEY);
+    return v && CONCEPT_TO_TYPE[v] ? v : null;
+  } catch { return null; }
+}
+function writeCachedConcept(v) {
+  try { window.localStorage.setItem(CONCEPT_CACHE_KEY, v); } catch { /* private mode */ }
+}
+
 export default function Home() {
   const [params] = useSearchParams();
   // ?preview=1 — admin draft preview, same contract as SitePage.
@@ -33,7 +44,10 @@ export default function Home() {
   // to see a concept without changing the saved choice (admin → Quick Blocks).
   const previewConcept = params.get('concept');
   const isPreview = !!CONCEPT_TO_TYPE[previewConcept];
-  const [concept, setConcept] = useState(isPreview ? previewConcept : DEFAULT_CONCEPT);
+  // Don't draw a hero until we know which one is saved — otherwise the default
+  // paints first and visibly swaps when the stored choice lands. The last
+  // choice seen is remembered so repeat visits paint the right hero at once.
+  const [concept, setConcept] = useState(() => (isPreview ? previewConcept : readCachedConcept()));
   // the switcher bar re-points ?concept= in place, so follow the URL
   useEffect(() => { if (isPreview) setConcept(previewConcept); }, [isPreview, previewConcept]);
 
@@ -45,10 +59,16 @@ export default function Home() {
         if (!alive) return;
         setPage(p);
         setSections(s);
-        if (!isPreview && c?.concept && CONCEPT_TO_TYPE[c.concept]) setConcept(c.concept);
+        if (!isPreview) {
+          const chosen = c?.concept && CONCEPT_TO_TYPE[c.concept] ? c.concept : DEFAULT_CONCEPT;
+          setConcept(chosen);
+          writeCachedConcept(chosen);
+        }
       }
     );
-    return () => { alive = false; };
+    // never leave the hero blank if the network stalls
+    const fallback = setTimeout(() => { if (alive) setConcept((cur) => cur || DEFAULT_CONCEPT); }, 2500);
+    return () => { alive = false; clearTimeout(fallback); };
   }, [isPreview, preview, canvas]);
 
   const effSections = canvas && canvas.slug === 'home' ? canvas.sections : sections;
@@ -73,8 +93,10 @@ export default function Home() {
           Preview mode — showing unpublished drafts. This banner isn't visible to the public.
         </div>
       )}
-      {conceptType && (
+      {conceptType ? (
         <SectionRenderer section={{ id: 'home-hero', data: {}, ...heroSection, type: conceptType }} />
+      ) : (
+        <div className="home-hero-pending" aria-hidden="true" />
       )}
       {(() => {
         // The scrolling marquee is owner-editable through the hero's data

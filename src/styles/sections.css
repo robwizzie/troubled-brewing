@@ -1760,3 +1760,6 @@
 }
 /* a card the shelf just sent you to glows for a moment */
 .product[data-spotlit] { box-shadow: 0 0 0 3px var(--color-yellow), 0 14px 34px rgba(95, 70, 35, 0.2); transition: box-shadow 400ms var(--ease); }
+
+/* holds the hero's space while the saved homepage look loads (no flash) */
+.home-hero-pending { min-height: min(78vh, 720px); background: var(--color-ink); }
