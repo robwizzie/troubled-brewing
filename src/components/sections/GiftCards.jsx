@@ -1,5 +1,5 @@
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
-import { SPOTON_GIFT_CARD_URL, BRAND, asset } from '../../lib/config.js';
+import { GIFT_CARD_URL, BRAND, asset } from '../../lib/config.js';
 import { SITE } from '../../lib/seed.js';
 import { track } from '../../lib/analytics.js';
 
@@ -12,12 +12,11 @@ import { track } from '../../lib/analytics.js';
    different product.
 
    The purchase link: the section's own `button_url` (http/https only) wins;
-   otherwise SPOTON_GIFT_CARD_URL from config.js (env-overridable, defaulting
-   to the shop's SpotOn order page, which carries SpotOn's "Purchase gift
-   cards" link). It always opens in a new tab.
+   otherwise GIFT_CARD_URL from config.js (the shop's SecureTree e-gift
+   card store, env-overridable). It always opens in a new tab.
 
-   No prices, amounts, bonuses or expiry rules on purpose: SpotOn owns those,
-   and the page shouldn't promise anything the checkout doesn't. */
+   No prices, amounts, bonuses or expiry rules on purpose: the gift card store owns
+   those, and the page shouldn't promise anything the checkout doesn't. */
 
 const OCCASION_SLOTS = [1, 2, 3, 4];
 const OCCASION_ART = ['cake', 'thanks', 'apple', 'fox', 'cup', 'heart'];
@@ -86,7 +85,7 @@ function DrawnCard() {
 
 function giftCardUrl(override) {
   const u = String(override || '').trim();
-  return /^https?:\/\//i.test(u) ? u : SPOTON_GIFT_CARD_URL;
+  return /^https?:\/\//i.test(u) ? u : GIFT_CARD_URL;
 }
 
 export default function GiftCards({ data = {} }) {
