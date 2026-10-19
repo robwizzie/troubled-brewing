@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useState } from 'react';
-import { LuCircleAlert, LuCircleCheck, LuCircleDot, LuFilePen, LuInfo, LuLoaderCircle, LuX } from 'react-icons/lu';
+import { LuCircleAlert, LuCircleCheck, LuCircleDot, LuFilePen, LuInfo, LuLoaderCircle, LuLock, LuX } from 'react-icons/lu';
 import { Icon } from './Icon.jsx';
 
 /* ---- Toasts --------------------------------------------------------------- */
@@ -62,12 +62,14 @@ export function Hint({ children }) {
 /* ---- Status chip: where a screen / page stands, in the same words everywhere.
    published   — what's on the site is what you see
    unpublished — you changed something and haven't pressed Publish
-   draft       — a previewed draft is saved privately, not on the site yet */
+   draft       — a previewed draft is saved privately, not on the site yet
+   private     — a read-only screen nobody else sees (Site stats) */
 const CHIP = {
   published: { icon: LuCircleCheck, label: 'Published' },
   unpublished: { icon: LuCircleDot, label: 'Unpublished changes' },
   draft: { icon: LuFilePen, label: 'Saved draft' },
   live: { icon: LuCircleCheck, label: 'Live' },
+  private: { icon: LuLock, label: 'Only you can see this' },
 };
 export function StatusChip({ state = 'published', children }) {
   const c = CHIP[state] || CHIP.published;

@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { LuEye, LuEyeOff, LuInfinity, LuSearch } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 import { bump } from '../../lib/dataVersion.js';
 import { publicUrl } from '../../lib/config.js';
-import { LuCamera, LuCircleCheck, LuExternalLink, LuPartyPopper, LuPencilLine, LuRefreshCw } from 'react-icons/lu';
+import { LuCamera, LuCircleCheck, LuExternalLink, LuEye, LuEyeOff, LuInfinity, LuPartyPopper, LuPencilLine, LuRefreshCw, LuSearch } from 'react-icons/lu';
 import { Spinner } from '../components/ui.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { PublishScope, ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
@@ -459,7 +458,7 @@ function ChalkboardScreen() {
                       checked={duration === d}
                       onChange={() => { setDuration(d); setDone(null); }}
                     />
-                    {d === KEEP && <LuInfinity aria-hidden="true" />}
+                    {d === KEEP && <Icon icon={LuInfinity} size={16} />}
                     {durationLabel(d)}
                   </label>
                 ))}
@@ -540,7 +539,7 @@ function ChalkboardScreen() {
                         onClick={() => toggleHidden(b)}
                         aria-label={`${b.hidden ? 'Show' : 'Hide'} the board from ${boardDate(b.published_at) || 'an unknown date'}${b.hidden ? ' on the website again' : ' from the website'}`}
                       >
-                        {b.hidden ? <LuEye aria-hidden="true" /> : <LuEyeOff aria-hidden="true" />}
+                        {b.hidden ? <Icon icon={LuEye} size={16} />: <Icon icon={LuEyeOff} size={16} />}
                         {b.hidden ? 'Show it' : 'Hide'}
                       </button>
                     </li>
@@ -556,7 +555,7 @@ function ChalkboardScreen() {
 
             <div className="chalkhist__import">
               <button type="button" className="btn btn--ghost btn--sm" onClick={findOlderPhotos} disabled={importState === 'looking' || busy}>
-                <LuSearch aria-hidden="true" /> {importState === 'looking' ? 'Looking…' : 'Find older board photos'}
+                <Icon icon={LuSearch} size={16} />{importState === 'looking' ? 'Looking…' : 'Find older board photos'}
               </button>
               {importState === 'none' && <span className="field__hint">No other board photos were found. Photos replaced before this list existed were deleted at the time.</span>}
               {importState === 'error' && <span className="field__hint">Couldn’t look just now. Check the connection and try again.</span>}

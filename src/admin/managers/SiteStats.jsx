@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { LuCalendarPlus, LuGift, LuInfo, LuMessageSquare, LuMousePointerClick, LuEye, LuSparkles, LuVote } from 'react-icons/lu';
-import { Spinner } from '../components/ui.jsx';
+import { Spinner, StatusChip } from '../components/ui.jsx';
+import { Icon } from '../components/Icon.jsx';
 import { ScreenHead } from '../lib/publishing.jsx';
 import { RANGES, loadStats, summarize } from '../lib/stats.js';
 import '../insights.css';
@@ -95,10 +96,10 @@ function BarList({ items, label, empty }) {
   );
 }
 
-function Tile({ icon: Icon, label, value, note }) {
+function Tile({ icon, label, value, note }) {
   return (
     <div className="stats-tile">
-      <span className="stats-tile__label"><Icon aria-hidden="true" /> {label}</span>
+      <span className="stats-tile__label"><Icon icon={icon} size={16} /> {label}</span>
       <span className="stats-tile__num">{fmt(value)}</span>
       {note && <span className="stats-tile__note">{note}</span>}
     </div>
@@ -120,6 +121,7 @@ export default function SiteStats({ sample, today }) {
   const head = (
     <ScreenHead
       title="Site stats"
+      chip={<StatusChip state="private" />}
       help="How people use the website, counted the private way: just daily totals, no cookies and nothing about who anyone is."
     >
       <div className="stats-range" role="group" aria-label="Date range">
@@ -139,7 +141,7 @@ export default function SiteStats({ sample, today }) {
       <div className="stats">
         {head}
         <section className="admin__panel stats-setup">
-          <h2><LuInfo aria-hidden="true" /> Not switched on yet</h2>
+          <h2><Icon icon={LuInfo} size={18} />Not switched on yet</h2>
           <p>
             Site stats need one small database update before they can start counting. Your developer has it ready
             (<code>supabase/migrations/2026-10-19-polls-and-stats.sql</code>); once it’s run, numbers start appearing here
@@ -154,7 +156,7 @@ export default function SiteStats({ sample, today }) {
       <div className="stats">
         {head}
         <section className="admin__panel stats-setup">
-          <h2><LuInfo aria-hidden="true" /> Couldn’t load the numbers</h2>
+          <h2><Icon icon={LuInfo} size={18} />Couldn’t load the numbers</h2>
           <p>Check the Wi-Fi and try again in a minute. Nothing on the site is affected.</p>
           <button type="button" className="btn btn--ghost btn--sm" onClick={() => { setState(null); loadStats(days, today).then(setState); }}>Try again</button>
         </section>
@@ -210,15 +212,15 @@ export default function SiteStats({ sample, today }) {
         <section className="admin__panel">
           <h2>Gift cards & events</h2>
           <ul className="stats-list">
-            <li><LuGift aria-hidden="true" /> <span>Gift card clicks</span> <strong>{fmt(s.extras.giftCards)}</strong></li>
-            <li><LuCalendarPlus aria-hidden="true" /> <span>Events added to a calendar</span> <strong>{fmt(s.extras.calendarAdds)}</strong></li>
-            <li><LuMessageSquare aria-hidden="true" /> <span>Events texted to a friend</span> <strong>{fmt(s.extras.textFriend)}</strong></li>
+            <li><Icon icon={LuGift} size={16} /><span>Gift card clicks</span> <strong>{fmt(s.extras.giftCards)}</strong></li>
+            <li><Icon icon={LuCalendarPlus} size={16} /><span>Events added to a calendar</span> <strong>{fmt(s.extras.calendarAdds)}</strong></li>
+            <li><Icon icon={LuMessageSquare} size={16} /><span>Events texted to a friend</span> <strong>{fmt(s.extras.textFriend)}</strong></li>
           </ul>
         </section>
       </div>
 
       <p className="stats-foot">
-        <LuInfo aria-hidden="true" /> These are simple daily totals the site keeps itself. No cookies, no IP addresses
+        <Icon icon={LuInfo} size={16} />These are simple daily totals the site keeps itself. No cookies, no IP addresses
         and nothing that identifies anyone, so they count everyone, not just people who accept the cookie banner.
         Your Google Analytics (if it’s set up) works as before.
       </p>

@@ -8,6 +8,7 @@ import {
 } from '../../lib/polls.js';
 import PollIcon from '../../components/PollIcon.jsx';
 import { Spinner } from '../components/ui.jsx';
+import { Icon } from '../components/Icon.jsx';
 import { ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
 import { same } from '../lib/publishHelpers.js';
 import '../insights.css';
@@ -215,7 +216,7 @@ export default function PollsManager() {
       <div className="polls-admin">
         {head}
         <section className="admin__panel stats-setup">
-          <h2><LuInfo aria-hidden="true" /> Not switched on yet</h2>
+          <h2><Icon icon={LuInfo} size={18} />Not switched on yet</h2>
           <p>
             Polls need one small database update first. Your developer has it ready
             (<code>supabase/migrations/2026-10-19-polls-and-stats.sql</code>). Until then the fox simply doesn’t ask
@@ -292,26 +293,26 @@ export default function PollsManager() {
         </div>
         <div className="admin-list__actions pollrow__actions">
           <button type="button" className="btn btn--ghost btn--sm" aria-expanded={open} onClick={() => setEditing(open ? null : p.id)}>
-            <LuPencil aria-hidden="true" /> {open ? 'Done' : 'Edit'}<span className="sr-only"> {p.question}</span>
+            <Icon icon={LuPencil} size={16} />{open ? 'Done' : 'Edit'}<span className="sr-only"> {p.question}</span>
           </button>
           {phase === 'running' && isSaved && (
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => update(p.id, { status: 'ended' })}>
-              <LuCircleStop aria-hidden="true" /> End now<span className="sr-only"> {p.question}</span>
+              <Icon icon={LuCircleStop} size={16} />End now<span className="sr-only"> {p.question}</span>
             </button>
           )}
           {(phase === 'ended' || phase === 'archived') && (
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => update(p.id, { status: 'draft' })}>
-              <LuArchiveRestore aria-hidden="true" /> Reuse<span className="sr-only"> {p.question}</span>
+              <Icon icon={LuArchiveRestore} size={16} />Reuse<span className="sr-only"> {p.question}</span>
             </button>
           )}
           {isSaved && phase !== 'archived' && (
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => update(p.id, { status: 'archived' })}>
-              <LuArchive aria-hidden="true" /> Archive<span className="sr-only"> {p.question}</span>
+              <Icon icon={LuArchive} size={16} />Archive<span className="sr-only"> {p.question}</span>
             </button>
           )}
           {!isSaved && (
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => remove(p.id)}>
-              <LuTrash2 aria-hidden="true" /> Remove<span className="sr-only"> {p.question}</span>
+              <Icon icon={LuTrash2} size={16} />Remove<span className="sr-only"> {p.question}</span>
             </button>
           )}
         </div>
@@ -324,7 +325,7 @@ export default function PollsManager() {
       {head}
 
       <p className="admin__note polls-admin__now">
-        <LuVote aria-hidden="true" />{' '}
+        <Icon icon={LuVote} size={16} />{' '}
         {liveNow ? <>In the fox now: <strong>{liveNow.question}</strong></> : 'No poll in the fox right now.'}
         {dirty && (afterPublish?.id !== liveNow?.id) && (
           <> After you publish: {afterPublish ? <strong>{afterPublish.question || 'your new poll'}</strong> : 'no poll'}.</>
@@ -332,14 +333,14 @@ export default function PollsManager() {
       </p>
 
       <section className="admin__panel">
-        <h2><LuPlus aria-hidden="true" /> New poll</h2>
+        <h2><Icon icon={LuPlus} size={18} />New poll</h2>
         <PollFields value={form} idPrefix={`${formId}-new`} onChange={(v) => { setForm(v); setMsg(''); }} />
         <button type="button" className="btn btn--primary" onClick={add}>Add this poll</button>
         <p className="field__hint" role="status" aria-live="polite">{msg}</p>
 
         {ideas.length > 0 && (
           <details className="polls-admin__ideas">
-            <summary><LuLightbulb aria-hidden="true" /> Need ideas? Polls from your menu</summary>
+            <summary><Icon icon={LuLightbulb} size={16} />Need ideas? Polls from your menu</summary>
             <p className="panel-help">Suggestions only. Tapping one fills in the form above; nothing goes on the site unless you add it and press Publish.</p>
             <ul className="polls-admin__idealist">
               {ideas.map((s) => (
