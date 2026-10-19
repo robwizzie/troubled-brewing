@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CoffeeCup, Beans, Hare } from './Motifs.jsx';
-import { productImageSources, isCutout } from '../lib/productImage.js';
+import { productImageSources, isCutout, slugifyDrink } from '../lib/productImage.js';
 import { DIETARY_LABELS } from '../lib/menuService.js';
 
 /* ONE product card, shared by the homepage "Signature sips" teaser and the
@@ -96,6 +96,7 @@ export default function ProductCard({ item, index = 0, eager = false, plate = tr
   return (
     <article
       ref={ref}
+      id={item.name ? `item-${slugifyDrink(item.name)}` : undefined}
       className={`product${cutout ? ' product--cutout' : ''}${seen ? ' is-in' : ''}`}
       style={cutout ? { '--i': index % 8 } : undefined}
     >

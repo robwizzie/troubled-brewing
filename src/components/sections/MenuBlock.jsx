@@ -75,6 +75,29 @@ export default function MenuBlock({ data = {} }) {
     return () => { cancelAnimationFrame(raf1); if (raf2) cancelAnimationFrame(raf2); };
   }, [location.key, location.hash, items, allowedCats]);
 
+  /* #item-<slug> (from the food shelf) → show everything, then bring that
+     item's card to the middle of the screen and give it a brief glow. */
+  useEffect(() => {
+    if (!location.hash.startsWith('#item-') || items === null) return undefined;
+    setActiveCat('all');
+    let raf2;
+    let timer;
+    let el = null;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        el = document.getElementById(location.hash.slice(1));
+        if (!el) return;
+        el.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        el.dataset.spotlit = '';
+        timer = setTimeout(() => delete el.dataset.spotlit, 2200);
+      });
+    });
+    return () => {
+      cancelAnimationFrame(raf1); if (raf2) cancelAnimationFrame(raf2); clearTimeout(timer);
+      if (el) delete el.dataset.spotlit;
+    };
+  }, [location.key, location.hash, items]);
+
   const dietaryOptions = useMemo(() => {
     const set = new Set();
     (items || []).forEach((i) => (i.dietary_flags || []).forEach((f) => set.add(f)));

@@ -16,6 +16,7 @@ import Newsletter from './Newsletter.jsx';
 import FeaturedDrink from './FeaturedDrink.jsx';
 import IntroDuo from './IntroDuo.jsx';
 import SignatureDrinks from './SignatureDrinks.jsx';
+import FoodShowcase from './FoodShowcase.jsx';
 import SocialProof from './SocialProof.jsx';
 import ReviewsHero from './ReviewsHero.jsx';
 import TestimonialsWall from './TestimonialsWall.jsx';
@@ -55,6 +56,7 @@ export const SECTION_RENDERERS = {
   featured_drink: FeaturedDrink,
   intro_duo: IntroDuo,
   signature_drinks: SignatureDrinks,
+  food_showcase: FoodShowcase,
   social_proof: SocialProof,
   reviews_hero: ReviewsHero,
   testimonials_wall: TestimonialsWall,
@@ -100,6 +102,7 @@ export const ADDABLE_SECTION_TYPES = [
   'featured_drink',
   'intro_duo',
   'signature_drinks',
+  'food_showcase',
   'social_proof',
   'testimonials_wall',
   'google_reviews_feed',
@@ -127,6 +130,7 @@ export const SECTION_LABELS = {
   featured_drink: 'Featured drink',
   intro_duo: 'Two-column intro',
   signature_drinks: 'Signature drinks teaser',
+  food_showcase: 'Food & drink shelf (photos)',
   social_proof: 'Social proof (rating + reviews)',
   reviews_hero: 'Reviews hero (rating)',
   testimonials_wall: 'Testimonials wall',

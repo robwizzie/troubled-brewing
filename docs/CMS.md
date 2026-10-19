@@ -85,6 +85,10 @@ Edited in **admin → Reviews** (`src/admin/managers/ReviewsManager.jsx`), reach
 
 `src/components/ProductCard.jsx` is the single product card, drawn by both the homepage `signature_drinks` teaser and `menu_block`'s card layout, so a drink looks the same wherever a visitor meets it. Photos resolve through `src/lib/productImage.js` — the item's `image_url`, then the drop-in file `public/images/drinks/<name-slug>.jpg`, then a drawn motif — and `src/lib/menuService.js` owns the selection helpers (`pickProducts`, `hasProductPhotos`) both sections share. Everything comes from the live `menu_items` rows, so the landing page and the Menu page can never disagree about a price, description or picture.
 
+**Cutout photos.** A menu photo whose file name contains `cutout` (a background-removed PNG/WebP — e.g. upload `iced-latte-cutout.png` in Menu Manager) is staged instead of cropped: shown whole on a warm lit backdrop with a contact shadow, rising in once and then gently bobbing (`isCutout` in `productImage.js`; styles under "CUTOUT products" in `sections.css`).
+
+**`food_showcase` — "Fresh off the counter" shelf** (`FoodShowcase.jsx`). A reusable section: the sage wall with one long walnut shelf, every cutout menu item standing on it with a hand-lettered price tag swinging beneath; category buttons filter it; tapping an item goes to `/menu#item-<slug>`, which scrolls that card into view and glows it (`MenuBlock`). Data: `heading`, `subheading`, `items` (names, optional), `categories` (optional), `hide_filters`, `hide_prices`, `include_photos` (let non-cutout photos in). It hides itself when no item has a photo. Placed first on Menu and under the hero on Home by `supabase/migrations/2026-10-18-food-showcase.sql` (or add it from the editor: "Food & drink shelf (photos)").
+
 ### The homepage wall
 
 `src/lib/wallPieces.js` holds the wall as data: one entry per destination, carrying both places it hangs.
