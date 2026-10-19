@@ -104,7 +104,7 @@ describe('Surprise me pours a drink', () => {
     const cup = pane.querySelector('.fox-pour__cup');
     expect(cup.classList.contains(`is-${look.vessel}`)).toBe(true);
     expect(cup.querySelector('.fox-pour__stream').getAttribute('fill')).toBe(look.fill);
-    expect(pane.querySelectorAll('.fox-pour__ice').length).toBe(look.ice ? 3 : 0);
+    expect(pane.querySelectorAll('.fox-pour__ice').length).toBe(look.ice ? 5 : 0);
     expect(within(pane).getByRole('button', { name: /Pick again/ }).disabled).toBe(true);
 
     act(() => { vi.advanceTimersByTime(POUR_MS - 360); });
