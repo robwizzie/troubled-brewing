@@ -1,7 +1,10 @@
 /* =============================================================================
    Local Love — the Station Ave strip (StationAveStrip.jsx)
 
-   A row of drawn storefronts along a sidewalk and road, scrolling sideways.
+   Two rows of drawn storefronts either side of a road, scrolling sideways as
+   one CSS grid: row 1 our side of the street (the even numbers), row 2 its
+   sidewalk, row 3 the road, row 4 the far (odd) side, row 5 its sidewalk.
+   Columns are shared, so a shop across the road sits under the door it faces.
    Everything inside the row is sized in em off .ave__row's font-size, so the
    whole street scales as one drawing (smaller on phones) without a second set
    of numbers. Colours per building come in as custom properties from the
@@ -46,9 +49,9 @@
   cursor: grab;
   /* a soft sage sky over the rooftops */
   background:
-    radial-gradient(ellipse 60% 40% at 18% 22%, rgba(255, 253, 247, 0.75), transparent 70%),
-    radial-gradient(ellipse 50% 30% at 72% 14%, rgba(255, 253, 247, 0.6), transparent 70%),
-    linear-gradient(180deg, var(--color-cream) 0%, #e3e8cf 26%, #e9ebd7 58%, var(--color-cream) 86%);
+    radial-gradient(ellipse 60% 40% at 18% 12%, rgba(255, 253, 247, 0.75), transparent 70%),
+    radial-gradient(ellipse 50% 30% at 72% 8%, rgba(255, 253, 247, 0.6), transparent 70%),
+    linear-gradient(180deg, var(--color-cream) 0%, #e3e8cf 18%, #e9ebd7 40%, var(--color-cream) 60%);
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent 100%);
 }
@@ -57,38 +60,71 @@
 .ave__scroller.fade-r { --fr: 64px; }
 .ave__scroller.is-dragging { cursor: grabbing; user-select: none; }
 .ave__scroller.is-dragging .shop { cursor: grabbing; }
-.ave__scroller img { -webkit-user-drag: none; user-select: none; }
+.ave__scroller img, .ave__scroller image { -webkit-user-drag: none; user-select: none; }
 
 /* phones: native momentum, landing storefront by storefront */
 @media (pointer: coarse) {
-  .ave__scroller { scroll-snap-type: x mandatory; cursor: auto; }
-  .ave__stop { scroll-snap-align: center; }
+  .ave__scroller { scroll-snap-type: x proximity; cursor: auto; scroll-padding-inline: 1rem; }
+  .ave__stop--main { scroll-snap-align: center; }
   .ave__sign { scroll-snap-align: start; }
-  .ave__scroller { scroll-padding-inline: 1rem; }
 }
 
 .ave__row {
-  --ground: 7.6em; /* sidewalk + curb + road under every building */
-  font-size: 16px;
+  --walk: 3.4em;   /* each sidewalk */
+  --road: 4.6em;
+  font-size: 13.5px;
   list-style: none; margin: 0;
-  display: flex; align-items: flex-end; gap: 0.9em;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 1), auto);
+  grid-template-rows: auto var(--walk) var(--road);
+  align-items: end;
+  column-gap: 0.9em;
   width: max-content; min-width: 100%;
-  padding: 2.4em max(1rem, (100% - var(--container)) / 2) var(--ground);
-  /* the ground: sidewalk slabs, curb, road with a brass centre line */
-  background:
-    repeating-linear-gradient(90deg, #e3b53f 0 2.4em, transparent 2.4em 5em) left 0 bottom 2.05em / 100% 0.22em no-repeat,
-    linear-gradient(180deg, #4a453e, #36322d) left 0 bottom 0 / 100% 4.25em no-repeat,
-    linear-gradient(180deg, #e4dac5 0 35%, #a99d86 100%) left 0 bottom 4.25em / 100% 0.45em no-repeat,
-    repeating-linear-gradient(90deg, transparent 0 3.9em, rgba(120, 100, 70, 0.28) 3.9em calc(3.9em + 1.5px)) left 0 bottom 4.7em / 100% 2.9em no-repeat,
-    linear-gradient(180deg, #efe7d5, #e0d4ba) left 0 bottom 4.7em / 100% 2.9em no-repeat;
+  padding: 2.6em max(1rem, (100% - var(--container)) / 2) 0;
+  overflow: clip;
 }
-.ave__row > li { flex-shrink: 0; }
+.ave__row.has-across { grid-template-rows: auto var(--walk) var(--road) auto calc(var(--walk) * 0.7); padding-bottom: 0.3em; }
+.ave__row > li { min-width: 0; }
+
+/* the ground strips run the full width of the street, under the row's side
+   padding too: they bleed out with negative margins and the row clips them */
+.ave__walk, .ave__road { grid-column: 1 / -1; align-self: stretch; margin-inline: -40em; }
+.ave__walk {
+  background:
+    linear-gradient(180deg, #e4dac5 0 30%, #a99d86 100%) left 0 bottom 0 / 100% 0.45em no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 3.9em, rgba(120, 100, 70, 0.28) 3.9em calc(3.9em + 1.5px)),
+    linear-gradient(180deg, #efe7d5, #e0d4ba);
+}
+.ave__walk--across {
+  background:
+    linear-gradient(180deg, #a99d86 0, #e4dac5 70%) left 0 top 0 / 100% 0.4em no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 3.9em, rgba(120, 100, 70, 0.24) 3.9em calc(3.9em + 1.5px)),
+    linear-gradient(180deg, #e9e0cb, #ddd1b7);
+}
+.ave__road {
+  position: relative;
+  display: grid; align-items: center; justify-items: start;
+  background:
+    repeating-linear-gradient(90deg, #e3b53f 0 2.4em, transparent 2.4em 5em) left 0 top 50% / 100% 0.22em no-repeat,
+    linear-gradient(180deg, #36322d, #4a453e 50%, #36322d);
+}
+.ave__road-label {
+  /* starts just inside the street (the road bleeds 40em left, at this
+     font-size that's ~65em) and then stays put while the street scrolls */
+  position: sticky; left: 4.5rem;
+  margin: -2.3em 0 0 67em;
+  font-family: var(--font-body); font-weight: 800; font-size: 0.62em; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(247, 241, 228, 0.55); white-space: nowrap;
+}
 
 /* ---- a stop: one storefront, plus its sandwich board on the sidewalk ----- */
 .ave__stop {
-  position: relative;
+  position: relative; z-index: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 }
+/* the far side of the road is further away: smaller, a touch hazier */
+.ave__stop--across { font-size: 0.6em; }
+.ave__stop--across .shop { filter: saturate(0.9); }
 .section--ave.is-in .ave__stop {
   animation: ave-rise 760ms var(--ease) both;
   animation-delay: calc(140ms + var(--i, 0) * 70ms);
@@ -106,11 +142,15 @@
   padding: 0; border: 0; background: none; color: inherit;
   font: inherit; font-size: 1em; text-align: center; cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 260ms var(--ease), filter 260ms var(--ease);
 }
 .shop:focus { outline: none; }
 .shop:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 5px; border-radius: 3px; }
 .shop--tall-0 { --upper: 4.3em; }
 .shop--tall-2 { --upper: 7.6em; }
+@media (hover: hover) {
+  .shop:hover { transform: translateY(-0.2em); }
+}
 
 /* wall textures shared by every wall surface of the building */
 .shop__roof, .shop__upper, .shop__ground { background-color: var(--wall); }
@@ -212,6 +252,23 @@
     radial-gradient(circle at 1.35em 0, var(--awn-alt) 0.45em, transparent calc(0.45em + 0.5px)) 0 0 / 1.8em 0.5em repeat-x;
   filter: drop-shadow(0 0.18em 0.12em rgba(0, 0, 0, 0.18));
 }
+/* a brown tiled pent awning (Anthony's) */
+.shop--awning-tile .shop__awning::before {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 0.42em, rgba(0, 0, 0, 0.22) 0.42em 0.5em),
+    repeating-linear-gradient(90deg, transparent 0 0.7em, rgba(0, 0, 0, 0.12) 0.7em 0.78em),
+    linear-gradient(180deg, #8a4a2c, #6b3820);
+  clip-path: polygon(3% 0, 97% 0, 100% 100%, 0 100%);
+}
+.shop--awning-tile .shop__awning::after { height: 0.25em; background: #4c2816; }
+/* no awning (Lula's): the sign sits straight on the siding */
+.shop--awning-none .shop__ground { padding-top: 1.1em; }
+
+/* Anthony's orange patio umbrellas, out on the sidewalk */
+.shop__umbrellas {
+  position: absolute; left: -0.4em; right: -0.4em; bottom: -2.6em; z-index: 3;
+  width: calc(100% + 0.8em); height: auto; pointer-events: none;
+}
 
 /* ground floor: shop window + door */
 .shop__ground {
@@ -268,7 +325,7 @@
 
 /* the chalk sandwich board out on the sidewalk */
 .ave__board {
-  position: absolute; top: calc(100% + 0.55em); left: 0.6em; z-index: 2;
+  position: absolute; top: calc(100% + 0.55em); left: 0.6em; z-index: 4;
   padding: 0.12em 0.55em 0.1em;
   background: #2f3a2c; color: #f6efdc;
   border: 0.18em solid #8a6a3a; border-radius: 0.15em;
@@ -276,24 +333,176 @@
   box-shadow: 0 0.3em 0.25em -0.15em rgba(0, 0, 0, 0.35);
   pointer-events: none;
 }
+.ave__stop--across .ave__board { top: calc(100% + 0.35em); }
+.ave__board--street { background: #f7f1e4; color: #2c2722; border-color: #545f33; }
 
-/* the selected storefront: its window lights up and its board turns brass */
+/* the selected storefront: it lifts and glows, its window lights up and its
+   board turns brass — easy to spot at a glance after stepping door to door */
+.ave__stop.is-selected { z-index: 5; }
+.ave__stop.is-selected .shop { transform: translateY(-0.35em); filter: drop-shadow(0 0 0.25em #f3c74f) drop-shadow(0 0 0.7em rgba(243, 199, 79, 0.85)); }
 .ave__stop.is-selected .ave__board { background: var(--color-yellow); color: var(--color-black); border-color: var(--color-black); }
 .ave__stop.is-selected .shop__window { box-shadow: 0 0 1.2em 0.25em rgba(255, 214, 120, 0.75); }
 .ave__stop.is-selected .shop__sign > span { box-shadow: inset 0 0 0 0.14em var(--color-yellow); }
 
-/* ---- our own door --------------------------------------------------------- */
-.shop--us { --roof: #a87c1c; --wall: #191512; --trim: #a87c1c; --sign: #191512; --ink: #e9c25a; --awn: #545f33; --awn-alt: #f7f1e4; width: 13.5em; }
-.shop--us .shop__upper > i { background: radial-gradient(ellipse at 50% 70%, #ffe7a8, #e3a64a); }
-.shop--us .shop__blade { background: #191512; border-color: #a87c1c; box-shadow: 0 0 0 0.12em #a87c1c, 0 0.2em 0.4em rgba(0, 0, 0, 0.3); }
-.shop--us .shop__blade img { width: 74%; height: 92%; object-position: 50% 15%; }
-.shop__window--us { background: radial-gradient(ellipse at 50% 35%, #4b3a26 0%, #1d1712 75%); }
-.shop__window--us img { object-fit: contain; padding: 0.35em 0.25em 0.15em; filter: none; }
-.shop__window--us::before { display: none; }
-.shop--us .shop__sign > span { font-size: 0.95em; letter-spacing: 0.03em; }
+/* ---- our own door: 514 Station Ave, drawn after the real thing ------------ */
+.ave__stop--us { z-index: 2; }
+.tb {
+  width: 19em;
+  --brick: #9c5034;
+  --green: #2f5f59;
+  --char: #3b3a3a;
+}
+.tb__brick {
+  position: relative; height: 13.2em; margin-inline: 0.2em;
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 1.1em;
+  padding: 1.1em 0 0;
+  background-color: var(--brick);
+  background-image:
+    repeating-linear-gradient(180deg, transparent 0 0.44em, rgba(255, 228, 200, 0.26) 0.44em calc(0.44em + 1.2px)),
+    repeating-linear-gradient(90deg, transparent 0 1.1em, rgba(255, 228, 200, 0.14) 1.1em calc(1.1em + 1.2px)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.06), transparent 20%, transparent 80%, rgba(0, 0, 0, 0.08));
+  border-top: 0.5em solid #6e3522;
+  box-shadow: inset 0 0.25em 0 #b86a4c;
+}
+.tb__floor { display: flex; justify-content: space-between; align-items: flex-end; padding-inline: 1.6em; }
+.tb__floor > i {
+  position: relative; width: 2.3em; height: 3.2em;
+  background:
+    linear-gradient(var(--green), var(--green)) 50% 50% / 100% 0.2em no-repeat,
+    linear-gradient(var(--green), var(--green)) 50% 0 / 0.16em 100% no-repeat,
+    linear-gradient(170deg, #d9e4e0 0%, #8fa6a6 35%, #4c6164 100%);
+  border: 0.26em solid var(--green);
+  box-shadow: 0 0.3em 0 -0.05em #d8c3a8; /* stone sill */
+}
+.tb__floor > i.tb__tall { height: 4.2em; width: 2.5em; }
+.tb__tall > b { /* the little iron balcony rail */
+  position: absolute; left: -0.35em; right: -0.35em; bottom: 0; height: 1.25em;
+  border: 0.14em solid #191512; border-bottom-width: 0.22em;
+  background: repeating-linear-gradient(90deg, transparent 0 0.35em, #191512 0.35em 0.48em);
+}
+/* the charcoal shingled pent roof over the shopfront, with the sign on it */
+.tb__pent { position: relative; height: 3.4em; margin-inline: -0.55em; z-index: 2; }
+.tb__pent::before { /* the slope */
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 0.62em, rgba(0, 0, 0, 0.42) 0.62em 0.7em),
+    repeating-linear-gradient(90deg, transparent 0 0.95em, rgba(0, 0, 0, 0.2) 0.95em 1.02em),
+    linear-gradient(180deg, #4d4b4a, #323030);
+  clip-path: polygon(2.2% 0, 97.8% 0, 100% 100%, 0 100%);
+}
+.tb__pent::after { /* the dark fascia board at its eave */
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 0.35em; background: #2a2018;
+}
+.tb__sign {
+  position: absolute; left: 50%; bottom: 0.55em; transform: translateX(-50%);
+  width: 10em; height: auto; z-index: 3;
+  filter: drop-shadow(0 0.12em 0.12em rgba(0, 0, 0, 0.45));
+}
+.tb__sign-sub { font-family: var(--font-body); font-weight: 700; font-size: 7.4px; letter-spacing: 0.16em; fill: #191512; }
+/* white soffit with little round downlights */
+.tb__soffit {
+  height: 0.7em; margin-inline: -0.2em;
+  display: flex; justify-content: space-around; align-items: center;
+  background: linear-gradient(180deg, #fbfaf6, #e4e1d8);
+  border-bottom: 1px solid #c9c4b8;
+}
+.tb__soffit > i { width: 0.42em; height: 0.24em; border-radius: 50%; background: #fff6cf; box-shadow: 0 0 0.4em 0.1em rgba(255, 226, 140, 0.9); }
+/* the shopfront: fluted pilasters, black-framed windows over board-and-batten */
+.tb__front {
+  height: 8.3em;
+  display: flex; align-items: stretch;
+  background: #f8f6f0;
+}
+.tb__pil {
+  position: relative; width: 0.55em; flex: none;
+  background: repeating-linear-gradient(90deg, #fbfaf6 0 0.14em, #dcd8ce 0.14em 0.19em);
+  border-inline: 1px solid #d3cec3;
+}
+.tb__pil--door { width: 1.15em; }
+.tb__win {
+  position: relative; flex: 1.45;
+  /* board-and-batten below the glass */
+  background:
+    repeating-linear-gradient(90deg, #f8f6f0 0 1.15em, #e2ddd2 1.15em 1.3em) left 0 bottom 0 / 100% 42% no-repeat,
+    #f8f6f0;
+}
+.tb__win--lights { flex: 1.2; }
+.tb__win > span { /* the glass, black frame */
+  position: absolute; left: 0.08em; right: 0.08em; top: 0.5em; height: 50%;
+  border: 0.24em solid #141210; border-bottom-width: 0.34em;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 18%, rgba(255, 220, 150, 0.75), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 30% 80%, rgba(220, 160, 90, 0.35), transparent 70%),
+    linear-gradient(170deg, #5a5247 0%, #352f29 55%, #433a31 100%);
+  overflow: hidden;
+}
+.tb__win > span::after { /* reflection */
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.2) 38%, transparent 46%);
+}
+.tb__win--lights > span::before { /* fairy lights along the top */
+  content: ''; position: absolute; left: 0; right: 0; top: 0.15em; height: 0.7em;
+  background: radial-gradient(circle, #fff3c4 0 0.08em, rgba(255, 220, 120, 0.6) 0.1em, transparent 0.2em) 0 0 / 0.45em 0.35em;
+}
+.tb__colombe {
+  position: absolute; left: 50%; bottom: 0.2em; transform: translateX(-50%);
+  padding: 0.12em 0.25em; background: #f4efe2; color: #1d1a17; border: 1px solid #1d1a17;
+  font: 700 0.42em/1 var(--font-body); font-style: italic; letter-spacing: 0.02em; white-space: nowrap;
+}
+.tb__open {
+  position: absolute; left: 50%; top: 32%; transform: translateX(-50%);
+  padding: 0.18em 0.35em 0.12em; background: #fff; color: #c8242b; border: 0.1em solid #c8242b; border-radius: 0.1em;
+  font: 900 0.48em/1 var(--font-body); font-style: normal; letter-spacing: 0.04em;
+  box-shadow: 0 0 0.5em rgba(255, 80, 80, 0.4);
+}
+.tb__sconce { /* black lantern beside the door */
+  position: absolute; top: 1.4em; left: 50%; transform: translateX(-50%);
+  width: 0.62em; height: 0.95em;
+  background: radial-gradient(ellipse at 50% 55%, #fff4c8, #f2b84b 70%);
+  border: 0.13em solid #141210; border-top-width: 0.24em; border-radius: 0.1em 0.1em 0.15em 0.15em;
+  box-shadow: 0 0 0.6em 0.15em rgba(255, 210, 110, 0.55);
+}
+.tb__num {
+  position: absolute; top: 4.3em; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-vintage); font-size: 0.74em; line-height: 1; letter-spacing: 0.02em; color: #141210;
+}
+.tb__door {
+  position: relative; width: 2.8em; flex: none;
+  margin-top: 0.15em;
+  background: linear-gradient(90deg, #262220, #121010 40%, #1d1a18);
+  border: 0.2em solid #0c0b0a; border-bottom: 0;
+  display: flex; flex-direction: column; padding: 0.35em 0.35em 0;
+}
+.tb__glass {
+  height: 3.2em;
+  background: linear-gradient(165deg, #f6dd9f, #c99350 70%);
+  border: 0.14em solid #050505;
+}
+.tb__panels {
+  flex: 1; margin-top: 0.3em;
+  background:
+    linear-gradient(#0a0909, #0a0909) 0 30% / 100% 0.12em no-repeat,
+    linear-gradient(#0a0909, #0a0909) 0 65% / 100% 0.12em no-repeat;
+}
+.tb__door::after { /* brass knob */
+  content: ''; position: absolute; left: 0.32em; top: 4.2em; width: 0.32em; height: 0.32em; border-radius: 50%; background: #d8b04a;
+}
+.tb__kick { height: 0.95em; margin-inline: -0.35em; background: linear-gradient(180deg, #e2c779, #b8973f); }
+/* bistro sets on the sidewalk, and the black street lamp in front */
+.tb__patio {
+  position: absolute; left: 0.2em; right: 0.2em; top: calc(100% - 1.6em); z-index: 3;
+  width: calc(100% - 0.4em); height: auto; pointer-events: none;
+}
+.tb__lamp {
+  position: absolute; left: 1.1em; bottom: -2.4em; z-index: 4; height: 15.5em; width: 1.6em;
+  display: flex; flex-direction: column; align-items: center; pointer-events: none;
+}
+.tb__lamp .ave__lamp-head { background: radial-gradient(ellipse at 50% 55%, #fffbe8 0%, #f6e3a6 60%, #d9b45a 100%); }
+.tb__lamp::after { content: ''; width: 1.1em; height: 0.5em; border-radius: 0.2em 0.2em 0 0; background: #1d1a17; }
+.ave__stop--us.is-selected .shop { transform: translateY(-0.2em); }
 
 .ave__pin {
-  position: relative; margin-bottom: 1.9em;
+  position: relative; margin-bottom: 0.9em; z-index: 5;
   padding: 0.38em 0.85em 0.34em;
   background: var(--color-pink-deep); color: #fff;
   border-radius: var(--radius-pill);
@@ -305,7 +514,6 @@
   content: ''; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
   border: 0.55em solid transparent; border-top-color: var(--color-pink-deep); border-bottom: 0;
 }
-.ave__board--us { background: var(--color-pink-deep); border-color: #191512; color: #fff; }
 
 /* ---- street furniture ---------------------------------------------------- */
 .ave__decor { position: relative; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
@@ -314,12 +522,13 @@
   background: linear-gradient(90deg, #1d1a17, #57504a 45%, #1d1a17);
 }
 /* street furniture stands at the kerb, out on the sidewalk */
-.ave__lamp, .ave__sign, .ave__cross { margin-bottom: -2.2em; z-index: 3; }
-.ave__lamp::after, .ave__sign::after, .ave__cross::after {
+.ave__lamp, .ave__sign, .ave__cross, .ave__alley { margin-bottom: -2.4em; z-index: 3; }
+.ave__lamp::after, .ave__sign::after, .ave__cross::after, .ave__alley::after {
   content: ''; width: 1.1em; height: 0.5em; border-radius: 0.2em 0.2em 0 0; background: #1d1a17;
 }
 
 .ave__lamp { height: 16.5em; width: 1.6em; }
+.ave__lamp--across { font-size: 0.6em; margin-bottom: -2em; }
 .ave__lamp-head {
   position: relative; width: 1.5em; height: 2.1em; margin-top: 0.7em;
   background: radial-gradient(ellipse at 50% 55%, #fffbe8 0%, #f8dc8a 55%, #e9b44a 100%);
@@ -348,18 +557,65 @@
   box-shadow: 0 0 0 0.08em #1d1a17;
 }
 
-/* a cross street at each new hundred block: the sidewalk breaks for a
-   crosswalk, and a little block sign says where you are */
+/* a cross street at each new hundred block: a little block sign, and the side
+   street cutting through both sidewalks with a zebra crossing */
 .ave__cross { height: 12em; width: 6.5em; }
 .ave__cross .ave__pole--short { flex: 1; }
 .ave__sign-blade--small { font-size: 0.7em; padding: 0.42em 0.6em 0.36em; }
-.ave__cross::before {
-  content: ''; position: absolute; left: -0.9em; right: -0.9em; top: calc(100% - 2.2em); height: var(--ground);
+.ave__crossing {
+  align-self: stretch; z-index: 0;
+  margin-inline: 0.6em;
   background:
-    repeating-linear-gradient(90deg, #f3ecdc 0 0.55em, transparent 0.55em 1.15em) left 0.6em bottom 0.55em / calc(100% - 1.2em) 3.1em no-repeat,
+    repeating-linear-gradient(90deg, #f3ecdc 0 0.55em, transparent 0.55em 1.15em) center top 0.4em / calc(100% - 1em) calc(var(--walk) - 0.8em) no-repeat,
     linear-gradient(180deg, #4a453e, #36322d);
-  z-index: -1;
 }
+.ave__row.has-across .ave__crossing {
+  background:
+    repeating-linear-gradient(90deg, #f3ecdc 0 0.55em, transparent 0.55em 1.15em) center top 0.4em / calc(100% - 1em) calc(var(--walk) - 0.8em) no-repeat,
+    repeating-linear-gradient(90deg, #f3ecdc 0 0.55em, transparent 0.55em 1.15em) center bottom 0.3em / calc(100% - 1em) calc(var(--walk) * 0.7 - 0.6em) no-repeat,
+    linear-gradient(180deg, #4a453e, #36322d);
+}
+
+/* the passage between Anthony's and our door, with its street sign */
+.ave__alley {
+  width: 2.6em; height: 15em; justify-content: flex-start;
+  background: linear-gradient(180deg, transparent 0 30%, #7d6f5f 30%, #5f5448 100%) center / 70% 100% no-repeat;
+  margin-inline: -0.5em; /* the gap is narrow: neighbours nearly touch */
+  padding-top: 5.4em;
+}
+.ave__alley-sign {
+  position: relative; z-index: 1;
+  width: 6.6em; padding: 0.35em 0.3em 0.3em;
+  background: #6b3a24; color: #f6efdc; border: 0.12em solid #f6efdc; border-radius: 0.2em;
+  box-shadow: 0 0 0 0.1em #6b3a24, 0 0.2em 0.3em rgba(0, 0, 0, 0.3);
+  font-family: var(--font-body); font-weight: 800; font-size: 0.46em; line-height: 1.2; letter-spacing: 0.05em;
+  text-transform: uppercase; text-align: center; white-space: normal;
+}
+.ave__alley .ave__pole { flex: 1; width: 0.28em; }
+
+/* the big street tree just past our door */
+.ave__streettree { width: 2.2em; height: 19em; justify-content: flex-end; z-index: 3; margin-bottom: -2.4em; }
+.ave__streettree .ave__tree { height: 12.2em; width: 0.8em; }
+.ave__streettree .ave__tree::before { width: 8.4em; height: 7.6em; bottom: 86%; }
+
+/* buildings on the other side of the road with nobody we list in them */
+.ave__filler { align-self: end; }
+.ave__filler-body {
+  position: relative;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.9em 1.5em; align-content: start;
+  width: 11em; height: var(--fh, 11em); padding: 1.4em 1.7em 0;
+  background: var(--fw, #cdbb9c);
+  border-top: 0.7em solid color-mix(in srgb, var(--fw, #cdbb9c) 62%, #2c2722);
+  filter: saturate(0.7);
+  opacity: 0.78;
+}
+.ave__filler-body > i { height: 2.3em; background: color-mix(in srgb, var(--fw, #cdbb9c) 45%, #3c4b52); border: 0.2em solid #f3ecdc; }
+.ave__filler-body::after { /* a plain door */
+  content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 2.4em; height: 3.6em; background: color-mix(in srgb, var(--fw, #cdbb9c) 40%, #2c2722);
+}
+.ave__filler--across { font-size: 0.6em; }
+.ave__filler--main .ave__filler-body { width: 12em; }
 
 /* the end of the walk: a tree and a bench */
 .ave__end { width: 9em; height: 12em; justify-content: flex-end; }
@@ -466,7 +722,7 @@
 
 /* ---- phones --------------------------------------------------------------- */
 @media (max-width: 720px) {
-  .ave__row { font-size: 14px; gap: 0.7em; }
+  .ave__row { font-size: 12.5px; column-gap: 0.7em; }
   .ave__scroller.fade-l { --fl: 28px; }
   .ave__scroller.fade-r { --fr: 28px; }
   .ave__hint { font-size: 1.3rem; }
