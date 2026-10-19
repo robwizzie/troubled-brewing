@@ -36,7 +36,9 @@ const BY_ID = new Map(WALL_ART.map((a) => [a.id, a]));
 const R = WALL_IMAGE.h / WALL_IMAGE.w;
 const MAX_UPSCALE = 3.1; // past ~3× the 934px original, the photo turns soft
 
-const HOUSE_SIPS = ['Banana Split Coffee', 'Hot Chai Latte', 'Hot Matcha Latte', 'Frozen Coffee'];
+// real, available menu names only (getMenu() drops switched-off items, so a
+// name SpotOn turns off simply falls out of the list)
+const HOUSE_SIPS = ['Iced Matcha Latte', 'Hot Chai Latte', 'Hot Matcha Latte', 'Frozen Coffee'];
 
 const CHAPTERS = [
   { id: 'intro', rect: WALL_FOCUS },

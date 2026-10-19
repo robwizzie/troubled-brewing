@@ -7,7 +7,7 @@ nothing ever looks broken.
 
 | File name | Where it shows |
 |---|---|
-| `featured.jpg` | **This Week's Trouble** — the gold oval frame on the green panel |
+| `featured.jpg` | **This Week's Trouble** — the gold oval frame on the green panel, only when the feature is a manual drink. When it names a menu item (the default), the frame uses that item's photo or `<item-name-slug>.jpg` below |
 | `iced-chai-latte.jpg` | Signature sips card #1 |
 | `banana-split-coffee.jpg` | Signature sips card #2 |
 | `coffee-flight.jpg` | Signature sips card #3 |

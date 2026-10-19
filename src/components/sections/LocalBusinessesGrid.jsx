@@ -46,11 +46,22 @@ const initials = (name) =>
     .join('')
     .toUpperCase();
 
+/* The directions link. A row's own maps_url (if the table ever gains one)
+   wins; otherwise a Google Maps search for name + address. The addresses are
+   typed as just the street ("512 Station Ave"), which Maps would resolve to
+   whichever Station Ave it fancies, so the town is appended unless the
+   address already names it. No address and no maps_url → no link. */
+const TOWN = ', Haddon Heights, NJ 08035';
+function directionsUrl(b) {
+  if (b.maps_url) return b.maps_url;
+  if (!b.address) return null;
+  const where = /haddon heights/i.test(b.address) ? b.address : `${b.address}${TOWN}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${where}`)}`;
+}
+
 function Card({ b }) {
   const number = streetNumber(b.address);
-  const mapsUrl = b.address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address}`)}`
-    : null;
+  const mapsUrl = directionsUrl(b);
   return (
     <article className="neighbor">
       <div className="neighbor__head">
