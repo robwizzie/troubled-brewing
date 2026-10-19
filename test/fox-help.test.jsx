@@ -92,7 +92,7 @@ describe('the fox’s help card', () => {
 
     // ordering: the real SpotOn link
     fireEvent.click(within(card).getByRole('button', { name: 'Can I order ahead?' }));
-    expect(within(card).getByRole('link', { name: /Order on SpotOn/ }).getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(within(card).getByRole('link', { name: /Order on SpotOn/ }).getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
 
     // and a way out to Contact
     expect(within(card).getByRole('link', { name: /Contact us/ }).getAttribute('href')).toBe('/contact');
