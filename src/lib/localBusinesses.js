@@ -44,11 +44,22 @@ export function directionsUrl(b) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${where}`)}`;
 }
 
-/* Street-number order (or the owner's manual order). Ties and unnumbered rows
-   fall back to display_order so the result is stable whatever the DB returns. */
+/* The street name on its own ("12 Kings Hwy, Haddon Heights" → "Kings Hwy"),
+   for the "Around town" stretch where the number alone means nothing. */
+export function streetName(address) {
+  return String(address || '').replace(/,.*$/, '').replace(/^\s*\d{1,5}[a-z]?\s+/i, '').trim();
+}
+
+/* Only businesses with a website are listed — the owner's rule: no site, no
+   storefront (in either layout). A url has to at least look like one. */
+export const hasWebsite = (b) => /^https?:\/\/\S+\.\S+/i.test(String(b?.url || '').trim());
+
+/* Street-number order (or the owner's manual order), website-less rows dropped.
+   Ties and unnumbered rows fall back to display_order so the result is stable
+   whatever the DB returns. */
 export function orderBusinesses(rows, orderBy = 'street') {
   const byManual = (a, b) => (a.display_order ?? 0) - (b.display_order ?? 0);
-  const list = [...(rows || [])];
+  const list = (rows || []).filter(hasWebsite);
   if (orderBy !== 'street') return list.sort(byManual);
   return list.sort((a, b) => {
     const na = streetNumber(a.address);

@@ -47,7 +47,7 @@ function Card({ b }) {
           <h3>{b.name}</h3>
           <p className="neighbor__meta">
             {b.category && <span className="neighbor__cat">{categoryLabel(b.category)}</span>}
-            {number != null && <span className="neighbor__num">{number} Station Ave</span>}
+            {number != null && <span className="neighbor__num">{b.address.replace(/,.*$/, '')}</span>}
           </p>
         </div>
       </div>
