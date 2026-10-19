@@ -15,11 +15,11 @@ describe('orderUrlFor — item link first, store page as the safety net', () => 
   });
 
   it('falls back to the store page with no item, no link, or a link it can’t trust', () => {
-    expect(orderUrlFor(null)).toBe(SPOTON_ORDER_URL);
-    expect(orderUrlFor({ name: 'Scone' })).toBe(SPOTON_ORDER_URL);
-    expect(orderUrlFor({ name: 'Scone', order_url: '' })).toBe(SPOTON_ORDER_URL);
-    expect(orderUrlFor({ name: 'Scone', order_url: 'scone-slug' })).toBe(SPOTON_ORDER_URL);
-    expect(orderUrlFor({ name: 'Scone', order_url: 'javascript:alert(1)' })).toBe(SPOTON_ORDER_URL);
+    expect(orderUrlFor(null)).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
+    expect(orderUrlFor({ name: 'Scone' })).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
+    expect(orderUrlFor({ name: 'Scone', order_url: '' })).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
+    expect(orderUrlFor({ name: 'Scone', order_url: 'scone-slug' })).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
+    expect(orderUrlFor({ name: 'Scone', order_url: 'javascript:alert(1)' })).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
   });
 });
 
@@ -146,6 +146,23 @@ describe('sync mapping: scraped → merge → snapshot', () => {
     ]);
     // …and the site follows the snapshot's link, or the store page without one
     expect(orderUrlFor(items[0])).toBe(`${STORE}/item/aaa-1`);
-    expect(orderUrlFor(items[2])).toBe(SPOTON_ORDER_URL);
+    expect(orderUrlFor(items[2])).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
+  });
+});
+
+describe('SpotOn section links (SpotOn has no per-item links)', () => {
+  it('sends an item to its SpotOn menu section by category', async () => {
+    const { orderUrlFor } = await import('../src/lib/order.js');
+    expect(orderUrlFor({ name: 'X', spoton_category: 'Iced Coffee & Espresso Drinks' })).toMatch(/#group-menu-a1hzjzus43fplawznaz2gwrpie$/);
+  });
+  it('finds the section by name when the row has no category', async () => {
+    const { orderUrlFor } = await import('../src/lib/order.js');
+    expect(orderUrlFor({ name: 'Iced Chai Latte' })).toMatch(/#group-menu-gstagdpalvdk1gy4252s3qsuwq$/);
+  });
+  it('falls back to the store page for unknown items, and keeps a proven item URL', async () => {
+    const { orderUrlFor } = await import('../src/lib/order.js');
+    const { SPOTON_ORDER_URL } = await import('../src/lib/config.js');
+    expect(orderUrlFor({ name: 'Nope' })).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
+    expect(orderUrlFor({ name: 'Iced Chai Latte', order_url: 'https://order.spoton.com/x/item/1' })).toBe('https://order.spoton.com/x/item/1');
   });
 });
