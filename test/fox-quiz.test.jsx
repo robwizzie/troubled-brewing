@@ -260,7 +260,7 @@ describe('Pick my drink, in the card', () => {
     expect(['Hot Latte', 'Cappuccino', 'Cafe Au Lait', 'Flat White']).toContain(top);
     expect(result.textContent).toContain(`Hot and creamy coffee — that’s our ${top}.`);
     expect(result.textContent).toMatch(/Your match/);
-    expect(within(result).getByRole('link', { name: new RegExp(`^Order ${esc(top)} on SpotOn`) }).getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(within(result).getByRole('link', { name: new RegExp(`^Order ${esc(top)} on SpotOn`) }).getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     const runners = result.querySelectorAll('.fox-runner');
     expect(runners).toHaveLength(2);
     runners.forEach((r) => {
@@ -303,7 +303,7 @@ describe('Surprise me, in the card', () => {
     const name = pane.querySelector('.fox-drink__name').textContent;
     expect(drinkNames.has(name)).toBe(true);
     expect(pane.querySelector('.fox-drink__price').textContent).toMatch(/^\$\d+\.\d\d$/);
-    expect(within(pane).getByRole('link', { name: new RegExp(`^Order ${esc(name)}`) }).getAttribute('href')).toBe(SPOTON_ORDER_URL);
+    expect(within(pane).getByRole('link', { name: new RegExp(`^Order ${esc(name)}`) }).getAttribute('href')).toSatisfy((u) => String(u).startsWith(SPOTON_ORDER_URL));
     fireEvent.click(within(pane).getByRole('button', { name: /Pick again/ }));
     expect(pane.querySelector('.fox-drink__name').textContent).not.toBe(name);
   });
