@@ -1,20 +1,20 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { FaArrowLeft, FaArrowUpRightFromSquare, FaDice, FaMedal, FaRotateRight } from 'react-icons/fa6';
+import { FaArrowLeft, FaArrowUpRightFromSquare, FaMedal, FaMugHot, FaRotateRight } from 'react-icons/fa6';
 import { CoffeeCup } from './Motifs.jsx';
 import { orderUrlFor, orderLabelFor } from '../lib/order.js';
 import { productImageSources, isCutout } from '../lib/productImage.js';
 import { track } from '../lib/analytics.js';
-import { FOX_PATH } from '../lib/foxArt.js';
+import { FOX_H, FOX_PATH, FOX_W } from '../lib/foxArt.js';
 import {
-  ANY, QUIZ, REEL_MS, classifyDrink, closedOrderNote, fmtPrice, matchDrink, pickSurprise,
-  quizPlan, reelPosition, reelStrip, refineOptions,
+  ANY, POUR_MS, QUIZ, closedOrderNote, drinkLook, fmtPrice, matchDrink, pickSurprise,
+  quizPlan, refineOptions,
 } from '../lib/foxFun.js';
 
 /* The fox's games — the panes that show in his help card's answer area
-   (FoxGuide.jsx) — plus the fox himself in his medallion, and his tail.
-   Rules live in src/lib/foxFun.js; these only draw them. Motion is CSS
-   (fox-guide.css) plus one requestAnimationFrame loop for the Surprise reel,
-   transform + opacity only; prefers-reduced-motion stills all of it. */
+   (FoxGuide.jsx) — plus the fox drawing, his accessories and his tail.
+   Rules live in src/lib/foxFun.js; these only draw them. All motion is CSS
+   (fox-guide.css), transform + opacity only; prefers-reduced-motion stills
+   all of it. */
 
 const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -44,132 +44,126 @@ function OrderLink({ item, small = false, where = 'fox' }) {
 }
 
 /* ---- Surprise me -------------------------------------------------------
-   A slot-machine reel of real drinks: it spins down with easing, overshoots
-   by a hair and settles on the pick (reelPosition), while a motion-blurred
-   copy of the strip cross-fades in at speed. Then the photo pops in with a
-   little sparkle (and steam, for a hot drink), and phones get one gentle
-   tick. The card's size is fixed from the first frame, so nothing jumps.
-   Reduced motion: no reel, the pick simply fades in. */
+   A barista moment instead of a slot machine: the pick is poured. Its cup
+   (a mug for a hot drink, a glass for a cold one — drinkLook) slides in,
+   ice drops in for an iced drink, a stream of the drink's colour pours and
+   the cup fills with a little slosh; then steam and a latte heart (hot), a
+   straw (iced) or a whipped top (frozen), a tiny sparkle, and the name and
+   price rise out with a soft bounce. ~1.5s, all CSS on transform + opacity,
+   replayed by "Pick again" (the pour is keyed). Phones get one gentle tick
+   as it settles. Reduced motion: the full cup, card and all, just fades in. */
 
-function ReelStrip({ strip, refEl, blur }) {
+const MUG = 'M20 34 H60 V58 C60 68 52 74 40 74 C28 74 20 68 20 58 Z';
+const GLASS = 'M18 20 H62 L57 74 C56.6 76.2 55 77 53 77 H27 C25 77 23.4 76.2 23 74 Z';
+
+/** The cup being poured, drawn in the logo's line style. */
+export function PourCup({ look }) {
+  const clip = `fox-pour-${useId().replace(/:/g, '')}`;
+  const mug = look.vessel === 'mug';
+  const top = mug ? 36 : 27;
   return (
-    <div className={`fox-reel__strip${blur ? ' is-blur' : ''}`} ref={refEl} style={blur ? { filter: `url(#${blur})` } : undefined}>
-      {strip.map((d, i) => (
-        <div className="fox-reel__row" key={i}>
-          <span className="fox-reel__name">{d.name}</span>
-          <span className="fox-reel__price">{fmtPrice(d.price)}</span>
-        </div>
-      ))}
-    </div>
+    <svg className={`fox-pour__cup is-${look.vessel}`} viewBox="0 0 88 88" aria-hidden="true" focusable="false"
+      style={{ '--fill-from': `${mug ? 40 : 52}px` }}>
+      <defs><clipPath id={clip}><path d={mug ? MUG : GLASS} /></clipPath></defs>
+      {mug && <ellipse cx="40" cy="78.5" rx="29" ry="4.5" fill="#fffaf0" stroke="#191512" strokeWidth="2" />}
+      <path d={mug ? MUG : GLASS} fill={mug ? '#fffaf0' : 'rgba(255, 255, 255, 0.6)'} />
+      <rect className="fox-pour__stream" x="38" y="0" width="4" height={mug ? 74 : 77} rx="2" fill={look.fill} />
+      <g clipPath={`url(#${clip})`}>
+        <g className="fox-pour__liquid">
+          <rect x="10" y={top} width="64" height="60" fill={look.fill} />
+          <ellipse cx="40" cy={top} rx="26" ry="2.6" fill="#fff" opacity="0.25" />
+        </g>
+      </g>
+      {look.ice && (
+        <g fill="rgba(255, 255, 255, 0.72)" stroke="#8ea8b4" strokeWidth="1.4">
+          <g className="fox-pour__ice"><rect x="25" y="42" width="13" height="13" rx="3" transform="rotate(-12 31.5 48.5)" /></g>
+          <g className="fox-pour__ice"><rect x="41" y="35" width="13" height="13" rx="3" transform="rotate(10 47.5 41.5)" /></g>
+          <g className="fox-pour__ice"><rect x="33" y="55" width="12" height="12" rx="3" transform="rotate(4 39 61)" /></g>
+        </g>
+      )}
+      {(look.ice || look.frozen) && (
+        <g className="fox-pour__straw"><path d="M53 4 L45 66" stroke="#c4566f" strokeWidth="4.2" strokeLinecap="round" /></g>
+      )}
+      {look.heart && (
+        <g className="fox-pour__heart">
+          <path d="M40 39.5 C33.5 35.5 34.5 31 37.6 31.6 C39 31.9 39.7 33 40 33.8 C40.3 33 41 31.9 42.4 31.6 C45.5 31 46.5 35.5 40 39.5 Z"
+            fill="#fbf2e4" stroke="#fffaf0" strokeWidth="0.6" transform="translate(40 36.2) scale(1.5 0.78) translate(-40 -35.5)" />
+        </g>
+      )}
+      <path d={mug ? MUG : GLASS} fill="none" stroke="#191512" strokeWidth="2.2" strokeLinejoin="round" />
+      {mug && <path d="M60 40 C71 40 72 54 59.5 57" fill="none" stroke="#191512" strokeWidth="2.2" strokeLinecap="round" />}
+      {!mug && <path d="M21 25 L25 70" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.7" />}
+      {look.frozen && (
+        <g className="fox-pour__dome">
+          <path d="M19 21 C17 12 27 8 31 12 C33 4 47 4 49 12 C53 8 63 12 61 21 Z" fill="#fffaf0" stroke="#191512" strokeWidth="2" strokeLinejoin="round" />
+        </g>
+      )}
+      {look.steam && (
+        <g className="fox-pour__steam" fill="none" stroke="#191512" strokeWidth="1.8" strokeLinecap="round">
+          <path d="M33 28 C30 23 36 19 33 13" />
+          <path d="M40 27 C37 21 44 17 40 9" />
+          <path d="M47 28 C44 23 50 19 47 14" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
+/** The Surprise me tile's icon: a steaming mug with a sparkle. */
+export function SurpriseIcon() {
+  return (
+    <span className="fox-help__tile-ico" aria-hidden="true">
+      <FaMugHot />
+      <svg className="fox-help__tile-spark" viewBox="0 0 10 10"><path d="M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8 Z" /></svg>
+    </span>
   );
 }
 
 export function SurprisePane({ menu, hours, overrides }) {
-  const uid = useId().replace(/:/g, '');
-  // the first roll happens on open, before the first paint
-  const [first] = useState(() => {
-    const final = pickSurprise(menu);
-    const animate = Boolean(final) && !reduced() && typeof requestAnimationFrame === 'function';
-    return { final, spin: animate ? { key: 1, strip: reelStrip(menu, final) } : null };
-  });
-  const [item, setItem] = useState(first.final);
-  const [spin, setSpin] = useState(first.spin); // { key, strip } while the reel turns
-  const [landed, setLanded] = useState(first.spin ? 0 : 1); // bumps on every landing (replays the pop)
-  const [instant, setInstant] = useState(!first.spin);
-  const sharp = useRef(null);
-  const soft = useRef(null);
-  const raf = useRef(0);
+  const [pour, setPour] = useState(() => ({ item: pickSurprise(menu), n: 1 }));
+  const [pouring, setPouring] = useState(() => Boolean(pour.item) && !reduced());
+  const instant = reduced();
 
-  const roll = (not) => {
-    const final = pickSurprise(menu, { not });
-    cancelAnimationFrame(raf.current);
-    setItem(final);
-    if (!final) { setSpin(null); return; }
-    if (reduced() || typeof requestAnimationFrame !== 'function') {
-      setInstant(true);
-      setSpin(null);
-      setLanded((n) => n + 1);
-      return;
-    }
-    setInstant(false);
-    setSpin({ key: Date.now(), strip: reelStrip(menu, final) });
+  // the pour's own clock: a tick on the phone as it settles, then the
+  // buttons wake up
+  useEffect(() => {
+    if (!pouring) return undefined;
+    const tick = setTimeout(() => { try { navigator.vibrate?.(10); } catch { /* not allowed here: fine */ } }, POUR_MS - 350);
+    const done = setTimeout(() => setPouring(false), POUR_MS);
+    return () => { clearTimeout(tick); clearTimeout(done); };
+  }, [pouring, pour.n]);
+
+  const again = () => {
+    const next = pickSurprise(menu, { not: pour.item?.name });
+    setPour((p) => ({ item: next, n: p.n + 1 }));
+    setPouring(Boolean(next) && !reduced());
+    track('fox_surprise_again');
   };
 
-  // the reel: one rAF loop writing transform + opacity straight to the strips
-  useEffect(() => {
-    if (!spin) return undefined;
-    const rows = spin.strip.length;
-    let start = 0;
-    let last = { t: 0, pos: 0 };
-    const paint = (pos, blurAmt) => {
-      const y = `translate3d(0, ${(-pos * 100) / rows}%, 0)`;
-      if (sharp.current) { sharp.current.style.transform = y; sharp.current.style.opacity = String(1 - blurAmt * 0.8); }
-      if (soft.current) { soft.current.style.transform = y; soft.current.style.opacity = String(blurAmt); }
-    };
-    const frame = (now) => {
-      if (!start) { start = now; last = { t: now, pos: 0 }; }
-      const t = (now - start) / REEL_MS;
-      const pos = reelPosition(t, rows);
-      const perFrame = (Math.abs(pos - last.pos) / Math.max(1, now - last.t)) * 16.7; // rows per 60fps frame
-      last = { t: now, pos };
-      paint(pos, Math.min(1, perFrame / 0.45));
-      if (t < 1) { raf.current = requestAnimationFrame(frame); return; }
-      paint(rows - 1, 0);
-      setSpin(null);
-      setLanded((n) => n + 1);
-      try { navigator.vibrate?.(10); } catch { /* not allowed here: fine */ }
-    };
-    paint(0, 0);
-    raf.current = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf.current);
-  }, [spin]);
-
+  const { item } = pour;
   if (!item) return <p className="fox-help__a">Hmm, I can’t see any drinks on the menu right now.</p>;
   const note = closedOrderNote(hours, overrides);
-  const hot = classifyDrink(item).temp === 'hot';
   return (
-    <div className={`fox-play fox-surprise${spin ? ' is-spinning' : ''}${instant ? ' is-instant' : ''}`} data-testid="fox-surprise">
-      <p className="fox-help__q">The fox picks…</p>
-      <div className="fox-drink fox-surprise__card" key={instant ? `i${landed}` : 'reel'}>
-        <span className="fox-surprise__pic">
-          {spin ? (
-            <span className="fox-drink__photo is-motif fox-surprise__dice" aria-hidden="true"><FaDice /></span>
-          ) : (
-            <span className="fox-surprise__pop" key={landed}>
-              <DrinkPhoto item={item} />
-              {!instant && (
-                <span className="fox-surprise__fx" aria-hidden="true">
-                  {hot && <span className="fox-surprise__steam"><i /><i /><i /></span>}
-                  <span className="fox-surprise__spark"><i /><i /><i /><i /><i /></span>
-                </span>
-              )}
-            </span>
-          )}
+    <div className={`fox-play fox-surprise${pouring ? ' is-pouring' : ''}${instant ? ' is-instant' : ''}`} data-testid="fox-surprise">
+      <p className="fox-help__q">The fox pours you…</p>
+      <div className="fox-drink fox-surprise__card fox-pour" key={pour.n}>
+        <span className="fox-pour__stage">
+          <PourCup look={drinkLook(item)} />
+          {!instant && <span className="fox-surprise__spark" aria-hidden="true"><i /><i /><i /><i /></span>}
         </span>
-        <div className="fox-drink__info">
-          <div className="fox-reel">
-            {spin ? (
-              <div className="fox-reel__win" aria-hidden="true" key={spin.key}>
-                <svg className="fox-reel__defs" width="0" height="0" focusable="false">
-                  <filter id={`${uid}-vblur`} x="0" y="-10%" width="100%" height="120%"><feGaussianBlur stdDeviation="0 2.4" /></filter>
-                </svg>
-                <ReelStrip strip={spin.strip} refEl={sharp} />
-                <ReelStrip strip={spin.strip} refEl={soft} blur={`${uid}-vblur`} />
-              </div>
-            ) : (
-              <div className="fox-reel__row is-landed" key={landed}>
-                <p className="fox-drink__name" title={item.name}>{item.name}</p>
-                <p className="fox-drink__price">{fmtPrice(item.price)}</p>
-              </div>
-            )}
+        <div className="fox-drink__info fox-pour__info">
+          <p className="fox-pour__wait" aria-hidden="true">Pouring…</p>
+          <div className="fox-pour__card">
+            <p className="fox-drink__name">{item.name}</p>
+            <p className="fox-drink__price">{fmtPrice(item.price)}</p>
           </div>
         </div>
-        {note && <p className="fox-drink__note" style={spin ? { visibility: 'hidden' } : undefined}>{note}</p>}
+        {note && <p className="fox-drink__note">{note}</p>}
       </div>
       <p className="fox-help__links fox-surprise__links">
         <OrderLink item={item} />
-        <button type="button" className="fox-help__link fox-help__link--ghost" onClick={() => { roll(item.name); track('fox_surprise_again'); }} disabled={Boolean(spin)}>
-          <FaDice aria-hidden="true" /> Pick again
+        <button type="button" className="fox-help__link fox-help__link--ghost" onClick={again} disabled={pouring}>
+          <FaRotateRight aria-hidden="true" /> Pick again
         </button>
       </p>
     </div>
@@ -345,58 +339,48 @@ export function AwardPane() {
   );
 }
 
-/* ---- The fox in his medallion -------------------------------------------
-   The logo drawing as a vector (src/lib/foxArt.js), framed so the fox —
-   hat to rail — is optically centred in the round. The viewBox is in the
-   drawing's own pixels: centre (131, 64), radius 90, which clears his hat,
-   his cup and the pumpkin with even room all round and lets the rail run
-   out under the brass ring like a ledge. Accessories are drawn in the same
-   coordinates, so they sit ON him (the nightcap over the top hat, the
-   pumpkin on the rail beside him, steam over the cup) and turn with him. */
+/* ---- The fox himself, and his accessories --------------------------------
+   The drawing is the logo fox as a vector (src/lib/foxArt.js), traced 1:1
+   from public/images/brand/fox-sipping.png and drawn at the PNG's own size
+   and proportions, so his card looks exactly as it did with the PNG — just
+   crisp on every screen. The accessories are overlays on it, not a redraw. */
 
-export const FOX_VIEW = '41 -26 180 180';
+/** The sipping fox: the full drawing (rail and all), or — with `bust` — just
+    his head, top hat and collar, framed square and centred (the paw tab). */
+export function FoxArt({ bust = false }) {
+  const box = bust ? [99, -3, 94, 94] : [0, 0, FOX_W, FOX_H];
+  return (
+    <svg className={bust ? 'fox-guide__bust' : 'fox-guide__art'} viewBox={box.join(' ')} width={box[2]} height={box[3]} aria-hidden="true" focusable="false">
+      <path d={FOX_PATH} fill="#191512" fillRule="evenodd" />
+    </svg>
+  );
+}
 
 /** Striped nightcap pulled down over his top hat, pompom flopping forward. */
-function Nightcap() {
+export function Nightcap() {
   return (
-    <g className="fox-acc fox-acc--nightcap" transform="translate(119 -9) scale(1.08) rotate(-4 35 30)">
+    <svg className="fox-acc fox-acc--nightcap" viewBox="0 0 70 50" aria-hidden="true">
       <path d="M6 40 C10 22 26 8 44 8 C54 8 60 14 63 24 C58 20 52 20 48 24 C52 30 50 36 44 40 Z" fill="#f7f1e4" stroke="#221f1a" strokeWidth="2" strokeLinejoin="round" />
       <path d="M18 22 L30 40 M30 12 L40 34 M44 9 L49 24" stroke="#7e8c54" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
       <path d="M3 40 Q25 46 47 39" fill="none" stroke="#221f1a" strokeWidth="5" strokeLinecap="round" />
       <path d="M3 40 Q25 46 47 39" fill="none" stroke="#e7ebd6" strokeWidth="2.6" strokeLinecap="round" />
       <circle cx="64" cy="28" r="5" fill="#f7f1e4" stroke="#221f1a" strokeWidth="2" />
-    </g>
-  );
-}
-
-/** A small pumpkin in the same line style, sitting on the rail beside him. */
-function Pumpkin() {
-  return (
-    <g className="fox-acc fox-acc--pumpkin" transform="translate(185 92) scale(0.55)">
-      <path d="M20 9 C19 5 21 3 24 2" fill="none" stroke="#545f33" strokeWidth="4.4" strokeLinecap="round" />
-      <ellipse cx="20" cy="22" rx="17" ry="12" fill="#e9973f" stroke="#191512" strokeWidth="4" />
-      <path d="M20 10 C13 14 13 30 20 34 M20 10 C27 14 27 30 20 34 M11 12 C6 17 7 29 12 32 M29 12 C34 17 33 29 28 32" fill="none" stroke="#191512" strokeWidth="2.6" opacity="0.7" />
-    </g>
-  );
-}
-
-export function FoxFigure({ sleepy = false, october = false }) {
-  return (
-    <svg className="fox-guide__figure" viewBox={FOX_VIEW} aria-hidden="true" focusable="false">
-      <path className="fox-guide__ink" d={FOX_PATH} fill="#191512" fillRule="evenodd" />
-      {/* steam curling up from his cup (rim at ~x 64–91, y 46) */}
-      <g className="fox-guide__steam" fill="none" stroke="#191512" strokeWidth="2.2" strokeLinecap="round">
-        <path d="M71 41 C67 36 75 31 71 25" />
-        <path d="M78 40 C74 34 83 28 78 20" />
-        <path d="M85 41 C81 36 89 31 85 26" />
-      </g>
-      {october && <Pumpkin />}
-      {sleepy && <Nightcap />}
     </svg>
   );
 }
 
-/** His bushy tail — tucked behind his medallion, it pops out to wag when petted. */
+/** A small pumpkin in the same line style, for October. */
+export function Pumpkin() {
+  return (
+    <svg className="fox-acc fox-acc--pumpkin" viewBox="0 0 40 36" aria-hidden="true">
+      <path d="M20 9 C19 5 21 3 24 2" fill="none" stroke="#545f33" strokeWidth="2.4" strokeLinecap="round" />
+      <ellipse cx="20" cy="22" rx="17" ry="12" fill="#e9973f" stroke="#221f1a" strokeWidth="2" />
+      <path d="M20 10 C13 14 13 30 20 34 M20 10 C27 14 27 30 20 34 M11 12 C6 17 7 29 12 32 M29 12 C34 17 33 29 28 32" fill="none" stroke="#221f1a" strokeWidth="1.4" opacity="0.7" />
+    </svg>
+  );
+}
+
+/** His bushy tail — tucked behind his card, it pops out to wag when petted. */
 export function Tail() {
   return (
     <svg className="fox-acc fox-acc--tail" viewBox="0 0 60 40" aria-hidden="true">

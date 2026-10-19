@@ -7,9 +7,7 @@
 
 .fox-guide {
   --fox-b: max(10px, env(safe-area-inset-bottom, 0px)); /* his distance off the bottom */
-  --fox-d: 104px;                                      /* his medallion's diameter */
-  --fox-ring: 4px;                                     /* …and its brass ring */
-  --fox-h: var(--fox-d);
+  --fox-h: 86px;                                       /* his sticker's height */
   position: fixed; z-index: 400;
   left: max(10px, env(safe-area-inset-left, 0px)); bottom: var(--fox-b);
   display: flex; align-items: flex-end; gap: 10px;
@@ -21,77 +19,67 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 
 .fox-guide__body { position: relative; pointer-events: auto; }
 .fox-guide__fox {
-  display: block; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%;
+  display: block; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 18px;
   /* he slides up into the corner once the page has settled */
   animation: fox-rise 0.9s cubic-bezier(0.3, 1.4, 0.5, 1) 0.8s both;
 }
 .fox-guide__fox:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
-
-/* His medallion: a round brass ring lit from the top-left, the same brass as
-   the gallery wall's thin gilt frames (keyline · bright fillet · gold ·
-   shadowed edge), round a cream face. Sizes are whole pixels (104 / 88 with
-   a 4 / 3px ring) so the ring lands on the pixel grid at 1x and 2x; the fox
-   inside is a vector, so he's crisp at any size. */
-.fox-guide__card {
-  position: relative; z-index: 1; display: block; box-sizing: border-box;
-  width: var(--fox-d); height: var(--fox-d); padding: var(--fox-ring);
-  border-radius: 50%;
-  background: linear-gradient(145deg, #f7dc94 0%, #e3b53f 30%, #b8892b 64%, #6b4a12 100%);
-  box-shadow:
-    0 0 0 1px rgba(94, 66, 16, 0.7),
-    0 1px 2px rgba(30, 22, 8, 0.28),
-    0 6px 16px rgba(30, 22, 8, 0.24);
+.fox-guide__card { /* a little cream sticker with a brass rim, so the line art reads over anything */
+  position: relative; display: block; width: 132px; padding: 10px 8px 6px;
+  background: radial-gradient(120% 100% at 30% 0%, #fffdf6, var(--color-cream));
+  border-radius: 18px;
+  box-shadow: 0 0 0 2px var(--color-yellow), 0 0 0 4px var(--color-paper), 0 8px 20px rgba(30, 22, 8, 0.28);
 }
-.fox-guide.is-open .fox-guide__card {
-  box-shadow: 0 0 0 1px rgba(94, 66, 16, 0.7), 0 0 0 3px var(--color-green-deep), 0 6px 16px rgba(30, 22, 8, 0.24);
-}
-.fox-guide__face {
-  position: relative; display: block; width: 100%; height: 100%;
-  border-radius: 50%; overflow: hidden; clip-path: circle(50%); isolation: isolate;
-  background: radial-gradient(110% 110% at 32% 22%, #fffdf6 0%, #f8f0dd 62%, #eee1c2 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(94, 66, 16, 0.6),
-    inset 0 0 0 2px rgba(255, 244, 214, 0.7),
-    inset 0 3px 7px rgba(60, 44, 16, 0.2);
+.fox-guide.is-open .fox-guide__card { box-shadow: 0 0 0 2px var(--color-green-deep), 0 0 0 4px var(--color-paper), 0 8px 20px rgba(30, 22, 8, 0.28); }
+/* Open, he IS the close button: he stops turning to the pointer, leaning
+   and sipping, and sits upright exactly as he rests — so he never tilts or
+   shifts in his frame under the card — and his card wears a tidy × badge
+   in the same green as its rim. */
+.fox-guide.is-open .fox-guide__figure { transform: scaleX(-1); transition: none; animation: none; }
+.fox-guide.is-open .fox-guide__steam { display: none; }
+.fox-guide__closex {
+  position: absolute; z-index: 2; top: -9px; right: -9px;
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--color-green-deep); color: var(--color-on-primary); font-size: 13px;
+  box-shadow: 0 0 0 2px var(--color-paper), 0 3px 8px rgba(30, 22, 8, 0.25);
+  animation: fox-fade 0.2s ease-out both;
 }
 .fox-guide__figure {
-  position: relative; display: block; width: 100%; height: 100%; overflow: visible;
+  position: relative; display: block;
   transform: scaleX(var(--face, -1)) rotate(var(--lean, 0deg));
-  transform-origin: 50% 78%;
+  transform-origin: 50% 90%;
   transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
   animation: fox-sip 9s ease-in-out 3s infinite;
 }
-/* a hair of extra ink so the fine lines of the drawing hold up at this size */
-.fox-guide__ink { stroke: #191512; stroke-width: 0.9; stroke-linejoin: round; }
+.fox-guide__figure img, .fox-guide__art { display: block; width: 100%; height: auto; }
 /* one motion at a time: a wave or a hop REPLACES the sip while it plays */
 .fox-guide.is-wave .fox-guide__figure { animation: fox-wave 1.4s ease-in-out both; }
 .fox-guide.is-hop .fox-guide__figure { animation: fox-hop 0.42s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
-.fox-guide.is-wave .fox-guide__steam path, .fox-guide.is-hop .fox-guide__steam path { animation: none; }
+.fox-guide.is-wave .fox-guide__steam i, .fox-guide.is-hop .fox-guide__steam i { animation: none; }
 
-/* steam curling up from his cup (drawn in the figure's own coordinates) */
-.fox-guide__steam path {
-  transform-box: fill-box; transform-origin: 50% 100%;
+/* steam curling up from his cup (the cup sits ~22% across, 30% down the drawing) */
+.fox-guide__steam { position: absolute; left: 18%; top: 4%; width: 18%; height: 30%; }
+.fox-guide__steam i {
+  position: absolute; bottom: 0; width: 3px; height: 14px; border-radius: 3px;
+  background: linear-gradient(transparent, rgba(25, 21, 18, 0.45), transparent);
   opacity: 0; animation: fox-steam 9s ease-out 3s infinite;
 }
-.fox-guide__steam path:nth-child(1) { animation-delay: 3.3s; }
-.fox-guide__steam path:nth-child(2) { animation-delay: 3.5s; }
-.fox-guide__steam path:nth-child(3) { animation-delay: 3.7s; }
+.fox-guide__steam i:nth-child(1) { left: 10%; animation-delay: 3.3s; }
+.fox-guide__steam i:nth-child(2) { left: 45%; animation-delay: 3.5s; height: 18px; }
+.fox-guide__steam i:nth-child(3) { left: 80%; animation-delay: 3.7s; }
 
-/* special-day badge (birthday cake, Halloween ghost…) pinned to the ring at
-   ten-thirty */
+/* special-day badge (birthday cake, Halloween ghost…) pinned to his sticker */
 .fox-guide__badge {
-  position: absolute; z-index: 2; left: 14.6%; top: 14.6%; translate: -50% -50%;
-  display: grid; place-items: center;
+  position: absolute; top: -9px; left: -7px; display: grid; place-items: center;
   width: 26px; height: 26px; border-radius: 50%;
   background: var(--color-pink-deep); color: #fffdf7; font-size: 13px;
   box-shadow: 0 0 0 2px var(--color-paper), 0 3px 8px rgba(30, 22, 8, 0.25);
 }
 
 /* the little × on him — shows on hover / keyboard focus on a desktop; on a
-   touch screen the card's "Hide the fox" does the job. It sits on the ring
-   at one-thirty. */
+   touch screen the card's "Hide the fox" does the job */
 .fox-guide__x {
-  position: absolute; top: 14.6%; right: 14.6%; translate: 50% -50%; z-index: 3;
+  position: absolute; top: -9px; right: -9px; z-index: 1;
   display: grid; place-items: center; width: 26px; height: 26px; padding: 0;
   border: 0; border-radius: 50%; cursor: pointer;
   background: var(--color-black); color: var(--color-paper); font-size: 13px;
@@ -163,6 +151,23 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 .fox-help__close:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
 
 .fox-help__say { flex: none; padding: 14px 16px 10px; } /* never scrolls, never shrinks */
+/* …except while a game is up: then the chips fold away (one "Other
+   questions" chip stays) and the game scrolls inside the answer area, so a
+   tall quiz result is always reachable — a soft fade says there's more */
+.fox-help.is-game .fox-help__say {
+  flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding-bottom: 18px; scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+}
+.fox-help.is-game .fox-help__body { flex: none; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-bottom: 10px; }
+/* …and the game tiles shrink to one compact row (with a "Questions" tile to
+   get the chips back), so even a 650px-tall laptop gives the game the room */
+.fox-help.is-game .fox-help__play { grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 0; }
+.fox-help.is-game .fox-help__tile { min-height: 46px; padding: 5px 2px; gap: 3px; font-size: 0.72rem; }
+.fox-help.is-game .fox-help__tile svg { font-size: 0.92rem; }
+.fox-help__tile--more { background: var(--color-cream); box-shadow: inset 0 0 0 1.5px var(--color-border); }
+.fox-help__tile--more svg { color: var(--color-green-deep); }
 .fox-help__say-in {
   position: relative; padding: 11px 14px 12px;
   background: var(--color-green-soft); border-radius: 4px 14px 14px 14px;
@@ -220,22 +225,23 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 
 .fox-guide__scrim { display: none; }
 
-/* ---- hidden: his head peeks in from the screen edge to bring him back --- */
-.fox-guide.is-hidden { left: 0; }
+/* ---- hidden: a small framed card with his head and top hat brings him
+   back. Same frame as his resting card (cream, gold rim, paper keyline),
+   sitting fully on screen — nothing clipped by the edge — with the bust
+   centred in it. Whole pixels (56px) so the rim is crisp at 1x and 2x. */
+.fox-guide.is-hidden { left: max(10px, env(safe-area-inset-left, 0px)); }
 .fox-guide__tab {
-  pointer-events: auto; position: relative; display: block; overflow: hidden;
-  width: 44px; height: 44px; padding: 0; border: 0; cursor: pointer;
-  border-radius: 0 22px 22px 0;
+  pointer-events: auto; position: relative; display: block; box-sizing: border-box;
+  width: 56px; height: 56px; padding: 5px 6px 4px; border: 0; cursor: pointer;
+  border-radius: 14px;
   background: radial-gradient(120% 100% at 30% 0%, #fffdf6, var(--color-cream));
-  box-shadow: 0 0 0 1.5px var(--color-yellow), 0 4px 12px rgba(30, 22, 8, 0.2);
+  box-shadow: 0 0 0 2px var(--color-yellow), 0 0 0 4px var(--color-paper), 0 6px 16px rgba(30, 22, 8, 0.26);
   animation: fox-tab 0.35s ease-out both;
 }
-/* a crop of the same drawing: just his head and top hat, turned to face in */
-.fox-guide__peek {
-  position: absolute; left: 3px; bottom: 0; width: 38px; height: 38px;
-  background-repeat: no-repeat; background-size: 120px auto; background-position: -47px 2px;
-  transform: scaleX(-1);
-}
+/* a crop of the same vector drawing: his head, hat and collar, turned to
+   face into the page */
+.fox-guide__peek { display: block; width: 100%; height: 100%; transform: scaleX(-1); }
+.fox-guide__bust { display: block; width: 100%; height: 100%; }
 .fox-guide__tab:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 
 /* ---- coming back: he slides in from the edge he left by, then one small
@@ -248,9 +254,8 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 
 /* ---- phones: a smaller fox, and the card becomes a bottom sheet --------- */
 @media (max-width: 600px) {
-  .fox-guide { --fox-d: 88px; --fox-ring: 3px; }
-  .fox-guide__ink { stroke-width: 1.3; }
-  .fox-guide__badge { width: 24px; height: 24px; font-size: 12px; }
+  .fox-guide { --fox-h: 60px; }
+  .fox-guide__card { width: 90px; padding: 6px 5px 4px; border-radius: 14px; }
   .fox-guide__bubble { margin-bottom: 26px; font-size: 0.95rem; }
   body:has(.concept-switcher) .fox-guide { --fox-b: 128px; }
   .fox-guide__scrim {
@@ -278,9 +283,9 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 /* On Step Inside the chapter cards own the left/bottom of the screen, so the
    fox steps aside: bottom-right on a laptop, top-left (under the nav) on a phone. */
 body:has(.sih) .fox-guide { left: auto; right: max(64px, env(safe-area-inset-right, 0px)); flex-direction: row-reverse; }
-body:has(.sih) .fox-guide.is-hidden { right: 0; }
-body:has(.sih) .fox-guide__tab { border-radius: 22px 0 0 22px; }
-body:has(.sih) .fox-guide__peek { left: auto; right: 3px; transform: none; }
+body:has(.sih) .fox-guide.is-hidden { right: max(10px, env(safe-area-inset-right, 0px)); }
+
+body:has(.sih) .fox-guide__peek { transform: none; }
 body:has(.sih) .fox-guide.is-back .fox-guide__body { animation-name: fox-return-r; }
 body:has(.sih) .fox-guide__tab { animation-name: fox-tab-r; }
 body:has(.sih) .fox-guide__bubble { border-radius: 14px 14px 3px 14px; }
@@ -288,9 +293,9 @@ body:has(.sih) .fox-guide__bubble::before { left: auto; right: -7px; box-shadow:
 body:has(.sih) .fox-help { left: auto; right: 0; transform-origin: calc(100% - 30px) 100%; }
 @media (max-width: 600px) {
   body:has(.sih) .fox-guide { right: auto; left: 12px; bottom: auto; top: 86px; flex-direction: row; align-items: flex-start; }
-  body:has(.sih) .fox-guide.is-hidden { left: 0; right: auto; }
-  body:has(.sih) .fox-guide__tab { border-radius: 0 22px 22px 0; animation-name: fox-tab; }
-  body:has(.sih) .fox-guide__peek { right: auto; left: 3px; transform: scaleX(-1); }
+  body:has(.sih) .fox-guide.is-hidden { left: max(10px, env(safe-area-inset-left, 0px)); right: auto; }
+  body:has(.sih) .fox-guide__tab { animation-name: fox-tab; }
+  body:has(.sih) .fox-guide__peek { transform: scaleX(-1); }
   body:has(.sih) .fox-guide.is-back .fox-guide__body { animation-name: fox-return-l; }
   body:has(.sih) .fox-guide__bubble { margin: 6px 0 0; border-radius: 3px 14px 14px 14px; }
   body:has(.sih) .fox-guide__bubble::before { right: auto; left: -7px; top: 12px; bottom: auto; box-shadow: -2px 2px 0 0 var(--color-yellow); }
@@ -302,8 +307,8 @@ body:has(.sih) .fox-help { left: auto; right: 0; transform-origin: calc(100% - 3
 @keyframes fox-card { from { opacity: 0; transform: translateY(10px) scale(0.96); } }
 @keyframes fox-sheet { from { transform: translateY(100%); } }
 @keyframes fox-fade { from { opacity: 0; } }
-@keyframes fox-tab { from { transform: translateX(-100%); } }
-@keyframes fox-tab-r { from { transform: translateX(100%); } }
+@keyframes fox-tab { from { transform: translateX(calc(-100% - 20px)); } }
+@keyframes fox-tab-r { from { transform: translateX(calc(100% + 20px)); } }
 @keyframes fox-answer { from { opacity: 0; transform: translateY(4px); } }
 /* back in from the edge: a plain slide, no scaling, no overshoot */
 @keyframes fox-return-l { from { transform: translateX(calc(-100% - 20px)); } }
@@ -339,6 +344,10 @@ body:has(.sih) .fox-help { left: auto; right: 0; transform-origin: calc(100% - 3
   font: 700 0.8rem/1.1 var(--font-body); text-align: center;
 }
 .fox-help__tile svg { font-size: 1.05rem; color: var(--color-yellow-deep); }
+/* Surprise me: a steaming mug with a little sparkle */
+.fox-help__tile-ico { position: relative; display: inline-block; line-height: 0; }
+.fox-help__tile .fox-help__tile-spark { position: absolute; right: -7px; top: -5px; width: 8px; height: 8px; font-size: inherit; fill: var(--color-pink-deep); }
+.fox-help__tile[aria-pressed='true'] .fox-help__tile-spark { fill: #fffdf7; }
 .fox-help__tile:hover { box-shadow: inset 0 0 0 1.5px var(--color-yellow-deep); }
 .fox-help__tile[aria-pressed='true'] { background: var(--color-green-deep); color: var(--color-on-primary); box-shadow: none; }
 .fox-help__tile[aria-pressed='true'] svg { color: var(--color-yellow); }
@@ -368,10 +377,12 @@ button.fox-help__link { font: 600 0.88rem/1 var(--font-body); border: 0; cursor:
   background: radial-gradient(90% 90% at 50% 30%, #fffdf6, var(--color-yellow-soft));
   box-shadow: inset 0 0 0 2px var(--color-yellow);
 }
-.fox-drink__photo img { width: 100%; height: 100%; object-fit: cover; }
+/* the WHOLE drink, always: a product photo is shown entire (contain), never
+   cropped to its straw or lid, on the cream backdrop */
+.fox-drink__photo img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: 50% 50%; padding: 3px; box-sizing: border-box; }
 .fox-drink__photo.is-cutout img { object-fit: contain; padding: 4px; filter: drop-shadow(0 3px 3px rgba(30, 22, 8, 0.25)); }
 .fox-drink__info { min-width: 0; }
-.fox-drink__name { margin: 0; font: 600 1.15rem/1.15 var(--font-display); color: var(--color-ink); }
+.fox-drink__name { margin: 0; font: 600 1.15rem/1.15 var(--font-display); color: var(--color-ink); overflow-wrap: anywhere; }
 .fox-drink__price { margin: 2px 0 0; font: 700 0.92rem/1.2 var(--font-body); color: var(--color-green-deep); }
 .fox-drink__note { grid-column: 1 / -1; margin: 6px 0 0; font: 500 0.88rem/1.35 var(--font-body); color: var(--color-ink-soft); }
 
@@ -418,8 +429,10 @@ button.fox-help__link { font: 600 0.88rem/1 var(--font-body); border: 0; cursor:
 .fox-quiz__choice.fox-quiz__skip:hover { color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-green-deep); }
 
 /* the match: top pick, the one-line why, then two runner-ups */
-.fox-match { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 4px 12px; margin-top: 6px; animation: fox-answer 0.25s ease-out both; }
+.fox-match { display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 4px 12px; margin-top: 6px; animation: fox-answer 0.25s ease-out both; }
 .fox-match .fox-help__q { margin-bottom: 2px; }
+.fox-match .fox-drink__photo { width: 72px; height: 72px; }
+.fox-match__why, .fox-match .fox-drink__note { overflow-wrap: anywhere; }
 .fox-match__why { grid-column: 1 / -1; margin: 8px 0 0; font: 600 0.98rem/1.35 var(--font-body); color: var(--color-ink); }
 .fox-runners__title { margin-top: 12px; }
 .fox-runners { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 0; padding: 0; list-style: none; }
@@ -450,60 +463,69 @@ button.fox-help__link { font: 600 0.88rem/1 var(--font-body); border: 0; cursor:
 .fox-refine__chip:hover { background: var(--color-yellow-soft); }
 .fox-refine__chip:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 
-/* ---- Surprise me: the reel ------------------------------------------------
-   The window is exactly one row tall and the strip moves by transform only;
-   a vertically-blurred copy cross-fades in at speed (opacity only). The
-   landed row is the same height, so nothing moves when the reel hands over. */
-.fox-surprise { --reel-h: 52px; }
-.fox-surprise__card { grid-template-columns: 64px minmax(0, 1fr); }
-.fox-surprise__pic { position: relative; display: block; width: 64px; height: 64px; }
-.fox-surprise__dice { font-size: 26px; color: var(--color-yellow-deep); }
-.fox-surprise__dice svg { animation: fox-dice 0.42s linear infinite; }
-.fox-surprise__pop { position: relative; display: block; animation: fox-pop 0.42s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
-.fox-reel { position: relative; height: var(--reel-h); overflow: hidden; }
-.fox-reel__win {
-  position: absolute; inset: 0;
-  -webkit-mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent);
-  mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent);
+/* ---- Surprise me: the pour ------------------------------------------------
+   Timeline (≈1.5s, POUR_MS in foxFun.js), all transform + opacity:
+     0.00  the cup slides in                     0.05  ice drops in (iced)
+     0.12  the stream pours                       0.30  the cup fills, a
+     1.00  whipped top (frozen) / straw (cold)          little slosh at the top
+     1.10  latte heart (hot, milky) · steam · sparkle · the cup bobs
+     1.10  name + price rise out with a soft bounce
+   Every element's resting style IS the finished pour, so with motion off
+   (prefers-reduced-motion) it simply shows — and the card fades in. */
+.fox-surprise__card.fox-pour { grid-template-columns: 88px minmax(0, 1fr); }
+.fox-pour__stage { position: relative; display: block; width: 88px; height: 88px; animation: fox-cup-bob 0.4s ease-in-out 1.1s both; }
+.fox-pour__cup { display: block; width: 88px; height: 88px; animation: fox-cup-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+.fox-pour__cup g, .fox-pour__cup rect { transform-box: fill-box; }
+.fox-pour__stream { transform-origin: 50% 0; opacity: 0; animation: fox-stream 1s cubic-bezier(0.45, 0, 0.3, 1) 0.12s both; }
+.fox-pour__liquid { animation: fox-fill 0.85s cubic-bezier(0.42, 0, 0.2, 1) 0.3s both; }
+.fox-pour__ice { animation: fox-ice 0.42s cubic-bezier(0.3, 1.45, 0.5, 1) 0.05s both; }
+.fox-pour__ice:nth-child(2) { animation-delay: 0.13s; }
+.fox-pour__ice:nth-child(3) { animation-delay: 0.21s; }
+.fox-pour__straw { animation: fox-straw 0.42s cubic-bezier(0.3, 1.4, 0.5, 1) 1s both; }
+.fox-pour__dome { transform-origin: 50% 100%; animation: fox-dome 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) 1s both; }
+.fox-pour__heart { transform-origin: 50% 50%; animation: fox-heart 0.45s cubic-bezier(0.3, 1.7, 0.5, 1) 1.08s both; }
+.fox-pour__steam path { transform-box: fill-box; transform-origin: 50% 100%; opacity: 0.32; animation: fox-pour-steam 1.8s ease-out 1.1s infinite both; }
+.fox-pour__steam path:nth-child(2) { animation-delay: 1.4s; }
+.fox-pour__steam path:nth-child(3) { animation-delay: 1.7s; }
+.fox-pour__info { display: grid; align-items: center; min-height: 64px; }
+.fox-pour__wait, .fox-pour__card { grid-area: 1 / 1; min-width: 0; }
+.fox-pour__wait {
+  margin: 0; font: italic 600 1rem/1.2 var(--font-display); color: var(--color-ink-soft);
+  opacity: 0; animation: fox-wait 1.15s linear both;
 }
-.fox-reel__defs { position: absolute; width: 0; height: 0; }
-.fox-reel__strip { position: absolute; left: 0; right: 0; top: 0; will-change: transform, opacity; backface-visibility: hidden; }
-.fox-reel__strip.is-blur { opacity: 0; }
-.fox-reel__row { display: flex; flex-direction: column; justify-content: center; height: var(--reel-h); min-width: 0; }
-.fox-reel__name, .fox-reel__row .fox-drink__name {
-  display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-  margin: 0; font: 600 1.15rem/1.2 var(--font-display); color: var(--color-ink);
-}
-.fox-reel__price, .fox-reel__row .fox-drink__price { display: block; margin: 2px 0 0; font: 700 0.92rem/1.2 var(--font-body); color: var(--color-green-deep); }
-.fox-surprise.is-spinning .fox-surprise__links { opacity: 0.5; pointer-events: none; }
-.fox-surprise__links { transition: opacity 0.2s ease; }
-/* landing: a little sparkle round the photo, and steam over a hot drink */
-.fox-surprise__fx { position: absolute; inset: 0; pointer-events: none; }
+.fox-pour__card { animation: fox-card-rise 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) 1.1s both; }
+.fox-surprise.is-pouring .fox-surprise__links { opacity: 0.55; pointer-events: none; }
+.fox-surprise__links { transition: opacity 0.25s ease; }
+.fox-surprise.is-instant .fox-surprise__card { animation: fox-fade 0.3s ease-out both; }
+/* a little sparkle as it settles */
+.fox-surprise__spark { position: absolute; inset: 0; pointer-events: none; }
 .fox-surprise__spark i {
   position: absolute; width: 10px; height: 10px; background: var(--color-yellow);
   clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
-  opacity: 0; animation: fox-spark 0.7s ease-out both;
+  opacity: 0; animation: fox-spark 0.7s ease-out 1.12s both;
 }
-.fox-surprise__spark i:nth-child(1) { left: -6px; top: 8px; }
-.fox-surprise__spark i:nth-child(2) { left: 26px; top: -9px; width: 12px; height: 12px; animation-delay: 0.06s; }
-.fox-surprise__spark i:nth-child(3) { right: -7px; top: 14px; animation-delay: 0.12s; }
-.fox-surprise__spark i:nth-child(4) { right: -3px; bottom: -4px; width: 8px; height: 8px; animation-delay: 0.18s; }
-.fox-surprise__spark i:nth-child(5) { left: -2px; bottom: -6px; width: 8px; height: 8px; animation-delay: 0.1s; }
-.fox-surprise__steam { position: absolute; left: 20px; top: -14px; width: 24px; height: 16px; }
-.fox-surprise__steam i {
-  position: absolute; bottom: 0; width: 3px; height: 13px; border-radius: 3px;
-  background: linear-gradient(transparent, rgba(25, 21, 18, 0.4), transparent);
-  opacity: 0; animation: fox-steam-up 1.5s ease-out 0.15s 2 both;
-}
-.fox-surprise__steam i:nth-child(1) { left: 2px; }
-.fox-surprise__steam i:nth-child(2) { left: 10px; animation-delay: 0.35s; height: 16px; }
-.fox-surprise__steam i:nth-child(3) { left: 18px; animation-delay: 0.55s; }
-.fox-surprise.is-instant .fox-surprise__card { animation: fox-fade 0.3s ease-out both; }
+.fox-surprise__spark i:nth-child(1) { left: 6px; top: 20px; }
+.fox-surprise__spark i:nth-child(2) { left: 66px; top: 12px; width: 12px; height: 12px; animation-delay: 1.18s; }
+.fox-surprise__spark i:nth-child(3) { left: 72px; top: 52px; width: 8px; height: 8px; animation-delay: 1.24s; }
+.fox-surprise__spark i:nth-child(4) { left: 2px; top: 60px; width: 8px; height: 8px; animation-delay: 1.3s; }
 
-@keyframes fox-dice { to { transform: rotate(360deg); } }
-@keyframes fox-pop { 0% { opacity: 0; transform: scale(0.72); } 55% { opacity: 1; transform: scale(1.07); } 100% { transform: scale(1); } }
+@keyframes fox-cup-in { from { opacity: 0; transform: translateY(8px) scale(0.94); } }
+@keyframes fox-cup-bob { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-4px); } }
+@keyframes fox-stream {
+  0% { opacity: 1; transform: translateY(0) scaleY(0); }
+  22% { opacity: 1; transform: translateY(0) scaleY(1); }
+  76% { opacity: 1; transform: translateY(0) scaleY(1); }
+  100% { opacity: 1; transform: translateY(64px) scaleY(0); }
+}
+@keyframes fox-fill { 0% { transform: translateY(var(--fill-from, 44px)); } 82% { transform: translateY(-1.6px); } 100% { transform: translateY(0); } }
+@keyframes fox-ice { 0% { opacity: 0; transform: translateY(-58px) rotate(-18deg); } 30% { opacity: 1; } }
+@keyframes fox-straw { from { opacity: 0; transform: translateY(-26px); } }
+@keyframes fox-dome { from { opacity: 0; transform: scale(0.2); } }
+@keyframes fox-heart { from { opacity: 0; transform: scale(0); } }
+@keyframes fox-pour-steam { 0% { opacity: 0; transform: translateY(5px) scaleY(0.7); } 30% { opacity: 0.45; } 100% { opacity: 0; transform: translateY(-9px) scaleY(1.15); } }
+@keyframes fox-wait { 0% { opacity: 0; } 12%, 78% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fox-card-rise { 0% { opacity: 0; transform: translateY(16px); } 60% { opacity: 1; } }
 @keyframes fox-spark { 0% { opacity: 0; transform: scale(0) rotate(0deg); } 40% { opacity: 1; transform: scale(1) rotate(45deg); } 100% { opacity: 0; transform: scale(0.3) rotate(90deg); } }
-@keyframes fox-steam-up { 0% { opacity: 0; transform: translateY(4px) scaleY(0.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-12px) scaleY(1.2); } }
 
 .fox-award { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: start; }
 .fox-award__medal {
@@ -514,38 +536,36 @@ button.fox-help__link { font: 600 0.88rem/1 var(--font-body); border: 0; cursor:
 }
 .fox-award__title { margin: 0 0 3px; font: 600 1.3rem/1.1 var(--font-display); color: var(--color-ink); }
 
-/* ---- accessories on the fox -----------------------------------------------
-   The nightcap and pumpkin are drawn inside his figure (FoxPlay's
-   FoxFigure), in the drawing's own coordinates, so they sit on him and turn
-   with him; only the z's and the tail live outside it. */
-.fox-acc { pointer-events: none; }
-svg.fox-acc { position: absolute; display: block; }
-/* zzz drift up into the empty corner of the face, on the side he's facing
-   away from (top-right as he usually sits) */
-.fox-guide__zzz {
-  position: absolute; top: 12%; left: calc(50% - var(--face, -1) * 20% - 9px);
-  width: 18px; height: 24px; pointer-events: none;
-}
+/* ---- accessories on the fox (overlays on the same drawing) -------------- */
+.fox-acc { position: absolute; display: block; pointer-events: none; }
+/* the nightcap sits over his top hat (inside the figure, so it turns with him) */
+.fox-acc--nightcap { left: 43%; top: -12%; width: 30%; height: auto; transform: rotate(-6deg); }
+/* zzz drift up from just above his head */
+.fox-guide__zzz { position: absolute; left: 62%; top: -8px; width: 34px; height: 34px; pointer-events: none; }
 .fox-guide__zzz i {
-  position: absolute; left: 0; bottom: 0; font: 700 17px/1 var(--font-hand); font-style: normal; color: var(--color-green-deep);
+  position: absolute; left: 0; bottom: 0; font: 700 22px/1 var(--font-hand); font-style: normal; color: var(--color-green-deep);
+  text-shadow: 0 0 3px var(--color-paper), 0 0 3px var(--color-paper), 0 0 6px var(--color-paper);
   opacity: 0; animation: fox-z 3.6s ease-out infinite;
 }
-.fox-guide__zzz i:nth-child(2) { animation-delay: 1.2s; font-size: 14px; }
-.fox-guide__zzz i:nth-child(3) { animation-delay: 2.4s; font-size: 12px; }
+.fox-guide__zzz i:nth-child(2) { animation-delay: 1.2s; font-size: 18px; }
+.fox-guide__zzz i:nth-child(3) { animation-delay: 2.4s; font-size: 15px; }
 /* asleep: no sipping, no steam — the z's are the one motion */
 .fox-guide.is-sleepy .fox-guide__figure { animation: none; }
 .fox-guide.is-sleepy .fox-guide__steam { display: none; }
 /* morning: a fresh cup, steaming steadily */
-.fox-guide.is-morning:not(.is-wave):not(.is-hop):not(.is-wag) .fox-guide__steam path { animation-duration: 3.2s; animation-delay: 0s; }
-.fox-guide.is-morning .fox-guide__steam path:nth-child(2) { animation-delay: 1s; }
-.fox-guide.is-morning .fox-guide__steam path:nth-child(3) { animation-delay: 2s; }
-/* new fox fact today: a dot on the ring at half-past two */
-.fox-guide__dot { left: 97.5%; top: 34%; translate: -50% -50%; width: 12px; height: 12px; z-index: 2; }
+.fox-guide.is-morning:not(.is-wave):not(.is-hop):not(.is-wag) .fox-guide__steam i { animation-duration: 3.2s; animation-delay: 0s; }
+.fox-guide.is-morning .fox-guide__steam i:nth-child(2) { animation-delay: 1s; }
+.fox-guide.is-morning .fox-guide__steam i:nth-child(3) { animation-delay: 2s; }
+/* October: a pumpkin at his feet */
+.fox-acc--pumpkin { right: -10px; bottom: -8px; width: 30px; filter: drop-shadow(0 2px 2px rgba(30, 22, 8, 0.25)); }
+/* new fox fact today */
+.fox-guide__dot { top: -3px; right: -3px; width: 12px; height: 12px; }
 
-/* the tail lives behind the medallion and only comes out to wag */
+/* the tail lives behind the sticker and only comes out to wag */
 .fox-guide__fox { position: relative; }
+.fox-guide__card { z-index: 1; }
 .fox-acc--tail {
-  right: -40px; top: 22%; width: 60px; z-index: 0;
+  right: -44px; top: 8%; width: 62px; z-index: 0;
   transform-origin: 6% 80%;
   opacity: 0; transform: translateX(-24px) rotate(10deg);
 }
@@ -559,7 +579,7 @@ svg.fox-acc { position: absolute; display: block; }
   animation: fox-confetti 1.1s cubic-bezier(0.2, 0.7, 0.4, 1) both;
 }
 
-@keyframes fox-z { 0% { opacity: 0; transform: translate(0, 6px) rotate(-8deg); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -16px) rotate(8deg); } }
+@keyframes fox-z { 0% { opacity: 0; transform: translate(0, 0) rotate(-8deg); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(18px, -30px) rotate(8deg); } }
 @keyframes fox-wag {
   0% { opacity: 0; transform: translateX(-24px) rotate(10deg); }
   18% { opacity: 1; transform: translateX(0) rotate(-14deg); }
@@ -578,7 +598,8 @@ svg.fox-acc { position: absolute; display: block; }
 @media (max-width: 600px) {
   .fox-help__tile { min-height: 60px; font-size: 0.82rem; }
   .fox-quiz__choice { min-height: 56px; }
-  .fox-acc--tail { right: -32px; width: 48px; }
+  .fox-acc--tail { right: -34px; width: 48px; }
+  .fox-acc--pumpkin { width: 24px; right: -8px; }
 }
 body:has(.sih) .fox-acc--tail { right: auto; left: -44px; transform-origin: 94% 80%; scale: -1 1; }
 
@@ -588,7 +609,7 @@ body:has(.sih) .fox-acc--tail { right: auto; left: -44px; transform-origin: 94% 
   .fox-guide__zzz i { opacity: 1; }
   .fox-guide__zzz i:nth-child(2) { transform: translate(8px, -9px); }
   .fox-guide__zzz i:nth-child(3) { transform: translate(15px, -17px); }
-  /* Surprise me: no reel — the pick just fades in (opacity only) */
+  /* Surprise me: no pour — the full cup and its card just fade in (opacity only) */
   .fox-guide .fox-surprise.is-instant .fox-surprise__card { animation: fox-fade 0.3s ease-out both !important; }
 }
 @media print { .fox-guide { display: none; } }
