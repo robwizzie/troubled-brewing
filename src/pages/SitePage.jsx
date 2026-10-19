@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CanvasEditingContext } from '../lib/canvasContext.jsx';
-import { getPage, getSections } from '../lib/dataService.js';
+import { getEvents, getPage, getSections } from '../lib/dataService.js';
 import SectionRenderer from '../components/SectionRenderer.jsx';
 import SEO from '../components/SEO.jsx';
 import SocialLinks from '../components/SocialLinks.jsx';
 import { PageSkeleton } from '../components/Skeleton.jsx';
-import { localBusinessJsonLd } from '../lib/jsonld.js';
+import { getMenu } from '../lib/menuService.js';
 
 /* Generic section-composed page. Fetches the page meta + ordered sections and
    renders them via the registry. Used by most public routes. Supports admin
@@ -34,7 +34,18 @@ export default function SitePage({ slug, children, showSocial = false }) {
 
   const effSections = canvas && canvas.slug === slug ? canvas.sections : sections;
 
-  const includeJsonLd = slug === 'location';
+  // Structured data that needs the page's own records: Menu on /menu,
+  // Event on /events (see src/lib/jsonld.js). Fetched once per slug.
+  const [schemaData, setSchemaData] = useState({});
+  useEffect(() => {
+    let alive = true;
+    setSchemaData({});
+    const load = slug === 'menu' ? getMenu().then((menuItems) => ({ menuItems }))
+      : slug === 'events' ? getEvents().then((events) => ({ events }))
+        : null;
+    if (load) load.then((d) => { if (alive) setSchemaData(d); }).catch(() => {});
+    return () => { alive = false; };
+  }, [slug]);
 
   return (
     <>
@@ -42,7 +53,8 @@ export default function SitePage({ slug, children, showSocial = false }) {
         title={page?.title}
         description={page?.meta_description}
         path={slug === 'home' ? '/' : `/${slug}`}
-        jsonLd={includeJsonLd ? localBusinessJsonLd() : undefined}
+        menuItems={schemaData.menuItems}
+        events={schemaData.events}
       />
       {preview && (
         <div className="announce" style={{ background: 'var(--color-accent)', color: 'var(--color-on-accent)' }}>

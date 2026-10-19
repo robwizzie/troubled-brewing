@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import seoPrerender from './scripts/seo-build-plugin.mjs';
 
 // Base path. The site currently deploys as a GitHub *project page* under
 // `/troubled-brewing/` (e.g. robwiscount.org/troubled-brewing/), so assets must
@@ -9,7 +10,9 @@ import react from '@vitejs/plugin-react';
 const base = process.env.VITE_BASE_PATH || '/troubled-brewing/';
 
 export default defineConfig({
-  plugins: [react()],
+  // seoPrerender: after the build, writes a static HTML page per public route
+  // (own title/description/canonical/OG/JSON-LD) + sitemap.xml + robots.txt.
+  plugins: [react(), seoPrerender()],
   base,
   // Route smoke tests (`npm test`). jsdom + a stubbed matchMedia/IntersectionObserver
   // (test/setup.js) is enough to prove every public route renders off the seed
