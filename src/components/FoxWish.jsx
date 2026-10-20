@@ -1,26 +1,41 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LuArrowLeft, LuCheck, LuCoffee, LuCroissant, LuSandwich, LuSparkles, LuWandSparkles } from 'react-icons/lu';
+import { LuArrowLeft, LuCheck, LuCoffee, LuCroissant, LuMessageSquarePlus, LuPenLine, LuSandwich, LuSparkles, LuWandSparkles } from 'react-icons/lu';
 import { track } from '../lib/analytics.js';
 import { CATEGORIES, LIMITS, checkWish, foxReply, markWished, sendWish, wishedToday } from '../lib/wishes.js';
 import '../styles/fox-wish.css';
 
-/* "Make a wish for the menu" — a pane in the fox's card (FoxGuide.jsx, and
-   ?fox=wish). The visitor writes a wish on a little paper note; it folds in
-   two, arcs into the fox's top hat, the hat swallows it (squash, stretch, a
-   wiggle) and a small burst of gold and blush sparkles pops out, then the
-   fox answers. One wish a day per browser. Rules and anti-spam live in
-   src/lib/wishes.js; the server side in supabase/migrations/2026-10-19-wishes.sql.
+/* "Make a wish for the menu" — ONE flow, shown in a few places:
 
-   One timeline, started on submit (all CSS, transform + opacity only,
-   fox-wish.css): fold 0–0.7s, flight 0.7–1.25s, swallow + sparkles to
-   ~1.9s, then the thank-you rises in (2.0s). `data-stage` follows it:
+     variant 'card'   the fox's card (FoxGuide.jsx, ?fox=wish). The card's
+                      header carries the title and the way back; this is just
+                      the form, then the hat scene in its place.
+     variant 'split'  a page or a page block: the /wish page (WishPage.jsx),
+                      the end of the Menu page, and the "Wish list" CMS
+                      section (sections/WishListSection.jsx). The words and a
+                      big top hat sit on one side, the form on the other (one
+                      column on phones), and the note flies into THAT hat.
+
+   Every variant runs the same rules and the same submit: checkWish(), the
+   honeypot and ~3s minimum, sendWish() (the submit_wish RPC),
+   track('wish_submitted', { category }), and one wish a day per browser
+   (wishedToday / markWished). Rules and anti-spam live in src/lib/wishes.js;
+   the server side in supabase/migrations/2026-10-19-wishes.sql.
+
+   The visitor writes the wish on a little paper note. On submit it folds in
+   two, arcs into the top hat, the hat swallows it (squash, stretch, a
+   wiggle) and a small burst of gold and blush sparkles pops out, then the
+   fox answers. One timeline, all CSS, transform + opacity only
+   (fox-wish.css): fold 0–0.7s, flight 0.7–1.25s, swallow + sparkles to
+   ~1.9s, then the thank-you rises in. `data-stage` follows it:
    form → fold → drop → thanks. Reduced motion: form → thanks, a quick fade
    with the hat and sparkles still.
 
-   Icons are Lucide (react-icons/lu), the same family as the admin. Nothing
-   a customer sees ever says "error" because of the database: if it's
-   missing or down, the hat still eats the wish. */
+   The "why" and first-name fields stay folded behind two small buttons
+   ("Say why", "Sign it") so the form is short. Icons are Lucide
+   (react-icons/lu), the same family as the admin. Nothing a customer sees
+   ever says "error" because of the database: if it's missing or down, the
+   hat still eats the wish. */
 
 export const FOLD_MS = 700;
 export const DROP_MS = 1300;
@@ -73,11 +88,13 @@ const SPARKS = [
   [58, -46, 'blush'], [-76, -12, 'gold'], [76, -12, 'gold'], [-44, -88, 'dot'], [44, -88, 'dot'],
 ];
 
-/** The hat, the note and the sparkles. `stage`: 'anim' | 'still'. */
-function WishScene({ stage, note, name }) {
+/** The hat, the note and the sparkles. `stage`: 'anim' | 'still'.
+    `fixed`: the scene keeps its full height at rest (the split layouts,
+    where the same hat waits for the note). */
+function WishScene({ stage, note, name, fixed = false }) {
   const anim = stage === 'anim';
   return (
-    <div className={`fox-wish__scene${anim ? ' is-anim' : ' is-still'}`} aria-hidden="true">
+    <div className={`fox-wish__scene${anim ? ' is-anim' : ' is-still'}${fixed ? ' is-fixed' : ''}`} aria-hidden="true">
       <HatBack />
       {anim && (
         <div className="fox-wish__fly">
@@ -105,15 +122,24 @@ function WishScene({ stage, note, name }) {
   );
 }
 
-/* ---- the pane --------------------------------------------------------------------- */
-export default function FoxWish({ onDone }) {
-  const uid = useId().replace(/:/g, '');
+/** The wish hat at rest, as a small illustration (the 404 page). */
+export function WishHat({ className = '' }) {
+  return (
+    <span className={`fox-wish wish-hat ${className}`.trim()}>
+      <WishScene stage="still" />
+    </span>
+  );
+}
+
+/* ---- the state machine (shared by every variant) ------------------------- */
+function useWish({ focusOnArrival }) {
   const [stage, setStage] = useState(() => (wishedToday() ? 'already' : 'form'));
   const [category, setCategory] = useState('drink');
   const [text, setText] = useState('');
   const [why, setWhy] = useState('');
   const [name, setName] = useState('');
   const [honey, setHoney] = useState('');
+  const [open, setOpen] = useState({ why: false, name: false });
   const [error, setError] = useState(null);
   const [reply, setReply] = useState('');
   const [note, setNote] = useState({ text: '', name: '' });
@@ -122,11 +148,12 @@ export default function FoxWish({ onDone }) {
   const timers = useRef([]);
   const refs = { text: useRef(null), why: useRef(null), name: useRef(null) };
   const thanksRef = useRef(null);
+  const sceneRef = useRef(null);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
-  // straight into the wish: focus the text field once the card has settled
-  // (the card focuses itself first when it opens)
+  // the card goes straight into the wish: focus the text field once the card
+  // has settled (the card focuses itself first when it opens)
   useEffect(() => {
-    if (stage !== 'form') return undefined;
+    if (!focusOnArrival || stage !== 'form') return undefined;
     const raf = requestAnimationFrame(() => requestAnimationFrame(() => refs.text.current?.focus({ preventScroll: true })));
     return () => cancelAnimationFrame(raf);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- on arrival only
@@ -137,8 +164,10 @@ export default function FoxWish({ onDone }) {
     try { if (!reduced()) window.navigator?.vibrate?.(10); } catch { /* no vibration: fine */ }
   }, [stage]);
 
-  const cat = CATEGORIES.find((c) => c.id === category) || CATEGORIES[0];
-  const near = text.length >= LIMITS.text - 10;
+  const reveal = (field) => {
+    setOpen((o) => ({ ...o, [field]: true }));
+    requestAnimationFrame(() => refs[field].current?.focus());
+  };
 
   const submit = (e) => {
     e.preventDefault();
@@ -146,6 +175,7 @@ export default function FoxWish({ onDone }) {
     const r = checkWish({ category, text, why, name, honeypot: honey, elapsedMs: Date.now() - started.current });
     if (!r.ok && !r.silent) {
       setError({ field: r.field, message: r.message });
+      if (r.field !== 'text') setOpen((o) => ({ ...o, [r.field]: true }));
       requestAnimationFrame(() => refs[r.field]?.current?.focus());
       return;
     }
@@ -159,6 +189,13 @@ export default function FoxWish({ onDone }) {
     setNote({ text: wish.text, name: wish.name || '' });
     setReply(foxReply(wish));
     if (reduced()) { setStage('thanks'); return; }
+    // the hat must be on screen to catch the note (a phone may have scrolled
+    // down to the button)
+    const hat = sceneRef.current;
+    if (hat?.getBoundingClientRect) {
+      const r2 = hat.getBoundingClientRect();
+      if (r2.top < 0 || r2.bottom > window.innerHeight) hat.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
+    }
     // the button presses down first, then the note takes over
     setPressed(true);
     timers.current = [
@@ -168,112 +205,199 @@ export default function FoxWish({ onDone }) {
     ];
   };
 
+  return {
+    stage, category, setCategory, text, setText, why, setWhy, name, setName, honey, setHoney,
+    open, reveal, error, setError, reply, note, pressed, refs, thanksRef, sceneRef, submit,
+  };
+}
+
+/* ---- the form ------------------------------------------------------------ */
+function WishForm({ w, uid, disabled = false }) {
+  const cat = CATEGORIES.find((c) => c.id === w.category) || CATEGORIES[0];
+  const near = w.text.length >= LIMITS.text - 10;
   const fieldProps = (field, id) => ({
     id,
-    'aria-invalid': error?.field === field ? 'true' : undefined,
-    'aria-describedby': error?.field === field ? `${uid}-err` : undefined,
+    'aria-invalid': w.error?.field === field ? 'true' : undefined,
+    'aria-describedby': w.error?.field === field ? `${uid}-err` : undefined,
   });
-  const errorFor = (field) => (error?.field === field
-    ? <p className="fox-wish__error" id={`${uid}-err`} role="alert">{error.message}</p> : null);
+  const errorFor = (field) => (w.error?.field === field
+    ? <p className="fox-wish__error" id={`${uid}-err`} role="alert">{w.error.message}</p> : null);
+  const change = (field, set) => (e) => { set(e.target.value); if (w.error?.field === field) w.setError(null); };
 
-  if (stage === 'already' || stage === 'thanks') {
-    const thanks = stage === 'thanks';
-    return (
-      <div className={`fox-play fox-wish fox-wish--done${thanks && note.text ? ' is-fresh' : ''}`} data-testid="fox-wish" data-stage={stage}>
-        <WishScene stage="still" />
-        <div className="fox-wish__words">
-          <p className="fox-help__q fox-wish__kicker" tabIndex={thanks ? -1 : undefined} ref={thanks ? thanksRef : undefined}>
-            <LuSparkles aria-hidden="true" />{thanks ? 'Into the hat it goes!' : 'Your wish is in the hat'}
-          </p>
-          <p className="fox-help__a fox-wish__reply">{thanks ? reply : 'You’ve made today’s wish.'}</p>
-          <p className="fox-wish__again">You can wish again tomorrow.</p>
-          {onDone && (
-            <button type="button" className="fox-wish__back" onClick={onDone}>
-              <LuArrowLeft aria-hidden="true" /> Back to questions
+  return (
+    <form className="fox-wish__form" onSubmit={w.submit} noValidate aria-label="Make a wish for the menu" inert={disabled ? '' : undefined}>
+      <fieldset className="fox-wish__cats">
+        <legend className="fox-wish__label">What kind of wish?</legend>
+        <div className="fox-wish__chips">
+          {CATEGORIES.map((c) => {
+            const Icon = CHIP_ICONS[c.id];
+            const on = w.category === c.id;
+            return (
+              <label key={c.id} className={`fox-wish__chip${on ? ' is-on' : ''}`}>
+                <input type="radio" name={`${uid}-cat`} value={c.id} checked={on} onChange={() => w.setCategory(c.id)} />
+                <Icon className="fox-wish__chip-ico" aria-hidden="true" />
+                <span>{c.label}</span>
+                {on && <span className="fox-wish__chip-check" aria-hidden="true"><LuCheck /></span>}
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <div className="fox-wish__field">
+        <div className="fox-wish__labelrow">
+          <label className="fox-wish__label" htmlFor={`${uid}-text`}>Your wish</label>
+          <span className={`fox-wish__count${near ? ' is-near' : ''}`} aria-hidden="true">{w.text.length}/{LIMITS.text}</span>
+        </div>
+        {/* the note itself: a strip of ruled paper you write on */}
+        <div className="fox-wish__notefield">
+          <input ref={w.refs.text} type="text" className="fox-wish__input fox-wish__input--note" {...fieldProps('text', `${uid}-text`)}
+            value={w.text} maxLength={LIMITS.text} placeholder={cat.placeholder} autoComplete="off" enterKeyHint="send"
+            onChange={change('text', w.setText)} required />
+        </div>
+        {errorFor('text')}
+      </div>
+
+      {w.open.why && (
+        <div className="fox-wish__field">
+          <label className="fox-wish__label" htmlFor={`${uid}-why`}>Why you’d love it <span className="fox-wish__opt">(optional)</span></label>
+          <input ref={w.refs.why} type="text" className="fox-wish__input" {...fieldProps('why', `${uid}-why`)}
+            value={w.why} maxLength={LIMITS.why} placeholder="It tastes like my grandma’s kitchen…" autoComplete="off"
+            onChange={change('why', w.setWhy)} />
+          {errorFor('why')}
+        </div>
+      )}
+      {w.open.name && (
+        <div className="fox-wish__field fox-wish__field--name">
+          <label className="fox-wish__label" htmlFor={`${uid}-name`}>First name <span className="fox-wish__opt">(optional)</span></label>
+          <input ref={w.refs.name} type="text" className="fox-wish__input" {...fieldProps('name', `${uid}-name`)}
+            value={w.name} maxLength={LIMITS.name} autoComplete="given-name"
+            onChange={change('name', w.setName)} />
+          {errorFor('name')}
+        </div>
+      )}
+      {!(w.open.why && w.open.name) && (
+        <div className="fox-wish__extras">
+          {!w.open.why && (
+            <button type="button" className="fox-wish__extra" aria-expanded="false" onClick={() => w.reveal('why')}>
+              <LuMessageSquarePlus aria-hidden="true" /> Say why
             </button>
           )}
+          {!w.open.name && (
+            <button type="button" className="fox-wish__extra" aria-expanded="false" onClick={() => w.reveal('name')}>
+              <LuPenLine aria-hidden="true" /> Sign it
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* a field people never see: anything typed here is a bot */}
+      <div className="fox-wish__hp" aria-hidden="true">
+        <label htmlFor={`${uid}-website`}>Website</label>
+        <input id={`${uid}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" value={w.honey} onChange={(e) => w.setHoney(e.target.value)} />
+      </div>
+
+      <div className="fox-wish__actions">
+        <button type="submit" className={`fox-wish__submit${w.pressed ? ' is-pressed' : ''}`} disabled={w.pressed}>
+          <LuWandSparkles aria-hidden="true" /> Drop it in the hat
+        </button>
+        <p className="fox-wish__fine">No email needed.<br />One wish a day.</p>
+      </div>
+    </form>
+  );
+}
+
+/* ---- the words after (thank-you, or "already wished today") --------------- */
+function WishWords({ w, onDone, doneLabel, after }) {
+  const thanks = w.stage === 'thanks';
+  return (
+    <div className="fox-wish__words">
+      <p className="fox-wish__kicker" tabIndex={thanks ? -1 : undefined} ref={thanks ? w.thanksRef : undefined}>
+        <LuSparkles aria-hidden="true" />{thanks ? 'Into the hat it goes!' : 'Your wish is in the hat'}
+      </p>
+      <p className="fox-wish__reply">{thanks ? w.reply : 'You’ve made today’s wish.'}</p>
+      <p className="fox-wish__again">You can wish again tomorrow.</p>
+      {onDone && (
+        <button type="button" className="fox-wish__back" onClick={onDone}>
+          <LuArrowLeft aria-hidden="true" /> {doneLabel}
+        </button>
+      )}
+      {after}
+    </div>
+  );
+}
+
+/**
+ * The wish flow. Props:
+ *   variant  'card' (the fox's card) | 'split' (a page or page block)
+ *   intro    split only: the heading and a line, shown beside the hat
+ *   onDone   card only: "Back to questions" after the thank-you
+ *   after    split only: something to offer after the thank-you (a link)
+ *   className  added to the outer element
+ */
+export function WishFlow({ variant = 'card', intro = null, onDone, doneLabel = 'Back to questions', after = null, className = '' }) {
+  const uid = useId().replace(/:/g, '');
+  const w = useWish({ focusOnArrival: variant === 'card' });
+  // in the card, the hat scene and the thank-you keep the form's height, so
+  // the card doesn't jump when the form goes
+  const boxRef = useRef(null);
+  const lockH = useRef(0);
+  const submit = (e) => {
+    if (variant === 'card' && boxRef.current) lockH.current = boxRef.current.offsetHeight;
+    w.submit(e);
+  };
+  const wf = { ...w, submit };
+  const lock = lockH.current ? { minHeight: `${lockH.current}px` } : undefined;
+  const done = w.stage === 'already' || w.stage === 'thanks';
+  const flying = w.stage === 'fold' || w.stage === 'drop';
+  const fresh = w.stage === 'thanks' && Boolean(w.note.text);
+  const status = flying ? <p className="sr-only" role="status">Folding your wish into the hat…</p> : null;
+
+  if (variant === 'split') {
+    return (
+      <div
+        className={`fox-wish fox-wish--split${done ? ' fox-wish--done' : ''}${fresh ? ' is-fresh' : ''} ${className}`.trim()}
+        data-testid="fox-wish" data-stage={w.stage} aria-busy={flying ? 'true' : undefined}>
+        {intro && <div className="fox-wish__intro">{intro}</div>}
+        <div className="fox-wish__stage" ref={w.sceneRef}>
+          <WishScene stage={flying ? 'anim' : 'still'} note={w.note.text} name={w.note.name} fixed />
+        </div>
+        <div className="fox-wish__main">
+          {status}
+          {done ? <WishWords w={w} after={after} /> : <WishForm w={wf} uid={uid} disabled={flying} />}
         </div>
       </div>
     );
   }
 
-  if (stage === 'fold' || stage === 'drop') {
+  if (done) {
     return (
-      <div className="fox-play fox-wish fox-wish--anim" data-testid="fox-wish" data-stage={stage} aria-busy="true">
-        <p className="sr-only" role="status">Folding your wish into the fox’s hat…</p>
-        <WishScene stage="anim" note={note.text} name={note.name} />
+      <div className={`fox-play fox-wish fox-wish--card fox-wish--done${fresh ? ' is-fresh' : ''} ${className}`.trim()} data-testid="fox-wish" data-stage={w.stage} style={lock}>
+        <WishScene stage="still" />
+        <WishWords w={w} onDone={onDone} doneLabel={doneLabel} />
+      </div>
+    );
+  }
+
+  if (flying) {
+    return (
+      <div className={`fox-play fox-wish fox-wish--card fox-wish--anim ${className}`.trim()} data-testid="fox-wish" data-stage={w.stage} aria-busy="true" style={lock}>
+        {status}
+        <WishScene stage="anim" note={w.note.text} name={w.note.name} />
       </div>
     );
   }
 
   return (
-    <form className="fox-play fox-wish fox-wish--form" data-testid="fox-wish" data-stage="form" onSubmit={submit} noValidate>
-      <div className="fox-wish__paper">
-        <div className="fox-wish__head">
-          <p className="fox-help__q" id={`${uid}-title`}>Make a wish for the menu</p>
-          <p className="fox-wish__sub">A drink or a treat you’d love to see? I’ll pass it to Tom and Cat.</p>
-        </div>
-
-        <fieldset className="fox-wish__cats">
-          <legend className="fox-wish__label">What kind of wish?</legend>
-          <div className="fox-wish__chips">
-            {CATEGORIES.map((c) => {
-              const Icon = CHIP_ICONS[c.id];
-              const on = category === c.id;
-              return (
-                <label key={c.id} className={`fox-wish__chip${on ? ' is-on' : ''}`}>
-                  <input type="radio" name={`${uid}-cat`} value={c.id} checked={on} onChange={() => setCategory(c.id)} />
-                  <Icon className="fox-wish__chip-ico" aria-hidden="true" />
-                  <span>{c.label}</span>
-                  {on && <span className="fox-wish__chip-check" aria-hidden="true"><LuCheck /></span>}
-                </label>
-              );
-            })}
-          </div>
-        </fieldset>
-
-        <div className="fox-wish__field">
-          <div className="fox-wish__labelrow">
-            <label className="fox-wish__label" htmlFor={`${uid}-text`}>Your wish</label>
-            <span className={`fox-wish__count${near ? ' is-near' : ''}`} aria-hidden="true">{text.length}/{LIMITS.text}</span>
-          </div>
-          <input ref={refs.text} type="text" className="fox-wish__input" {...fieldProps('text', `${uid}-text`)}
-            value={text} maxLength={LIMITS.text} placeholder={cat.placeholder} autoComplete="off" enterKeyHint="next"
-            onChange={(e) => { setText(e.target.value); if (error?.field === 'text') setError(null); }} required />
-          {errorFor('text')}
-        </div>
-
-        <div className="fox-wish__field">
-          <label className="fox-wish__label" htmlFor={`${uid}-why`}>Why? <span className="fox-wish__opt">(optional)</span></label>
-          <input ref={refs.why} type="text" className="fox-wish__input" {...fieldProps('why', `${uid}-why`)}
-            value={why} maxLength={LIMITS.why} placeholder="It tastes like my grandma’s kitchen…" autoComplete="off"
-            onChange={(e) => { setWhy(e.target.value); if (error?.field === 'why') setError(null); }} />
-          {errorFor('why')}
-        </div>
-
-        <div className="fox-wish__field fox-wish__field--name">
-          <label className="fox-wish__label" htmlFor={`${uid}-name`}>First name <span className="fox-wish__opt">(optional)</span></label>
-          <input ref={refs.name} type="text" className="fox-wish__input" {...fieldProps('name', `${uid}-name`)}
-            value={name} maxLength={LIMITS.name} autoComplete="given-name"
-            onChange={(e) => { setName(e.target.value); if (error?.field === 'name') setError(null); }} />
-          {errorFor('name')}
-        </div>
-
-        {/* a field people never see: anything typed here is a bot */}
-        <div className="fox-wish__hp" aria-hidden="true">
-          <label htmlFor={`${uid}-website`}>Website</label>
-          <input id={`${uid}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} />
-        </div>
-
-        <div className="fox-wish__actions">
-          <button type="submit" className={`fox-wish__submit${pressed ? ' is-pressed' : ''}`} disabled={pressed}>
-            <LuWandSparkles aria-hidden="true" /> Drop it in the hat
-          </button>
-          <p className="fox-wish__fine">No email needed. One wish a day.</p>
-        </div>
-      </div>
-    </form>
+    <div ref={boxRef} className={`fox-play fox-wish fox-wish--card fox-wish--form ${className}`.trim()} data-testid="fox-wish" data-stage="form">
+      <WishForm w={wf} uid={uid} />
+    </div>
   );
+}
+
+/** The wish pane in the fox's card. */
+export default function FoxWish({ onDone }) {
+  return <WishFlow variant="card" onDone={onDone} />;
 }
 
 /* ---- ways in ---------------------------------------------------------------- */
@@ -288,15 +412,52 @@ export function WishButton({ pressed, onClick }) {
   );
 }
 
-/** "Wish for something new?" at the bottom of the Menu page: opens the fox
-    straight to the wish (the ?fox=wish deep link, which cleans itself up). */
-export function MenuWishLink() {
+/** The wish as a page block: a section with a heading and a line beside the
+    hat. Used at the end of the Menu page and by the "Wish list" CMS section. */
+export function WishSection({ heading, intro, headingId, className = '', after = null }) {
+  const uid = useId().replace(/:/g, '');
+  const hid = headingId || `${uid}-wish-h`;
   return (
-    <p className="menu-wish">
-      <Link className="menu-wish__link" to="?fox=wish&src=menu">
-        <LuWandSparkles aria-hidden="true" />
-        Wish for something new?
-      </Link>
-    </p>
+    <section className={`section wish-section ${className}`.trim()} aria-labelledby={hid}>
+      <div className="container">
+        <WishFlow
+          variant="split"
+          after={after}
+          intro={(
+            <>
+              <h2 className="wish-section__title" id={hid}>{heading}</h2>
+              {intro && <p className="wish-section__lede">{intro}</p>}
+            </>
+          )}
+        />
+      </div>
+    </section>
+  );
+}
+
+/** The end of the Menu page: "Don't see your favorite?" and the wish, right
+    there (the old "Wish for something new?" link opened the fox instead). */
+export function MenuWish() {
+  return (
+    <WishSection
+      className="wish-section--menu"
+      heading="Don’t see your favorite?"
+      intro="Make a wish for the menu. Tom and Cat read every one."
+    />
+  );
+}
+
+/** A small hat moment (the 404 page): the hat at rest and a link to /wish. */
+export function WishNudge({ children = 'Make a wish for the menu', lead = null }) {
+  return (
+    <div className="wish-nudge">
+      <WishHat className="wish-nudge__hat" />
+      <span className="wish-nudge__words">
+        {lead && <span className="wish-nudge__lead">{lead}</span>}
+        <Link className="wish-nudge__link" to="/wish">
+          <LuWandSparkles aria-hidden="true" />{children}
+        </Link>
+      </span>
+    </div>
   );
 }

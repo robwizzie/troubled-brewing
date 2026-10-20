@@ -291,15 +291,17 @@ body:has(.sih) .fox-guide__tab { animation-name: fox-tab-r; }
 body:has(.sih) .fox-guide__bubble { border-radius: 14px 14px 3px 14px; }
 body:has(.sih) .fox-guide__bubble::before { left: auto; right: -7px; box-shadow: 2px -2px 0 0 var(--color-yellow); }
 body:has(.sih) .fox-help { left: auto; right: 0; transform-origin: calc(100% - 30px) 100%; }
+/* /wish on a phone: the form is the whole page, so he steps aside the same
+   way (top-left, under the nav) instead of sitting on its buttons */
 @media (max-width: 600px) {
-  body:has(.sih) .fox-guide { right: auto; left: 12px; bottom: auto; top: 86px; flex-direction: row; align-items: flex-start; }
-  body:has(.sih) .fox-guide.is-hidden { left: max(10px, env(safe-area-inset-left, 0px)); right: auto; }
-  body:has(.sih) .fox-guide__tab { animation-name: fox-tab; }
-  body:has(.sih) .fox-guide__peek { transform: scaleX(-1); }
-  body:has(.sih) .fox-guide.is-back .fox-guide__body { animation-name: fox-return-l; }
-  body:has(.sih) .fox-guide__bubble { margin: 6px 0 0; border-radius: 3px 14px 14px 14px; }
-  body:has(.sih) .fox-guide__bubble::before { right: auto; left: -7px; top: 12px; bottom: auto; box-shadow: -2px 2px 0 0 var(--color-yellow); }
-  body:has(.sih) .fox-help { left: 0; right: 0; }
+  body:has(.sih) .fox-guide, body:has(.wish-page) .fox-guide { right: auto; left: 12px; bottom: auto; top: 86px; flex-direction: row; align-items: flex-start; }
+  body:has(.sih) .fox-guide.is-hidden, body:has(.wish-page) .fox-guide.is-hidden { left: max(10px, env(safe-area-inset-left, 0px)); right: auto; }
+  body:has(.sih) .fox-guide__tab, body:has(.wish-page) .fox-guide__tab { animation-name: fox-tab; }
+  body:has(.sih) .fox-guide__peek, body:has(.wish-page) .fox-guide__peek { transform: scaleX(-1); }
+  body:has(.sih) .fox-guide.is-back .fox-guide__body, body:has(.wish-page) .fox-guide.is-back .fox-guide__body { animation-name: fox-return-l; }
+  body:has(.sih) .fox-guide__bubble, body:has(.wish-page) .fox-guide__bubble { margin: 6px 0 0; border-radius: 3px 14px 14px 14px; }
+  body:has(.sih) .fox-guide__bubble::before, body:has(.wish-page) .fox-guide__bubble::before { right: auto; left: -7px; top: 12px; bottom: auto; box-shadow: -2px 2px 0 0 var(--color-yellow); }
+  body:has(.sih) .fox-help, body:has(.wish-page) .fox-help { left: 0; right: 0; }
 }
 
 @keyframes fox-rise { from { transform: translateY(140%); opacity: 0; } }
