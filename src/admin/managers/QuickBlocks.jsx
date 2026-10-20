@@ -1,15 +1,19 @@
-import { Spinner, Hint } from '../components/ui.jsx';
+import { Link } from 'react-router-dom';
+import { LuArrowRight, LuPanelsTopLeft, LuPlus, LuX } from 'react-icons/lu';
+import { Spinner } from '../components/ui.jsx';
+import { Icon } from '../components/Icon.jsx';
 import ImageField from '../components/ImageField.jsx';
 import { ScreenHead } from '../lib/publishing.jsx';
 import { useBlockDraft } from '../lib/useBlockDraft.js';
-import { CONCEPTS, DEFAULT_CONCEPT } from '../../lib/concepts.js';
 
 /* One-off editable bits (content_blocks rows): announcement banner, social
-   links, featured drink, community-board picks and the homepage look. Every
+   links, featured drink and community-board picks (the homepage look has its
+   own screen, with previews: managers/HomepageLook.jsx). Every
    change stays on this screen until Publish; only the blocks you actually
    changed are written. */
 
 const SOCIAL_KEYS = ['instagram', 'facebook', 'tiktok', 'x', 'youtube'];
+const SOCIAL_NAMES = { instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', x: 'X (Twitter)', youtube: 'YouTube' };
 const changed = (dirty) => (dirty ? <span className="badge badge--draft panel-badge">Changed — not live yet</span> : null);
 
 export default function QuickBlocks() {
@@ -17,9 +21,8 @@ export default function QuickBlocks() {
   const social = useBlockDraft('social_links', { instagram: '', facebook: '', tiktok: '', x: '', youtube: '' }, { label: 'social links' });
   const featured = useBlockDraft('featured_drink', { item: '', name: '', description: '', price: '', image_url: '' }, { label: 'the featured drink' });
   const picks = useBlockDraft('staff_picks', { items: [] }, { label: 'board picks' });
-  const concept = useBlockDraft('homepage_concept', { concept: DEFAULT_CONCEPT }, { label: 'the homepage look' });
 
-  if (![announce, social, featured, picks, concept].every((b) => b.loaded)) return <Spinner />;
+  if (![announce, social, featured, picks].every((b) => b.loaded)) return <Spinner />;
 
   const setA = (k, v) => announce.set((a) => ({ ...a, [k]: v }));
   const setF = (k, v) => featured.set((f) => ({ ...f, [k]: v }));
@@ -30,7 +33,7 @@ export default function QuickBlocks() {
     <div>
       <ScreenHead
         title="Banner, links & featured drink"
-        help="Small bits that show up across the site: the message bar on top of every page, your social links in the footer, the featured drink on the homepage, and the homepage look."
+        help="Small bits that show up across the site: the message bar on top of every page, your social links in the footer and the featured drink on the homepage."
       />
 
       <section className="admin__panel">
@@ -42,7 +45,7 @@ export default function QuickBlocks() {
         </label>
         <div className="field">
           <label htmlFor="qb-banner">Message</label>
-          <input id="qb-banner" value={announce.value.message || ''} placeholder="Closed early Sat for a private event 💛" onChange={(e) => setA('message', e.target.value)} />
+          <input id="qb-banner" value={announce.value.message || ''} placeholder="Closed early Sat for a private event" onChange={(e) => setA('message', e.target.value)} />
         </div>
       </section>
 
@@ -51,7 +54,7 @@ export default function QuickBlocks() {
         <p className="panel-help">Paste the full link to each profile. Blank ones are hidden. Shown in the footer and on the Contact page.</p>
         {SOCIAL_KEYS.map((key) => (
           <div className="field" key={key}>
-            <label htmlFor={`qb-social-${key}`} style={{ textTransform: 'capitalize' }}>{key === 'x' ? 'X (Twitter)' : key}</label>
+            <label htmlFor={`qb-social-${key}`}>{SOCIAL_NAMES[key]}</label>
             <input
               id={`qb-social-${key}`}
               value={social.value[key] || ''}
@@ -91,24 +94,20 @@ export default function QuickBlocks() {
           <div key={i} className="picks-row">
             <input aria-label={`Pick ${i + 1} label`} placeholder="Label (e.g. Barista's pick)" value={it.label || ''} onChange={(e) => setItems(items.map((x, idx) => (idx === i ? { ...x, label: e.target.value } : x)))} />
             <input aria-label={`Pick ${i + 1} value`} placeholder="Value (e.g. Iced Chai Latte)" value={it.value || ''} onChange={(e) => setItems(items.map((x, idx) => (idx === i ? { ...x, value: e.target.value } : x)))} />
-            <button className="btn btn--ghost btn--sm" aria-label={`Remove pick ${i + 1}`} onClick={() => setItems(items.filter((_, idx) => idx !== i))}>✕</button>
+            <button className="btn btn--ghost btn--sm" aria-label={`Remove pick ${i + 1}`} onClick={() => setItems(items.filter((_, idx) => idx !== i))}><Icon icon={LuX} size={16} /></button>
           </div>
         ))}
-        <button className="btn btn--ghost btn--sm" onClick={() => setItems([...items, { label: '', value: '' }])}>+ Add a pick</button>
+        <button className="btn btn--ghost btn--sm" onClick={() => setItems([...items, { label: '', value: '' }])}><Icon icon={LuPlus} size={16} />Add a pick</button>
       </section>
 
-      <section className="admin__panel">
-        <h2>Homepage look {changed(concept.dirty)} <Hint>Swap the style of your homepage hero. Great for a seasonal refresh. You can also do this in the editor by clicking the top of the homepage.</Hint></h2>
-        <div className="concept-picker">
-          {CONCEPTS.map((c) => (
-            <label key={c.value} className={`concept-option ${concept.value.concept === c.value ? 'is-active' : ''}`}>
-              <input type="radio" name="concept" value={c.value} checked={concept.value.concept === c.value} onChange={() => concept.set({ concept: c.value })} />
-              <strong>{c.label}</strong>
-              <span>{c.desc}</span>
-            </label>
-          ))}
-        </div>
-      </section>
+      <Link to="/admin/look" className="linkcard">
+        <span className="linkcard__icon"><Icon icon={LuPanelsTopLeft} size={22} /></span>
+        <span className="linkcard__text">
+          <strong>Looking for the homepage look?</strong>
+          <span>It has its own screen now, with a picture of every style and a full preview before you publish.</span>
+        </span>
+        <Icon icon={LuArrowRight} size={20} className="linkcard__go" />
+      </Link>
     </div>
   );
 }

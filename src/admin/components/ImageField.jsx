@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import { uploadImage, formatBytes } from '../lib/uploadImage.js';
 import { useToast } from './ui.jsx';
 import { mediaUrl } from '../../lib/config.js';
+import { LuCamera, LuImage, LuLoaderCircle } from 'react-icons/lu';
+import { Icon } from './Icon.jsx';
 
 /* Image upload control with client-side compression + size before/after.
    Used across the admin (menu items, gallery, team, heroes, etc.). */
@@ -34,12 +36,13 @@ export default function ImageField({ label = 'Image', value, onChange, preset = 
       <label>{label}</label>
       <div className="imagefield">
         <div className="imagefield__preview">
-          {value ? <img src={mediaUrl(value)} alt="" /> : <span className="imagefield__empty" aria-hidden="true">No image</span>}
+          {value ? <img src={mediaUrl(value)} alt="" /> : <span className="imagefield__empty" aria-hidden="true"><Icon icon={LuImage} size={22} />No image</span>}
         </div>
         <div className="imagefield__controls">
           <div className="imagefield__buttons">
             <label className={`btn btn--ghost btn--sm imagefield__pick ${busy ? 'is-busy' : ''}`}>
-              {busy ? 'Shrinking & uploading…' : value ? '📷 Change photo' : '📷 Choose a photo'}
+              <Icon icon={busy ? LuLoaderCircle : LuCamera} size={16} className={busy ? 'admin-spin' : ''} />
+              {busy ? 'Shrinking & uploading…' : value ? 'Change photo' : 'Choose a photo'}
               <input ref={inputRef} type="file" accept="image/*" onChange={onFile} disabled={busy} className="sr-only" />
             </label>
             {value && (

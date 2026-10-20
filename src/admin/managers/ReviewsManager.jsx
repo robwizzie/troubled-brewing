@@ -9,6 +9,8 @@ import ImageField from '../components/ImageField.jsx';
 import { useToast, Spinner, Hint, Empty } from '../components/ui.jsx';
 import { ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
 import { same } from '../lib/publishHelpers.js';
+import { LuCamera, LuEye, LuEyeOff, LuPlus, LuStar } from 'react-icons/lu';
+import { Icon } from '../components/Icon.jsx';
 
 /* Reviews control room.
 
@@ -30,9 +32,9 @@ import { same } from '../lib/publishHelpers.js';
    block once and creates any new favourites. */
 
 const RATING_OPTIONS = [
-  { value: 5, label: '5★ only — the perfect ones' },
-  { value: 4, label: '4★ and up — recommended' },
-  { value: 3, label: '3★ and up' },
+  { value: 5, label: '5 stars only — the perfect ones' },
+  { value: 4, label: '4 stars and up — recommended' },
+  { value: 3, label: '3 stars and up' },
   { value: 1, label: 'Show every review' },
 ];
 
@@ -44,7 +46,15 @@ const FILTERS = [
   { key: 'photos', label: 'With photos' },
 ];
 
-const stars = (n) => '★'.repeat(Math.max(0, Math.min(5, Math.round(n || 0))));
+const starCount = (n) => Math.max(0, Math.min(5, Math.round(n || 0)));
+function Stars({ n }) {
+  const k = starCount(n);
+  return (
+    <span className="stars" role="img" aria-label={`${k} star${k === 1 ? '' : 's'}`}>
+      {Array.from({ length: k }, (_, i) => <Icon key={i} icon={LuStar} size={14} className="stars__on" />)}
+    </span>
+  );
+}
 
 export default function ReviewsManager({ embedded = false }) {
   const toast = useToast();
@@ -167,7 +177,7 @@ export default function ReviewsManager({ embedded = false }) {
     <div>
       {!embedded && (
         <ScreenHead
-          title="Reviews"
+          title="Google reviews"
           help="Choose which Google reviews appear on the homepage strip and the Reviews page, which lead, and add their photos."
         />
       )}
@@ -236,7 +246,7 @@ export default function ReviewsManager({ embedded = false }) {
                       <div className="rv-row__who">
                         <strong>{r.author}</strong>
                         <span className="rv-row__meta">
-                          <span className="rv-row__stars">{stars(r.rating)}</span>
+                          <span className="rv-row__stars"><Stars n={r.rating} /></span>
                           {r.time ? ` · ${r.time}` : ''}
                           {pinned ? ' · featured' : ''}
                           {belowFloor ? ' · below your star minimum' : ''}
@@ -255,14 +265,16 @@ export default function ReviewsManager({ embedded = false }) {
                         disabled={belowFloor}
                         title={belowFloor ? 'Already below your star minimum' : undefined}
                       >
-                        {hidden ? '👁 Show on site' : '🚫 Hide'}
+                        <Icon icon={hidden ? LuEye : LuEyeOff} size={16} />
+                        {hidden ? 'Show on site' : 'Hide'}
                       </button>
                       <button
                         type="button"
                         className={`btn btn--sm ${pinned ? 'btn--accent' : 'btn--ghost'}`}
                         onClick={() => update(toggleMap('pinned', r.key))}
                       >
-                        {pinned ? '★ Featured' : '☆ Feature'}
+                        <Icon icon={LuStar} size={16} className={pinned ? 'stars__on' : ''} />
+                        {pinned ? 'Featured' : 'Feature'}
                       </button>
                       <button
                         type="button"
@@ -270,11 +282,13 @@ export default function ReviewsManager({ embedded = false }) {
                         aria-expanded={openPhoto === r.key}
                         onClick={() => setOpenPhoto(openPhoto === r.key ? null : r.key)}
                       >
-                        {photo ? '📷 Change photo' : '📷 Add photo'}
+                        <Icon icon={LuCamera} size={16} />
+                        {photo ? 'Change photo' : 'Add photo'}
                       </button>
                       {!imported.has(r.key) && r.text && (
                         <button type="button" className="btn btn--ghost btn--sm" onClick={() => addToFavorites(r)}>
-                          + Favorite
+                          <Icon icon={LuPlus} size={16} />
+                          Favorite
                         </button>
                       )}
                     </div>

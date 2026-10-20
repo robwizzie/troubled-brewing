@@ -4,6 +4,10 @@
    the "Recently published" list all read from here, so a screen is always
    called the same thing everywhere.
    ============================================================================= */
+import {
+  LuAtSign, LuCalendarDays, LuCamera, LuChartLine, LuCircleHelp, LuClock, LuCoffee, LuCroissant, LuFrame, LuHistory, LuHouse,
+  LuImages, LuInbox, LuLink, LuMegaphone, LuPanelsTopLeft, LuQuote, LuSquarePen, LuStar, LuStore, LuUsers, LuVote,
+} from 'react-icons/lu';
 
 /* Friendly page names — the owner picks "Menu", never a slug. */
 export const PAGE_NAMES = {
@@ -22,27 +26,47 @@ export const PAGE_NAMES = {
 };
 
 /* Every screen. `nav` places it in the sidebar: 'top' (always visible, in
-   order), a group name, or 'more' (folded away under "More"). */
+   order), a group name (groups appear in the order they first show up here),
+   'more' (folded away under "More") or 'bottom' (Help, at the foot).
+   `icon` is a Lucide component from react-icons/lu.
+
+   Adding a screen is ONE line here (plus its <Route> in AdminApp.jsx); the
+   sidebar, breadcrumbs, quick-jump and home page all pick it up:
+     { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'Every day' }, */
 export const SCREENS = [
-  { to: '/admin', icon: '🏠', label: 'Home', nav: 'top', end: true },
-  { to: '/admin/chalkboard', icon: '📷', label: 'Today’s chalkboard', nav: 'top', star: true },
-  { to: '/admin/editor', icon: '✏️', label: 'Edit your pages', nav: 'top' },
-  { to: '/admin/hours', icon: '🕘', label: 'Hours & holidays', nav: 'Every day' },
-  { to: '/admin/quick-blocks', icon: '📣', label: 'Banner & links', nav: 'Every day' },
-  { to: '/admin/inbox', icon: '✉️', label: 'Messages', nav: 'Every day', badge: 'inbox' },
-  { to: '/admin/menu', icon: '☕', label: 'Menu', nav: 'Lists on the site' },
-  { to: '/admin/pairings', icon: '🥐', label: 'Drink pairings', nav: 'Lists on the site' },
-  { to: '/admin/events', icon: '📅', label: 'Events', nav: 'Lists on the site' },
-  { to: '/admin/reviews', icon: '⭐', label: 'Google reviews', nav: 'Lists on the site' },
-  { to: '/admin/testimonials', icon: '💬', label: 'Hand-picked quotes', nav: 'more' },
-  { to: '/admin/gallery', icon: '🖼️', label: 'Gallery Wall', nav: 'more' },
-  { to: '/admin/troublemakers', icon: '🦊', label: 'Troublemakers', nav: 'more' },
-  { to: '/admin/neighborhood', icon: '🏘️', label: 'Local Love', nav: 'more' },
-  { to: '/admin/timeline', icon: '🕰️', label: 'Timeline', nav: 'more' },
-  { to: '/admin/media', icon: '🗂️', label: 'Photo library', nav: 'more' },
-  { to: '/admin/google', icon: '🔗', label: 'Google connection', nav: 'more' },
-  { to: '/admin/help', icon: '❓', label: 'Help', nav: 'bottom' },
+  { to: '/admin', icon: LuHouse, label: 'Home', nav: 'top', end: true },
+  { to: '/admin/chalkboard', icon: LuCamera, label: 'Today’s chalkboard', nav: 'top', star: true },
+  { to: '/admin/editor', icon: LuSquarePen, label: 'Edit your pages', nav: 'top' },
+  { to: '/admin/hours', icon: LuClock, label: 'Hours & holidays', nav: 'Every day' },
+  { to: '/admin/quick-blocks', icon: LuMegaphone, label: 'Banner & links', nav: 'Every day' },
+  { to: '/admin/inbox', icon: LuInbox, label: 'Messages', nav: 'Every day', badge: 'inbox' },
+  { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'Every day' },
+  { to: '/admin/menu', icon: LuCoffee, label: 'Menu', nav: 'On the site' },
+  { to: '/admin/pairings', icon: LuCroissant, label: 'Drink pairings', nav: 'On the site' },
+  { to: '/admin/events', icon: LuCalendarDays, label: 'Events', nav: 'On the site' },
+  { to: '/admin/reviews', icon: LuStar, label: 'Google reviews', nav: 'On the site' },
+  { to: '/admin/look', icon: LuPanelsTopLeft, label: 'Homepage look', nav: 'On the site' },
+  { to: '/admin/polls', icon: LuVote, label: 'This or that polls', nav: 'On the site' },
+  { to: '/admin/testimonials', icon: LuQuote, label: 'Hand-picked quotes', nav: 'more' },
+  { to: '/admin/gallery', icon: LuFrame, label: 'Gallery Wall', nav: 'more' },
+  { to: '/admin/troublemakers', icon: LuUsers, label: 'Troublemakers', nav: 'more' },
+  { to: '/admin/neighborhood', icon: LuStore, label: 'Local Love', nav: 'more' },
+  { to: '/admin/timeline', icon: LuHistory, label: 'Timeline', nav: 'more' },
+  { to: '/admin/media', icon: LuImages, label: 'Photo library', nav: 'more' },
+  { to: '/admin/google', icon: LuLink, label: 'Google connection', nav: 'more' },
+  { to: '/admin/help', icon: LuCircleHelp, label: 'Help', nav: 'bottom' },
 ];
+
+const PLACES = new Set(['top', 'more', 'bottom']);
+/** The sidebar's named groups, in the order they first appear in SCREENS. */
+export const NAV_GROUPS = [...new Set(SCREENS.map((s) => s.nav).filter((n) => n && !PLACES.has(n)))];
+
+/** The sidebar group a screen sits in ("Every day", "More"…), or ''. */
+export function groupOf(screen) {
+  if (!screen) return '';
+  if (screen.nav === 'more') return 'More';
+  return PLACES.has(screen.nav) ? '' : screen.nav;
+}
 
 /** The screen a path belongs to (longest matching prefix), or null. */
 export function screenFor(pathname) {
@@ -66,74 +90,86 @@ export function describePath(pathname) {
 }
 
 /* ---- The jobs people actually come here to do ----------------------------
-   The big cards on the home page, in the words staff use. `keywords` feed the
+   The cards on the home page, in the words staff use, most common first (the
+   first COMMON_COUNT after the chalkboard are the "Most days" row). `keywords` feed the
    search box; include the words a barista would type, misspelled or not. */
 export const TASKS = [
   {
-    id: 'chalkboard', to: '/admin/chalkboard', icon: '📷',
+    id: 'chalkboard', to: '/admin/chalkboard', icon: LuCamera,
     title: 'Update the chalkboard',
     desc: 'Snap the specials board — it goes on the homepage.',
-    keywords: 'chalkboard chalk blackboard black board sign signs specials special today daily photo picture pic camera snap board menu board',
+    keywords: 'chalkboard chalk blackboard black board sign signs specials special today daily photo picture pic camera snap board menu board past boards old history archive keep longer until replace stay how long duration',
   },
   {
-    id: 'hours', to: '/admin/hours', icon: '🕘',
+    id: 'hours', to: '/admin/hours', icon: LuClock,
     title: 'Change hours or add a holiday closure',
     desc: 'Opening times on every page, plus days you’re closed.',
     keywords: 'hours open opening close closing closed time times holiday holidays christmas thanksgiving easter snow storm weather early late schedule day off vacation',
   },
   {
-    id: 'banner', to: '/admin/quick-blocks', icon: '📣',
-    title: 'Post an announcement banner',
-    desc: 'The message bar across the top of every page.',
-    keywords: 'banner announcement announce message notice alert news bar top heads up instagram facebook tiktok social links featured drink',
-  },
-  {
-    id: 'menu', to: '/admin/menu', icon: '☕',
+    id: 'menu', to: '/admin/menu', icon: LuCoffee,
     title: 'Edit the menu descriptions or photos',
     desc: 'What each drink and bite says, its photo and dietary tags.',
     keywords: 'menu drink drinks food item items latte coffee espresso tea pastry pastries bagel description describe photo picture vegan gluten dairy dietary allergy sold out',
   },
   {
-    id: 'pairings', to: '/admin/pairings', icon: '🥐',
-    title: 'Pair a drink with a treat',
-    desc: '“Goes great with…” under a drink on the Menu page — your staff’s picks.',
-    keywords: 'pair pairs pairing pairings goes great with treat treats combo combos match together muffin scone cookie croissant bakery snack recommend recommendation suggestion',
-  },
-  {
-    id: 'event', to: '/admin/events', icon: '📅',
+    id: 'event', to: '/admin/events', icon: LuCalendarDays,
     title: 'Add an event',
     desc: 'Open mics, art nights and more on the Events page.',
     keywords: 'event events calendar open mic music live night class workshop party date trivia show',
   },
   {
-    id: 'pages', to: '/admin/editor', icon: '✏️',
+    id: 'reviews', to: '/admin/reviews', icon: LuStar,
+    title: 'Hide or feature a review',
+    desc: 'Choose which Google reviews show and which one leads.',
+    keywords: 'review reviews google stars star rating hide feature pin bad good testimonial customer',
+  },
+  {
+    id: 'banner', to: '/admin/quick-blocks', icon: LuMegaphone,
+    title: 'Post an announcement banner',
+    desc: 'The message bar across the top of every page.',
+    keywords: 'banner announcement announce message notice alert news bar top heads up instagram facebook tiktok social links featured drink',
+  },
+  {
+    id: 'pages', to: '/admin/editor', icon: LuSquarePen,
     title: 'Edit a page’s words or photos',
     desc: 'Tap any part of any page and type over it.',
     keywords: 'page pages words text writing wording photo photos picture image about story homepage home heading title section hero typo spelling paragraph contact',
   },
   {
-    id: 'reviews', to: '/admin/reviews', icon: '⭐',
-    title: 'Hide or feature a review',
-    desc: 'Choose which Google reviews show and which one leads.',
-    keywords: 'review reviews google stars star rating hide feature pin bad good testimonial customer',
+    id: 'pairings', to: '/admin/pairings', icon: LuCroissant,
+    title: 'Pair a drink with a treat',
+    desc: '“Goes great with…” under a drink on the Menu page — your staff’s picks.',
+    keywords: 'pair pairs pairing pairings goes great with treat treats combo combos match together muffin scone cookie croissant bakery snack recommend recommendation suggestion',
+  },
+  {
+    id: 'look', to: '/admin/look', icon: LuPanelsTopLeft,
+    title: 'Change the homepage look',
+    desc: 'Compare the homepage styles side by side and preview one before it goes live.',
+    keywords: 'look style styles design theme concept layout hero front homepage appearance seasonal refresh redesign',
   },
 ];
 
 /* Less common jobs: not cards, but the search box still finds them. */
 export const MORE_TASKS = [
-  { id: 'inbox', to: '/admin/inbox', icon: '✉️', title: 'Read messages from the site', desc: 'Contact and catering form messages.', keywords: 'inbox message messages email contact catering form enquiry inquiry request order' },
-  { id: 'quotes', to: '/admin/testimonials', icon: '💬', title: 'Add a hand-picked quote', desc: 'Favourite quotes shown above the Google reviews.', keywords: 'quote quotes testimonial testimonials favourite favorite' },
-  { id: 'gallery', to: '/admin/gallery', icon: '🖼️', title: 'Add or edit art on the Gallery Wall', desc: 'Pieces, artists and their stories.', keywords: 'gallery art artist artists painting paintings wall piece frame for sale' },
-  { id: 'team', to: '/admin/troublemakers', icon: '🦊', title: 'Add or edit a staff card', desc: 'The Troublemakers page — photos, roles and fun facts.', keywords: 'troublemakers staff team barista baristas employee employees people bio new hire' },
-  { id: 'local', to: '/admin/neighborhood', icon: '🏘️', title: 'Add a local business', desc: 'The neighbours on the Local Love page.', keywords: 'local love business businesses neighbor neighbour neighborhood shop shops station ave partner' },
-  { id: 'timeline', to: '/admin/timeline', icon: '🕰️', title: 'Add a milestone to the Timeline', desc: 'The shop’s story, year by year.', keywords: 'timeline history milestone milestones year anniversary' },
-  { id: 'photos', to: '/admin/media', icon: '🗂️', title: 'See every uploaded photo', desc: 'The photo library.', keywords: 'photo library photos images uploads upload pictures media' },
-  { id: 'social', to: '/admin/quick-blocks', icon: '🔗', title: 'Change social media links', desc: 'Instagram, Facebook and friends in the footer.', keywords: 'social instagram facebook tiktok links footer x twitter' },
-  { id: 'google', to: '/admin/google', icon: '🔗', title: 'Google connection', desc: 'Where your rating, reviews and address come from.', keywords: 'google connection connect rating maps address place refresh fetch' },
-  { id: 'help', to: '/admin/help', icon: '❓', title: 'Help', desc: 'Plain-English how-tos.', keywords: 'help how stuck guide tutorial question undo mistake' },
+  { id: 'inbox', to: '/admin/inbox', icon: LuInbox, title: 'Read messages from the site', desc: 'Contact and catering form messages.', keywords: 'inbox message messages email contact catering form enquiry inquiry request order' },
+  { id: 'quotes', to: '/admin/testimonials', icon: LuQuote, title: 'Add a hand-picked quote', desc: 'Favourite quotes shown above the Google reviews.', keywords: 'quote quotes testimonial testimonials favourite favorite' },
+  { id: 'gallery', to: '/admin/gallery', icon: LuFrame, title: 'Add or edit art on the Gallery Wall', desc: 'Pieces, artists and their stories.', keywords: 'gallery art artist artists painting paintings wall piece frame for sale' },
+  { id: 'team', to: '/admin/troublemakers', icon: LuUsers, title: 'Add or edit a staff card', desc: 'The Troublemakers page — photos, roles and fun facts.', keywords: 'troublemakers staff team barista baristas employee employees people bio new hire' },
+  { id: 'local', to: '/admin/neighborhood', icon: LuStore, title: 'Add a local business', desc: 'The neighbours on the Local Love page.', keywords: 'local love business businesses neighbor neighbour neighborhood shop shops station ave partner' },
+  { id: 'timeline', to: '/admin/timeline', icon: LuHistory, title: 'Add a milestone to the Timeline', desc: 'The shop’s story, year by year.', keywords: 'timeline history milestone milestones year anniversary' },
+  { id: 'photos', to: '/admin/media', icon: LuImages, title: 'See every uploaded photo', desc: 'The photo library.', keywords: 'photo library photos images uploads upload pictures media' },
+  { id: 'social', to: '/admin/quick-blocks', icon: LuAtSign, title: 'Change social media links', desc: 'Instagram, Facebook and friends in the footer.', keywords: 'social instagram facebook tiktok links footer x twitter' },
+  { id: 'google', to: '/admin/google', icon: LuLink, title: 'Google connection', desc: 'Where your rating, reviews and address come from.', keywords: 'google connection connect rating maps address place refresh fetch' },
+  { id: 'polls', to: '/admin/polls', icon: LuVote, title: 'Ask a “This or that” poll in the fox', desc: 'A one-tap question like “Iced or hot today?”, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
+  { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'See site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visit visits visitors traffic views pages numbers clicks orders dashboard report how many people busy' },
+  { id: 'help', to: '/admin/help', icon: LuCircleHelp, title: 'Help', desc: 'Plain-English how-tos.', keywords: 'help how stuck guide tutorial question undo mistake' },
 ];
 
 const ALL_TASKS = [...TASKS, ...MORE_TASKS];
+
+/** How many cards (after the chalkboard) make the home page's "Most days" row. */
+export const COMMON_COUNT = 4;
 
 const words = (s) =>
   String(s || '')

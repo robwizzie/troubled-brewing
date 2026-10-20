@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, Empty, ConfirmModal } from '../components/ui.jsx';
+import { LuInbox } from 'react-icons/lu';
 import { ScreenHead } from '../lib/publishing.jsx';
+
+const when = (iso) => new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
 /* Contact + catering submissions. Read/unread, filter by type, delete. */
 export default function Inbox() {
@@ -12,7 +15,7 @@ export default function Inbox() {
 
   async function load() {
     const { data, error } = await supabase.from('submissions').select('*').order('created_at', { ascending: false });
-    if (error) { toast('Could not load inbox', 'error'); setItems([]); return; }
+    if (error) { toast('Couldn’t load your messages. Check your internet connection, then refresh the page.', 'error'); setItems([]); return; }
     setItems(data || []);
   }
   // load-once on mount: `load` is a new identity every render.
@@ -42,7 +45,8 @@ export default function Inbox() {
   return (
     <div>
       <ScreenHead
-        title="Inbox"
+        icon={LuInbox}
+        title="Messages"
         help="Messages people sent from the Contact and Catering forms. Nothing here is shown on the site."
       />
       <div className="inbox-filters">
@@ -52,15 +56,15 @@ export default function Inbox() {
       </div>
 
       {filtered.length === 0 ? (
-        <Empty>{filter === 'all' ? 'No messages yet. When someone uses the Contact or Catering form, it lands here.' : 'No messages match that filter. Tap “all” to see every message.'}</Empty>
+        <Empty icon={LuInbox}>{filter === 'all' ? 'No messages yet. When someone uses the Contact or Catering form, it lands here.' : 'No messages match that filter. Tap “all” to see every message.'}</Empty>
       ) : (
         <ul className="admin-list">
           {filtered.map((m) => (
             <li key={m.id} className={`admin-list__row inbox-row ${m.read ? '' : 'is-unread'}`}>
               <div className="admin-list__body">
-                <strong>{m.name} <span className="badge badge--live" style={{ marginLeft: 6 }}>{m.form_type}</span></strong>
+                <strong>{m.name}</strong> {m.form_type && <span className="badge badge--hidden">{m.form_type === 'catering' ? 'Catering' : 'Contact'}</span>}
                 <div className="admin-list__meta">
-                  <a href={`mailto:${m.email}`}>{m.email}</a>{m.phone ? ` · ${m.phone}` : ''} · {new Date(m.created_at).toLocaleString()}
+                  <a href={`mailto:${m.email}`}>{m.email}</a>{m.phone ? ` · ${m.phone}` : ''} · {when(m.created_at)}
                 </div>
                 {m.form_type === 'catering' && (
                   <div className="admin-list__meta">

@@ -24,6 +24,9 @@ import GoogleProfileSettings from './managers/GoogleProfileSettings.jsx';
 import Inbox from './managers/Inbox.jsx';
 import MediaLibrary from './managers/MediaLibrary.jsx';
 import HelpCenter from './HelpCenter.jsx';
+import HomepageLook from './managers/HomepageLook.jsx';
+import PollsManager from './managers/PollsManager.jsx'; // poll-insights
+import SiteStats from './managers/SiteStats.jsx'; // poll-insights
 import './admin.css';
 
 /* /admin is a task launcher ("Update the chalkboard", "Change hours"…); the
@@ -40,6 +43,7 @@ const screen = (el, slug, viewLabel) => (
 
 export default function AdminApp() {
   return (
+    <div className="adm">
     <AuthProvider>
       <ToastProvider>
         <UnsavedProvider>
@@ -57,27 +61,31 @@ export default function AdminApp() {
             >
               <Route index element={<AdminHome />} />
               <Route path="settings" element={<Navigate to="/admin" replace />} />
-              <Route path="menu" element={screen(<MenuManager />, 'menu', 'View the live Menu page ↗')} />
-              <Route path="pairings" element={screen(<PairingsManager />, 'menu', 'View the live Menu page ↗')} />
-              <Route path="events" element={screen(<EventsManager />, 'events', 'View the live Events page ↗')} />
-              <Route path="testimonials" element={screen(<TestimonialsManager />, 'reviews', 'View the live Reviews page ↗')} />
-              <Route path="reviews" element={screen(<ReviewsManager />, 'reviews', 'View the live Reviews page ↗')} />
-              <Route path="gallery" element={screen(<GalleryManager />, 'gallery-wall', 'View the live Gallery Wall ↗')} />
-              <Route path="troublemakers" element={screen(<TroublemakersManager />, 'troublemakers', 'View the live Troublemakers page ↗')} />
-              <Route path="neighborhood" element={screen(<LocalBusinessManager />, 'neighborhood', 'View the live Local Love page ↗')} />
-              <Route path="timeline" element={screen(<TimelineManager />, 'timeline', 'View the live Timeline ↗')} />
-              <Route path="hours" element={screen(<HoursEditor />, 'location', 'View the live Hours page ↗')} />
-              <Route path="quick-blocks" element={screen(<QuickBlocks />, 'home', 'View the live site ↗')} />
+              <Route path="menu" element={screen(<MenuManager />, 'menu', 'View the live Menu page')} />
+              <Route path="pairings" element={screen(<PairingsManager />, 'menu', 'View the live Menu page')} />
+              <Route path="events" element={screen(<EventsManager />, 'events', 'View the live Events page')} />
+              <Route path="testimonials" element={screen(<TestimonialsManager />, 'reviews', 'View the live Reviews page')} />
+              <Route path="reviews" element={screen(<ReviewsManager />, 'reviews', 'View the live Reviews page')} />
+              <Route path="gallery" element={screen(<GalleryManager />, 'gallery-wall', 'View the live Gallery Wall')} />
+              <Route path="troublemakers" element={screen(<TroublemakersManager />, 'troublemakers', 'View the live Troublemakers page')} />
+              <Route path="neighborhood" element={screen(<LocalBusinessManager />, 'neighborhood', 'View the live Local Love page')} />
+              <Route path="timeline" element={screen(<TimelineManager />, 'timeline', 'View the live Timeline')} />
+              <Route path="hours" element={screen(<HoursEditor />, 'location', 'View the live Hours page')} />
+              <Route path="quick-blocks" element={screen(<QuickBlocks />, 'home', 'View the live site')} />
+              <Route path="look" element={screen(<HomepageLook />, 'home', 'View the live homepage')} />
               <Route path="chalkboard" element={<ChalkboardManager />} />
-              <Route path="google" element={screen(<GoogleProfileSettings />, 'reviews', 'View the live Reviews page ↗')} />
+              <Route path="google" element={screen(<GoogleProfileSettings />, 'reviews', 'View the live Reviews page')} />
               <Route path="inbox" element={<Inbox />} />
               <Route path="media" element={<MediaLibrary />} />
               <Route path="help" element={<HelpCenter />} />
+              <Route path="polls" element={screen(<PollsManager />, 'home', 'View the live site')} />
+              <Route path="stats" element={<SiteStats />} />
             </Route>
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
         </UnsavedProvider>
       </ToastProvider>
     </AuthProvider>
+    </div>
   );
 }

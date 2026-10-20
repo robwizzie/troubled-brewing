@@ -3,18 +3,20 @@
    admin.css and the shared .btn / .badge / .field__hint classes. */
 
 /* ---- how long it stays up ---------------------------------------------- */
-.chalk .chalkdur { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); min-width: 0; }
-.chalk .chalkdur__legend { padding: 0 var(--space-1); font-weight: 700; }
+.chalk .chalkdur { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--adm-line); border-radius: var(--adm-radius); background: var(--adm-surface); min-width: 0; }
+.chalk .chalkdur__legend { padding: 0 var(--space-1); font-weight: 600; }
 .chalk .chalkdur__choices { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
 .chalk .chalkdur__choice {
   position: relative; display: inline-flex; align-items: center; gap: 0.4rem;
-  min-height: 44px; padding: 0.4rem 0.9rem; border-radius: var(--radius-pill);
-  border: 2px solid var(--color-border); background: var(--color-paper);
+  min-height: 44px; padding: 0.4rem 0.9rem; border-radius: 999px;
+  border: 1px solid var(--adm-line-strong); background: var(--adm-surface);
   font-weight: 600; cursor: pointer;
 }
 .chalk .chalkdur__choice input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
-.chalk .chalkdur__choice.is-on { border-color: var(--color-green-deep); background: var(--color-green-soft); color: var(--color-green-deep); }
-.chalk .chalkdur__choice:focus-within { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.chalk .chalkdur__choice.is-on { border-color: var(--adm-sage); background: var(--adm-sage-50); color: var(--adm-sage-700); box-shadow: inset 0 0 0 1px var(--adm-sage); }
+.chalk .chalkdur__choice:hover { background: var(--adm-sunk); }
+.chalk .chalkdur__choice.is-on:hover { background: var(--adm-sage-50); }
+.chalk .chalkdur__choice:focus-within { outline: 2px solid var(--adm-sage); outline-offset: 2px; }
 .chalk .chalkdur__choice--keep svg { font-size: 1.15em; }
 .chalk .chalkdur__hint { margin: var(--space-2) 0 0; }
 
@@ -23,20 +25,20 @@
 .chalk .chalkhist__list { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: grid; gap: var(--space-2); }
 .chalk .chalkhist__item {
   display: grid; grid-template-columns: 88px 1fr auto; gap: var(--space-3); align-items: center;
-  padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-paper);
+  padding: var(--space-2); border: 1px solid var(--adm-line); border-radius: var(--adm-radius); background: var(--adm-surface);
 }
 .chalk .chalkhist__item.is-hidden .chalkhist__thumb { opacity: 0.4; filter: grayscale(1); }
-.chalk .chalkhist__thumb { width: 88px; height: 66px; object-fit: cover; border-radius: 4px; background: #23261f; border: 3px solid #6b4a2c; }
+.chalk .chalkhist__thumb { width: 88px; height: 66px; object-fit: cover; border-radius: var(--adm-radius-sm); background: #23261f; border: 1px solid var(--adm-line); }
 .chalk .chalkhist__text { min-width: 0; }
 .chalk .chalkhist__text p { margin: 0; }
-.chalk .chalkhist__date { font-weight: 700; }
-.chalk .chalkhist__caption { color: var(--color-ink-soft); font-size: var(--text-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chalk .chalkhist__date { font-weight: 600; }
+.chalk .chalkhist__caption { color: var(--adm-ink-3); font-size: var(--text-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chalk .chalkhist__tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.2rem !important; }
 .chalk .chalkhist__toggle { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 40px; white-space: nowrap; }
 .chalk .chalkhist__import { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
 .chalk .chalkhist__import .btn { display: inline-flex; align-items: center; gap: 0.35rem; }
 .chalk .chalkhist__publish { display: grid; gap: var(--space-2); margin-top: var(--space-3); }
-.chalk .chalkhist__saved { margin: var(--space-3) 0 0; font-weight: 700; color: var(--color-success); }
+.chalk .chalkhist__saved { margin: var(--space-3) 0 0; font-weight: 600; color: var(--adm-ok); }
 
 @media (max-width: 520px) {
   .chalk .chalkhist__item { grid-template-columns: 72px 1fr; }

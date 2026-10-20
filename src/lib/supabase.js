@@ -11,6 +11,12 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // the network, so a missing/blank env never throws — it just falls back.
 export const isSupabaseConfigured = Boolean(url && anonKey);
 
+// The same project URL + anon key, for the one caller that can't go through
+// the client: the cookieless stats beacon (src/lib/siteStats.js), which must
+// work from navigator.sendBeacon on page hide.
+export const SUPABASE_URL = url || '';
+export const SUPABASE_ANON_KEY = anonKey || '';
+
 export const supabase = isSupabaseConfigured
   ? createClient(url, anonKey, {
       auth: {
