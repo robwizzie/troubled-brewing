@@ -30,6 +30,30 @@ describe('homepage concepts', () => {
     expect(bar.querySelector('[aria-current="page"]').getAttribute('href')).toContain(concept);
   });
 
+  it('/?previewConcept= (the admin\'s Preview) shows that look with a "not live" banner, no switcher, and saves nothing', async () => {
+    window.localStorage.removeItem('tb_home_concept');
+    const { container } = render(
+      <MemoryRouter initialEntries={['/?previewConcept=warm_storefront']}>
+        <App />
+      </MemoryRouter>
+    );
+    await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
+    expect(screen.getByText(/preview, not live/i).textContent).toMatch(/Warm Storefront/);
+    expect(screen.queryByRole('navigation', { name: /compare homepage looks/i })).toBeNull();
+    expect(container.querySelector('.wsh')).toBeTruthy(); // the Warm Storefront hero
+    expect(window.localStorage.getItem('tb_home_concept')).toBeNull();
+  });
+
+  it('an unknown ?previewConcept= is ignored', async () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/?previewConcept=<script>']}>
+        <App />
+      </MemoryRouter>
+    );
+    await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
+    expect(screen.queryByText(/preview, not live/i)).toBeNull();
+  });
+
   it('ordinary visitors never see the switcher', async () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/']}>

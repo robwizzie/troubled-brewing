@@ -2,6 +2,8 @@ import ImageField from './ImageField.jsx';
 import { Hint } from './ui.jsx';
 import { asset } from '../../lib/config.js';
 import { FRAME_STYLE_OPTIONS, normalizeFrameStyle } from '../../lib/frameStyles.js';
+import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
+import { Icon } from './Icon.jsx';
 
 /* THE schema-driven field renderer — the union of SectionEditor's old `Input`
    (text/textarea/markdown/number/select/image/images/frames) and
@@ -32,9 +34,9 @@ export function FramesEditor({ value = [], onChange }) {
             <div className="frames-editor__head">
               <strong>Frame {i + 1}</strong>
               <div>
-                <button type="button" className="iconbtn" onClick={() => move(i, -1)} disabled={i === 0}>▲</button>
-                <button type="button" className="iconbtn" onClick={() => move(i, 1)} disabled={i === frames.length - 1}>▼</button>
-                <button type="button" className="iconbtn" onClick={() => remove(i)}>✕</button>
+                <button type="button" className="iconbtn" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Move frame ${i + 1} up`}><Icon icon={LuArrowUp} size={16} /></button>
+                <button type="button" className="iconbtn" onClick={() => move(i, 1)} disabled={i === frames.length - 1} aria-label={`Move frame ${i + 1} down`}><Icon icon={LuArrowDown} size={16} /></button>
+                <button type="button" className="iconbtn" onClick={() => remove(i)} aria-label={`Remove frame ${i + 1}`}><Icon icon={LuX} size={16} /></button>
               </div>
             </div>
             <ImageField label="Image" value={f.image_url} preset="card" folder="frames" onChange={(url) => update(i, 'image_url', url)} />
@@ -50,7 +52,7 @@ export function FramesEditor({ value = [], onChange }) {
           </div>
         </div>
       ))}
-      <button type="button" className="btn btn--ghost btn--sm" onClick={add}>+ Add frame</button>
+      <button type="button" className="btn btn--ghost btn--sm" onClick={add}><Icon icon={LuPlus} size={16} />Add frame</button>
     </div>
   );
 }
@@ -141,7 +143,7 @@ export function ImagesEditor({ value = [], onChange }) {
           </div>
         </div>
       ))}
-      <button type="button" className="btn btn--ghost btn--sm" onClick={add}>+ Add image</button>
+      <button type="button" className="btn btn--ghost btn--sm" onClick={add}><Icon icon={LuPlus} size={16} />Add image</button>
     </div>
   );
 }
@@ -160,10 +162,10 @@ export function FunFactsEditor({ value, onChange }) {
         <div key={i} className="funfacts__row">
           <input placeholder="Label (e.g. favorite_movie)" value={k} onChange={(e) => update(i, e.target.value, v)} />
           <input placeholder="Answer" value={v} onChange={(e) => update(i, k, e.target.value)} />
-          <button type="button" className="btn btn--ghost btn--sm" onClick={() => remove(i)}>✕</button>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={() => remove(i)} aria-label={`Remove fun fact ${i + 1}`}><Icon icon={LuX} size={16} /></button>
         </div>
       ))}
-      <button type="button" className="btn btn--ghost btn--sm" onClick={add}>+ Add a fun fact</button>
+      <button type="button" className="btn btn--ghost btn--sm" onClick={add}><Icon icon={LuPlus} size={16} />Add a fun fact</button>
     </div>
   );
 }

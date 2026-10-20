@@ -8,6 +8,8 @@ import CollectionManager from '../components/CollectionManager.jsx';
 import { useToast, Spinner } from '../components/ui.jsx';
 import { managerFor } from './sectionMeta.js';
 import { usePublishScope, useUnsaved } from '../lib/publishing.jsx';
+import { LuArrowLeft, LuArrowRight, LuX } from 'react-icons/lu';
+import { Icon } from '../components/Icon.jsx';
 
 /* Fields for a section whose content lives in a content_blocks row (e.g. the
    featured drink). The editor holds the value (blockApi) so it publishes with
@@ -111,9 +113,10 @@ export default function SectionPanel({ section, isNew, effectiveType, focusTarge
               })
             }
           >
-            ← Back to the section
+            <Icon icon={LuArrowLeft} size={16} />
+            Back to the section
           </button>
-          <button className="iconbtn" aria-label="Close" onClick={onClose}>✕</button>
+          <button className="iconbtn" aria-label="Close" onClick={onClose}><Icon icon={LuX} /></button>
         </div>
         <div className="tb-panel__body">
           {manager.component ? (
@@ -142,13 +145,14 @@ export default function SectionPanel({ section, isNew, effectiveType, focusTarge
     <aside className="tb-panel" aria-label="Edit section">
       <div className="tb-panel__head">
         <h2>{SECTION_LABELS[type] || type}</h2>
-        <button className="iconbtn" aria-label="Close" onClick={onClose}>✕</button>
+        <button className="iconbtn" aria-label="Close" onClick={onClose}><Icon icon={LuX} /></button>
       </div>
       <div className="tb-panel__body" ref={bodyRef}>
         {children}
         {manager ? (
           <button className="btn btn--primary tb-panel__manage" onClick={() => setManaging(true)}>
-            Manage {manager.title.toLowerCase()} →
+            Manage {manager.title.toLowerCase()}
+            <Icon icon={LuArrowRight} size={16} />
           </button>
         ) : (
           schema.note && <p className="admin-note">{schema.note}</p>
