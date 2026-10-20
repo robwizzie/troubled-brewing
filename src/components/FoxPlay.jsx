@@ -5,6 +5,7 @@ import { productImageSources, isCutout } from '../lib/productImage.js';
 import { track } from '../lib/analytics.js';
 import { FOX_H, FOX_PATH, FOX_W } from '../lib/foxArt.js';
 import { saveUsual } from '../lib/yourUsual.js'; // fox-outfits: "your usual"
+import { PersonaLauncher } from './PersonaCard.jsx'; // drink-personality
 import {
   ANY, POUR_MS, QUIZ, closedOrderNote, drinkLook, fmtPrice, matchDrink, pickSurprise,
   quizPlan, refineOptions,
@@ -490,6 +491,8 @@ export function QuizPane({ menu, hours, overrides }) {
           <p className="fox-match__why">{r.line}</p>
           {(honest || note) && <p className="fox-drink__note">{[honest, note].filter(Boolean).join(' ')}</p>}
         </div>
+        {/* drink-personality: "Get my drink personality" → the shareable card (PersonaCard.jsx) */}
+        <PersonaLauncher answers={answers} item={r.item} />
         <p className="fox-help__links">
           <OrderLink item={r.item} where="fox_quiz" />
           <button type="button" className="fox-help__link fox-help__link--ghost" onClick={restart}><FaRotateRight aria-hidden="true" /> Start over</button>

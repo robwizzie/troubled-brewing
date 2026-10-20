@@ -1,0 +1,180 @@
+/* Drink personality (PersonaCard.jsx): the quiz result's "Get my drink
+   personality" button, and the card it flips in over the fox's panel.
+   Everything is scoped under .persona-*; motion is transform + opacity
+   only, and prefers-reduced-motion turns the flip into a plain fade. */
+
+/* ---- the button on the quiz result ---- */
+.persona-launch { margin: 12px 0 4px; }
+.persona-launch__btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; min-height: 46px; padding: 0 14px; border: 0; border-radius: var(--radius-pill, 999px); cursor: pointer;
+  background: linear-gradient(180deg, #ecc66d 0%, #d4ad57 55%, #c39639 100%);
+  color: var(--color-ink, #221f1a);
+  box-shadow: inset 0 0 0 1.5px #a87c1c, inset 0 2px 0 rgba(255, 246, 214, 0.7), 0 2px 0 #a87c1c;
+  font: 700 0.95rem/1.1 var(--font-body);
+}
+.persona-launch__btn:hover { background: linear-gradient(180deg, #f2d27f 0%, #dcb661 55%, #c99c3f 100%); }
+.persona-launch__btn:focus-visible { outline: 3px solid var(--focus-ring, #b0436e); outline-offset: 2px; }
+.persona-spark { width: 0.8em; height: 0.8em; flex: none; fill: currentColor; }
+.persona-launch__btn .persona-spark:last-child { width: 0.6em; height: 0.6em; }
+
+/* ---- the layer over the fox's panel ---- */
+.persona-layer {
+  position: absolute; inset: 0; z-index: 6;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgba(212, 173, 87, 0.22), rgba(212, 173, 87, 0) 60%),
+    var(--color-cream, #f7f1e4);
+  border-radius: inherit;
+  animation: persona-fade 0.22s ease-out both;
+}
+.persona-dialog { box-sizing: border-box; min-height: 100%; padding: 10px 14px 16px; outline: none; }
+.persona-dialog:focus-visible { outline: none; }
+.persona-dialog__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.persona-dialog__kicker { margin: 0; font: 700 0.74rem/1.2 var(--font-body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-yellow-deep, #a87c1c); }
+.persona-dialog__close {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; margin-right: -4px; padding: 0;
+  border: 0; border-radius: 50%; background: transparent; color: var(--color-ink-soft, #5d564b); font-size: 17px; cursor: pointer;
+}
+.persona-dialog__close:hover { background: rgba(84, 95, 51, 0.12); color: var(--color-ink, #221f1a); }
+.persona-dialog__close:focus-visible { outline: 3px solid var(--focus-ring, #b0436e); outline-offset: 1px; }
+
+/* ---- the flip: the card's back (gilt, the fox thinking) turns to its face ---- */
+.persona-flip { position: relative; perspective: 1400px; }
+.persona-flip__inner {
+  display: grid; transform-style: preserve-3d;
+  animation: persona-flip 0.85s cubic-bezier(0.25, 0.9, 0.3, 1.12) 0.05s both;
+}
+.persona-flip__inner > * { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.persona-flip__back {
+  display: grid; place-content: center; justify-items: center; gap: 10px;
+  transform: rotateY(180deg);
+  border: 6px solid #c69a3d;
+  border-image: linear-gradient(135deg, #f7dc94 0%, #e3b53f 32%, #a87c1c 70%, #5e4210 100%) 1;
+  background:
+    repeating-linear-gradient(45deg, rgba(212, 173, 87, 0.16) 0 2px, transparent 2px 14px),
+    repeating-linear-gradient(-45deg, rgba(212, 173, 87, 0.16) 0 2px, transparent 2px 14px),
+    #545f33;
+  color: #f7f1e4; font: 700 1.3rem/1 Caveat, var(--font-hand, cursive);
+}
+.persona-flip__fox { width: 62%; height: auto; color: #f7f1e4; }
+
+/* a little burst of gold as the card lands */
+.persona-burst { position: absolute; inset: 0; pointer-events: none; }
+.persona-burst i {
+  position: absolute; left: 50%; top: 22%; width: 12px; height: 12px; margin: -6px;
+  background: #e3b53f;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  opacity: 0; animation: persona-burst 0.75s ease-out 0.72s both;
+}
+.persona-burst i:nth-child(1) { --dx: -130px; --dy: -14px; }
+.persona-burst i:nth-child(2) { --dx: 128px; --dy: -24px; background: #e98fb0; }
+.persona-burst i:nth-child(3) { --dx: -96px; --dy: 70px; width: 9px; height: 9px; }
+.persona-burst i:nth-child(4) { --dx: 104px; --dy: 62px; background: #f7f1e4; }
+.persona-burst i:nth-child(5) { --dx: -40px; --dy: -46px; width: 8px; height: 8px; background: #e98fb0; }
+.persona-burst i:nth-child(6) { --dx: 46px; --dy: -52px; width: 9px; height: 9px; }
+
+@keyframes persona-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes persona-flip {
+  0% { transform: rotateY(-180deg) scale(0.86); opacity: 0; }
+  12% { opacity: 1; }
+  100% { transform: rotateY(0) scale(1); opacity: 1; }
+}
+@keyframes persona-burst {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4) rotate(0); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1) rotate(90deg); }
+}
+
+/* ---- the card face (the same design as the Story image) ---- */
+.persona-card {
+  position: relative; box-sizing: border-box; min-width: 0;
+  padding: 20px 16px 14px; text-align: center; color: var(--p-fg);
+  border: 6px solid #c69a3d;
+  border-image: linear-gradient(135deg, #f7dc94 0%, #e3b53f 32%, #a87c1c 70%, #5e4210 100%) 1;
+  background:
+    radial-gradient(120% 70% at 50% 18%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 62%),
+    radial-gradient(1.2px 1.2px at 20% 30%, rgba(30, 20, 10, 0.05) 50%, transparent 51%) 0 0 / 23px 19px,
+    radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.08) 50%, transparent 51%) 0 0 / 17px 29px,
+    linear-gradient(180deg, var(--p-bg) 0%, var(--p-bg2) 100%);
+  box-shadow: 0 14px 30px -12px rgba(40, 26, 8, 0.55), inset 0 0 0 1px rgba(94, 66, 16, 0.6);
+}
+.persona-card.is-dark {
+  background:
+    radial-gradient(120% 70% at 50% 18%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 62%),
+    radial-gradient(1.2px 1.2px at 20% 30%, rgba(0, 0, 0, 0.08) 50%, transparent 51%) 0 0 / 23px 19px,
+    radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.05) 50%, transparent 51%) 0 0 / 17px 29px,
+    linear-gradient(180deg, var(--p-bg) 0%, var(--p-bg2) 100%);
+}
+/* the fine inner rule */
+.persona-card::before {
+  content: ''; position: absolute; inset: 6px; pointer-events: none;
+  border: 1.5px solid var(--p-accent); opacity: 0.6;
+}
+.persona-card > * { position: relative; }
+.persona-card__eyebrow { margin: 0; font: 700 1.45rem/1 Caveat, var(--font-hand, cursive); color: var(--p-accent); }
+.persona-card__name {
+  margin: 4px 0 8px; font: 900 clamp(1.75rem, 8.4vw, 2.2rem)/1.02 var(--font-display); color: var(--p-fg);
+  letter-spacing: -0.01em; overflow-wrap: break-word; text-wrap: balance;
+}
+.persona-card__line { margin: 0 auto 12px; max-width: 30ch; font: italic 500 0.98rem/1.35 var(--font-display); color: var(--p-soft); text-wrap: pretty; }
+.persona-card__traits { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
+.persona-card__traits li {
+  padding: 5px 10px; border-radius: 999px;
+  background: var(--p-chip); color: var(--p-chip-fg);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--p-accent) 55%, transparent);
+  font: 600 0.78rem/1.15 var(--font-body);
+}
+.persona-card__match {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  margin: 0 2px; text-align: left;
+}
+.persona-card__matchtext { min-width: 0; padding-top: 34px; }
+.persona-card__label { margin: 0 0 4px; font: 700 0.68rem/1.1 var(--font-body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--p-accent); }
+.persona-card__drink { margin: 0; font: 600 1.2rem/1.12 var(--font-display); color: var(--p-fg); overflow-wrap: anywhere; }
+.persona-card__art { display: grid; justify-items: center; width: 116px; }
+.persona-card__fox { display: block; width: 116px; height: auto; margin-bottom: 3px; color: var(--p-fg); }
+.persona-card__photo.fox-photo { --w: 108px; --ar: 5 / 6; }
+.persona-card__foot {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin: 14px 0 0; padding-top: 12px;
+  border-top: 1.5px solid color-mix(in srgb, var(--p-accent) 50%, transparent);
+}
+.persona-card__logo { flex: none; display: block; width: auto; height: 38px; mix-blend-mode: multiply; }
+.persona-card.is-dark .persona-card__logo { filter: invert(1); mix-blend-mode: screen; }
+.persona-card__handle { display: grid; margin: 0; min-width: 0; text-align: left; font: 500 0.74rem/1.3 var(--font-body); color: var(--p-soft); overflow-wrap: anywhere; }
+.persona-card__handle span:first-child { font: 700 0.86rem/1.2 var(--font-body); color: var(--p-fg); }
+.persona-card__handle .persona-card__dot { display: none; }
+
+/* ---- share, download, copy ---- */
+.persona-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.persona-btn {
+  flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  min-height: 42px; padding: 0 14px; border: 0; border-radius: var(--radius-pill, 999px); cursor: pointer;
+  background: var(--color-paper, #fffdf7); color: var(--color-green-deep, #545f33);
+  box-shadow: inset 0 0 0 1.5px var(--color-green-deep, #545f33);
+  font: 600 0.88rem/1 var(--font-body);
+}
+.persona-btn svg { font-size: 0.9em; flex: none; }
+.persona-btn--main { flex-basis: 100%; min-height: 48px; background: var(--color-green-deep, #545f33); color: var(--color-on-primary, #fffdf8); font-size: 0.98rem; box-shadow: none; }
+.persona-btn:hover { background: var(--color-green-soft, #e7ebd6); }
+.persona-btn--main:hover { background: var(--color-primary-hover, #404829); }
+.persona-btn:disabled { opacity: 0.65; cursor: progress; }
+.persona-btn:focus-visible, .persona-back__btn:focus-visible { outline: 3px solid var(--focus-ring, #b0436e); outline-offset: 2px; }
+.persona-actions__note { flex-basis: 100%; margin: 0; font: 500 0.88rem/1.35 var(--font-body); color: var(--color-ink-soft, #5d564b); }
+.persona-help { margin: 10px 0 0; text-align: center; font: 500 0.86rem/1.35 var(--font-body); color: var(--color-ink-soft, #5d564b); }
+.persona-help strong { color: var(--color-pink-deep, #b0436e); font-weight: 700; }
+.persona-status { min-height: 1.2em; margin: 4px 0 0; text-align: center; font: 700 0.84rem/1.3 var(--font-body); color: var(--color-green-deep, #545f33); overflow-wrap: anywhere; }
+.persona-back { margin: 2px 0 0; text-align: center; }
+.persona-back__btn {
+  min-height: 36px; padding: 0 12px; border: 0; border-radius: var(--radius-pill, 999px); cursor: pointer;
+  background: transparent; color: var(--color-green-deep, #545f33); font: 700 0.84rem/1 var(--font-body);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ---- reduced motion: no flip, no burst — the card simply fades in ---- */
+.persona-layer.is-instant .persona-flip__inner { animation: persona-fade 0.2s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .persona-layer, .persona-flip__inner { animation: persona-fade 0.2s ease-out both; }
+  .persona-burst { display: none; }
+}
