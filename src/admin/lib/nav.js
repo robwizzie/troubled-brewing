@@ -1,3 +1,6 @@
+import { createElement } from 'react';
+import { LuChartLine, LuVote } from 'react-icons/lu';
+
 /* =============================================================================
    One map of the admin, in the owner's words. The sidebar, the home page's
    task cards, the "What do you want to change?" search, the breadcrumbs and
@@ -41,6 +44,8 @@ export const SCREENS = [
   { to: '/admin/timeline', icon: '🕰️', label: 'Timeline', nav: 'more' },
   { to: '/admin/media', icon: '🗂️', label: 'Photo library', nav: 'more' },
   { to: '/admin/google', icon: '🔗', label: 'Google connection', nav: 'more' },
+  { to: '/admin/polls', icon: createElement(LuVote, { 'aria-hidden': true }), label: 'This or that polls', nav: 'Lists on the site' },
+  { to: '/admin/stats', icon: createElement(LuChartLine, { 'aria-hidden': true }), label: 'Site stats', nav: 'Every day' },
   { to: '/admin/help', icon: '❓', label: 'Help', nav: 'bottom' },
 ];
 
@@ -130,6 +135,8 @@ export const MORE_TASKS = [
   { id: 'photos', to: '/admin/media', icon: '🗂️', title: 'See every uploaded photo', desc: 'The photo library.', keywords: 'photo library photos images uploads upload pictures media' },
   { id: 'social', to: '/admin/quick-blocks', icon: '🔗', title: 'Change social media links', desc: 'Instagram, Facebook and friends in the footer.', keywords: 'social instagram facebook tiktok links footer x twitter' },
   { id: 'google', to: '/admin/google', icon: '🔗', title: 'Google connection', desc: 'Where your rating, reviews and address come from.', keywords: 'google connection connect rating maps address place refresh fetch' },
+  { id: 'polls', to: '/admin/polls', icon: createElement(LuVote, { 'aria-hidden': true }), title: 'Ask a “This or that” poll in the fox', desc: 'A one-tap question like “Iced or hot today?”, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
+  { id: 'stats', to: '/admin/stats', icon: createElement(LuChartLine, { 'aria-hidden': true }), title: 'See site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visits visitors traffic views pages numbers clicks orders dashboard report how many people' },
   { id: 'help', to: '/admin/help', icon: '❓', title: 'Help', desc: 'Plain-English how-tos.', keywords: 'help how stuck guide tutorial question undo mistake' },
 ];
 
