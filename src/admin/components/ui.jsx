@@ -1,6 +1,9 @@
 import { createContext, useCallback, useContext, useState } from 'react';
+import { LuCircleAlert, LuCircleCheck, LuCircleDot, LuFilePen, LuInfo, LuLoaderCircle, LuX } from 'react-icons/lu';
+import { Icon } from './Icon.jsx';
 
 /* ---- Toasts --------------------------------------------------------------- */
+const TOAST_ICONS = { success: LuCircleCheck, error: LuCircleAlert, info: LuInfo };
 const ToastContext = createContext(() => {});
 
 export function ToastProvider({ children }) {
@@ -16,8 +19,9 @@ export function ToastProvider({ children }) {
       <div className="toast-wrap" aria-live="polite">
         {toasts.map((t) => (
           <div key={t.id} className={`toast toast--${t.type}`} role={t.type === 'error' ? 'alert' : undefined}>
-            {t.message}
-            <button type="button" className="toast__close" aria-label="Dismiss" onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))}>✕</button>
+            <Icon icon={TOAST_ICONS[t.type] || LuInfo} size={18} className="toast__icon" />
+            <span className="toast__msg">{t.message}</span>
+            <button type="button" className="toast__close" aria-label="Dismiss" onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))}><Icon icon={LuX} size={16} /></button>
           </div>
         ))}
       </div>
@@ -49,8 +53,28 @@ export function ConfirmModal({ open, title, body, confirmLabel = 'Confirm', canc
 export function Hint({ children }) {
   return (
     <span className="hint" tabIndex={0} role="note">
-      ?
+      <Icon icon={LuInfo} size={16} />
       <span className="hint__bubble">{children}</span>
+    </span>
+  );
+}
+
+/* ---- Status chip: where a screen / page stands, in the same words everywhere.
+   published   — what's on the site is what you see
+   unpublished — you changed something and haven't pressed Publish
+   draft       — a previewed draft is saved privately, not on the site yet */
+const CHIP = {
+  published: { icon: LuCircleCheck, label: 'Published' },
+  unpublished: { icon: LuCircleDot, label: 'Unpublished changes' },
+  draft: { icon: LuFilePen, label: 'Saved draft' },
+  live: { icon: LuCircleCheck, label: 'Live' },
+};
+export function StatusChip({ state = 'published', children }) {
+  const c = CHIP[state] || CHIP.published;
+  return (
+    <span className={`statuschip statuschip--${state}`}>
+      <Icon icon={c.icon} size={14} />
+      {children || c.label}
     </span>
   );
 }
@@ -63,9 +87,19 @@ export function StatusBadge({ status, hasDraft }) {
 }
 
 /* ---- Misc ----------------------------------------------------------------- */
-export function Empty({ children }) {
-  return <p className="admin-empty">{children}</p>;
+export function Empty({ children, icon }) {
+  return (
+    <p className="admin-empty">
+      {icon && <Icon icon={icon} size={28} className="admin-empty__icon" />}
+      <span>{children}</span>
+    </p>
+  );
 }
 export function Spinner({ label = 'Loading…' }) {
-  return <p className="admin-empty" aria-busy="true">{label}</p>;
+  return (
+    <p className="admin-empty" aria-busy="true">
+      <Icon icon={LuLoaderCircle} size={22} className="admin-spin" />
+      <span>{label}</span>
+    </p>
+  );
 }

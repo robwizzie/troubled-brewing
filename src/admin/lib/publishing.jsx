@@ -1,8 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ConfirmModal, useToast } from '../components/ui.jsx';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { LuExternalLink, LuEye, LuUndo2, LuUpload } from 'react-icons/lu';
+import { ConfirmModal, StatusChip, useToast } from '../components/ui.jsx';
+import { Icon } from '../components/Icon.jsx';
 import { friendlyError, publishedTime } from './publishHelpers.js';
-import { recordPublish, currentAdminPath } from './nav.js';
+import { recordPublish, currentAdminPath, screenFor } from './nav.js';
 
 /* =============================================================================
    Explicit publishing — the one rule the whole admin follows:
@@ -240,7 +242,7 @@ export function usePublishUnit(unitId, { dirty, canDiscard = dirty, publish, dis
 }
 
 /* ---- The shared sticky action bar ----------------------------------------- */
-export function ActionBar({ preview, viewHref, viewLabel = 'View the live page ↗', publishLabel = 'Publish' }) {
+export function ActionBar({ preview, viewHref, viewLabel = 'View the live page', publishLabel = 'Publish' }) {
   const scope = usePublishScope();
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   if (!scope) return null;
@@ -251,15 +253,15 @@ export function ActionBar({ preview, viewHref, viewLabel = 'View the live page �
   else if (dirty && notes.length === 1) status = notes[0];
   else if (dirty && scope.count > 1) status = `Unsaved changes in ${scope.count} places — not on the site yet`;
   else if (dirty) status = 'Unsaved changes — not on the site yet';
-  else if (lastPublished) status = `✓ Published at ${publishedTime(lastPublished)} — the site is up to date`;
-  else status = '✓ No changes — the site is up to date';
+  else if (lastPublished) status = `Published at ${publishedTime(lastPublished)} — the site is up to date`;
+  else status = 'No changes — the site is up to date';
 
   return (
     <div className={`actionbar ${dirty ? 'is-dirty' : ''}`} role="region" aria-label="Publish changes">
-      <p className="actionbar__status" role="status" aria-live="polite">
-        {dirty && busy !== 'publish' && <span className="actionbar__dot" aria-hidden="true" />}
-        {status}
-      </p>
+      <div className="actionbar__status" role="status" aria-live="polite">
+        <StatusChip state={dirty ? 'unpublished' : 'published'} />
+        <span className="actionbar__text">{status}</span>
+      </div>
       <div className="actionbar__buttons">
         <button
           type="button"
@@ -267,6 +269,7 @@ export function ActionBar({ preview, viewHref, viewLabel = 'View the live page �
           disabled={!canDiscard || Boolean(busy)}
           onClick={() => setConfirmDiscard(true)}
         >
+          <Icon icon={LuUndo2} size={16} />
           Discard
         </button>
         {preview && (
@@ -277,11 +280,13 @@ export function ActionBar({ preview, viewHref, viewLabel = 'View the live page �
             onClick={preview.onClick}
             title={preview.title}
           >
-            Preview ↗
+            <Icon icon={LuEye} size={16} />
+            Preview
           </button>
         )}
         {!preview && viewHref && (
           <a className="btn btn--ghost btn--sm actionbar__view" href={viewHref} target="_blank" rel="noreferrer">
+            <Icon icon={LuExternalLink} size={16} />
             {viewLabel}
           </a>
         )}
@@ -291,6 +296,7 @@ export function ActionBar({ preview, viewHref, viewLabel = 'View the live page �
           disabled={!dirty || Boolean(busy)}
           onClick={publish}
         >
+          <Icon icon={LuUpload} size={16} />
           {busy === 'publish' ? 'Publishing…' : publishLabel}
         </button>
       </div>
@@ -310,12 +316,22 @@ export function ActionBar({ preview, viewHref, viewLabel = 'View the live page �
   );
 }
 
-/* ---- Screen chrome: title + one plain line about what it changes ---------- */
-export function ScreenHead({ title, help, children }) {
+/* ---- Screen chrome: title + one plain line about what it changes ----------
+   Inside an editing screen it also shows where things stand at a glance —
+   "Published" or "Unpublished changes" — next to the title. */
+export function ScreenHead({ title, help, children, icon: iconProp }) {
+  const scope = useContext(ScopeContext);
+  // the screen's own sidebar icon, so every header matches its nav entry
+  const { pathname } = useLocation();
+  const icon = iconProp || screenFor(pathname)?.icon;
   return (
     <header className="screenhead">
       <div className="screenhead__text">
-        <h1>{title}</h1>
+        <div className="screenhead__titlerow">
+          {icon && <span className="screenhead__icon"><Icon icon={icon} size={22} /></span>}
+          <h1>{title}</h1>
+          {scope && <StatusChip state={scope.dirty ? 'unpublished' : 'published'} />}
+        </div>
         {help && <p className="screenhead__help">{help}</p>}
       </div>
       {children && <div className="screenhead__actions">{children}</div>}

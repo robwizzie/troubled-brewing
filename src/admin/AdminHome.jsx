@@ -1,14 +1,17 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
-import { MORE_TASKS, PAGE_NAMES, TASKS, agoLabel, readRecent, searchTasks } from './lib/nav.js';
+import { LuArrowRight, LuCamera, LuCircleCheck, LuCircleDot, LuSearch, LuSquarePen, LuUpload, LuX } from 'react-icons/lu';
+import { COMMON_COUNT, MORE_TASKS, PAGE_NAMES, TASKS, agoLabel, readRecent, searchTasks } from './lib/nav.js';
+import { Icon } from './components/Icon.jsx';
+import { StatusChip } from './components/ui.jsx';
 import { chalkStatus, loadChalkboard } from './lib/chalkStatus.js';
 
-/* Admin home — a task launcher. The first thing on screen is the job staff do
-   every morning (the chalkboard); under it, "What do you want to change?"
-   and a big card for each common job, in the words people use for it. Below
-   that: anything waiting to publish, what was published recently from this
-   device, and the one rule (nothing goes live until you publish). */
+/* Admin home — a calm task launcher. The first thing on screen is the job
+   staff do every morning (the chalkboard); under it, "What do you want to
+   change?", the most common jobs as cards, then everything else, grouped.
+   Below that: anything waiting to publish and what was published recently
+   from this device. Every screen is one tap from here. */
 
 const TIP_KEY = 'tb-admin-tip-dismissed-v1';
 function tipDismissed() {
@@ -28,15 +31,18 @@ function ChalkboardCard() {
   }, []);
   return (
     <Link to="/admin/chalkboard" className="homechalk">
-      <span className="homechalk__icon" aria-hidden="true">📷</span>
+      <span className="homechalk__icon"><Icon icon={LuCamera} size={26} /></span>
       <span className="homechalk__text">
         <strong className="homechalk__title">Update today’s chalkboard</strong>
         <span className="homechalk__desc">Snap the specials board and put it on the homepage — about 30 seconds.</span>
         {status && (
-          <span className={`homechalk__status ${status.live ? 'is-live' : ''}`}>{status.live ? '✓ ' : ''}{status.text}</span>
+          <span className={`homechalk__status ${status.live ? 'is-live' : ''}`}>
+            <Icon icon={status.live ? LuCircleCheck : LuCircleDot} size={15} />
+            {status.text}
+          </span>
         )}
       </span>
-      <span className="homechalk__go" aria-hidden="true">→</span>
+      <span className="homechalk__go"><Icon icon={LuArrowRight} size={22} /></span>
     </Link>
   );
 }
@@ -53,6 +59,7 @@ function FirstTimeTip() {
           className="btn btn--ghost btn--sm"
           onClick={() => { dismissTip(); setHidden(true); }}
         >
+          <Icon icon={LuX} size={16} />
           Got it — hide this
         </button>
       </div>
@@ -81,6 +88,8 @@ function TaskSearch() {
       }}
     >
       <label htmlFor={id} className="homesearch__label">What do you want to change?</label>
+      <div className="homesearch__field">
+      <Icon icon={LuSearch} size={20} className="homesearch__icon" />
       <input
         id={id}
         type="search"
@@ -91,6 +100,7 @@ function TaskSearch() {
         enterKeyHint="go"
         onChange={(e) => setQ(e.target.value)}
       />
+      </div>
       {typed && (
         <div className="homesearch__results" aria-live="polite">
           {results.length ? (
@@ -98,8 +108,9 @@ function TaskSearch() {
               {results.map((t) => (
                 <li key={t.id}>
                   <Link to={t.to}>
-                    <span aria-hidden="true">{t.icon}</span>
+                    <span className="homesearch__ricon"><Icon icon={t.icon} /></span>
                     <span><strong>{t.title}</strong><small>{t.desc}</small></span>
+                    <Icon icon={LuArrowRight} size={18} className="homesearch__go" />
                   </Link>
                 </li>
               ))}
@@ -144,13 +155,13 @@ function Activity() {
     <section className="admin__panel homeactivity">
       {waiting.length > 0 && (
         <>
-          <h2>Waiting to publish</h2>
+          <h2><Icon icon={LuUpload} size={18} />Waiting to publish</h2>
           <p className="panel-help">You previewed changes to these pages but didn’t publish them. Open one to publish or discard.</p>
           <ul className="homeactivity__list">
             {waiting.map((slug) => (
               <li key={slug}>
-                <Link to={`/admin/editor/${slug}`}>✏️ {PAGE_NAMES[slug] || 'A page'} page</Link>
-                <span className="badge badge--draft">Not on the site yet</span>
+                <Link to={`/admin/editor/${slug}`}><Icon icon={LuSquarePen} size={16} />{PAGE_NAMES[slug] || 'A page'} page</Link>
+                <StatusChip state="draft" />
               </li>
             ))}
           </ul>
@@ -158,7 +169,7 @@ function Activity() {
       )}
       {recent.length > 0 && (
         <>
-          <h2>Recently published</h2>
+          <h2><Icon icon={LuCircleCheck} size={18} />Recently published</h2>
           <ul className="homeactivity__list">
             {recent.map((r) => (
               <li key={`${r.label}-${r.at}`}>
@@ -174,48 +185,69 @@ function Activity() {
   );
 }
 
+function greeting(now = new Date()) {
+  const h = Number(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/New_York' }).format(now));
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function TaskCard({ t }) {
+  return (
+    <li>
+      <Link to={t.to} className="taskcard">
+        <span className="taskcard__icon"><Icon icon={t.icon} size={22} /></span>
+        <span className="taskcard__title">{t.title}</span>
+        <span className="taskcard__desc">{t.desc}</span>
+      </Link>
+    </li>
+  );
+}
+
 export default function AdminHome() {
   const cards = TASKS.filter((t) => t.id !== 'chalkboard');
+  const common = cards.slice(0, COMMON_COUNT);
+  const handy = cards.slice(COMMON_COUNT);
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
   return (
     <div className="adminhome">
-      <h1 className="sr-only">Admin home</h1>
+      <header className="adminhome__head">
+        <p className="adminhome__date">{today}</p>
+        <h1 className="adminhome__hello">{greeting()}</h1>
+        <p className="adminhome__sub">What would you like to update? Nothing goes on the website until you press Publish.</p>
+      </header>
       <ChalkboardCard />
       <FirstTimeTip />
       <TaskSearch />
 
-      <h2 className="adminhome__h">Things you can change</h2>
-      <ul className="taskcards">
-        {cards.map((t) => (
-          <li key={t.id}>
-            <Link to={t.to} className="taskcard">
-              <span className="taskcard__icon" aria-hidden="true">{t.icon}</span>
-              <span className="taskcard__title">{t.title}</span>
-              <span className="taskcard__desc">{t.desc}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <section aria-labelledby="home-common">
+        <h2 id="home-common" className="adminhome__h">Most days</h2>
+        <ul className="taskcards">
+          {common.map((t) => <TaskCard key={t.id} t={t} />)}
+        </ul>
+      </section>
+
+      <section aria-labelledby="home-handy">
+        <h2 id="home-handy" className="adminhome__h">Also handy</h2>
+        <ul className="taskcards taskcards--quiet">
+          {handy.map((t) => <TaskCard key={t.id} t={t} />)}
+        </ul>
+      </section>
 
       <Activity />
 
-      <details className="admin__panel homemore">
-        <summary>Something else? Gallery, staff, local businesses, messages…</summary>
+      <section aria-labelledby="home-more">
+        <h2 id="home-more" className="adminhome__h">Everything else</h2>
         <ul className="homelinks">
           {MORE_TASKS.map((t) => (
             <li key={t.id}>
-              <Link to={t.to}><strong><span aria-hidden="true">{t.icon}</span> {t.title}</strong><span>{t.desc}</span></Link>
+              <Link to={t.to}>
+                <span className="homelinks__icon"><Icon icon={t.icon} /></span>
+                <span className="homelinks__text"><strong>{t.title}</strong><span>{t.desc}</span></span>
+              </Link>
             </li>
           ))}
         </ul>
-      </details>
-
-      <section className="admin__panel">
-        <h2>How publishing works</h2>
-        <ol className="howto">
-          <li>Make your changes — they show straight away on your screen only.</li>
-          <li>The bar at the bottom says <strong>Unsaved changes</strong> while anything is waiting.</li>
-          <li>Press <strong>Publish</strong> to put it on the website, or <strong>Discard</strong> to throw it away.</li>
-        </ol>
       </section>
     </div>
   );
