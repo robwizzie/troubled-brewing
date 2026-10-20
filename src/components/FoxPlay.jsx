@@ -1,11 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { FaArrowLeft, FaArrowUpRightFromSquare, FaMedal, FaMugHot, FaRotateRight } from 'react-icons/fa6';
-import { CoffeeCup } from './Motifs.jsx';
 import { orderUrlFor, orderLabelFor } from '../lib/order.js';
 import { productImageSources, isCutout } from '../lib/productImage.js';
 import { track } from '../lib/analytics.js';
 import { FOX_H, FOX_PATH, FOX_W } from '../lib/foxArt.js';
 import { saveUsual } from '../lib/yourUsual.js'; // fox-outfits: "your usual"
+import { PersonaLauncher } from './PersonaCard.jsx'; // drink-personality
 import {
   ANY, POUR_MS, QUIZ, closedOrderNote, drinkLook, fmtPrice, matchDrink, pickSurprise,
   quizPlan, refineOptions,
@@ -19,18 +19,39 @@ import {
 
 const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-/** A menu item's photo (own image → drop-in file), or a drawn cup. */
-export function DrinkPhoto({ item, small = false }) {
-  const [i, setI] = useState(0);
+/* ---- A drink's picture ---------------------------------------------------
+   One component for every drink the fox shows (Surprise me, the quiz match
+   and its runner-ups, "your usual"): a small gilt frame — the gallery
+   wall's thin gold fillet — holding the item's real photo when it has one
+   (its own image_url, then the drop-in file; productImageSources), and its
+   drawn cup otherwise. The cup is there from the first paint: it holds the
+   frame's size while the photo lazy-loads, stays if the photo fails (each
+   source is tried in turn, then it quietly gives up), and is what a drink
+   without a photo simply looks like. A cutout (background removed) is shown
+   whole on the lit mat; an ordinary photo fills the frame.
+   `ready` holds a loaded photo back — Surprise me pours the cup first, then
+   lets the photo take over. `art` swaps the stand-in drawing (the pour). */
+export function DrinkPhoto(props) {
+  // a new drink starts over: first source, nothing loaded
+  return <FramedDrink key={props.item?.name || ''} {...props} />;
+}
+
+function FramedDrink({ item, size = 'md', ready = true, art = null, className = '' }) {
   const sources = productImageSources(item);
+  const [i, setI] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const src = sources[i];
-  useEffect(() => setI(0), [item?.name]);
-  if (!src) {
-    return <span className="fox-drink__photo is-motif" aria-hidden="true"><CoffeeCup size={small ? 28 : 40} color="var(--color-yellow-deep)" steam={false} /></span>;
-  }
+  const shown = Boolean(src && loaded && ready);
+  const cls = ['fox-photo', `fox-photo--${size}`, shown && 'has-photo', src && isCutout(src) && 'is-cutout', className].filter(Boolean).join(' ');
   return (
-    <span className={`fox-drink__photo${isCutout(src) ? ' is-cutout' : ''}`}>
-      <img src={src} alt="" onError={() => setI((n) => n + 1)} />
+    <span className={cls} data-photo={shown ? 'photo' : 'drawn'}>
+      <span className="fox-photo__art" aria-hidden="true">{art || <PourCup look={drinkLook(item)} still />}</span>
+      {src && (
+        <img className="fox-photo__img" src={src} alt={item?.name || ''} aria-hidden={shown ? undefined : 'true'}
+          loading="lazy" decoding="async"
+          onLoad={() => setLoaded(true)}
+          onError={() => { setLoaded(false); setI((n) => n + 1); }} />
+      )}
     </span>
   );
 }
@@ -54,58 +75,259 @@ function OrderLink({ item, small = false, where = 'fox' }) {
    replayed by "Pick again" (the pour is keyed). Phones get one gentle tick
    as it settles. Reduced motion: the full cup, card and all, just fades in. */
 
-const MUG = 'M20 34 H60 V58 C60 68 52 74 40 74 C28 74 20 68 20 58 Z';
-const GLASS = 'M18 20 H62 L57 74 C56.6 76.2 55 77 53 77 H27 C25 77 23.4 76.2 23 74 Z';
+/* The palette and line of the fox art: ink outlines at one weight, cream,
+   sage and gold, with soft gradients only where they give the glass depth. */
+const INK = '#2c2722';
+const CREAM = '#f7f1e4';
+const SAGE = '#545f33';
+const GOLD_DEEP = '#a87c1c';
+const MILK = '#f0e0c2';
+const LINE = 2.2;
 
-/** The cup being poured, drawn in the logo's line style. */
-export function PourCup({ look }) {
-  const clip = `fox-pour-${useId().replace(/:/g, '')}`;
-  const mug = look.vessel === 'mug';
-  const top = mug ? 36 : 27;
+/** Blend two #rrggbb colours: t = 0 → a, 1 → b. */
+function mix(a, b, t) {
+  const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const x = rgb(a);
+  const y = rgb(b);
+  return `#${x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('')}`;
+}
+
+/* ---- the tumbler (iced, frozen) — viewBox 0 0 100 100 ----
+   A slightly tapered glass: an elliptical rim, a thick base, the drink
+   inside it to SURF. */
+const GLASS_OUT = 'M23 20 L30.2 85 C30.6 89 32.6 91 36.5 91 H63.5 C67.4 91 69.4 89 69.8 85 L77 20';
+const GLASS_BODY = `${GLASS_OUT} A27 5.2 0 0 0 23 20 Z`;
+const GLASS_IN = 'M25.2 21.5 L31.4 78.6 C31.6 80.4 32.8 81.2 34.8 81.2 H65.2 C67.2 81.2 68.4 80.4 68.6 78.6 L74.8 21.5 Z';
+const below = (y) => `M10 ${y} Q50 ${y + 7.4} 90 ${y} V100 H10 Z`; // everything under the drink's surface
+// ice: [cx, cy, size, turn] — two bobbing at the top, the rest under
+const ICE = [[37.5, 34, 13, -14], [58, 33, 12.5, 12], [47, 46.5, 12, 6], [61.5, 52, 11, -9], [37, 60, 10.5, 18]];
+const DROPS = [[29.6, 47, 1.5], [33.6, 66, 1.2], [67.6, 41, 1.3], [64.6, 68, 1.6], [39.5, 75, 1.1], [69.6, 56, 1], [31.5, 33, 1]];
+
+/* ---- the mug and saucer (hot) ---- */
+const MUG_OUT = 'M21 40 C21 56 22.5 68 27.5 75.5 C31 80.5 36 82.5 46 82.5 C56 82.5 61 80.5 64.5 75.5 C69.5 68 71 56 71 40';
+const MUG_BODY = `${MUG_OUT} A25 6 0 0 0 21 40 Z`;
+const HEART = 'M0 6 C-9.5 0.5 -8.5 -6.2 -4.3 -6.2 C-2.2 -6.2 -0.7 -4.9 0 -3.4 C0.7 -4.9 2.2 -6.2 4.3 -6.2 C8.5 -6.2 9.5 0.5 0 6 Z';
+
+function Citrus({ kind }) {
+  const peel = kind === 'orange' ? '#ec8a3a' : '#f0c93a';
+  const flesh = kind === 'orange' ? '#f7ad62' : '#f8de62';
   return (
-    <svg className={`fox-pour__cup is-${look.vessel}`} viewBox="0 0 88 88" aria-hidden="true" focusable="false"
-      style={{ '--fill-from': `${mug ? 40 : 52}px` }}>
-      <defs><clipPath id={clip}><path d={mug ? MUG : GLASS} /></clipPath></defs>
-      {mug && <ellipse cx="40" cy="78.5" rx="29" ry="4.5" fill="#fffaf0" stroke="#191512" strokeWidth="2" />}
-      <path d={mug ? MUG : GLASS} fill={mug ? '#fffaf0' : 'rgba(255, 255, 255, 0.6)'} />
-      <rect className="fox-pour__stream" x="38" y="0" width="4" height={mug ? 74 : 77} rx="2" fill={look.fill} />
-      <g clipPath={`url(#${clip})`}>
+    <g className="fox-pour__citrus">
+      <g transform="translate(75 17) rotate(-12)">
+        <circle r="11" fill={peel} stroke={INK} strokeWidth={LINE} />
+        <circle r="8.6" fill="#fdf6dc" />
+        <circle r="7.4" fill={flesh} />
+        <g stroke="#fdf6dc" strokeWidth="1.3" strokeLinecap="round">
+          {[0, 45, 90, 135].map((a) => <path key={a} d="M0 -7.4 V7.4" transform={`rotate(${a})`} />)}
+        </g>
+        <circle r="1.5" fill="#fdf6dc" />
+        <path d="M-6.4 -5.2 A8.2 8.2 0 0 1 2 -8" fill="none" stroke="#fff" strokeWidth="1.1" strokeLinecap="round" opacity="0.7" />
+      </g>
+    </g>
+  );
+}
+
+/** A glass straw: clear tube, ink edges; under the surface it takes the drink's colour. */
+function Straw({ d, tint, clip }) {
+  return (
+    <g className="fox-pour__straw">
+      <path d={d} stroke={INK} strokeWidth="5" strokeLinecap="round" fill="none" />
+      <path d={d} stroke="#eef2ea" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+      <g clipPath={`url(#${clip})`}><path d={d} stroke={tint} strokeWidth="2.8" fill="none" opacity="0.7" /></g>
+      <path d={d} stroke="#fff" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.9" transform="translate(-0.9 0)" />
+    </g>
+  );
+}
+
+function Glass({ look, id, still }) {
+  const frozen = look.frozen;
+  const surf = frozen ? 24 : 34;
+  const top = look.top || mix(look.fill, '#ffffff', 0.18);
+  const deep = mix(look.fill, '#5a3410', 0.22); // deeper and warmer at the bottom, never grey
+  const layered = look.milk && !frozen;
+  const straw = frozen ? 'M64 1 L52 70' : 'M67 3 L53 76';
+  return (
+    <>
+      <defs>
+        <clipPath id={`${id}-in`}><path d={GLASS_IN} /></clipPath>
+        <clipPath id={`${id}-body`}><path d={GLASS_BODY} /></clipPath>
+        <clipPath id={`${id}-under`}><path d={below(surf)} /></clipPath>
+        <linearGradient id={`${id}-glass`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
+          <stop offset="0.45" stopColor="#ffffff" stopOpacity="0.1" />
+          <stop offset="1" stopColor="#bccdc8" stopOpacity="0.42" />
+        </linearGradient>
+        <linearGradient id={`${id}-liq`} x1="0" x2="0" y1={surf} y2="81" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor={layered ? mix(top, '#000000', 0.06) : top} />
+          <stop offset="1" stopColor={layered ? look.fill : deep} />
+        </linearGradient>
+        <linearGradient id={`${id}-milk`} x1="0" x2="0" y1="52" y2="81" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor={mix(look.fill, MILK, 0.4)} />
+          <stop offset="0.3" stopColor={MILK} />
+          <stop offset="1" stopColor="#e6d1ab" />
+        </linearGradient>
+        <linearGradient id={`${id}-ice`} x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="1" stopColor="#e4eef0" stopOpacity="0.45" />
+        </linearGradient>
+      </defs>
+      {/* the glass, its back wall and the back of the rim */}
+      <path d={GLASS_BODY} fill={`url(#${id}-glass)`} />
+      <path d="M23 20 A27 5.2 0 0 1 77 20" fill="none" stroke={INK} strokeWidth="1.4" opacity="0.55" />
+      {!still && <rect className="fox-pour__stream" x="48.2" y="0" width="3.6" height="80" rx="1.8" fill={look.fill} />}
+      {!frozen && <Straw d={straw} tint={look.fill} clip={`${id}-under`} />}
+      {/* the drink */}
+      <g clipPath={`url(#${id}-in)`}>
         <g className="fox-pour__liquid">
-          <rect x="10" y={top} width="64" height="60" fill={look.fill} />
-          <ellipse cx="40" cy={top} rx="26" ry="2.6" fill="#fff" opacity="0.25" />
+          <rect x="20" y={surf} width="60" height="70" fill={`url(#${id}-liq)`} />
+          {layered && (
+            <>
+              <path d="M20 57 C29 52.5 38 61 50 56.5 C61 52 70 60 80 55 V100 H20 Z" fill={`url(#${id}-milk)`} />
+              <g fill={look.fill} opacity="0.5">
+                <path d="M34 57.5 C31.5 63 38 66 35 73 C40 68 39.5 62 41.5 58 Z" />
+                <path d="M57 56 C55.5 61 60.5 63.5 58.5 69 C63 64.5 62 59.5 63.5 56.5 Z" />
+                <path d="M46.5 57.5 C46 60.5 48.5 62 47.2 65 C50 62.5 49.6 59.5 50.5 57 Z" />
+              </g>
+            </>
+          )}
+          <ellipse cx="50" cy={surf} rx="25" ry="3.6" fill={mix(top, '#ffffff', 0.28)} />
+          <path d={`M27 ${surf - 0.4} Q50 ${surf - 4.4} 73 ${surf - 0.4}`} fill="none" stroke="#fff" strokeWidth="0.9" opacity="0.55" />
         </g>
       </g>
       {look.ice && (
-        <g fill="rgba(255, 255, 255, 0.72)" stroke="#8ea8b4" strokeWidth="1.4">
-          <g className="fox-pour__ice"><rect x="25" y="42" width="13" height="13" rx="3" transform="rotate(-12 31.5 48.5)" /></g>
-          <g className="fox-pour__ice"><rect x="41" y="35" width="13" height="13" rx="3" transform="rotate(10 47.5 41.5)" /></g>
-          <g className="fox-pour__ice"><rect x="33" y="55" width="12" height="12" rx="3" transform="rotate(4 39 61)" /></g>
+        <g>
+          {ICE.map(([x, y, s, r], i) => (
+            <g key={i} className="fox-pour__ice">
+              <g transform={`rotate(${r} ${x} ${y})`}>
+                <rect x={x - s / 2} y={y - s / 2} width={s} height={s} rx="3.4" fill={`url(#${id}-ice)`} stroke={INK} strokeOpacity="0.5" strokeWidth="1.1" />
+                <path d={`M${x - s / 2 + 2.4} ${y + s / 2 - 4} V${y - s / 2 + 3.2} Q${x - s / 2 + 2.4} ${y - s / 2 + 2.4} ${x - s / 2 + 3.4} ${y - s / 2 + 2.4} H${x + s / 2 - 4}`}
+                  fill="none" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" />
+              </g>
+            </g>
+          ))}
+          {/* under the surface the ice takes the drink's colour */}
+          <g className="fox-pour__tint" clipPath={`url(#${id}-under)`} opacity="1">
+            {ICE.map(([x, y, s, r], i) => (
+              <rect key={i} x={x - s / 2} y={y - s / 2} width={s} height={s} rx="3.4" transform={`rotate(${r} ${x} ${y})`} fill={look.fill} opacity="0.38" />
+            ))}
+          </g>
         </g>
       )}
-      {(look.ice || look.frozen) && (
-        <g className="fox-pour__straw"><path d="M53 4 L45 66" stroke="#c4566f" strokeWidth="4.2" strokeLinecap="round" /></g>
+      {/* the thick base */}
+      <g clipPath={`url(#${id}-body)`}>
+        <rect x="20" y="81.2" width="60" height="12" fill="#d7e3df" opacity="0.65" />
+        <ellipse cx="50" cy="81.6" rx="17" ry="2.2" fill="none" stroke={INK} strokeWidth="1" opacity="0.4" />
+        <path d="M36 86.5 H55" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" opacity="0.8" />
+      </g>
+      {/* gleam, shade and condensation on the glass */}
+      <path d="M28.4 26 L33.8 80" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" opacity="0.6" />
+      <path d="M33.4 27 L35.4 46" stroke="#fff" strokeWidth="1.1" strokeLinecap="round" opacity="0.5" />
+      <path d="M72.6 25 L67.2 80" stroke={INK} strokeWidth="2.4" strokeLinecap="round" opacity="0.09" />
+      <g className="fox-pour__drops">
+        {DROPS.map(([x, y, r], i) => (
+          <g key={i}>
+            <path d={`M${x} ${y - r * 1.6} C${x + r * 1.1} ${y - r * 0.2} ${x + r} ${y + r} ${x} ${y + r} C${x - r} ${y + r} ${x - r * 1.1} ${y - r * 0.2} ${x} ${y - r * 1.6} Z`}
+              fill="#fff" fillOpacity="0.55" stroke={INK} strokeOpacity="0.35" strokeWidth="0.6" />
+            <circle cx={x - r * 0.3} cy={y} r={r * 0.32} fill="#fff" />
+          </g>
+        ))}
+      </g>
+      {/* the outline and the rim */}
+      <path d={GLASS_OUT} fill="none" stroke={INK} strokeWidth={LINE} strokeLinejoin="round" strokeLinecap="round" />
+      <path d="M77 20 A27 5.2 0 0 1 23 20" fill="none" stroke={INK} strokeWidth={LINE} />
+      <path d="M26 21.6 Q50 26.6 74 21.6" fill="none" stroke="#fff" strokeWidth="1" opacity="0.8" />
+      {frozen && (
+        <>
+          <Straw d={straw} tint={look.fill} clip={`${id}-under`} />
+          <g className="fox-pour__dome">
+            <path d="M22.5 21.5 C16.5 15 23 8 30.5 10.8 C30.5 4 41 1 47.5 5.6 C53 0.6 65.5 3 66.5 10.6 C74 7.6 83 14 77.5 21.5 C69 25.6 31 25.6 22.5 21.5 Z"
+              fill="#fbf5ea" stroke={INK} strokeWidth={LINE} strokeLinejoin="round" />
+            <path d="M25.5 18.6 C35 15.6 43 21 51.5 16.8 C59.5 13 67.5 18 75 17" fill="none" stroke={INK} strokeWidth="1.1" opacity="0.35" strokeLinecap="round" />
+            <path d="M35 9.6 C41 6.6 49.5 10.4 57 7.4" fill="none" stroke={INK} strokeWidth="1.1" opacity="0.35" strokeLinecap="round" />
+            <path d="M27 14.6 Q31 19 35 13.4 Q40 18.6 45 11.8 Q50 18 55 11.4 Q60 17.6 66 12.4 Q70 17 74 14.6" fill="none" stroke={GOLD_DEEP} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" opacity="0.92" />
+            <path d="M30 13 C31.5 11 34 10.6 36 11.4" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" />
+          </g>
+        </>
       )}
+      {look.citrus && <Citrus kind={look.citrus} />}
+    </>
+  );
+}
+
+function Mug({ look, id, still }) {
+  const surface = look.heart ? look.fill : look.crema ? '#6b3f22' : look.fill;
+  return (
+    <>
+      <defs>
+        <clipPath id={`${id}-in`}><ellipse cx="46" cy="40.7" rx="22.4" ry="4.9" /></clipPath>
+        <clipPath id={`${id}-body`}><path d={MUG_BODY} /></clipPath>
+        <linearGradient id={`${id}-mug`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#fffbf3" />
+          <stop offset="0.42" stopColor={CREAM} />
+          <stop offset="1" stopColor="#dfcfae" />
+        </linearGradient>
+        <radialGradient id={`${id}-top`} cx="0.42" cy="0.4" r="0.7">
+          <stop offset="0" stopColor={mix(surface, '#ffffff', look.crema ? 0.35 : 0.16)} />
+          <stop offset="1" stopColor={mix(surface, '#000000', 0.12)} />
+        </radialGradient>
+      </defs>
+      {/* the saucer and its shadows */}
+      <ellipse cx="47" cy="90.6" rx="31" ry="4" fill={INK} opacity="0.1" />
+      <ellipse cx="47" cy="84.6" rx="35" ry="7.4" fill={CREAM} stroke={INK} strokeWidth={LINE} />
+      <ellipse cx="47" cy="84" rx="21" ry="3.8" fill="none" stroke={INK} strokeWidth="1" opacity="0.22" />
+      <path d="M17 86.4 Q47 94 77 86.4" fill="none" stroke="#fff" strokeWidth="1" opacity="0.8" />
+      <ellipse cx="46" cy="82.2" rx="20" ry="3.2" fill={INK} opacity="0.2" />
+      {/* the handle, then the mug over its ends */}
+      <path d="M69.4 49 C83.5 47 86 64.5 65.5 71" fill="none" stroke={INK} strokeWidth="8.4" strokeLinecap="round" />
+      <path d="M69.4 49 C83.5 47 86 64.5 65.5 71" fill="none" stroke={CREAM} strokeWidth="4.2" strokeLinecap="round" />
+      <path d={MUG_BODY} fill={`url(#${id}-mug)`} />
+      <g clipPath={`url(#${id}-body)`}>
+        <path d="M18 56 Q46 64 74 56" fill="none" stroke={SAGE} strokeWidth="3.6" />
+        <path d="M18 61.4 Q46 69.4 74 61.4" fill="none" stroke="#d4ad57" strokeWidth="1.2" />
+        <path d="M25.5 46 C25.5 58 27 67 31 73" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" opacity="0.75" />
+      </g>
+      <path d={MUG_OUT} fill="none" stroke={INK} strokeWidth={LINE} strokeLinecap="round" />
+      {/* the opening: inside wall, then the drink rising into it */}
+      <ellipse cx="46" cy="40" rx="25" ry="6" fill="#e8dcc4" stroke={INK} strokeWidth={LINE} />
+      {!still && <rect className="fox-pour__stream" x="44.2" y="0" width="3.6" height="41" rx="1.8" fill={look.fill} />}
+      <g clipPath={`url(#${id}-in)`}>
+        <g className="fox-pour__liquid">
+          <ellipse cx="46" cy="41.4" rx="22.4" ry="4.9" fill={`url(#${id}-top)`} />
+          {look.crema && <ellipse cx="44.5" cy="41" rx="15" ry="2.6" fill="#c08850" opacity="0.55" />}
+          {look.milk && !look.heart && !look.crema && <ellipse cx="45" cy="41" rx="17" ry="3" fill="#fff" opacity="0.14" />}
+        </g>
+      </g>
+      <path d="M22.6 41.6 Q46 49 69.4 41.6" fill="none" stroke="#fff" strokeWidth="1" opacity="0.85" />
       {look.heart && (
         <g className="fox-pour__heart">
-          <path d="M40 39.5 C33.5 35.5 34.5 31 37.6 31.6 C39 31.9 39.7 33 40 33.8 C40.3 33 41 31.9 42.4 31.6 C45.5 31 46.5 35.5 40 39.5 Z"
-            fill="#fbf2e4" stroke="#fffaf0" strokeWidth="0.6" transform="translate(40 36.2) scale(1.5 0.78) translate(-40 -35.5)" />
-        </g>
-      )}
-      <path d={mug ? MUG : GLASS} fill="none" stroke="#191512" strokeWidth="2.2" strokeLinejoin="round" />
-      {mug && <path d="M60 40 C71 40 72 54 59.5 57" fill="none" stroke="#191512" strokeWidth="2.2" strokeLinecap="round" />}
-      {!mug && <path d="M21 25 L25 70" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.7" />}
-      {look.frozen && (
-        <g className="fox-pour__dome">
-          <path d="M19 21 C17 12 27 8 31 12 C33 4 47 4 49 12 C53 8 63 12 61 21 Z" fill="#fffaf0" stroke="#191512" strokeWidth="2" strokeLinejoin="round" />
+          <g transform="translate(46.5 41.3) scale(1.3 0.5)">
+            <path d="M0 11 C-0.6 8 -0.4 7 0 6" fill="none" stroke="#fbf4e6" strokeWidth="1.6" strokeLinecap="round" />
+            <path d={HEART} fill="#fbf4e6" />
+            <path d="M-3 -3 C-1.8 -0.2 1.8 -0.2 3 -3" fill="none" stroke={look.fill} strokeWidth="0.9" opacity="0.6" />
+          </g>
         </g>
       )}
       {look.steam && (
-        <g className="fox-pour__steam" fill="none" stroke="#191512" strokeWidth="1.8" strokeLinecap="round">
-          <path d="M33 28 C30 23 36 19 33 13" />
-          <path d="M40 27 C37 21 44 17 40 9" />
-          <path d="M47 28 C44 23 50 19 47 14" />
+        <g className="fox-pour__steam" fill="none" stroke={INK} strokeWidth="1.7" strokeLinecap="round">
+          <path d="M37 31 C33 25.5 40.5 21 36.5 14" />
+          <path d="M46 29.5 C42 22.5 50.5 18 46 9" />
+          <path d="M55 31 C51 25.5 58.5 21 54.5 15" />
         </g>
       )}
+    </>
+  );
+}
+
+/** The cup being poured — a mug on its saucer for a hot drink, a tumbler
+    for a cold one — drawn in the fox art's line and palette. `still` draws
+    the finished cup with no pour (a stand-in for a missing photo). */
+export function PourCup({ look, still = false }) {
+  const id = `fox-pour-${useId().replace(/:/g, '')}`;
+  const mug = look.vessel === 'mug';
+  return (
+    <svg className={`fox-pour__cup is-${look.vessel}${still ? ' is-still' : ''}`} viewBox="0 0 100 100" aria-hidden="true" focusable="false"
+      style={{ '--fill-from': `${mug ? 11 : look.frozen ? 58 : 48}px` }}>
+      {mug ? <Mug look={look} id={id} still={still} /> : <Glass look={look} id={id} still={still} />}
     </svg>
   );
 }
@@ -149,10 +371,12 @@ export function SurprisePane({ menu, hours, overrides }) {
     <div className={`fox-play fox-surprise${pouring ? ' is-pouring' : ''}${instant ? ' is-instant' : ''}`} data-testid="fox-surprise">
       <p className="fox-help__q">The fox pours you…</p>
       <div className="fox-drink fox-surprise__card fox-pour" key={pour.n}>
-        <span className="fox-pour__stage">
-          <PourCup look={drinkLook(item)} />
-          {!instant && <span className="fox-surprise__spark" aria-hidden="true"><i /><i /><i /><i /></span>}
-        </span>
+        <DrinkPhoto item={item} size="lg" ready={!pouring} className="fox-pour__frame" art={(
+          <span className="fox-pour__stage">
+            <PourCup look={drinkLook(item)} />
+            {!instant && <span className="fox-surprise__spark"><i /><i /><i /><i /></span>}
+          </span>
+        )} />
         <div className="fox-drink__info fox-pour__info">
           <p className="fox-pour__wait" aria-hidden="true">Pouring…</p>
           <div className="fox-pour__card">
@@ -258,7 +482,7 @@ export function QuizPane({ menu, hours, overrides }) {
         </div>
         <h3 className="sr-only" tabIndex={-1} ref={heading}>Your drink</h3>
         <div className="fox-match" key={r.item.name}>
-          <DrinkPhoto item={r.item} />
+          <DrinkPhoto item={r.item} size="md" />
           <div className="fox-drink__info">
             <p className="fox-help__q">{r.exact ? 'Your match' : tuned ? 'Fine-tuned' : 'Closest match'}</p>
             <p className="fox-drink__name">{r.item.name}</p>
@@ -267,6 +491,8 @@ export function QuizPane({ menu, hours, overrides }) {
           <p className="fox-match__why">{r.line}</p>
           {(honest || note) && <p className="fox-drink__note">{[honest, note].filter(Boolean).join(' ')}</p>}
         </div>
+        {/* drink-personality: "Get my drink personality" → the shareable card (PersonaCard.jsx) */}
+        <PersonaLauncher answers={answers} item={r.item} />
         <p className="fox-help__links">
           <OrderLink item={r.item} where="fox_quiz" />
           <button type="button" className="fox-help__link fox-help__link--ghost" onClick={restart}><FaRotateRight aria-hidden="true" /> Start over</button>
@@ -277,7 +503,7 @@ export function QuizPane({ menu, hours, overrides }) {
             <ul className="fox-runners">
               {r.runners.map((d) => (
                 <li className="fox-runner" key={d.name}>
-                  <DrinkPhoto item={d} small />
+                  <DrinkPhoto item={d} size="sm" />
                   <span className="fox-runner__info">
                     <span className="fox-runner__name">{d.name}</span>
                     <span className="fox-runner__price">{fmtPrice(d.price)}</span>
