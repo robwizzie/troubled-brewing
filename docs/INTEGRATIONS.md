@@ -173,6 +173,20 @@ Embedded form. The `newsletter` section stores the `mailchimp_action_url`; the f
 
 Standard gtag snippet, **gated behind the consent banner** — GA4 only loads after the visitor accepts. Tracks page views and key events: Order-Now clicks (primary conversion), menu views, form submits, newsletter signups, outbound clicks to local businesses + Google reviews. Measurement ID via `VITE_GA4_MEASUREMENT_ID`. Give Tom/Cat/Katie access to the GA4 property.
 
+## Site stats (first-party, cookieless)
+
+GA4 needs consent and an ID, so in practice the owners got no numbers. Alongside it (GA4 is unchanged), the site keeps its own **daily totals** in Supabase, shown on the admin's **Site stats** page.
+
+- **What is stored:** only `site_stats(day, event, key, count)`, e.g. `(2026-10-19, page_view, /menu) = 41`. No IP, no user agent, no visitor/session id, no fingerprint, no cookies, and nothing in localStorage/sessionStorage for this. Event names are a fixed whitelist (`src/lib/siteStats.js · STAT_EVENTS`, mirrored in the SQL); keys are a fixed page list or short tokens (`fox_quiz`, `google`…). Item names, event titles and free text never leave the browser.
+- **Why no consent banner:** consent (ePrivacy/GDPR) is about storing or reading things on the visitor's device and processing personal data. This does neither: it adds 1 to a shared daily counter. A count of how often the Menu page was opened isn't personal data about anyone. The same reasoning is in the header comment of `src/lib/siteStats.js`, and `/privacy` says it in plain words.
+- **How:** `track()` and the route-change page view call `recordStat()`. Counts wait in memory and go up in one request at most every 4 s (`increment_stats`, a text/plain JSON batch), and on `pagehide` through `navigator.sendBeacon` (anon key in the query string, since a beacon can't set headers). Fails silently. Never from `/admin`, the editor canvas, `navigator.webdriver` browsers, or without Supabase configured.
+- **Database:** `supabase/migrations/2026-10-19-polls-and-stats.sql` (not run until the owner OKs it). Anon can only *call* `increment_stat(day, event, key, n)` / `increment_stats(text)` (SECURITY DEFINER; event whitelist, key ≤ 80 plain characters, day = today ± 1, n ≤ 20); it can't read. Authenticated admins can read. Before the migration runs, the requests 404 quietly and the admin page says "Not switched on yet".
+- **Order-click sources** are bucketed in the browser: `menu`, `fox_quiz`, `surprise`, `home`, `pairings`, `fox_usual`, `nav`, `other`.
+
+## "This or that" polls (the fox)
+
+A one-tap poll on the fox card's home view (`src/components/FoxPoll.jsx`, rules in `src/lib/polls.js`), managed on the admin's **This or that polls** page with the explicit Publish model. Same migration file: `polls` + `poll_votes`. Visitors read only published polls running today (shop's clock), may insert a vote only into such a poll with choice `a`/`b`, and see totals only via `poll_results(poll_id)` (no select on vote rows). One vote per browser: a localStorage flag plus a random browser-made `voter_hash` with `unique (poll_id, voter_hash)` and a format CHECK. No IP or personal data. Without the tables the card simply doesn't render.
+
 ## Forms & notifications (§6)
 
 Contact + catering forms INSERT into `submissions` (anon allowed by RLS). Honeypot field + simple timing/rate check for spam (no paid captcha). Optional `notify` Edge Function emails the owners via Resend (free 3,000/mo). v1 minimum: submissions appear in the admin Inbox.
