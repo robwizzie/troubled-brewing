@@ -28,6 +28,9 @@ const GUIDES = [
   { q: 'See how it looks on a phone', a: 'Use the 📱 button in the editor’s top bar. It shows the real phone layout — same site, honest widths. Press 🖥 to go back.' },
   { q: 'Edit from your phone', a: 'Everything here works on a phone. The editor stacks instead of splitting: your page on top, the fields for whatever you tapped in a sheet underneath, and the Publish bar along the bottom — same as on a laptop.' },
   { q: 'Undo a mistake', a: 'Before you publish: press Discard in the bottom bar. After you publish: select the section (or open the item) and expand “Earlier versions”, press “Use this version”, then Publish.' },
+  // wishes-tricks
+  { q: 'Read the menu wishes', a: 'Visitors can “Make a wish for the menu” from the fox’s card, or from “Wish for something new?” at the bottom of the Menu page. They land in Wish list. Similar wishes are counted together under Top wishes, so the most-wished ideas are at the top. Set each one to Considering, Added to menu, Not now, or Hide it as spam, add a private note, or tick several and change them at once. Export CSV gives you a spreadsheet. These save straight away, with no Publish, because wishes are never shown on the site. Nobody leaves an email or phone number, only an optional first name.' },
+  { q: 'Fox secrets', a: 'The fox has a few hidden tricks for people who poke around (we don’t announce them on the site). Tap him five times quickly and he tips his top hat. Late at night, after 11 PM while the shop is closed, a moon and stars come out in his corner and he whispers that the beans are sleeping. On the shop’s birthday, October 13, he wears a little party hat and says how old Trouble is turning. QR table cards can open him straight to a game: add ?fox=quiz (Pick my drink), ?fox=surprise, ?fox=wish or ?fox=open to any page link, plus &src=table so the stats show table-card scans.' },
 ];
 
 export default function HelpCenter() {
