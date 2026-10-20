@@ -31,7 +31,9 @@ Go to **troublebrewingcoffeehouse.com/admin** and sign in. You land on **Admin h
 4. Optional: **Add a few words under the photo** ("Pumpkin cold foam is back!").
 5. Tap **Put it on the website**. You'll see **It's on the website!** and a **See it on the website** button.
 
-It comes down by itself after **3 days** (change that under **More options**), and the homepage goes back to the drawn board of your live menu, so old specials never linger. Also under **More options**: *The board hasn't changed — keep this photo up longer*, and *Take the photo down*. Both wait for the big button too.
+**How long should it stay up?** Pick under the photo. Usually **3 days**, then the homepage goes back to the drawn board of your live menu, so old specials never linger. Choose **Until I replace it** and the photo stays up until you post a new one (the top line then says *"Showing since Oct 19 · stays up until replaced"*). Under **More options**: *The board hasn't changed — keep this photo up longer*, and *Take the photo down*. All of these wait for the big button too.
+
+**Past boards.** Every photo you put up is kept. Once there are two or more, the homepage shows **See past boards** under the chalkboard, a flip-through of the old boards (also at `/chalkboard`). Blurry one? Open **Past boards** at the bottom of the chalkboard screen, tap **Hide**, then **Update past boards on the website**. The photo stays saved; it just won't show. **Find older board photos** adds any earlier board photos still in storage.
 
 **If something goes wrong** the screen says so in plain words: *photo too big* (take it with the camera button — those always fit), *no connection* (check the Wi-Fi and tap the button again — your photo is still there), *signed out* (tap **Sign in again**, then come back and tap the button). **iPhone photos:** taking the photo with the button always works. A HEIC photo copied to a laptop only opens in Safari — if you see the HEIC message, do it from the phone, or set iPhone **Settings → Camera → Formats → Most Compatible**.
 

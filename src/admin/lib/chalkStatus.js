@@ -1,5 +1,8 @@
 import { supabase } from '../../lib/supabase.js';
-import { CHALKBOARD_KEY, DEFAULT_MAX_AGE_DAYS, daysAgo, isChalkboardLive, maxAgeOf } from '../../lib/chalkboard.js';
+import {
+  CHALKBOARD_HISTORY_KEY, CHALKBOARD_KEY, DEFAULT_MAX_AGE_DAYS, daysAgo, historyBoards, isChalkboardLive, keepsUntilReplaced,
+  maxAgeOf, shortDate,
+} from '../../lib/chalkboard.js';
 import { SHOP_TZ, dayName, shopNow } from '../../lib/hours.js';
 
 /* The chalkboard's state in one sentence a barista can read at a glance:
@@ -9,7 +12,7 @@ import { SHOP_TZ, dayName, shopNow } from '../../lib/hours.js';
    the shop's clock, like the homepage's own freshness check. */
 
 export const EMPTY_CHALKBOARD = {
-  url: '', path: '', caption: '', updated_at: null, enabled: false, max_age_days: DEFAULT_MAX_AGE_DAYS,
+  url: '', path: '', caption: '', updated_at: null, enabled: false, max_age_days: DEFAULT_MAX_AGE_DAYS, keep_until_replaced: false,
 };
 
 export async function loadChalkboard() {
@@ -22,6 +25,20 @@ export async function saveChalkboard(data) {
   const { error } = await supabase
     .from('content_blocks')
     .upsert({ key: CHALKBOARD_KEY, data, status: 'published' }, { onConflict: 'key' });
+  if (error) throw error;
+}
+
+/** Every board in content_blocks.chalkboard_history (hidden ones too), newest first. */
+export async function loadChalkboardHistory() {
+  const { data, error } = await supabase.from('content_blocks').select('data').eq('key', CHALKBOARD_HISTORY_KEY).maybeSingle();
+  if (error) throw error;
+  return historyBoards(data?.data);
+}
+
+export async function saveChalkboardHistory(boards) {
+  const { error } = await supabase
+    .from('content_blocks')
+    .upsert({ key: CHALKBOARD_HISTORY_KEY, data: { boards: historyBoards(boards) }, status: 'published' }, { onConflict: 'key' });
   if (error) throw error;
 }
 
@@ -71,6 +88,9 @@ export function untilWords(maxAge, now = new Date()) {
 /** { live, text } for the status line. */
 export function chalkStatus(block, now = new Date()) {
   const live = isChalkboardLive(block, { now });
+  if (live && keepsUntilReplaced(block)) {
+    return { live: true, text: `Showing since ${shortDate(block.updated_at)} · stays up until replaced` };
+  }
   if (live) {
     const down = comesDownOn(block.updated_at, maxAgeOf(block), now);
     return {

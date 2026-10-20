@@ -17,6 +17,7 @@ Every public page is **section-composed** (see CMS.md) so the owner can rearrang
 | 11 | Neighborhood / Local Love | `/neighborhood` | Local businesses they support (community + SEO) | `hero` → `local_businesses_grid` → `cta` |
 | 12 | TB Timeline | `/timeline` | Scrollable timeline of TB milestones (opening day, anniversaries, launches) | `photo_hero` (the gallery wall) → `timeline_grid` (string of frames, year tags) → `cta` with photo |
 | 13 | Gift Cards | `/gift-cards` | "Give someone Trouble": buy a SpotOn e-gift card | `gift_cards` (hero line + drawn gift card and the top-hat fox, "Buy an e-gift card" → SpotOn in a new tab, how-it-works line, four occasion cards → the same link) |
+| 14 | Past Boards | `/chalkboard` | "What was on the board last fall?" | Not CMS sections: `ChalkboardPage.jsx` lists the public `chalkboard_history` boards by month (≥2, else a short note) and opens the `PastBoards` flip-through; also opened from **See past boards** under the homepage chalkboard |
 | — | Privacy | `/privacy` | Privacy policy (forms/newsletter/analytics) | static legal content |
 | — | Accessibility | `/accessibility` | Accessibility statement + contact | static legal content |
 | — | Admin | `/admin/*` | Auth-gated CMS (not in sitemap, noindex) | see CMS.md |

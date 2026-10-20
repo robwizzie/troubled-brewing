@@ -230,7 +230,9 @@ export const CONTENT_BLOCKS = {
   announcement_banner: { enabled: false, message: '' },
   /* A staff photo of the shop's real chalkboard (admin → Today's chalkboard).
      Off by default: the Pastry Case hero draws its board from the live menu. */
-  chalkboard_photo: { url: '', path: '', caption: '', updated_at: null, enabled: false, max_age_days: 3 },
+  chalkboard_photo: { url: '', path: '', caption: '', updated_at: null, enabled: false, max_age_days: 3, keep_until_replaced: false },
+  /* Every chalkboard photo staff have published, newest first (src/lib/chalkboard.js). */
+  chalkboard_history: { boards: [] },
   /* Which Google reviews the site shows + the owner's per-review overrides.
      See src/lib/reviews.js — 4★ is the default floor ("only the good ones"). */
   review_settings: { min_rating: 4, hidden: {}, pinned: {}, photos: {} },
