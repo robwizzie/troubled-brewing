@@ -144,15 +144,11 @@ describe('Banner, links & featured drink (QuickBlocks)', () => {
     expect(publishBtn().disabled).toBe(true); // nothing left to publish
   });
 
-  it('the homepage-look picker is staged until Publish', async () => {
+  it('points to the Homepage look screen instead of a picker of its own', async () => {
     renderScreen(<QuickBlocks />);
-    const radios = await screen.findAllByRole('radio');
-    const other = radios.find((r) => !r.checked);
-    fireEvent.click(other);
-    expect(contentWrites()).toHaveLength(0);
-    await publish();
-    expect(writes('content_blocks')).toHaveLength(1);
-    expect(writes('content_blocks')[0].payload).toMatchObject({ key: 'homepage_concept', data: { concept: other.value } });
+    const link = await screen.findByRole('link', { name: /homepage look/i });
+    expect(link.getAttribute('href')).toBe('/admin/look');
+    expect(screen.queryAllByRole('radio')).toHaveLength(0);
   });
 
   it('Discard (after a confirm) puts the live values back and writes nothing', async () => {
@@ -223,8 +219,8 @@ describe('Google reviews', () => {
   it('min stars, hide, feature and + Favorite are staged; Publish writes the settings once', async () => {
     renderScreen(<ReviewsManager />);
     fireEvent.change(await screen.findByLabelText(/minimum stars/i), { target: { value: '5' } });
-    fireEvent.click(screen.getAllByRole('button', { name: /☆ feature/i })[0]);
-    fireEvent.click(screen.getAllByRole('button', { name: /\+ favorite/i })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /^feature$/i })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /^favorite$/i })[0]);
     expect(contentWrites()).toHaveLength(0);
 
     await publish();
@@ -237,7 +233,7 @@ describe('Google reviews', () => {
 
   it('hiding a review is staged', async () => {
     renderScreen(<ReviewsManager />);
-    fireEvent.click((await screen.findAllByRole('button', { name: /🚫 hide/i }))[0]);
+    fireEvent.click((await screen.findAllByRole('button', { name: /^hide$/i }))[0]);
     expect(contentWrites()).toHaveLength(0);
     await publish();
     expect(writes('content_blocks')).toHaveLength(1);
@@ -282,7 +278,7 @@ describe('Lists (Menu via CollectionManager)', () => {
   it('re-ordering and adding are staged until Publish', async () => {
     renderScreen(<MenuManager />);
     fireEvent.click(await screen.findByRole('button', { name: /move mocha up/i }));
-    fireEvent.click(screen.getByRole('button', { name: /\+ add item/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^add item$/i }));
     fireEvent.change(screen.getByLabelText(/^name/i), { target: { value: 'Cortado' } });
     fireEvent.click(screen.getByRole('button', { name: /^done$/i }));
     expect(contentWrites()).toHaveLength(0);

@@ -1,154 +1,291 @@
 /* ==========================================================================
-   "Make a wish for the menu" (src/components/FoxWish.jsx) — the form, the
-   folding note, the top hat that eats it, and the "Make a wish" button in
-   the fox's card. Scoped to .fox-wish*; no hover lifts; reduced motion
-   skips straight to the thank-you.
+   "Make a wish for the menu" (src/components/FoxWish.jsx) — the paper-note
+   form, the fold → flight → swallow → sparkle timeline, the thank-you, and
+   the "Make a wish" button in the fox's card. Scoped to .fox-wish* and
+   .menu-wish*. 8px rhythm, 44px tap targets, Lucide icons at one size and
+   stroke. Motion is transform + opacity only; no hover lifts; reduced
+   motion skips straight to a still thank-you.
    ========================================================================== */
+
+.fox-wish {
+  --wish-ink: #2c2722;
+  --wish-sage: #545f33;
+  --wish-gold: #d4ad57;
+  --wish-gold-deep: #a87c1c;
+  --wish-cream: #f7f1e4;
+  --wish-paper: #fffdf7;
+  --wish-rasp: #b0436e;
+  --wish-blush: #e98fb0;
+  --wish-line: #e6dcc6;
+}
+.fox-wish svg[class*='fox-wish__chip-ico'], .fox-wish-btn svg, .fox-wish__submit svg, .fox-wish__back svg,
+.fox-wish__kicker svg, .menu-wish__link svg, .fox-wish__chip-check svg {
+  stroke-width: 1.9; /* one stroke weight for every Lucide icon in the flow */
+}
 
 /* ---- the button in the fox's card --------------------------------------- */
 .fox-wish-btn {
-  display: flex; align-items: center; gap: 10px; width: 100%; margin: 0 0 10px;
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; margin: 0 0 8px;
   padding: 8px 12px 8px 8px; border: 0; border-radius: 12px; cursor: pointer; text-align: left;
-  background: linear-gradient(100deg, var(--color-yellow-soft), #fffaf0 70%);
-  box-shadow: inset 0 0 0 1.5px var(--color-yellow);
-  color: var(--color-ink); font: 600 0.9rem/1.2 var(--font-body);
+  background: linear-gradient(100deg, var(--color-yellow-soft, #fbf0d2), #fffaf0 75%);
+  box-shadow: inset 0 0 0 1.5px var(--color-yellow, #d4ad57);
+  color: var(--color-ink); font: 600 0.92rem/1.2 var(--font-body);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
-.fox-wish-btn svg { flex: none; width: 38px; height: 32px; }
-.fox-wish-btn small { display: block; margin-top: 1px; font-weight: 500; font-size: 0.78rem; color: var(--color-ink-soft); }
-.fox-wish-btn:hover { box-shadow: inset 0 0 0 1.5px var(--color-yellow-deep); }
+.fox-wish-btn__ico {
+  display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%;
+  background: #2c2722; color: #d4ad57; font-size: 20px;
+}
+.fox-wish-btn small { display: block; margin-top: 2px; font-weight: 500; font-size: 0.8rem; color: var(--color-ink-soft); }
+.fox-wish-btn:hover { box-shadow: inset 0 0 0 1.5px var(--color-yellow-deep, #a87c1c); }
+.fox-wish-btn:active { transform: scale(0.985); }
 .fox-wish-btn[aria-pressed='true'] { background: var(--color-green-deep); color: var(--color-on-primary); box-shadow: none; }
 .fox-wish-btn[aria-pressed='true'] small { color: inherit; opacity: 0.85; }
 .fox-wish-btn:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 
-/* ---- the form ------------------------------------------------------------- */
-.fox-wish { display: grid; gap: 10px; }
-.fox-wish__sub { margin: 2px 0 0; font: 500 0.92rem/1.35 var(--font-body); color: var(--color-ink); }
-.fox-wish__label { display: block; margin: 0 0 4px; padding: 0; font: 700 0.8rem/1.2 var(--font-body); color: var(--color-ink); }
+/* ---- the form: a little paper note --------------------------------------- */
+.fox-wish--form { margin: -3px -6px; }
+.fox-wish__paper {
+  position: relative; display: grid; gap: 16px; padding: 20px 16px 16px;
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, transparent 27px, rgba(176, 67, 110, 0.16) 27px 28px, transparent 28px),
+    repeating-linear-gradient(180deg, transparent 0 31px, rgba(84, 95, 51, 0.07) 31px 32px),
+    var(--wish-paper);
+  box-shadow: 0 0 0 1px var(--wish-line), 0 1px 0 rgba(44, 39, 34, 0.04), 0 8px 18px rgba(44, 39, 34, 0.08);
+}
+.fox-wish__paper::before { /* a strip of gold tape holding the note on */
+  content: ''; position: absolute; top: -7px; left: 50%; width: 64px; height: 16px; margin-left: -32px;
+  background: rgba(212, 173, 87, 0.5); border-radius: 2px; transform: rotate(-2.5deg);
+  box-shadow: 0 1px 2px rgba(44, 39, 34, 0.1);
+}
+.fox-wish__head .fox-help__q { margin: 0; }
+.fox-wish__sub { margin: 4px 0 0; font: 500 0.95rem/1.4 var(--font-body); color: var(--color-ink); }
+.fox-wish__label { display: block; margin: 0 0 8px; padding: 0; font: 700 0.84rem/1.2 var(--font-body); color: var(--color-ink); }
+.fox-wish__labelrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .fox-wish__opt { font-weight: 500; color: var(--color-ink-soft); }
 .fox-wish__cats { margin: 0; padding: 0; border: 0; min-width: 0; }
-.fox-wish__chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.fox-wish__chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .fox-wish__chip {
-  position: relative; display: grid; justify-items: center; align-content: start; gap: 2px;
-  min-height: 58px; padding: 6px 3px 5px; border-radius: 10px; cursor: pointer; text-align: center;
-  background: #fffdf7; box-shadow: inset 0 0 0 1.5px var(--color-border);
-  font: 600 0.72rem/1.15 var(--font-body); color: var(--color-ink);
+  position: relative; display: grid; justify-items: center; align-content: center; gap: 4px;
+  min-height: 64px; padding: 8px 4px; border-radius: 12px; cursor: pointer; text-align: center;
+  background: #fff; box-shadow: inset 0 0 0 1.5px var(--wish-line);
+  font: 600 0.74rem/1.15 var(--font-body); color: var(--color-ink);
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
-.fox-wish__chip svg { width: 28px; height: 24px; }
+.fox-wish__chip-ico { width: 22px; height: 22px; color: var(--wish-sage); transition: color 0.15s ease; }
 .fox-wish__chip input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
-.fox-wish__chip:hover { box-shadow: inset 0 0 0 1.5px var(--color-yellow-deep); }
-.fox-wish__chip.is-on { background: var(--color-yellow-soft); box-shadow: inset 0 0 0 2px var(--color-green-deep); }
+.fox-wish__chip:hover { box-shadow: inset 0 0 0 1.5px var(--wish-gold-deep); }
+.fox-wish__chip:active { transform: scale(0.97); }
+.fox-wish__chip.is-on { background: var(--wish-sage); color: var(--wish-paper); box-shadow: none; }
+.fox-wish__chip.is-on .fox-wish__chip-ico { color: var(--wish-gold); }
+.fox-wish__chip-check {
+  position: absolute; top: -6px; right: -6px; display: grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%; background: var(--wish-gold); color: var(--wish-ink);
+  font-size: 12px; box-shadow: 0 0 0 2px var(--wish-paper);
+  animation: fox-wish-check 0.25s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes fox-wish-check { from { transform: scale(0.3); opacity: 0; } }
 .fox-wish__chip:has(input:focus-visible) { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 
 .fox-wish__field { position: relative; }
 .fox-wish__input {
-  display: block; width: 100%; min-height: 40px; padding: 8px 11px; box-sizing: border-box;
-  border: 1.5px solid var(--color-border); border-radius: 10px; background: #fffdf7;
+  display: block; width: 100%; min-height: 44px; padding: 10px 12px; box-sizing: border-box;
+  border: 1.5px solid var(--wish-line); border-radius: 10px; background: #fff;
   font: 500 1rem/1.3 var(--font-body); color: var(--color-ink);
+  transition: border-color 0.15s ease;
 }
-.fox-wish__input::placeholder { color: #8f877a; font-style: italic; }
-.fox-wish__input:focus { outline: 3px solid var(--focus-ring); outline-offset: 1px; border-color: var(--color-green-deep); }
-.fox-wish__input[aria-invalid='true'] { border-color: var(--color-pink-deep); }
-.fox-wish__count { position: absolute; right: 2px; top: 0; font: 600 0.72rem/1.2 var(--font-body); color: var(--color-ink-soft); }
-.fox-wish__error { margin: 5px 0 0; font: 600 0.85rem/1.3 var(--font-body); color: var(--color-pink-deep); }
-.fox-wish__field--name .fox-wish__input { max-width: 220px; }
+.fox-wish__input::placeholder { color: #9a917f; font-style: italic; }
+.fox-wish__input:focus { outline: 3px solid var(--focus-ring); outline-offset: 1px; border-color: var(--wish-sage); }
+.fox-wish__input[aria-invalid='true'] { border-color: var(--wish-rasp); }
+.fox-wish__count { font: 600 0.75rem/1.2 var(--font-body); color: var(--color-ink-soft); opacity: 0.7; font-variant-numeric: tabular-nums; transition: color 0.2s ease; }
+.fox-wish__count.is-near { color: var(--wish-gold-deep); opacity: 1; }
+.fox-wish__error { margin: 8px 0 0; font: 600 0.88rem/1.35 var(--font-body); color: var(--wish-rasp); }
+.fox-wish__field--name .fox-wish__input { max-width: 240px; }
 /* the honeypot: off-screen, out of the tab order, hidden from screen readers */
 .fox-wish__hp { position: absolute !important; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 
-.fox-wish__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-top: 2px; }
+.fox-wish__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 .fox-wish__submit, .fox-wish__back {
-  min-height: 42px; padding: 0 18px; border: 0; border-radius: 999px; cursor: pointer;
-  background: var(--color-green-deep); color: var(--color-on-primary);
-  font: 700 0.95rem/1 var(--font-body);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 46px; padding: 0 20px; border: 0; border-radius: 999px; cursor: pointer;
+  font: 700 0.98rem/1 var(--font-body);
 }
-.fox-wish__submit:hover, .fox-wish__back:hover { background: var(--color-ink); }
-.fox-wish__submit:focus-visible, .fox-wish__back:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
-.fox-wish__fine { margin: 0; font: 500 0.78rem/1.3 var(--font-body); color: var(--color-ink-soft); }
+.fox-wish__submit svg, .fox-wish__back svg { font-size: 20px; }
+.fox-wish__submit {
+  background: var(--wish-sage); color: var(--wish-paper);
+  box-shadow: 0 3px 0 #353c1f, 0 6px 14px rgba(44, 39, 34, 0.18);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+}
+.fox-wish__submit svg { color: var(--wish-gold); }
+.fox-wish__submit:hover { background: #4a5429; }
+/* pressing it: it goes DOWN (scale + a shorter shadow), never up */
+.fox-wish__submit:active, .fox-wish__submit.is-pressed {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 1px 0 #353c1f, 0 2px 6px rgba(44, 39, 34, 0.16);
+}
+.fox-wish__submit:disabled { cursor: default; }
+.fox-wish__submit:focus-visible, .fox-wish__back:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.fox-wish__fine { margin: 0; font: 600 1.12rem/1.2 var(--font-hand); color: var(--wish-gold-deep); }
 
-/* ---- the scene: the note folds, drops into the hat, the hat wiggles ------- */
-.fox-wish--anim { min-height: 214px; }
-.fox-wish__scene { position: relative; height: 214px; perspective: 600px; }
-.fox-wish__hat { position: absolute; left: 50%; bottom: 0; width: 160px; height: auto; margin-left: -80px; overflow: visible; }
-.fox-wish__hat-in { transform-box: fill-box; transform-origin: 50% 100%; }
-.fox-wish__sparks { opacity: 0; }
+/* ---- the scene ----------------------------------------------------------- */
+.fox-wish--anim { min-height: 200px; }
+.fox-wish__scene { position: relative; height: 200px; }
+.fox-wish__hat {
+  position: absolute; left: 50%; bottom: 4px; width: 150px; height: auto; margin-left: -75px; overflow: visible;
+  transform-origin: 50% 100%;
+}
+.fox-wish__hat--back { z-index: 1; }
+.fox-wish__hat--front { z-index: 3; }
+.fox-wish__hat-shadow { fill: rgba(44, 39, 34, 0.16); }
 
+/* the note: 200 × 108, two halves; the bottom half folds up over the top */
+.fox-wish__fly { position: absolute; z-index: 2; left: 50%; top: 6px; width: 200px; height: 108px; margin-left: -100px; }
+.fox-wish__fly-y { width: 100%; height: 100%; transform-origin: 50px 27px; }
 .fox-wish__note {
-  position: absolute; left: 50%; top: 4px; width: 200px; min-height: 92px; margin-left: -100px;
-  padding: 14px 16px; box-sizing: border-box; border-radius: 3px;
-  background: repeating-linear-gradient(#fffdf7 0 21px, #e9dfc9 21px 22px);
-  box-shadow: 0 0 0 1.5px var(--color-ink), 0 6px 14px rgba(30, 22, 8, 0.18);
-  font: 700 1.25rem/1.15 var(--font-hand); color: var(--color-ink); text-align: center;
-  transform-origin: 50% 0;
-  animation: fox-wish-fold 0.95s cubic-bezier(0.5, 0, 0.3, 1) both;
+  position: relative; width: 200px; height: 108px; transform-origin: 0 27px;
+  perspective: 600px; transform-style: preserve-3d;
 }
-.fox-wish__note-text { position: relative; display: block; overflow-wrap: anywhere; }
-/* the bottom half folding up over the top: a paper flap with a shadowed crease */
-.fox-wish__note-flap {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 50%; z-index: 1; border-radius: 0 0 3px 3px;
-  background: linear-gradient(#efe6d2, #fffdf7);
-  box-shadow: 0 0 0 1.5px var(--color-ink);
-  transform-origin: 50% 0; transform: rotateX(90deg); opacity: 0;
-  animation: fox-wish-flap 0.95s cubic-bezier(0.5, 0, 0.3, 1) both;
+.fox-wish__note-top, .fox-wish__note-face, .fox-wish__note-back {
+  box-sizing: border-box; border-radius: 4px;
+  background: repeating-linear-gradient(180deg, var(--wish-paper) 0 17px, #ece3cf 17px 18px);
+  box-shadow: inset 0 0 0 1.5px var(--wish-ink);
 }
-@keyframes fox-wish-flap {
-  0% { opacity: 0; transform: rotateX(90deg); }
-  12% { opacity: 1; transform: rotateX(90deg); }
-  40%, 100% { opacity: 1; transform: rotateX(178deg); }
+.fox-wish__note-top {
+  position: absolute; inset: 0 0 54px; display: grid; place-items: center; padding: 6px 12px;
+  border-radius: 4px 4px 0 0; box-shadow: inset 0 0 0 1.5px var(--wish-ink), 0 4px 10px rgba(44, 39, 34, 0.12);
 }
-@keyframes fox-wish-fold {
+.fox-wish__note-text {
+  font: 700 1.3rem/1.05 var(--font-hand); color: var(--wish-ink); text-align: center;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+}
+.fox-wish__note-bottom {
+  position: absolute; left: 0; right: 0; top: 54px; height: 54px;
+  transform-origin: 50% 0; transform-style: preserve-3d;
+}
+.fox-wish__note-face, .fox-wish__note-back {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: 0 0 4px 4px;
+}
+.fox-wish__note-face {
+  display: flex; align-items: center; justify-content: flex-end; padding: 0 14px;
+  font: 700 1.05rem/1 var(--font-hand); color: var(--wish-rasp);
+}
+.fox-wish__note-back { transform: rotateX(180deg); background: #efe4cc; border-radius: 4px 4px 0 0; }
+.fox-wish__note-crease { /* the second fold's soft shadow */
+  position: absolute; left: 0; top: 0; width: 200px; height: 54px; border-radius: 4px; opacity: 0;
+  background: linear-gradient(90deg, rgba(44, 39, 34, 0) 40%, rgba(44, 39, 34, 0.16) 50%, rgba(44, 39, 34, 0) 60%);
+}
+
+/* the timeline (t = 0 when the note appears) */
+.is-anim .fox-wish__note-bottom { animation: fox-wish-fold1 0.3s cubic-bezier(0.55, 0, 0.35, 1) 0.04s both; }
+.is-anim .fox-wish__note { animation: fox-wish-fold2 0.28s cubic-bezier(0.55, 0, 0.35, 1) 0.36s both; }
+.is-anim .fox-wish__note-crease { animation: fox-wish-crease 0.28s ease-out 0.36s both; }
+.is-anim .fox-wish__fly { animation: fox-wish-fly-x 0.55s cubic-bezier(0.25, 0.7, 0.35, 1) 0.7s both; }
+.is-anim .fox-wish__fly-y {
+  animation:
+    fox-wish-fly-y 0.55s linear 0.7s both,
+    fox-wish-fly-out 0.12s linear 1.2s both;
+}
+.is-anim .fox-wish__hat { animation: fox-wish-swallow 0.7s cubic-bezier(0.3, 0.9, 0.4, 1) 1.2s both; }
+.is-anim .fox-wish__spark { animation: fox-wish-burst 0.75s cubic-bezier(0.15, 0.8, 0.3, 1) calc(1.24s + var(--i) * 0.018s) both; }
+
+@keyframes fox-wish-fold1 { from { transform: rotateX(0deg); } to { transform: rotateX(180deg); } }
+@keyframes fox-wish-fold2 { from { transform: scaleX(1); } to { transform: scaleX(0.5); } }
+@keyframes fox-wish-crease { 0% { opacity: 0; } 60% { opacity: 1; } 100% { opacity: 0.6; } }
+@keyframes fox-wish-fly-x { from { transform: translateX(0); } to { transform: translateX(50px); } }
+/* up a little, then down into the hat (ease-out rising, ease-in falling),
+   shrinking and turning as it goes */
+@keyframes fox-wish-fly-y {
+  0% { transform: translateY(0) scale(1) rotate(0deg); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
+  32% { transform: translateY(-22px) scale(0.6) rotate(40deg); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45); }
+  100% { transform: translateY(112px) scale(0.34) rotate(110deg); }
+}
+@keyframes fox-wish-fly-out { to { opacity: 0; } }
+/* the hat swallows it: squash, stretch, settle, then a happy wiggle */
+@keyframes fox-wish-swallow {
   0% { transform: none; }
-  40% { transform: scale(1, 1); }
-  62% { transform: translateY(6px) scale(0.5, 0.5) rotate(-4deg); }
-  100% { transform: translateY(16px) scale(0.13, 0.2) rotate(-10deg); opacity: 0.9; }
+  16% { transform: scale(1.09, 0.86); }
+  34% { transform: scale(0.95, 1.07); }
+  50% { transform: scale(1.02, 0.98); }
+  64% { transform: rotate(-5deg); }
+  78% { transform: rotate(4deg); }
+  90% { transform: rotate(-1.5deg); }
+  100% { transform: none; }
 }
 
-.fox-wish__hat { animation: fox-wish-hat-in 0.5s ease-out both; }
-@keyframes fox-wish-hat-in { from { opacity: 0; transform: translateY(14px); } }
-.is-drop .fox-wish__hat { animation: none; }
-.fox-wish__dropnote { transform-box: view-box; animation: fox-wish-drop 0.55s cubic-bezier(0.55, 0, 0.8, 0.4) both; }
-@keyframes fox-wish-drop {
-  0% { transform: translateY(-10px); }
-  100% { transform: translateY(46px) rotate(4deg); }
+/* sparkles: from the hat's opening (79px above the scene's foot) */
+.fox-wish__sparks { position: absolute; z-index: 4; left: 50%; top: calc(100% - 79px); width: 0; height: 0; pointer-events: none; }
+.fox-wish__spark {
+  position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; opacity: 0;
+  background: var(--wish-gold);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
 }
-.is-drop .fox-wish__hat-in { animation: fox-wish-wiggle 0.62s ease-in-out 0.5s both; }
-@keyframes fox-wish-wiggle {
-  0%, 100% { transform: none; }
-  20% { transform: rotate(-7deg) scaleY(0.96); }
-  45% { transform: rotate(6deg); }
-  70% { transform: rotate(-3deg); }
-  85% { transform: rotate(1.5deg); }
-}
-.is-drop .fox-wish__sparks { animation: fox-wish-spark 0.7s ease-out 0.75s both; transform-box: fill-box; transform-origin: 50% 100%; }
-@keyframes fox-wish-spark {
-  0% { opacity: 0; transform: translateY(10px) scale(0.4); }
-  50% { opacity: 1; }
-  100% { opacity: 1; transform: none; }
+.fox-wish__spark--blush { background: var(--wish-blush); width: 10px; height: 10px; left: -5px; top: -5px; }
+.fox-wish__spark--dot { clip-path: circle(50%); width: 7px; height: 7px; left: -3.5px; top: -3.5px; background: var(--wish-gold-deep); }
+@keyframes fox-wish-burst {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.2) rotate(0deg); }
+  18% { opacity: 1; }
+  65% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1) rotate(90deg); }
 }
 
-/* ---- thank-you / already wished ------------------------------------------- */
-.fox-wish--done { justify-items: start; gap: 4px; }
-.fox-wish__scene--small { height: 86px; width: 100%; }
-.fox-wish__scene--small .fox-wish__hat { width: 92px; margin-left: -46px; animation: none; }
-.fox-wish__scene--small .fox-wish__sparks { opacity: 1; }
+/* ---- the thank-you (and "already wished") --------------------------------- */
+.fox-wish--done { display: grid; gap: 0; }
+.fox-wish--done .fox-wish__scene { height: 150px; }
+/* the thank-you's scene is 50px shorter (no note to fold): the hat glides up
+   into it from exactly where it swallowed the note, so nothing jumps */
+.fox-wish--done.is-fresh .fox-wish__hat, .fox-wish--done.is-fresh .fox-wish__sparks {
+  animation: fox-wish-settle 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes fox-wish-settle { from { translate: 0 50px; } }
+/* at rest three sparkles stay, softly, over the hat */
+.is-still .fox-wish__spark { opacity: 0; }
+.is-still .fox-wish__spark:nth-child(2), .is-still .fox-wish__spark:nth-child(3), .is-still .fox-wish__spark:nth-child(4) {
+  opacity: 0.95; transform: translate(calc(var(--x) * 0.62), calc(var(--y) * 0.62)) scale(0.85);
+}
+.fox-wish--done.is-fresh .is-still .fox-wish__spark { animation: fox-wish-rest 0.5s ease-out both; }
+@keyframes fox-wish-rest { from { opacity: 0; } }
+.fox-wish__words { display: grid; justify-items: start; gap: 8px; }
+.fox-wish__kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0; }
+.fox-wish__kicker svg { font-size: 16px; color: var(--wish-gold-deep); }
 .fox-wish--done .fox-help__q:focus { outline: none; }
 .fox-wish--done .fox-help__q:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
-.fox-wish__reply { font-size: 1.05rem; }
-.fox-wish__again { margin: 2px 0 6px; font: 600 0.88rem/1.3 var(--font-body); color: var(--color-green-deep); }
+.fox-wish__reply { margin: 0; font-size: 1.06rem; line-height: 1.4; }
+.fox-wish__again { margin: 0; font: 700 1.25rem/1.1 var(--font-hand); color: var(--wish-sage); }
+.fox-wish__back {
+  margin-top: 4px; background: transparent; color: var(--wish-sage);
+  box-shadow: inset 0 0 0 1.5px var(--wish-sage);
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+.fox-wish__back:hover { background: rgba(84, 95, 51, 0.08); }
+.fox-wish__back:active { transform: scale(0.97); }
+/* the words rise in, one after another */
+.fox-wish--done.is-fresh .fox-wish__words > * { animation: fox-wish-rise 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.fox-wish--done.is-fresh .fox-wish__words > :nth-child(2) { animation-delay: 0.08s; }
+.fox-wish--done.is-fresh .fox-wish__words > :nth-child(3) { animation-delay: 0.16s; }
+.fox-wish--done.is-fresh .fox-wish__words > :nth-child(4) { animation-delay: 0.24s; }
+@keyframes fox-wish-rise { from { opacity: 0; transform: translateY(10px); } }
 
 /* the Menu page's "Wish for something new?" link */
 .menu-wish { display: flex; justify-content: center; padding: 0 var(--space-4, 16px) var(--space-6, 40px); }
 .menu-wish__link {
-  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 0; border-radius: 999px;
-  background: transparent; cursor: pointer; color: var(--color-green-deep);
-  font: 600 1rem/1.2 var(--font-body); text-decoration: underline; text-underline-offset: 3px;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: 999px;
+  color: var(--color-green-deep); font: 600 1rem/1.2 var(--font-body); text-decoration: underline; text-underline-offset: 3px;
 }
-.menu-wish__link svg { width: 28px; height: 24px; }
+.menu-wish__link svg { font-size: 20px; color: var(--color-yellow-deep, #a87c1c); }
 .menu-wish__link:hover { color: var(--color-ink); }
 .menu-wish__link:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 
 @media (max-width: 400px) {
-  .fox-wish__chip { font-size: 0.68rem; min-height: 56px; }
+  .fox-wish__paper { padding: 20px 12px 16px; }
+  .fox-wish__chips { gap: 6px; }
+  .fox-wish__chip { font-size: 0.7rem; min-height: 60px; }
 }
 
+/* reduced motion: no flight, no burst; a quick fade to the still thank-you */
 @media (prefers-reduced-motion: reduce) {
-  .fox-wish *, .fox-wish__note, .fox-wish__hat { animation: none !important; transition: none !important; }
+  .fox-wish *, .fox-wish-btn, .fox-wish__submit { animation: none !important; transition: none !important; }
+  .fox-wish--done.is-fresh { animation: fox-wish-fade 0.25s ease-out both !important; }
 }
+@keyframes fox-wish-fade { from { opacity: 0; } }

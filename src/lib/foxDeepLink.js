@@ -58,10 +58,9 @@ export function useFoxDeepLink(onOpen) {
     handled.current = stamp;
     if (link.view) cb.current(link.view);
     const to = link.view || 'page';
-    // after this commit's effects: on a first load the analytics set-up
-    // (useAnalytics in App, a parent) runs after this child's effect
-    const params = link.src ? { to, src: link.src } : { to };
-    setTimeout(() => track('fox_deeplink', params), 0);
+    // track() sets analytics up itself if this is the first thing on the page
+    // (this child's effect runs before App's useAnalytics on a first load)
+    track('fox_deeplink', link.src ? { to, src: link.src } : { to });
     try {
       window.history.replaceState(window.history.state, '', stripFoxParams(window.location.href));
     } catch { /* an odd sandbox: the card still opened */ }

@@ -1,108 +1,111 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { LuArrowLeft, LuCheck, LuCoffee, LuCroissant, LuSandwich, LuSparkles, LuWandSparkles } from 'react-icons/lu';
 import { track } from '../lib/analytics.js';
 import { CATEGORIES, LIMITS, checkWish, foxReply, markWished, sendWish, wishedToday } from '../lib/wishes.js';
 import '../styles/fox-wish.css';
 
 /* "Make a wish for the menu" — a pane in the fox's card (FoxGuide.jsx, and
-   ?fox=wish). The visitor writes a wish; it folds into a paper note and
-   drops into the fox's top hat, the hat gives a satisfied wiggle and a
-   sparkle, and the fox answers with one of a few lines. One wish a day per
-   browser. Rules and anti-spam live in src/lib/wishes.js; the server side
-   in supabase/migrations/2026-10-19-wishes.sql.
+   ?fox=wish). The visitor writes a wish on a little paper note; it folds in
+   two, arcs into the fox's top hat, the hat swallows it (squash, stretch, a
+   wiggle) and a small burst of gold and blush sparkles pops out, then the
+   fox answers. One wish a day per browser. Rules and anti-spam live in
+   src/lib/wishes.js; the server side in supabase/migrations/2026-10-19-wishes.sql.
 
-   Stages: form → fold → drop → thanks (reduced motion: form → thanks).
-   Nothing a customer sees ever says "error" because of the database: if
-   it's missing or down, the hat still eats the wish. */
+   One timeline, started on submit (all CSS, transform + opacity only,
+   fox-wish.css): fold 0–0.7s, flight 0.7–1.25s, swallow + sparkles to
+   ~1.9s, then the thank-you rises in (2.0s). `data-stage` follows it:
+   form → fold → drop → thanks. Reduced motion: form → thanks, a quick fade
+   with the hat and sparkles still.
 
-export const FOLD_MS = 950;
-export const DROP_MS = 1250;
+   Icons are Lucide (react-icons/lu), the same family as the admin. Nothing
+   a customer sees ever says "error" because of the database: if it's
+   missing or down, the hat still eats the wish. */
+
+export const FOLD_MS = 700;
+export const DROP_MS = 1300;
 
 const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-/* ---- the little drawings ---------------------------------------------- */
+const CHIP_ICONS = { drink: LuCoffee, pastry: LuCroissant, food: LuSandwich, other: LuSparkles };
+
+/* ---- the hat ------------------------------------------------------------------
+   The shop's top hat (ink, raspberry band with a gold edge), turned over to
+   take wishes. Two layers so the note can drop BETWEEN them: the back (brim
+   and the dark opening) under the note, the front (the crown and the near
+   lip of the brim) over it. Both carry the same squash/wiggle animation, so
+   they move as one. viewBox 0 0 160 120; the opening is centred at (80, 40). */
 const INK = '#2c2722';
+const INK_TOP = '#3d3630';
 
-function ChipArt({ id }) {
-  const common = { fill: 'none', stroke: INK, strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' };
-  if (id === 'drink') {
-    return (
-      <svg viewBox="0 0 28 24" aria-hidden="true" focusable="false">
-        <path d="M5 9 H19 V15 C19 19 16.5 21 12 21 C7.5 21 5 19 5 15 Z" fill="#f7f1e4" {...common} />
-        <path d="M19 11 C23.5 11 23.5 16.5 19 16.5" {...common} />
-        <path d="M9 6 C8 4.5 10 3.5 9 2 M13.5 6 C12.5 4.5 14.5 3.5 13.5 2" {...common} stroke="#a87c1c" />
-        <path d="M9.5 12.5 C10.5 11.3 12 11.6 12 12.6 C12 11.6 13.5 11.3 14.5 12.5 C14.5 14 12 15.4 12 15.4 C12 15.4 9.5 14 9.5 12.5 Z" fill="#b0436e" stroke="none" />
-      </svg>
-    );
-  }
-  if (id === 'pastry') {
-    return (
-      <svg viewBox="0 0 28 24" aria-hidden="true" focusable="false">
-        <path d="M3 16 C4 9 9 6 14 6 C19 6 24 9 25 16 C21 18.5 7 18.5 3 16 Z" fill="#e7c27a" {...common} />
-        <path d="M9.5 7.6 C10.5 11 10.5 14 10 17.4 M14 6 V17.9 M18.5 7.6 C17.5 11 17.5 14 18 17.4" {...common} strokeWidth="1.3" />
-      </svg>
-    );
-  }
-  if (id === 'food') {
-    return (
-      <svg viewBox="0 0 28 24" aria-hidden="true" focusable="false">
-        <path d="M4 10 C4 5.5 24 5.5 24 10 Z" fill="#e7c27a" {...common} />
-        <path d="M3.5 12.5 C7 10.5 9 14 12.5 12 C16 10 18 14 24.5 12" {...common} stroke="#545f33" strokeWidth="2.2" />
-        <path d="M4 14.5 H24" {...common} stroke="#b0436e" strokeWidth="2.2" />
-        <path d="M4 17 H24 C24 20 4 20 4 17 Z" fill="#e7c27a" {...common} />
-      </svg>
-    );
-  }
+function HatBack() {
   return (
-    <svg viewBox="0 0 28 24" aria-hidden="true" focusable="false">
-      <path d="M14 2.5 L16.2 9.6 L23.5 12 L16.2 14.4 L14 21.5 L11.8 14.4 L4.5 12 L11.8 9.6 Z" fill="#d4ad57" {...common} />
-      <path d="M22.5 3.5 V7.5 M20.5 5.5 H24.5" {...common} stroke="#b0436e" />
+    <svg className="fox-wish__hat fox-wish__hat--back" viewBox="0 0 160 120" aria-hidden="true" focusable="false">
+      <ellipse className="fox-wish__hat-shadow" cx="80" cy="113" rx="44" ry="5.5" />
+      <ellipse cx="80" cy="40" rx="62" ry="13" fill={INK_TOP} stroke={INK} strokeWidth="2.2" />
+      <ellipse cx="80" cy="40" rx="38" ry="8" fill="#14110e" />
+      <path d="M44 38.5 A36 6.5 0 0 1 116 38.5" fill="none" stroke="#000" strokeOpacity="0.35" strokeWidth="3" />
     </svg>
   );
 }
 
-/** The fox's top hat, turned over to take wishes: back of the brim, then
-    the note (children), then the crown and the front of the brim over it. */
-function WishHat({ children }) {
+function HatFront() {
   return (
-    <svg className="fox-wish__hat" viewBox="0 0 140 120" aria-hidden="true" focusable="false">
-      <g className="fox-wish__hat-in">
-        {/* inside of the hat, seen over the back of the brim */}
-        <ellipse cx="70" cy="44" rx="58" ry="13" fill="#3d3630" stroke={INK} strokeWidth="2.4" />
-        <ellipse cx="70" cy="45" rx="35" ry="7.5" fill="#1d1916" />
-        {children}
-        {/* the crown, hanging below the brim */}
-        <path d="M35 45 L40 104 C40 110 100 110 100 104 L105 45 C100 51 40 51 35 45 Z" fill={INK} stroke={INK} strokeWidth="2.4" strokeLinejoin="round" />
-        <path d="M38.5 87 C55 92.5 85 92.5 101.5 87 L100.6 97 C84 102 56 102 39.4 97 Z" fill="#d4ad57" />
-        <path d="M48 56 L50.5 96" stroke="#5a5048" strokeWidth="2.4" strokeLinecap="round" />
-        {/* the front of the brim, over the note's way in */}
-        <path d="M12 44 C12 60 128 60 128 44 C128 52 104 57 70 57 C36 57 12 52 12 44 Z" fill="#3d3630" stroke={INK} strokeWidth="2.4" strokeLinejoin="round" />
-      </g>
-      <g className="fox-wish__sparks" stroke="#d4ad57" strokeWidth="2.6" strokeLinecap="round">
-        <path d="M70 6 V18 M64 12 H76" />
-        <path d="M26 18 V26 M22 22 H30" stroke="#b0436e" />
-        <path d="M114 16 V25 M109.5 20.5 H118.5" />
-        <circle cx="96" cy="8" r="2.2" fill="#545f33" stroke="none" />
-        <circle cx="42" cy="9" r="1.8" fill="#a87c1c" stroke="none" />
-      </g>
+    <svg className="fox-wish__hat fox-wish__hat--front" viewBox="0 0 160 120" aria-hidden="true" focusable="false">
+      {/* the near half of the brim, with the opening cut out of it */}
+      <path fillRule="evenodd" fill={INK_TOP} stroke={INK} strokeWidth="2.2" strokeLinejoin="round"
+        d="M18 40 A62 13 0 0 0 142 40 L118 40 A38 8 0 0 1 42 40 Z" />
+      {/* the crown, hanging below the brim; its top edge is the opening's near rim */}
+      <path fill={INK} stroke={INK} strokeWidth="2.2" strokeLinejoin="round"
+        d="M42 40 A38 8 0 0 0 118 40 L115.5 103 A35.5 7 0 0 1 44.5 103 Z" />
+      {/* the band, just under the brim */}
+      <path fill="#b0436e" d="M42.6 52 A37.4 8 0 0 0 117.4 52 L116.9 64 A36.9 8 0 0 1 43.1 64 Z" />
+      <path fill="none" stroke="#d4ad57" strokeWidth="1.6" d="M43.1 64 A36.9 8 0 0 0 116.9 64" />
+      {/* a soft sheen */}
+      <path fill="none" stroke="#fff" strokeOpacity="0.14" strokeWidth="5" strokeLinecap="round" d="M56 70 L57.5 98" />
+      <path fill="none" stroke="#fff" strokeOpacity="0.2" strokeWidth="1.6" strokeLinecap="round" d="M30 47 C48 53 66 54.5 80 54.5" />
     </svg>
   );
 }
 
-/** The folded note, as it drops into the hat. */
-function DropNote() {
+const SPARKS = [
+  [-58, -46, 'gold'], [-30, -70, 'blush'], [0, -82, 'gold'], [30, -70, 'gold'],
+  [58, -46, 'blush'], [-76, -12, 'gold'], [76, -12, 'gold'], [-44, -88, 'dot'], [44, -88, 'dot'],
+];
+
+/** The hat, the note and the sparkles. `stage`: 'anim' | 'still'. */
+function WishScene({ stage, note, name }) {
+  const anim = stage === 'anim';
   return (
-    <g className="fox-wish__dropnote">
-      <g transform="translate(70 14) rotate(-10)">
-        <rect x="-13" y="-10" width="26" height="20" rx="1.5" fill="#fffdf7" stroke={INK} strokeWidth="1.8" />
-        <path d="M-13 -10 L0 1 L13 -10" fill="none" stroke={INK} strokeWidth="1.3" strokeLinejoin="round" />
-        <path d="M-7 5 H5" stroke="#b0436e" strokeWidth="1.4" strokeLinecap="round" />
-      </g>
-    </g>
+    <div className={`fox-wish__scene${anim ? ' is-anim' : ' is-still'}`} aria-hidden="true">
+      <HatBack />
+      {anim && (
+        <div className="fox-wish__fly">
+          <div className="fox-wish__fly-y">
+            <div className="fox-wish__note">
+              <div className="fox-wish__note-top">
+                <span className="fox-wish__note-text">{note}</span>
+              </div>
+              <div className="fox-wish__note-bottom">
+                <div className="fox-wish__note-face">{name ? `— ${name}` : ''}</div>
+                <div className="fox-wish__note-back" />
+              </div>
+              <span className="fox-wish__note-crease" />
+            </div>
+          </div>
+        </div>
+      )}
+      <HatFront />
+      <span className="fox-wish__sparks">
+        {SPARKS.map(([x, y, kind], i) => (
+          <i key={`${x},${y}`} className={`fox-wish__spark fox-wish__spark--${kind}`} style={{ '--x': `${x}px`, '--y': `${y}px`, '--i': i }} />
+        ))}
+      </span>
+    </div>
   );
 }
 
-/* ---- the pane ------------------------------------------------------------ */
+/* ---- the pane --------------------------------------------------------------------- */
 export default function FoxWish({ onDone }) {
   const uid = useId().replace(/:/g, '');
   const [stage, setStage] = useState(() => (wishedToday() ? 'already' : 'form'));
@@ -113,7 +116,8 @@ export default function FoxWish({ onDone }) {
   const [honey, setHoney] = useState('');
   const [error, setError] = useState(null);
   const [reply, setReply] = useState('');
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState({ text: '', name: '' });
+  const [pressed, setPressed] = useState(false);
   const started = useRef(Date.now());
   const timers = useRef([]);
   const refs = { text: useRef(null), why: useRef(null), name: useRef(null) };
@@ -128,10 +132,13 @@ export default function FoxWish({ onDone }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- on arrival only
   }, []);
   useEffect(() => {
-    if (stage === 'thanks') thanksRef.current?.focus({ preventScroll: true });
+    if (stage !== 'thanks') return;
+    thanksRef.current?.focus({ preventScroll: true });
+    try { if (!reduced()) window.navigator?.vibrate?.(10); } catch { /* no vibration: fine */ }
   }, [stage]);
 
   const cat = CATEGORIES.find((c) => c.id === category) || CATEGORIES[0];
+  const near = text.length >= LIMITS.text - 10;
 
   const submit = (e) => {
     e.preventDefault();
@@ -143,19 +150,21 @@ export default function FoxWish({ onDone }) {
       return;
     }
     setError(null);
-    const wish = r.ok ? r.wish : { category, text: text.trim() };
+    const wish = r.ok ? r.wish : { category, text: text.trim(), name: '' };
     if (r.ok) {
       sendWish(r.wish); // never throws; the hat eats it either way
       track('wish_submitted', { category: r.wish.category });
     }
     markWished();
-    setNote(wish.text);
+    setNote({ text: wish.text, name: wish.name || '' });
     setReply(foxReply(wish));
     if (reduced()) { setStage('thanks'); return; }
-    setStage('fold');
+    // the button presses down first, then the note takes over
+    setPressed(true);
     timers.current = [
-      setTimeout(() => setStage('drop'), FOLD_MS),
-      setTimeout(() => setStage('thanks'), FOLD_MS + DROP_MS),
+      setTimeout(() => setStage('fold'), 130),
+      setTimeout(() => setStage('drop'), 130 + FOLD_MS),
+      setTimeout(() => setStage('thanks'), 130 + FOLD_MS + DROP_MS),
     ];
   };
 
@@ -167,102 +176,101 @@ export default function FoxWish({ onDone }) {
   const errorFor = (field) => (error?.field === field
     ? <p className="fox-wish__error" id={`${uid}-err`} role="alert">{error.message}</p> : null);
 
-  if (stage === 'already') {
+  if (stage === 'already' || stage === 'thanks') {
+    const thanks = stage === 'thanks';
     return (
-      <div className="fox-play fox-wish fox-wish--done" data-testid="fox-wish" data-stage="already">
-        <div className="fox-wish__scene fox-wish__scene--small"><WishHat /></div>
-        <p className="fox-help__q">Your wish is in the hat</p>
-        <p className="fox-help__a">You’ve made today’s wish. You can wish again tomorrow.</p>
-        {onDone && <button type="button" className="fox-wish__back" onClick={onDone}>Back to questions</button>}
-      </div>
-    );
-  }
-
-  if (stage === 'thanks') {
-    return (
-      <div className="fox-play fox-wish fox-wish--done" data-testid="fox-wish" data-stage="thanks">
-        <div className="fox-wish__scene fox-wish__scene--small is-settled"><WishHat /></div>
-        <p className="fox-help__q" tabIndex={-1} ref={thanksRef}>Into the hat it goes!</p>
-        <p className="fox-help__a fox-wish__reply">{reply}</p>
-        <p className="fox-wish__again">You can wish again tomorrow.</p>
-        {onDone && <button type="button" className="fox-wish__back" onClick={onDone}>Back to questions</button>}
+      <div className={`fox-play fox-wish fox-wish--done${thanks && note.text ? ' is-fresh' : ''}`} data-testid="fox-wish" data-stage={stage}>
+        <WishScene stage="still" />
+        <div className="fox-wish__words">
+          <p className="fox-help__q fox-wish__kicker" tabIndex={thanks ? -1 : undefined} ref={thanks ? thanksRef : undefined}>
+            <LuSparkles aria-hidden="true" />{thanks ? 'Into the hat it goes!' : 'Your wish is in the hat'}
+          </p>
+          <p className="fox-help__a fox-wish__reply">{thanks ? reply : 'You’ve made today’s wish.'}</p>
+          <p className="fox-wish__again">You can wish again tomorrow.</p>
+          {onDone && (
+            <button type="button" className="fox-wish__back" onClick={onDone}>
+              <LuArrowLeft aria-hidden="true" /> Back to questions
+            </button>
+          )}
+        </div>
       </div>
     );
   }
 
   if (stage === 'fold' || stage === 'drop') {
     return (
-      <div className={`fox-play fox-wish fox-wish--anim is-${stage}`} data-testid="fox-wish" data-stage={stage} aria-busy="true">
+      <div className="fox-play fox-wish fox-wish--anim" data-testid="fox-wish" data-stage={stage} aria-busy="true">
         <p className="sr-only" role="status">Folding your wish into the fox’s hat…</p>
-        <div className="fox-wish__scene">
-          {stage === 'fold' && (
-            <div className="fox-wish__note" aria-hidden="true">
-              <span className="fox-wish__note-flap" />
-              <span className="fox-wish__note-text">{note}</span>
-            </div>
-          )}
-          <WishHat>{stage === 'drop' ? <DropNote /> : null}</WishHat>
-        </div>
+        <WishScene stage="anim" note={note.text} name={note.name} />
       </div>
     );
   }
 
   return (
-    <form className="fox-play fox-wish" data-testid="fox-wish" data-stage="form" onSubmit={submit} noValidate>
-      <div className="fox-wish__head">
-        <div>
+    <form className="fox-play fox-wish fox-wish--form" data-testid="fox-wish" data-stage="form" onSubmit={submit} noValidate>
+      <div className="fox-wish__paper">
+        <div className="fox-wish__head">
           <p className="fox-help__q" id={`${uid}-title`}>Make a wish for the menu</p>
           <p className="fox-wish__sub">A drink or a treat you’d love to see? I’ll pass it to Tom and Cat.</p>
         </div>
-      </div>
 
-      <fieldset className="fox-wish__cats">
-        <legend className="fox-wish__label">What kind of wish?</legend>
-        <div className="fox-wish__chips">
-          {CATEGORIES.map((c) => (
-            <label key={c.id} className={`fox-wish__chip${category === c.id ? ' is-on' : ''}`}>
-              <input type="radio" name={`${uid}-cat`} value={c.id} checked={category === c.id} onChange={() => setCategory(c.id)} />
-              <ChipArt id={c.id} />
-              <span>{c.label}</span>
-            </label>
-          ))}
+        <fieldset className="fox-wish__cats">
+          <legend className="fox-wish__label">What kind of wish?</legend>
+          <div className="fox-wish__chips">
+            {CATEGORIES.map((c) => {
+              const Icon = CHIP_ICONS[c.id];
+              const on = category === c.id;
+              return (
+                <label key={c.id} className={`fox-wish__chip${on ? ' is-on' : ''}`}>
+                  <input type="radio" name={`${uid}-cat`} value={c.id} checked={on} onChange={() => setCategory(c.id)} />
+                  <Icon className="fox-wish__chip-ico" aria-hidden="true" />
+                  <span>{c.label}</span>
+                  {on && <span className="fox-wish__chip-check" aria-hidden="true"><LuCheck /></span>}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <div className="fox-wish__field">
+          <div className="fox-wish__labelrow">
+            <label className="fox-wish__label" htmlFor={`${uid}-text`}>Your wish</label>
+            <span className={`fox-wish__count${near ? ' is-near' : ''}`} aria-hidden="true">{text.length}/{LIMITS.text}</span>
+          </div>
+          <input ref={refs.text} type="text" className="fox-wish__input" {...fieldProps('text', `${uid}-text`)}
+            value={text} maxLength={LIMITS.text} placeholder={cat.placeholder} autoComplete="off" enterKeyHint="next"
+            onChange={(e) => { setText(e.target.value); if (error?.field === 'text') setError(null); }} required />
+          {errorFor('text')}
         </div>
-      </fieldset>
 
-      <div className="fox-wish__field">
-        <label className="fox-wish__label" htmlFor={`${uid}-text`}>Your wish</label>
-        <input ref={refs.text} type="text" className="fox-wish__input" {...fieldProps('text', `${uid}-text`)}
-          value={text} maxLength={LIMITS.text} placeholder={cat.placeholder} autoComplete="off" enterKeyHint="next"
-          onChange={(e) => { setText(e.target.value); if (error?.field === 'text') setError(null); }} required />
-        <span className="fox-wish__count" aria-hidden="true">{text.length}/{LIMITS.text}</span>
-        {errorFor('text')}
-      </div>
+        <div className="fox-wish__field">
+          <label className="fox-wish__label" htmlFor={`${uid}-why`}>Why? <span className="fox-wish__opt">(optional)</span></label>
+          <input ref={refs.why} type="text" className="fox-wish__input" {...fieldProps('why', `${uid}-why`)}
+            value={why} maxLength={LIMITS.why} placeholder="It tastes like my grandma’s kitchen…" autoComplete="off"
+            onChange={(e) => { setWhy(e.target.value); if (error?.field === 'why') setError(null); }} />
+          {errorFor('why')}
+        </div>
 
-      <div className="fox-wish__field">
-        <label className="fox-wish__label" htmlFor={`${uid}-why`}>Why? <span className="fox-wish__opt">(optional)</span></label>
-        <input ref={refs.why} type="text" className="fox-wish__input" {...fieldProps('why', `${uid}-why`)}
-          value={why} maxLength={LIMITS.why} placeholder="It tastes like my grandma’s kitchen…" autoComplete="off"
-          onChange={(e) => { setWhy(e.target.value); if (error?.field === 'why') setError(null); }} />
-        {errorFor('why')}
-      </div>
+        <div className="fox-wish__field fox-wish__field--name">
+          <label className="fox-wish__label" htmlFor={`${uid}-name`}>First name <span className="fox-wish__opt">(optional)</span></label>
+          <input ref={refs.name} type="text" className="fox-wish__input" {...fieldProps('name', `${uid}-name`)}
+            value={name} maxLength={LIMITS.name} autoComplete="given-name"
+            onChange={(e) => { setName(e.target.value); if (error?.field === 'name') setError(null); }} />
+          {errorFor('name')}
+        </div>
 
-      <div className="fox-wish__field fox-wish__field--name">
-        <label className="fox-wish__label" htmlFor={`${uid}-name`}>First name <span className="fox-wish__opt">(optional)</span></label>
-        <input ref={refs.name} type="text" className="fox-wish__input" {...fieldProps('name', `${uid}-name`)}
-          value={name} maxLength={LIMITS.name} autoComplete="given-name"
-          onChange={(e) => { setName(e.target.value); if (error?.field === 'name') setError(null); }} />
-        {errorFor('name')}
-      </div>
+        {/* a field people never see: anything typed here is a bot */}
+        <div className="fox-wish__hp" aria-hidden="true">
+          <label htmlFor={`${uid}-website`}>Website</label>
+          <input id={`${uid}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} />
+        </div>
 
-      {/* a field people never see: anything typed here is a bot */}
-      <div className="fox-wish__hp" aria-hidden="true">
-        <label htmlFor={`${uid}-website`}>Website</label>
-        <input id={`${uid}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} />
-      </div>
-
-      <div className="fox-wish__actions">
-        <button type="submit" className="fox-wish__submit">Drop it in the hat</button>
-        <p className="fox-wish__fine">No email needed. One wish a day.</p>
+        <div className="fox-wish__actions">
+          <button type="submit" className={`fox-wish__submit${pressed ? ' is-pressed' : ''}`} disabled={pressed}>
+            <LuWandSparkles aria-hidden="true" /> Drop it in the hat
+          </button>
+          <p className="fox-wish__fine">No email needed. One wish a day.</p>
+        </div>
       </div>
     </form>
   );
@@ -270,26 +278,11 @@ export default function FoxWish({ onDone }) {
 
 /* ---- ways in ---------------------------------------------------------------- */
 
-/** A small top hat with a wish note peeking out, for the buttons. */
-function HatIcon() {
-  return (
-    <svg viewBox="0 0 38 32" aria-hidden="true" focusable="false">
-      <g transform="rotate(-8 19 18)">
-        <rect x="13" y="3" width="12" height="9" rx="1" fill="#fffdf7" stroke={INK} strokeWidth="1.5" transform="rotate(14 19 8)" />
-        <path d="M10 12 H28 L26.5 26 H11.5 Z" fill={INK} stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M11 21 H27 L26.6 24 H11.4 Z" fill="#d4ad57" />
-        <path d="M4 27 C10 29.5 28 29.5 34 27" fill="none" stroke={INK} strokeWidth="2.6" strokeLinecap="round" />
-      </g>
-      <path d="M33 4 V9 M30.5 6.5 H35.5" stroke="#b0436e" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 /** The "Make a wish" button in the fox's card. */
 export function WishButton({ pressed, onClick }) {
   return (
     <button type="button" className="fox-wish-btn" aria-pressed={pressed} onClick={onClick}>
-      <HatIcon />
+      <span className="fox-wish-btn__ico" aria-hidden="true"><LuWandSparkles /></span>
       <span>Make a wish for the menu<small>A drink or treat you’d love to see?</small></span>
     </button>
   );
@@ -301,7 +294,7 @@ export function MenuWishLink() {
   return (
     <p className="menu-wish">
       <Link className="menu-wish__link" to="?fox=wish&src=menu">
-        <HatIcon />
+        <LuWandSparkles aria-hidden="true" />
         Wish for something new?
       </Link>
     </p>
