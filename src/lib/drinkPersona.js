@@ -169,5 +169,14 @@ export function personaFor({ answers = {}, item } = {}) {
   };
 }
 
+/* Personas are only for drinks with a REAL photo: the card and the Story
+   image are built around it, and there is never a drawn stand-in. */
+
+/** The drink's real photo (its menu item's image_url), or '' if it has none. */
+export const personaPhoto = (item) => (typeof item?.image_url === 'string' ? item.image_url.trim() : '');
+
+/** Can this drink have a persona card? Only with a real photo. */
+export const hasPersonaPhoto = (item) => Boolean(personaPhoto(item));
+
 /** A filename for the downloaded story image. */
-export const storyFileName = (persona) => `trouble-brewing-${persona?.id || 'persona'}-story.png`;
+export const storyFileName = (persona) => `trouble-brewing-${persona?.id || 'persona'}.png`;
