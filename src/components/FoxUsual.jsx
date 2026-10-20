@@ -25,7 +25,7 @@ export default function FoxUsual({ menu, onSomethingDifferent }) {
 
   return (
     <div className="fox-usual" data-testid="fox-usual">
-      <DrinkPhoto item={item} />
+      <DrinkPhoto item={item} size="sm" />
       <div className="fox-usual__info">
         <p className="fox-usual__q">Back for {articleFor(item.name)} {item.name}?</p>
         {Number(item.price) > 0 && <p className="fox-usual__price">{fmtPrice(item.price)}</p>}

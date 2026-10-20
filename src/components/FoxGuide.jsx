@@ -544,9 +544,13 @@ export default function FoxGuide() {
         >
           <span className="fox-guide__card">
             <span className="fox-guide__figure">
+              {/* fox-outfits: the back layer (scarf behind his neck, umbrella)
+                  sits under the drawing, the front layer over it — both in
+                  the figure, so they move with him */}
+              <FoxOutfit outfit={outfit} layer="back" />
               <FoxArt />
               <span className="fox-guide__steam" aria-hidden="true"><i /><i /><i /></span>
-              <FoxOutfit outfit={outfit} hasPumpkin={mood.october} />{/* fox-outfits */}
+              <FoxOutfit outfit={outfit} hasPumpkin={mood.october} />
               {mood.sleepy && <Nightcap />}
             </span>
             {mood.sleepy && <span className="fox-guide__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>}
