@@ -288,11 +288,21 @@ describe('your usual', () => {
     expect(localStorage.getItem(USUAL_KEY)).toBeNull();
   });
 
-  it('a Surprise pick becomes the usual', async () => {
+  it('a Surprise pick is not the usual until they tap Order', async () => {
     render(<MemoryRouter><FoxGuide /></MemoryRouter>);
     fireEvent.click(screen.getByRole('button', { name: /ask the fox/i }));
     fireEvent.click(await screen.findByRole('button', { name: /surprise me/i }));
-    const name = screen.getByTestId('fox-surprise').querySelector('.fox-drink__name').textContent;
-    expect(readUsual().name).toBe(name);
+    expect(readUsual()).toBeNull();
+  });
+
+  it('coming back from Pick my drink never shows the usual', async () => {
+    localStorage.setItem(USUAL_KEY, JSON.stringify({ name: 'Iced Latte', price: 1, savedAt: Date.now() - 3 * 86_400_000 }));
+    render(<MemoryRouter><FoxGuide /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: /ask the fox/i }));
+    expect(await screen.findByText('Back for an Iced Latte?')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /pick my drink/i }));
+    expect(screen.getByTestId('fox-quiz')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /pick my drink/i }));
+    expect(screen.queryByTestId('fox-usual')).toBeNull();
   });
 });
