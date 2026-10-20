@@ -170,6 +170,18 @@ export const SEO_ROUTES = [
     priority: '0.6',
   },
   {
+    path: '/chalkboard',
+    slug: 'chalkboard',
+    label: 'Past Boards',
+    title: 'Past Chalkboards | Trouble Brewing Coffee House',
+    description:
+      'Flip through the chalkboards from behind the counter at Trouble Brewing Coffee House in Haddon Heights, NJ: past specials and seasonal drinks.',
+    og: 'home',
+    ogAlt: 'The pastry case and coffee counter inside Trouble Brewing Coffee House, Haddon Heights, NJ',
+    changefreq: 'weekly',
+    priority: '0.5',
+  },
+  {
     path: '/privacy',
     slug: 'privacy',
     label: 'Privacy Policy',
