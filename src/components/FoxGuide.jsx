@@ -14,6 +14,10 @@ import { AwardPane, FactPane, FoxArt, Nightcap, Pumpkin, QuizPane, SurpriseIcon,
 import FoxOutfit, { FoxOutfitLine } from './FoxOutfit.jsx'; // fox-outfits
 import FoxUsual from './FoxUsual.jsx'; // fox-outfits
 import useFoxOutfit from '../lib/useFoxOutfit.js'; // fox-outfits
+import FoxWish, { WishButton } from './FoxWish.jsx'; // wishes-tricks: the wish list
+import { FoxNightSky, FoxTipArt, FoxTipBubble, FoxTrickFigure } from './FoxTricks.jsx'; // wishes-tricks: hidden tricks
+import useFoxTricks from '../lib/useFoxTricks.js'; // wishes-tricks
+import { useFoxDeepLink } from '../lib/foxDeepLink.js'; // wishes-tricks: ?fox=open|quiz|surprise|wish
 
 /* The Trouble Brewing fox — the dapper top-hatted fox from the logo, cup in
    hand (public/images/brand/fox-sipping.png). He's the logo fox, so no
@@ -171,6 +175,16 @@ export default function FoxGuide() {
   useEffect(() => () => { clearTimeout(openTimer.current); clearTimeout(moveTimer.current); }, []);
   const base = useFoxHours();
   const outfit = useFoxOutfit(); // fox-outfits: seasonal / weather accessories
+  // wishes-tricks: hidden tricks (hat tip, late-night sky, birthday hat), and
+  // deep links that open the card straight to a view (QR table cards)
+  const tricks = useFoxTricks({ base });
+  useFoxDeepLink((view) => {
+    setHidden(false); // shown for this visit; the saved "hidden" choice is left alone
+    setLine(null);
+    store.set('localStorage', MET_KEY, '1'); // the first-visit hello never covers a deep link
+    setPicked(view === 'open' ? null : view);
+    setOpen(true);
+  });
   const data = useFoxData(wanted || open, base);
   const day = specialDay(foxToday());
   const Badge = day ? BADGES[day.id] : null;
@@ -368,6 +382,8 @@ export default function FoxGuide() {
     }
     if (r.confetti && !reduced()) setBurst(Date.now());
     else if (r.wag) play('wag', 950);
+    // wishes-tricks: the 5th quick tap tips his hat, and leaves the card as it was
+    if (tricks.tap(Date.now())) { clearTimeout(openTimer.current); return; }
     if (touch && !open) {
       if (!r.quick && !r.wag) play('hop', 420);
       openTimer.current = setTimeout(openCard, r.wag && !reduced() ? 950 : QUICK_MS);
@@ -393,19 +409,20 @@ export default function FoxGuide() {
   const mood = foxMood({ hours: hrs?.hours, overrides: hrs?.overrides, now: new Date(), today: foxToday() });
   const fact = dailyFact(new Date(), data?.menu || null);
   const factNew = factSeen !== todayIso;
-  const greeting = day ? day.text
+  // wishes-tricks: the birthday / late-night lines come first
+  const greeting = tricks.greeting || (day ? day.text
     : mood.sleepy ? `${backLine(mood.next)} Ask me anything meanwhile.`
       : mood.morning ? 'Good morning! What can I help you with?'
-        : 'Hi there! What can I help you with?';
+        : 'Hi there! What can I help you with?');
   const PLAY = [
     { id: 'surprise', label: 'Surprise me', Icon: SurpriseIcon },
     { id: 'quiz', label: 'Pick my drink', Icon: FaWandMagicSparkles },
     { id: 'fact', label: 'Fox fact', Icon: FaLightbulb, dot: factNew },
   ];
-  const isPlay = ['surprise', 'quiz', 'fact', 'award'].includes(picked);
+  const isPlay = ['surprise', 'quiz', 'fact', 'award', 'wish'].includes(picked); // wishes-tricks: + wish
   // a game result can be tall: while one is up, the chips fold away so the
   // answer area gets the room (and scrolls on its own if it still needs to)
-  const isGame = Boolean(data) && ['surprise', 'quiz'].includes(picked);
+  const isGame = (Boolean(data) && ['surprise', 'quiz'].includes(picked)) || picked === 'wish'; // wishes-tricks: + wish
   const moodCls = `${mood.sleepy ? ' is-sleepy' : ''}${mood.morning ? ' is-morning' : ''}${mood.october ? ' is-october' : ''}`;
 
   if (hidden) {
@@ -421,7 +438,7 @@ export default function FoxGuide() {
   }
 
   return (
-    <div className={`fox-guide${open ? ' is-open' : ''}${back ? ' is-back' : ''}${move ? ` is-${move}` : ''}${moodCls}`}>
+    <div className={`fox-guide${open ? ' is-open' : ''}${back ? ' is-back' : ''}${move ? ` is-${move}` : ''}${moodCls}${tricks.cls}`}>
       {open && <div className="fox-guide__scrim" aria-hidden="true" />}
       {open && (
         <section
@@ -454,7 +471,9 @@ export default function FoxGuide() {
               game (quiz / Surprise) is up, the answer area scrolls instead. */}
           <div className="fox-help__say" aria-live="polite">
             <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
-              {picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
+              {picked === 'wish' ? <FoxWish onDone={() => setPicked(null)} /> /* wishes-tricks */
+                : (picked === 'quiz' || picked === 'surprise') && !data ? <p className="fox-help__a" aria-busy="true">One sec, checking today’s menu…</p> /* wishes-tricks: a deep link before the menu loads */
+                : picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
                 : picked === 'quiz' && data ? <QuizPane menu={data.menu} hours={data.hours} overrides={data.overrides} />
                   : picked === 'fact' && data ? <FactPane fact={fact} />
                     : picked === 'award' ? <AwardPane />
@@ -502,6 +521,8 @@ export default function FoxGuide() {
                 )}
               </ul>
             )}
+            {/* wishes-tricks: "Make a wish for the menu", under the game tiles */}
+            {!isGame && <WishButton pressed={false} onClick={() => ask('wish')} />}
             {isGame ? null : data ? (
               <ul className="fox-help__chips" aria-label="Common questions">
                 {answers.map((a) => (
@@ -543,12 +564,14 @@ export default function FoxGuide() {
           aria-label={open ? 'Close the fox’s help' : `Ask the fox: hours, directions, menu and more${factNew ? ' (new fox fact today)' : ''}`}
         >
           <span className="fox-guide__card">
+            <FoxNightSky tricks={tricks} />{/* wishes-tricks: late-night moon and stars */}
             <span className="fox-guide__figure">
               {/* fox-outfits: the back layer (scarf behind his neck, umbrella)
                   sits under the drawing, the front layer over it — both in
                   the figure, so they move with him */}
               <FoxOutfit outfit={outfit} layer="back" />
-              <FoxArt />
+              {tricks.tipping ? <FoxTipArt /> : <FoxArt />}{/* wishes-tricks: the hat comes off */}
+              <FoxTrickFigure tricks={tricks} />
               <span className="fox-guide__steam" aria-hidden="true"><i /><i /><i /></span>
               <FoxOutfit outfit={outfit} hasPumpkin={mood.october} />
               {mood.sleepy && <Nightcap />}
@@ -569,6 +592,7 @@ export default function FoxGuide() {
             ))}
           </span>
         )}
+        <FoxTipBubble tricks={tricks} />{/* wishes-tricks: "Why, thank you." */}
         {!open && (
           <button type="button" className="fox-guide__x" onClick={hide} aria-label="Hide the fox">
             <FaXmark aria-hidden="true" />

@@ -7,6 +7,7 @@ import SEO from '../components/SEO.jsx';
 import SocialLinks from '../components/SocialLinks.jsx';
 import { PageSkeleton } from '../components/Skeleton.jsx';
 import { getMenu } from '../lib/menuService.js';
+import { MenuWishLink } from '../components/FoxWish.jsx'; // wishes-tricks
 
 /* Generic section-composed page. Fetches the page meta + ordered sections and
    renders them via the registry. Used by most public routes. Supports admin
@@ -66,6 +67,8 @@ export default function SitePage({ slug, children, showSocial = false }) {
       ) : (
         effSections.map((s) => <SectionRenderer key={s.id} section={s} />)
       )}
+      {/* wishes-tricks: "Wish for something new?" opens the fox's wish list */}
+      {slug === 'menu' && !canvas && effSections != null && <MenuWishLink />}
       {showSocial && (
         <div className="container" style={{ textAlign: 'center', paddingBottom: 'var(--space-6)' }}>
           <p className="eyebrow">Follow along</p>

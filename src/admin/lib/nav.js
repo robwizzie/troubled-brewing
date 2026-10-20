@@ -5,6 +5,8 @@
    called the same thing everywhere.
    ============================================================================= */
 
+import { WISH_NAV_ICON } from './wishNavIcon.jsx'; // wishes-tricks
+
 /* Friendly page names — the owner picks "Menu", never a slug. */
 export const PAGE_NAMES = {
   home: 'Home',
@@ -30,6 +32,7 @@ export const SCREENS = [
   { to: '/admin/hours', icon: '🕘', label: 'Hours & holidays', nav: 'Every day' },
   { to: '/admin/quick-blocks', icon: '📣', label: 'Banner & links', nav: 'Every day' },
   { to: '/admin/inbox', icon: '✉️', label: 'Messages', nav: 'Every day', badge: 'inbox' },
+  { to: '/admin/wishes', icon: WISH_NAV_ICON, label: 'Wish list', nav: 'Every day' },
   { to: '/admin/menu', icon: '☕', label: 'Menu', nav: 'Lists on the site' },
   { to: '/admin/pairings', icon: '🥐', label: 'Drink pairings', nav: 'Lists on the site' },
   { to: '/admin/events', icon: '📅', label: 'Events', nav: 'Lists on the site' },
