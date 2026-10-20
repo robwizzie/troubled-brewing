@@ -95,7 +95,15 @@ export function summarize(rows, days, today = shopNow().isoDate) {
     surprise: sum('fox_question', 'surprise') + sum('fox_surprise_again'),
     pollVotes: sum('poll_vote'),
   };
+  // wishes-tricks: QR table-card scans (any fox deep link or page link with
+  // src=table; key 'table:<view>') and menu wishes
+  const tableScans = inRange
+    .filter((r) => r.event === 'fox_deeplink' && String(r.key).startsWith('table:'))
+    .reduce((t, r) => t + (Number(r.count) || 0), 0);
+  const wishes = sum('wish_submitted');
   const extras = {
+    tableScans,
+    wishes,
     giftCards: sum('gift_card_click'),
     calendarAdds: sum('add_to_calendar'),
     textFriend: sum('share_event'),

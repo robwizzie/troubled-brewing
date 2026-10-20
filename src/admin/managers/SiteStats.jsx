@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { LuCalendarPlus, LuGift, LuInfo, LuMessageSquare, LuMousePointerClick, LuEye, LuSparkles, LuVote } from 'react-icons/lu';
+import { LuCalendarPlus, LuGift, LuInfo, LuMessageSquare, LuMousePointerClick, LuEye, LuQrCode, LuSparkles, LuVote, LuWandSparkles } from 'react-icons/lu';
 import { Spinner, StatusChip } from '../components/ui.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { ScreenHead } from '../lib/publishing.jsx';
@@ -178,6 +178,8 @@ export default function SiteStats({ sample, today }) {
         <Tile icon={LuMousePointerClick} label="Order clicks" value={s.orders} note="Taps on an Order button" />
         <Tile icon={LuSparkles} label="Fox chats" value={s.fox.opens} note="Times someone opened the fox" />
         <Tile icon={LuVote} label="Poll votes" value={s.fox.pollVotes} />
+        <Tile icon={LuQrCode} label="Table card scans" value={s.extras.tableScans} note="QR codes on the tables" />
+        <Tile icon={LuWandSparkles} label="Menu wishes" value={s.extras.wishes} note="Made with the fox" />
       </div>
 
       <section className="admin__panel">

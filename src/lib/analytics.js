@@ -35,10 +35,16 @@ export function loadGA() {
   window.gtag('config', GA4_ID, { anonymize_ip: true });
 }
 
-/** Track a key event (Order clicks, form submits, outbound clicks…). No-op without consent. */
+/** Track a key event (Order clicks, form submits, outbound clicks…). No-op without consent.
+    Safe to call before useAnalytics has run (e.g. from a child's effect on
+    the first load, like a fox deep link): GA is set up on the spot, and its
+    gtag() stub queues the event in dataLayer until the script arrives. The
+    site stats queue in memory by themselves (siteStats.js). */
 export function track(name, params = {}) {
   recordStat(name, params); // aggregate counts only; whitelisted events; never from /admin
-  if (!GA4_ID || !hasConsent() || typeof window.gtag !== 'function') return;
+  if (!GA4_ID || !hasConsent()) return;
+  loadGA(); // idempotent: makes sure gtag exists for an event that comes first
+  if (typeof window.gtag !== 'function') return;
   window.gtag('event', name, params);
 }
 

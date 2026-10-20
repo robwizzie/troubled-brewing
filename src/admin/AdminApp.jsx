@@ -24,6 +24,7 @@ import GoogleProfileSettings from './managers/GoogleProfileSettings.jsx';
 import Inbox from './managers/Inbox.jsx';
 import MediaLibrary from './managers/MediaLibrary.jsx';
 import HelpCenter from './HelpCenter.jsx';
+import WishList from './managers/WishList.jsx'; // wishes-tricks
 import HomepageLook from './managers/HomepageLook.jsx';
 import PollsManager from './managers/PollsManager.jsx'; // poll-insights
 import SiteStats from './managers/SiteStats.jsx'; // poll-insights
@@ -76,6 +77,7 @@ export default function AdminApp() {
               <Route path="chalkboard" element={<ChalkboardManager />} />
               <Route path="google" element={screen(<GoogleProfileSettings />, 'reviews', 'View the live Reviews page')} />
               <Route path="inbox" element={<Inbox />} />
+              <Route path="wishes" element={<WishList />} />
               <Route path="media" element={<MediaLibrary />} />
               <Route path="help" element={<HelpCenter />} />
               <Route path="polls" element={screen(<PollsManager />, 'home', 'View the live site')} />
