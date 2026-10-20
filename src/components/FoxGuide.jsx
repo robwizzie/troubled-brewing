@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaCircleQuestion, FaEyeSlash, FaGhost, FaHeart, FaLightbulb, FaMedal, FaSnowflake, FaStar, FaWandMagicSparkles, FaXmark } from 'react-icons/fa6';
+import { FaArrowRight, FaArrowUpRightFromSquare, FaCakeCandles, FaCat, FaCircleQuestion, FaEyeSlash, FaGhost, FaHeart, FaLightbulb, FaSnowflake, FaStar, FaWandMagicSparkles, FaXmark } from 'react-icons/fa6';
 import { track } from '../lib/analytics.js';
 import { orderUrlFor } from '../lib/order.js';
 import { SITE } from '../lib/seed.js';
@@ -9,8 +9,8 @@ import { getMenu } from '../lib/menuService.js';
 import { googleWeekly, shopNow } from '../lib/hours.js';
 import { findSection, foxAnswers, hoursAnswer, plainText } from '../lib/foxHelp.js';
 import { QUIPS, foxToday, specialDay } from '../lib/foxDays.js';
-import { QUICK_MS, backLine, dailyFact, foxMood, registerTap } from '../lib/foxFun.js';
-import { AwardPane, FactPane, FoxArt, Nightcap, Pumpkin, QuizPane, SurpriseIcon, SurprisePane, Tail } from './FoxPlay.jsx';
+import { QUICK_MS, backLine, dailyFact, foxMood } from '../lib/foxFun.js';
+import { FactPane, FoxArt, Nightcap, Pumpkin, QuizPane, SurpriseIcon, SurprisePane } from './FoxPlay.jsx';
 import FoxOutfit, { FoxOutfitLine } from './FoxOutfit.jsx'; // fox-outfits
 import FoxUsual from './FoxUsual.jsx'; // fox-outfits
 import FoxPoll from './FoxPoll.jsx'; // poll-insights: "This or that"
@@ -47,9 +47,7 @@ import { useFoxDeepLink } from '../lib/foxDeepLink.js'; // wishes-tricks: ?fox=o
    fine-tuned; "Fox fact" changes daily (a dot on him until you've seen
    it). By the shop's clock he's sleepy in a nightcap when it's closed (with
    the real next opening), has a fresh steaming cup in the morning, and sits
-   by a pumpkin all October. Pet him (quick taps) and his tail wags; every
-   10th tap is a little celebration, and the first earns the Trouble-maker
-   badge in his card's header. */
+   by a pumpkin all October. Quick repeat taps never toggle the card. */
 
 const SEEN_KEY = 'tb-fox-day'; // special-day line already said today
 const HIDDEN_KEY = 'tb-fox-hidden'; // '1' = the visitor sent him away
@@ -57,21 +55,11 @@ const MET_KEY = 'tb-fox-met'; // '1' = the first-visit hello has happened
 const QUIP_I_KEY = 'tb-fox-quip'; // which quip is next (localStorage)
 const QUIPPED_KEY = 'tb-fox-quipped'; // already offered a quip this visit (sessionStorage)
 const FACT_SEEN_KEY = 'tb-fox-fact-seen'; // shop date of the last daily fact opened
-const PETS_KEY = 'tb-fox-pets'; // { total, badge }: taps ever, and the Trouble-maker badge
 
 const store = {
   get(s, k) { try { return window[s].getItem(k); } catch { return null; } },
   set(s, k, v) { try { window[s].setItem(k, v); } catch { /* private mode: fine */ } },
   del(s, k) { try { window[s].removeItem(k); } catch { /* fine */ } },
-};
-
-const readPets = () => {
-  try {
-    const v = JSON.parse(store.get('localStorage', PETS_KEY) || '{}');
-    return { recent: [], total: Number(v.total) || 0, badge: Boolean(v.badge) };
-  } catch {
-    return { recent: [], total: 0, badge: false };
-  }
 };
 
 const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -163,16 +151,16 @@ export default function FoxGuide() {
   const [back, setBack] = useState(false); // came back from the edge this visit
   const [wanted, setWanted] = useState(false);
   const [picked, setPicked] = useState(null);
+  const [browsed, setBrowsed] = useState(false); // opened a game or answer since the card opened
   const [line, setLine] = useState(null);
   const [move, setMove] = useState(null); // 'wave' | 'hop' — the one motion playing
   const [quipN, setQuipN] = useState(() => Number(store.get('localStorage', QUIP_I_KEY)) || 0);
   const [, tick] = useState(0);
-  const [pets, setPets] = useState(readPets);
-  const [burst, setBurst] = useState(0); // confetti key (0 = none)
   const [factSeen, setFactSeen] = useState(() => store.get('localStorage', FACT_SEEN_KEY));
   const moveTimer = useRef(0);
   const openTimer = useRef(0);
   const pointerType = useRef('mouse');
+  const lastTap = useRef(0);
   useEffect(() => () => { clearTimeout(openTimer.current); clearTimeout(moveTimer.current); }, []);
   const base = useFoxHours();
   const outfit = useFoxOutfit(); // fox-outfits: seasonal / weather accessories
@@ -184,13 +172,14 @@ export default function FoxGuide() {
     setLine(null);
     store.set('localStorage', MET_KEY, '1'); // the first-visit hello never covers a deep link
     setPicked(view === 'open' ? null : view);
+    setBrowsed(view !== 'open');
     setOpen(true);
   });
   const data = useFoxData(wanted || open, base);
   const day = specialDay(foxToday());
   const Badge = day ? BADGES[day.id] : null;
 
-  // the ONE motion playing (wave / hop / wag); a new one replaces the last
+  // the ONE motion playing (wave / hop); a new one replaces the last
   const play = useCallback((m, ms) => {
     if (reduced()) return undefined;
     clearTimeout(moveTimer.current);
@@ -204,13 +193,6 @@ export default function FoxGuide() {
     const id = setInterval(() => tick((t) => t + 1), 60_000);
     return () => clearInterval(id);
   }, []);
-
-  // confetti clears itself
-  useEffect(() => {
-    if (!burst) return undefined;
-    const t = setTimeout(() => setBurst(0), 1300);
-    return () => clearTimeout(t);
-  }, [burst]);
 
   // a special day speaks up by itself (once a day); otherwise a first-time
   // visitor gets a peek + wave and a hello
@@ -351,6 +333,7 @@ export default function FoxGuide() {
 
   const openCard = () => {
     setLine(null);
+    setBrowsed(false);
     setOpen(true);
     track('fox_open');
   };
@@ -361,36 +344,25 @@ export default function FoxGuide() {
     openCard();
   };
 
-  /* Every tap counts; quick ones are petting and never toggle the card.
-     With a mouse or keyboard the first tap opens the card at once. On a
-     touch screen the card is a bottom sheet that would cover him, so he hops
-     straight away and the sheet opens once the taps stop (QUICK_MS later,
-     or after the wag) — a single tap still opens it, petting just comes
-     first. */
+  /* A tap within QUICK_MS of the last one never toggles the card, so a
+     double tap doesn't open and shut it. With a mouse or keyboard the first
+     tap opens the card at once. On a touch screen the card is a bottom sheet
+     that would cover him, so he hops straight away and the sheet opens once
+     the taps stop (QUICK_MS later). */
   const onFoxTap = (e) => {
     const touch = pointerType.current === 'touch' && e.detail !== 0;
-    const r = registerTap(pets, Date.now());
-    setPets(r.state);
-    store.set('localStorage', PETS_KEY, JSON.stringify({ total: r.state.total, badge: r.state.badge }));
+    const now = Date.now();
+    const quick = now - lastTap.current < QUICK_MS;
+    lastTap.current = now;
     clearTimeout(openTimer.current);
-    if (r.award) {
-      setLine(null);
-      setOpen(true);
-      setPicked('award');
-      if (!reduced()) setBurst(Date.now());
-      track('fox_badge');
-      return;
-    }
-    if (r.confetti && !reduced()) setBurst(Date.now());
-    else if (r.wag) play('wag', 950);
     // wishes-tricks: the 5th quick tap tips his hat, and leaves the card as it was
     if (tricks.tap(Date.now())) { clearTimeout(openTimer.current); return; }
     if (touch && !open) {
-      if (!r.quick && !r.wag) play('hop', 420);
-      openTimer.current = setTimeout(openCard, r.wag && !reduced() ? 950 : QUICK_MS);
+      if (!quick) play('hop', 420);
+      openTimer.current = setTimeout(openCard, QUICK_MS);
       return;
     }
-    if (r.quick) return;
+    if (quick) return;
     toggle();
   };
 
@@ -400,6 +372,7 @@ export default function FoxGuide() {
       store.set('localStorage', FACT_SEEN_KEY, todayIso);
     }
     setPicked((cur) => (cur === id ? null : id));
+    setBrowsed(true);
     track('fox_question', { question: id });
   };
 
@@ -420,7 +393,7 @@ export default function FoxGuide() {
     { id: 'quiz', label: 'Pick my drink', Icon: FaWandMagicSparkles },
     { id: 'fact', label: 'Fox fact', Icon: FaLightbulb, dot: factNew },
   ];
-  const isPlay = ['surprise', 'quiz', 'fact', 'award', 'wish'].includes(picked); // wishes-tricks: + wish
+  const isPlay = ['surprise', 'quiz', 'fact', 'wish'].includes(picked); // wishes-tricks: + wish
   // a game result can be tall: while one is up, the chips fold away so the
   // answer area gets the room (and scrolls on its own if it still needs to)
   const isGame = (Boolean(data) && ['surprise', 'quiz'].includes(picked)) || picked === 'wish'; // wishes-tricks: + wish
@@ -454,7 +427,6 @@ export default function FoxGuide() {
             <div>
               <h2 className="fox-help__title" id={`${panelId}-title`}>
                 Ask the fox
-                {pets.badge && <span className="fox-help__badge" title="You earned the Trouble-maker badge"><FaMedal aria-hidden="true" /> Trouble-maker</span>}
               </h2>
               {status && (
                 <p className={`fox-help__status${status.open ? ' is-open' : ''}`}>
@@ -477,7 +449,6 @@ export default function FoxGuide() {
                 : picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
                 : picked === 'quiz' && data ? <QuizPane menu={data.menu} hours={data.hours} overrides={data.overrides} />
                   : picked === 'fact' && data ? <FactPane fact={fact} />
-                    : picked === 'award' ? <AwardPane />
                       : chosen ? (
                 <>
                   <p className="fox-help__q">{chosen.q}</p>
@@ -490,8 +461,9 @@ export default function FoxGuide() {
                 </>
               ) : (
                 <>
-                  {/* fox-outfits: your usual, then his line about the outfit */}
-                  {data && <FoxUsual menu={data.menu} onSomethingDifferent={() => ask('quiz')} />}
+                  {/* fox-outfits: your usual (only on the card's first view, never
+                      after coming back from a game), then his line about the outfit */}
+                  {data && !browsed && <FoxUsual menu={data.menu} onSomethingDifferent={() => ask('quiz')} />}
                   <p className="fox-help__a">{greeting}</p>
                   <FoxOutfitLine outfit={outfit} />
                 </>
@@ -587,15 +559,7 @@ export default function FoxGuide() {
             {open && <span className="fox-guide__closex" aria-hidden="true"><FaXmark /></span>}
             {factNew && !open && <span className="fox-guide__dot" aria-hidden="true" />}
           </span>
-          <Tail />
         </button>
-        {burst > 0 && (
-          <span className="fox-guide__confetti" key={burst} aria-hidden="true">
-            {Array.from({ length: 16 }, (_, i) => (
-              <i key={i} style={{ '--a': `${(i * 360) / 16}deg`, '--d': `${46 + (i % 4) * 14}px`, '--c': ['#e3b53f', '#e98fb0', '#7e8c54', '#b0436e'][i % 4] }} />
-            ))}
-          </span>
-        )}
         <FoxTipBubble tricks={tricks} />{/* wishes-tricks: "Why, thank you." */}
         {!open && (
           <button type="button" className="fox-guide__x" onClick={hide} aria-label="Hide the fox">

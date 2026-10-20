@@ -1,8 +1,7 @@
 import { orderUrlFor } from './order.js';
 import { productImageSources } from './productImage.js';
 
-/* "Your usual": the last drink the fox matched or picked for a visitor (or
-   whose order link they tapped), remembered in THEIR browser only —
+/* "Your usual": the last drink a visitor actually tapped Order on, remembered in THEIR browser only —
    localStorage `tb.fox.usual`, never sent anywhere. On a later visit (more
    than ~10 minutes later, less than 60 days) his card greets them with it.
 
