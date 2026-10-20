@@ -318,8 +318,9 @@ export function ActionBar({ preview, viewHref, viewLabel = 'View the live page',
 
 /* ---- Screen chrome: title + one plain line about what it changes ----------
    Inside an editing screen it also shows where things stand at a glance —
-   "Published" or "Unpublished changes" — next to the title. */
-export function ScreenHead({ title, help, children, icon: iconProp }) {
+   "Published" or "Unpublished changes" — next to the title. A read-only
+   screen passes its own `chip` (Site stats: "Only you can see this"). */
+export function ScreenHead({ title, help, children, icon: iconProp, chip }) {
   const scope = useContext(ScopeContext);
   // the screen's own sidebar icon, so every header matches its nav entry
   const { pathname } = useLocation();
@@ -330,7 +331,7 @@ export function ScreenHead({ title, help, children, icon: iconProp }) {
         <div className="screenhead__titlerow">
           {icon && <span className="screenhead__icon"><Icon icon={icon} size={22} /></span>}
           <h1>{title}</h1>
-          {scope && <StatusChip state={scope.dirty ? 'unpublished' : 'published'} />}
+          {chip || (scope && <StatusChip state={scope.dirty ? 'unpublished' : 'published'} />)}
         </div>
         {help && <p className="screenhead__help">{help}</p>}
       </div>

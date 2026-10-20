@@ -165,6 +165,13 @@ describe('search', () => {
     ['new barista', '/admin/troublemakers'],
     ['catering', '/admin/inbox'],
     ['instagram', '/admin/quick-blocks'],
+    ['poll', '/admin/polls'],
+    ['vote', '/admin/polls'],
+    ['stats', '/admin/stats'],
+    ['visits', '/admin/stats'],
+    ['past boards', '/admin/chalkboard'],
+    ['keep up', '/admin/chalkboard'],
+    ['homepage style', '/admin/look'],
   ])('"%s" → %s', (q, to) => {
     expect(searchTasks(q)[0]?.to).toBe(to);
   });

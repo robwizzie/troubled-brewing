@@ -98,7 +98,7 @@ export const TASKS = [
     id: 'chalkboard', to: '/admin/chalkboard', icon: LuCamera,
     title: 'Update the chalkboard',
     desc: 'Snap the specials board — it goes on the homepage.',
-    keywords: 'chalkboard chalk blackboard black board sign signs specials special today daily photo picture pic camera snap board menu board',
+    keywords: 'chalkboard chalk blackboard black board sign signs specials special today daily photo picture pic camera snap board menu board past boards old history archive keep longer until replace stay how long duration',
   },
   {
     id: 'hours', to: '/admin/hours', icon: LuClock,
@@ -162,7 +162,7 @@ export const MORE_TASKS = [
   { id: 'social', to: '/admin/quick-blocks', icon: LuAtSign, title: 'Change social media links', desc: 'Instagram, Facebook and friends in the footer.', keywords: 'social instagram facebook tiktok links footer x twitter' },
   { id: 'google', to: '/admin/google', icon: LuLink, title: 'Google connection', desc: 'Where your rating, reviews and address come from.', keywords: 'google connection connect rating maps address place refresh fetch' },
   { id: 'polls', to: '/admin/polls', icon: LuVote, title: 'Ask a “This or that” poll in the fox', desc: 'A one-tap question like “Iced or hot today?”, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
-  { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'See site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visits visitors traffic views pages numbers clicks orders dashboard report how many people' },
+  { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'See site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visit visits visitors traffic views pages numbers clicks orders dashboard report how many people busy' },
   { id: 'help', to: '/admin/help', icon: LuCircleHelp, title: 'Help', desc: 'Plain-English how-tos.', keywords: 'help how stuck guide tutorial question undo mistake' },
 ];
 

@@ -238,7 +238,7 @@
 .statuschip { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-radius: 999px; border: 1px solid transparent; font-size: 0.78rem; font-weight: 600; white-space: nowrap; line-height: 1; }
 .statuschip--published, .statuschip--live { background: var(--adm-ok-50); color: var(--adm-ok); border-color: var(--adm-ok-100); }
 .statuschip--unpublished { background: var(--adm-gold-50); color: var(--adm-gold-700); border-color: var(--adm-gold-100); }
-.statuschip--draft { background: var(--adm-sunk); color: var(--adm-ink-2); border-color: var(--adm-line); }
+.statuschip--draft, .statuschip--private { background: var(--adm-sunk); color: var(--adm-ink-2); border-color: var(--adm-line); }
 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; border: 1px solid transparent; line-height: 1.2; }
 .badge--live { background: var(--adm-ok-50); color: var(--adm-ok); border-color: var(--adm-ok-100); }
 .badge--draft { background: var(--adm-gold-50); color: var(--adm-gold-700); border-color: var(--adm-gold-100); }
