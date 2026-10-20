@@ -1,0 +1,3195 @@
+{
+  "exported_at": "2026-10-19T15:15:41.508Z",
+  "tables": {
+    "pages": [
+      {
+        "slug": "community",
+        "title": "Community — Trouble Brewing Coffee House",
+        "meta_description": "Events, our community board, loyalty, and customer photos from Trouble Brewing Coffee House in Haddon Heights, NJ.",
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "slug": "gift-cards",
+        "title": "Gift Cards | Trouble Brewing Coffee House, Haddon Heights",
+        "meta_description": "Give someone Trouble: send an e-gift card for Trouble Brewing Coffee House in Haddon Heights, NJ. Pick an amount, add a note, and it goes by email.",
+        "updated_at": "2026-10-19T13:13:38.495449+00:00"
+      },
+      {
+        "slug": "home",
+        "title": "Trouble Brewing Coffee House | Haddon Heights NJ Coffee Shop",
+        "meta_description": "Independent coffee shop on Station Ave in Haddon Heights, NJ. La Colombe coffee, Metolius teas, breakfast all day, gluten-free sweets and a Pup Cup.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "menu",
+        "title": "Menu | Trouble Brewing Coffee House, Haddon Heights NJ",
+        "meta_description": "La Colombe espresso drinks, Metolius teas, breakfast sandwiches served all day, lunch melts, fresh bakery and gluten-free sweets. Order ahead online.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "about",
+        "title": "Our Story | Trouble Brewing Coffee House, Haddon Heights",
+        "meta_description": "Haddon Heights locals Tom and Cat opened Trouble Brewing on Station Ave on Friday the 13th, October 2017. Serious coffee, breakfast all day, good Trouble.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "events",
+        "title": "Events | Trouble Brewing Coffee House, Haddon Heights NJ",
+        "meta_description": "Upcoming events and community gatherings at Trouble Brewing Coffee House, 514 Station Ave in Haddon Heights, NJ. See what's on, then come say hi.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "location",
+        "title": "Hours & Directions | Trouble Brewing Coffee House",
+        "meta_description": "Find Trouble Brewing Coffee House at 514 Station Ave, Haddon Heights, NJ 08035, open seven days a week. Hours, parking, directions: (856) 617-6638.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "contact",
+        "title": "Contact & Catering | Trouble Brewing Coffee House",
+        "meta_description": "Call (856) 617-6638 or send a message to Trouble Brewing Coffee House in Haddon Heights, NJ: questions, feedback and catering inquiries.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "timeline",
+        "title": "Our Story So Far | Trouble Brewing Coffee House Timeline",
+        "meta_description": "From opening day on Friday the 13th, October 2017, to nine years on Station Ave: the milestones of Trouble Brewing Coffee House in Haddon Heights, NJ.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "reviews",
+        "title": "Reviews | Trouble Brewing Coffee House, Haddon Heights NJ",
+        "meta_description": "What neighbors say about Trouble Brewing Coffee House in Haddon Heights, NJ: real Google reviews of our coffee, breakfast and crew. Leave your own.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "gallery-wall",
+        "title": "The Gallery Wall | Trouble Brewing Coffee House",
+        "meta_description": "The green gallery wall at Trouble Brewing Coffee House: framed art, a gold fox and the curiosities that make our Haddon Heights café feel like home.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "troublemakers",
+        "title": "Meet the Troublemakers | Trouble Brewing Coffee House",
+        "meta_description": "Meet the Troublemakers, the crew pouring La Colombe coffee and making breakfast all day at Trouble Brewing Coffee House in Haddon Heights, NJ.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      },
+      {
+        "slug": "neighborhood",
+        "title": "Local Love: Station Ave Neighbors | Trouble Brewing",
+        "meta_description": "Our favorite Haddon Heights neighbors on Station Ave: Italian, empanadas, pizza, afternoon tea, flowers and local gifts. Shop small with Trouble Brewing.",
+        "updated_at": "2026-10-19T05:30:17.647418+00:00"
+      }
+    ],
+    "sections": [
+      {
+        "id": "25c2e499-777e-4cdb-b7e8-f547656539c4",
+        "page_slug": "menu",
+        "type": "cta",
+        "display_order": 2,
+        "data": {
+          "body": "Order ahead on SpotOn for pickup.",
+          "heading": "Ready to order?",
+          "button_url": "",
+          "button_label": "Order on SpotOn",
+          "secondary_url": "/gift-cards",
+          "secondary_label": "Buying for someone? Send a gift card"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T13:13:38.495449+00:00"
+      },
+      {
+        "id": "89328c42-77f2-42f2-a4f8-45b4107a3fe7",
+        "page_slug": "contact",
+        "type": "rich_text",
+        "display_order": 0,
+        "data": {
+          "heading": "Get in touch",
+          "body_markdown": "Questions, ideas, or planning something? Use the form below for general questions, or the catering form for events. We read every message."
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "d1867909-6245-4779-8d46-089b2f4972ac",
+        "page_slug": "community",
+        "type": "events_list",
+        "display_order": 0,
+        "data": {
+          "heading": "What's coming up"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "8267d640-badb-4cef-b1c4-c57d87095afe",
+        "page_slug": "community",
+        "type": "community_board",
+        "display_order": 1,
+        "data": {
+          "heading": "On the Community Board"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "f5a048fd-8766-4882-8b75-3cd29bdc09b8",
+        "page_slug": "community",
+        "type": "rich_text",
+        "display_order": 2,
+        "data": {
+          "heading": "Loyalty",
+          "body_markdown": "Regulars are the heart of this place. Ask a Troublemaker about our loyalty perks next time you're in. *(Full program details coming soon.)*"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "bb0c73fb-692e-479e-a0ba-1326d6f91d97",
+        "page_slug": "community",
+        "type": "instagram",
+        "display_order": 3,
+        "data": {
+          "embed_handle": "troublebrewingcoffee"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "5747b170-d232-41b9-968d-25ae0168a240",
+        "page_slug": "reviews",
+        "type": "reviews_hero",
+        "display_order": 0,
+        "data": {
+          "heading": "What the neighborhood says"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "9f471ecd-4189-4969-8eaa-99d77e0127ab",
+        "page_slug": "reviews",
+        "type": "testimonials_wall",
+        "display_order": 1,
+        "data": {
+          "layout": "masonry",
+          "heading": "A few of our favorites"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "624fc39c-78b2-42d3-a873-d6c5174c53b7",
+        "page_slug": "reviews",
+        "type": "google_reviews_feed",
+        "display_order": 2,
+        "data": {
+          "count": 5,
+          "heading": "Fresh from Google"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "4ae9f075-0469-498b-a29f-60b5634e0695",
+        "page_slug": "reviews",
+        "type": "review_cta",
+        "display_order": 3,
+        "data": {
+          "body": "We'd love to hear about it.",
+          "heading": "Been in lately?",
+          "button_label": "Leave a review on Google"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "2716087b-fb00-4ced-b894-3318255cea92",
+        "page_slug": "gallery-wall",
+        "type": "gallery_wall_room",
+        "display_order": 0,
+        "data": {
+          "hint": "Pick something off the wall",
+          "intro": "Every frame on this wall arrived some other way — found, gifted, or made by somebody who drinks here. Have a proper look at any of them.",
+          "heading": "The Gallery Wall",
+          "image_url": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-18T21:11:34.025314+00:00"
+      },
+      {
+        "id": "35410ae7-8ef8-4cb2-9368-f7a475882f57",
+        "page_slug": "menu",
+        "type": "menu_block",
+        "display_order": 1,
+        "data": {
+          "heading": "The Menu",
+          "categories": [
+            "espresso",
+            "specialty",
+            "food",
+            "pastry",
+            "seasonal"
+          ]
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:22:22.622933+00:00"
+      },
+      {
+        "id": "f03856e4-0fec-4608-9204-a9033464c882",
+        "page_slug": "neighborhood",
+        "type": "hero",
+        "display_order": 0,
+        "data": {
+          "cta_url": "",
+          "heading": "Local Love",
+          "cta_label": "",
+          "subheading": "The Haddon Heights spots we can't get enough of.",
+          "background_image_url": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "dd9365f0-136c-4e63-b5a6-e52d1a69cb0f",
+        "page_slug": "neighborhood",
+        "type": "local_businesses_grid",
+        "display_order": 1,
+        "data": {
+          "heading": "Our neighbors"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "0df6e2e3-fcdd-4169-ad8d-3b83404e86ae",
+        "page_slug": "neighborhood",
+        "type": "cta",
+        "display_order": 2,
+        "data": {
+          "body": "Tell us who we're missing.",
+          "heading": "Know a great local spot?",
+          "button_url": "/contact",
+          "button_label": "Send a suggestion"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "id": "66308780-2320-479d-8cf9-92a626c888bc",
+        "page_slug": "about",
+        "type": "photo_hero",
+        "display_order": 0,
+        "data": {
+          "layout": "framed",
+          "caption": "Inside 514 Station Ave",
+          "cta_url": "/menu",
+          "eyebrow": "Since Friday the 13th, October 2017",
+          "heading": "Our Story",
+          "cta_label": "See the Menu",
+          "image_alt": "Inside Trouble Brewing: the round brass sign of the top-hatted fox leaning against the counter between potted plants, under a white pressed-tin ceiling",
+          "image_url": "/images/pages/room-fox-sign.jpg",
+          "subheading": "From spreadsheets to steamed milk.",
+          "frame_style": "gilt-grand",
+          "secondary_url": "/location",
+          "secondary_label": "Plan a visit",
+          "background_image_url": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "f4d247c7-30df-4684-a204-2b116b2ead9a",
+        "page_slug": "gallery-wall",
+        "type": "gallery_pieces_grid",
+        "display_order": 1,
+        "data": {
+          "intro": "The same wall, photographed piece by piece. Where we know who made something, their name links to them.",
+          "heading": "The collection, close up"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-18T21:11:34.025314+00:00"
+      },
+      {
+        "id": "1f05d5b1-2f00-4d3d-8086-cdea6d522e86",
+        "page_slug": "about",
+        "type": "photo_story",
+        "display_order": 1,
+        "data": {
+          "tone": "paper",
+          "caption": "514 Station Ave",
+          "eyebrow": "Chapter one",
+          "heading": "Two bankers walk into a coffee shop",
+          "image_alt": "The front of Trouble Brewing Coffee House: a black door numbered 514 under the TROUBLE BREWING sign, with bistro chairs on the sidewalk",
+          "image_url": "/images/pages/storefront-door.jpg",
+          "inset_alt": "Close-up of the gallery wall: framed prints, a gold fox head, a pumpkin in an oval frame and a silhouette, all on sage green",
+          "inset_url": "/images/pages/wall-detail.jpg",
+          "image_side": "right",
+          "frame_style": "black-mat",
+          "inset_frame": "oval-gilt",
+          "body_markdown": "Tom and Cat spent years in mortgage banking before deciding the world needed one more genuinely good neighborhood coffee shop more than it needed two more bankers. Haddon Heights residents themselves, they opened Trouble Brewing at 514 Station Ave on **Friday the 13th of October, 2017** — about as on-brand an opening day as a shop called Trouble could ask for. It's been a warm, art-filled room where the coffee is serious and the vibe is not ever since."
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "709a390e-8eab-4bcd-8db5-85bbc38c0a2d",
+        "page_slug": "about",
+        "type": "photo_mosaic",
+        "display_order": 3,
+        "data": {
+          "tone": "sage",
+          "intro": "We partnered with **La Colombe** because great coffee shouldn't be complicated — it should be consistent, ethical, and delicious. That partnership is the foundation we build every drink on, alongside **Metolius** teas and breakfast served all day.",
+          "badges": [
+            "La Colombe coffee",
+            "Metolius tea"
+          ],
+          "images": [
+            {
+              "alt": "Espresso pouring from the machine into a small glass",
+              "url": "/images/pages/espresso-pull.jpg",
+              "caption": "Pulled to order"
+            },
+            {
+              "alt": "A latte with a leaf poured in the foam, in a black textured mug on a wooden table",
+              "url": "/images/pages/latte-art.jpg",
+              "caption": "Latte art"
+            },
+            {
+              "alt": "An Iced Matcha Latte: bright green matcha over milk in a tall glass, finished with a fresh strawberry",
+              "url": "/images/pages/iced-matcha.jpg",
+              "caption": "Iced Matcha Latte"
+            },
+            {
+              "alt": "Iced coffee and milk in a glass printed with the Trouble Brewing fox, with a bamboo lid and a glass straw",
+              "url": "/images/pages/iced-coffee-tb-glass.jpg",
+              "caption": "Iced, in a Trouble glass"
+            }
+          ],
+          "layout": "strip",
+          "eyebrow": "What we pour",
+          "heading": "Why La Colombe"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "3bc8651d-9089-4195-b595-8ba3412a5f21",
+        "page_slug": "about",
+        "type": "photo_story",
+        "display_order": 4,
+        "data": {
+          "tone": "paper",
+          "caption": "La Colombe to take home",
+          "eyebrow": "Chapter two",
+          "heading": "Why local matters",
+          "link_url": "/neighborhood",
+          "image_alt": "The shop corner: La Colombe coffee and Trouble Brewing tumblers on a black shelf, a Trouble Brewing long-sleeve under a gold fox head, and snacks on a wooden stand",
+          "image_url": "/images/pages/retail-corner.jpg",
+          "image_side": "left",
+          "link_label": "Meet our Station Ave neighbors",
+          "frame_style": "bronze-carved",
+          "body_markdown": "Independent shops are the connective tissue of a town. We buy local where we can, host our neighbors, and try to send everyone back out the door a little more caffeinated and a little more cared-for."
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "2ebfdb9d-1f1e-44d3-b481-81f4ca0c48f0",
+        "page_slug": "about",
+        "type": "pull_quote",
+        "display_order": 2,
+        "data": {
+          "quote": "This shop is cozy, clearly loved by locals, and has plenty of seating without feeling overcrowded. Chosen decor includes foxes and mushrooms and adds the right touch of whimsy.",
+          "source": "Google review",
+          "attribution": "Hazel Stjernelys"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "118c293f-a84b-4847-9a7b-a138dae8adf2",
+        "page_slug": "about",
+        "type": "photo_mosaic",
+        "display_order": 5,
+        "data": {
+          "tone": "paper",
+          "intro": "The green-walled, art-covered room our regulars call a second home.",
+          "images": [
+            {
+              "alt": "A corner of the gallery wall — gilt and black frames and a gold fox head — above the self-serve station with dried flowers, cups and sweeteners",
+              "url": "/images/pages/wall-and-bar.jpg"
+            },
+            {
+              "alt": "Behind the counter: a chalkboard of seasonal drinks beside the espresso machine, stacks of cups, and the big menu board on the wall",
+              "url": "/images/pages/chalkboard-counter.jpg"
+            },
+            {
+              "alt": "A fox-shaped planter with a spider plant on the counter, with the seating area and green walls of the shop beyond",
+              "url": "/images/pages/fox-planter.jpg"
+            },
+            {
+              "alt": "The counter: a pastry case full of muffins, scones and croissants under a hand-lettered bakery chalkboard and a gold TB sign",
+              "url": "/images/pages/pastry-counter.jpg"
+            },
+            {
+              "alt": "More of the gallery wall: framed sketches, a small red cross-stitch and black-and-white photographs on the green wall",
+              "url": "/images/pages/wall-corner.jpg"
+            }
+          ],
+          "layout": "salon",
+          "heading": "Have a look around"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "ee276b13-050d-4d6a-8d56-78561eb25973",
+        "page_slug": "about",
+        "type": "cta",
+        "display_order": 6,
+        "data": {
+          "body": "Breakfast is served all day. Order ahead on SpotOn and we’ll have it ready — or come in and stay a while.",
+          "eyebrow": "514 Station Ave · Haddon Heights",
+          "heading": "Pull up a chair",
+          "image_alt": "A scone on a black plate and a warm drink in a glass mug, set on a hardback book",
+          "image_url": "/images/pages/scone-on-a-book.jpg",
+          "button_url": "",
+          "frame_style": "gold-botanical",
+          "button_label": "Order Now",
+          "secondary_url": "/location",
+          "secondary_label": "Hours & directions"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "b1db39e0-d1b7-4321-bb4c-f58c02847f51",
+        "page_slug": "events",
+        "type": "photo_hero",
+        "display_order": 0,
+        "data": {
+          "focus": "center 40%",
+          "layout": "full",
+          "cta_url": "/contact",
+          "heading": "Events & Community",
+          "cta_label": "Host an event",
+          "image_alt": "A fox-shaped planter with a spider plant on the counter, with the seating area and green walls of the shop beyond",
+          "image_url": "/images/pages/fox-planter.jpg",
+          "subheading": "There's always something brewing.",
+          "background_image_url": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "5c83ae2e-d6a1-41fa-b0db-50d63410a848",
+        "page_slug": "home",
+        "type": "featured_drink",
+        "display_order": 3,
+        "data": {
+          "heading": "This Week's Trouble"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.463851+00:00"
+      },
+      {
+        "id": "35f59600-0aee-4782-8130-20939d3efd67",
+        "page_slug": "menu",
+        "type": "food_showcase",
+        "display_order": 0,
+        "data": {},
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:22:22.61104+00:00"
+      },
+      {
+        "id": "b2044fb6-c151-487c-ab35-e7b149e89230",
+        "page_slug": "home",
+        "type": "food_showcase",
+        "display_order": 1,
+        "data": {},
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.467077+00:00"
+      },
+      {
+        "id": "7c653bb6-8c13-43cd-b5d7-6d31a5dd079d",
+        "page_slug": "home",
+        "type": "cta",
+        "display_order": 6,
+        "data": {
+          "body": "Order ahead on SpotOn and we'll have it ready.",
+          "heading": "Skip the line",
+          "button_url": "",
+          "button_label": "Order Now"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.469925+00:00"
+      },
+      {
+        "id": "f4dcab9e-ad58-40a9-97d5-55b9cebee9b0",
+        "page_slug": "home",
+        "type": "social_proof",
+        "display_order": 2,
+        "data": {
+          "label": "Loved by the neighborhood"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.469247+00:00"
+      },
+      {
+        "id": "9d18922c-fc99-41ff-9dd5-bbbbf618cca8",
+        "page_slug": "home",
+        "type": "hours",
+        "display_order": 5,
+        "data": {
+          "heading": "Today at Trouble Brewing"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.458651+00:00"
+      },
+      {
+        "id": "ad00a1e8-b8ff-4597-9f3e-d49525ec98d3",
+        "page_slug": "home",
+        "type": "intro_duo",
+        "display_order": 7,
+        "data": {
+          "body_a": "We pull serious espresso, press paninis to order, and turn out warm brioche breakfast sandwiches, fresh-baked scones, and specialty drinks worth the trip — plus gluten-free and vegan options. Breakfast is served all day.",
+          "body_b": "Come for an event, meet the Troublemakers behind the counter, or just sink into the green-walled, art-covered room our regulars call a second home. That's the good kind of Trouble.",
+          "heading_a": "Good coffee, real food",
+          "heading_b": "More than a coffee shop"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.460387+00:00"
+      },
+      {
+        "id": "92d4a621-7e7d-4aa2-bb5c-917b9d95dfb3",
+        "page_slug": "home",
+        "type": "signature_drinks",
+        "display_order": 4,
+        "data": {
+          "heading": "Signature sips",
+          "button_label": "See the full menu"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.458651+00:00"
+      },
+      {
+        "id": "71a62ce6-886a-40f1-b9a6-2831cf19a1fe",
+        "page_slug": "home",
+        "type": "newsletter",
+        "display_order": 9,
+        "data": {
+          "body": "New drinks, events, and the occasional bit of Trouble — straight to your inbox.",
+          "heading": "Stay in the loop",
+          "mailchimp_action_url": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.462797+00:00"
+      },
+      {
+        "id": "defee90b-0cc5-4da6-b1f0-73fac20559ab",
+        "page_slug": "home",
+        "type": "instagram",
+        "display_order": 8,
+        "data": {
+          "embed_handle": "troublebrewingcoffee"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.461077+00:00"
+      },
+      {
+        "id": "3ed1b5a8-ad35-4553-b056-acfadc0d85a9",
+        "page_slug": "home",
+        "type": "gallery_wall_hero",
+        "display_order": 0,
+        "data": {
+          "frames": [
+            {
+              "link": "/menu",
+              "label": "Order / Menu",
+              "image_url": "images/wall/order-menu.jpg",
+              "frame_style": "gilt-grand"
+            },
+            {
+              "link": "/troublemakers",
+              "label": "The Troublemakers",
+              "image_url": "images/wall/troublemakers.jpg",
+              "frame_style": "black-stacked"
+            },
+            {
+              "link": "/gallery-wall",
+              "label": "The Gallery Wall",
+              "image_url": "images/wall/gallery-wall.jpg",
+              "frame_style": "gold-tapestry"
+            },
+            {
+              "link": "/events",
+              "label": "Events",
+              "image_url": "images/wall/whats-on.jpg",
+              "frame_style": "oval-black"
+            },
+            {
+              "link": "/neighborhood",
+              "label": "Local Love",
+              "image_url": "images/wall/local-love.jpg",
+              "frame_style": "gold-botanical"
+            },
+            {
+              "link": "/reviews",
+              "label": "Reviews",
+              "image_url": "images/wall/reviews.jpg",
+              "frame_style": "oval-gilt"
+            },
+            {
+              "link": "/timeline",
+              "label": "The Journey",
+              "image_url": "images/wall/our-story-so-far.jpg",
+              "frame_style": "bronze-carved"
+            },
+            {
+              "link": "/about",
+              "label": "Our Story",
+              "image_url": "images/wall/our-story.jpg",
+              "frame_style": "brass-chain"
+            }
+          ],
+          "heading": "Welcome to Trouble Brewing",
+          "subheading": "A whole wall of reasons to stop in.",
+          "specials_link": "/menu#specials",
+          "specials_label": "Current Drink Specials"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T01:24:02.468066+00:00"
+      },
+      {
+        "id": "248b9aea-48dc-411e-8bbe-448c97f40bac",
+        "page_slug": "events",
+        "type": "events_list",
+        "display_order": 1,
+        "data": {
+          "heading": "Upcoming at Trouble Brewing",
+          "show_past": true,
+          "past_heading": "Lately at Trouble",
+          "empty_message": "New events go up here as soon as they’re planned — check back soon, or follow along on Instagram.",
+          "empty_image_alt": "A corner of the gallery wall — gilt and black frames and a gold fox head — above the self-serve station with dried flowers, cups and sweeteners",
+          "empty_image_url": "/images/pages/wall-and-bar.jpg",
+          "instagram_handle": "troublebrewingcoffee"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "07fdb2bd-9b47-478b-b99e-336545bc7c2a",
+        "page_slug": "events",
+        "type": "cta",
+        "display_order": 2,
+        "data": {
+          "body": "Showers, meetings, small parties — our space is yours. Tell us what you're planning.",
+          "eyebrow": "Catering & private gatherings",
+          "heading": "Want to host something?",
+          "image_alt": "Sandwiches and chips on white plates across a wooden table, seen from above",
+          "image_url": "/images/pages/table-spread.jpg",
+          "button_url": "/contact",
+          "frame_style": "black-mat",
+          "button_label": "Start a catering inquiry",
+          "secondary_url": "tel:+18566176638",
+          "secondary_label": "Call (856) 617-6638"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "17e9bfb4-4074-47c4-b5a6-914222f13070",
+        "page_slug": "location",
+        "type": "cta",
+        "display_order": 7,
+        "data": {
+          "body": "Questions? Give us a call.",
+          "heading": "Come say hi",
+          "button_url": "tel:+18566176638",
+          "button_label": "Call (856) 617-6638"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "6f1e1919-b01e-4d1c-8c9a-de947bef5dbf",
+        "page_slug": "location",
+        "type": "visit_panel",
+        "display_order": 1,
+        "data": {
+          "address": "514 Station Ave, Haddon Heights, NJ 08035",
+          "heading": "Find us",
+          "embed_url": "",
+          "phone_url": "tel:+18566176638",
+          "phone_label": "Call (856) 617-6638",
+          "hours_heading": "Hours",
+          "directions_label": "Get directions"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "60419b03-092a-46cf-a4f4-407dfd1a835c",
+        "page_slug": "location",
+        "type": "hours",
+        "display_order": 2,
+        "data": {
+          "heading": "Hours"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": false,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "5c9cea42-24f4-49d3-a1e9-9556ef9a9f98",
+        "page_slug": "location",
+        "type": "photo_hero",
+        "display_order": 0,
+        "data": {
+          "focus": "center 60%",
+          "layout": "full",
+          "cta_url": "https://maps.google.com/maps?q=514%20Station%20Ave%2C%20Haddon%20Heights%2C%20NJ%2008035",
+          "eyebrow": "514 Station Ave · Haddon Heights, NJ",
+          "heading": "Look for the black door at 514",
+          "cta_label": "Get directions",
+          "image_alt": "The white panelled shopfront of Trouble Brewing Coffee House on Station Ave — black door, big windows, the TROUBLE BREWING sign above and bistro tables out front",
+          "image_url": "/images/pages/storefront-wide.jpg",
+          "subheading": "Find us on Station Ave. Pull up a chair and stay a while.",
+          "secondary_url": "tel:+18566176638",
+          "secondary_label": "Call (856) 617-6638"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "6769d598-2a44-4911-a227-e3e7f9e551d7",
+        "page_slug": "location",
+        "type": "rich_text",
+        "display_order": 3,
+        "data": {
+          "heading": "Parking",
+          "variant": "note",
+          "body_markdown": "Street parking is available out front, plus a **lot behind the coffee house**. Enter from White Horse Pike or Atlantic Ave."
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "b8e822aa-f299-4708-a2ef-39a6e1e6d0c5",
+        "page_slug": "location",
+        "type": "photo_story",
+        "display_order": 4,
+        "data": {
+          "tone": "sage",
+          "caption": "Station Ave",
+          "eyebrow": "The neighborhood",
+          "heading": "On Station Ave",
+          "link_url": "/neighborhood",
+          "image_alt": "Station Ave on a sunny day: Trouble Brewing’s black awning between Anthony’s and Lula’s, behind leafy street trees and parked cars",
+          "image_url": "/images/pages/station-ave-street.jpg",
+          "inset_alt": "The front of Trouble Brewing Coffee House: a black door numbered 514 under the TROUBLE BREWING sign, with bistro chairs on the sidewalk",
+          "inset_url": "/images/pages/storefront-door.jpg",
+          "image_side": "left",
+          "link_label": "Walk the block with Local Love",
+          "frame_style": "gilt-thin",
+          "inset_frame": "oval-black",
+          "body_markdown": "We're at 514, between Anthony's Creative Italian Cuisine at 512 and Lula's Empanadas at 516 — a short stroll from Ralph's Pizza, South Jersey Special, Jane's Tea House and April Robin Florist. Make an afternoon of it."
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "6c1e80bd-220d-4e32-b18a-74a71af18497",
+        "page_slug": "location",
+        "type": "photo_story",
+        "display_order": 5,
+        "data": {
+          "tone": "paper",
+          "caption": "The counter",
+          "eyebrow": "Once you’re in",
+          "heading": "Step inside",
+          "image_alt": "The counter: a pastry case full of muffins, scones and croissants under a hand-lettered bakery chalkboard and a gold TB sign",
+          "image_url": "/images/pages/pastry-counter.jpg",
+          "inset_alt": "Behind the counter: a chalkboard of seasonal drinks beside the espresso machine, stacks of cups, and the big menu board on the wall",
+          "inset_url": "/images/pages/chalkboard-counter.jpg",
+          "image_side": "right",
+          "frame_style": "gilt-grand",
+          "inset_frame": "black-flat",
+          "body_markdown": "Order at the counter: the pastry case is right there and the drinks are up on the chalkboard. Breakfast is served all day, and there are gluten-free and vegan options too. Then grab a seat under the gallery wall."
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "1bef6bc6-ef00-44fb-a9f9-3d2a0ee18c38",
+        "page_slug": "location",
+        "type": "cta",
+        "display_order": 6,
+        "data": {
+          "body": "Order ahead on SpotOn and we'll have it ready.",
+          "eyebrow": "In a hurry?",
+          "heading": "Skip the line",
+          "image_alt": "A crumb-topped muffin on a pink plate beside an iced pink-and-orange drink in a Trouble Brewing glass",
+          "image_url": "/images/pages/muffin-and-refresher.jpg",
+          "button_url": "",
+          "frame_style": "gold-botanical",
+          "button_label": "Order ahead",
+          "secondary_url": "/menu",
+          "secondary_label": "See the menu"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "fea7e438-cbcc-42b7-9924-dc6aecc63ef6",
+        "page_slug": "troublemakers",
+        "type": "photo_hero",
+        "display_order": 0,
+        "data": {
+          "layout": "framed",
+          "caption": "Where the Trouble happens",
+          "cta_url": "",
+          "eyebrow": "Behind the counter",
+          "heading": "The Troublemakers",
+          "cta_label": "",
+          "image_alt": "Behind the counter: a chalkboard of seasonal drinks beside the espresso machine, stacks of cups, and the big menu board on the wall",
+          "image_url": "/images/pages/chalkboard-counter.jpg",
+          "subheading": "The people behind your coffee.",
+          "frame_style": "black-stacked",
+          "background_image_url": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "30c1713b-772a-4bbc-b74f-dd39ecf91aad",
+        "page_slug": "troublemakers",
+        "type": "troublemakers_grid",
+        "display_order": 1,
+        "data": {
+          "heading": "Meet the team"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "118469df-03d1-4f05-b593-2e358c1cb43b",
+        "page_slug": "troublemakers",
+        "type": "pull_quote",
+        "display_order": 2,
+        "data": {
+          "quote": "Their staff are fantastic. I love chatting with them every time I go in.",
+          "source": "Google review",
+          "attribution": "Heather Roth"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "3c8396e4-8999-4bd6-8a0c-447e1132d059",
+        "page_slug": "troublemakers",
+        "type": "cta",
+        "display_order": 3,
+        "data": {
+          "body": "It's the question they answer all day — and they'll have your usual down by the third visit.",
+          "heading": "Ask them what to order",
+          "image_alt": "A latte with a leaf poured in the foam, in a black textured mug on a wooden table",
+          "image_url": "/images/pages/latte-art.jpg",
+          "button_url": "/menu",
+          "frame_style": "oval-gilt",
+          "button_label": "See the menu",
+          "secondary_url": "",
+          "secondary_label": "Order Now"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "f6bcb2bb-7049-4132-b7f5-df95b020788d",
+        "page_slug": "timeline",
+        "type": "photo_hero",
+        "display_order": 0,
+        "data": {
+          "focus": "50% 90%",
+          "layout": "framed",
+          "caption": "The gallery wall",
+          "cta_url": "",
+          "eyebrow": "Since 2017",
+          "heading": "Our Story So Far",
+          "cta_label": "",
+          "image_alt": "Close-up of the gallery wall: framed prints, a gold fox head, a pumpkin in an oval frame and a silhouette, all on sage green",
+          "image_url": "/images/pages/wall-detail.jpg",
+          "subheading": "A few of the moments that made Trouble.",
+          "frame_style": "bronze-carved",
+          "background_image_url": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "751c6b54-49cf-4142-8d0b-4ca5be8656cc",
+        "page_slug": "timeline",
+        "type": "timeline_grid",
+        "display_order": 1,
+        "data": {
+          "heading": "The Trouble Brewing timeline",
+          "end_label": "…and counting",
+          "fill_images": [
+            {
+              "alt": "The white panelled shopfront of Trouble Brewing Coffee House on Station Ave — black door, big windows, the TROUBLE BREWING sign above and bistro tables out front",
+              "url": "/images/pages/storefront-wide.jpg"
+            },
+            {
+              "alt": "A fox-shaped planter with a spider plant on the counter, with the seating area and green walls of the shop beyond",
+              "url": "/images/pages/fox-planter.jpg"
+            },
+            {
+              "alt": "Behind the counter: a chalkboard of seasonal drinks beside the espresso machine, stacks of cups, and the big menu board on the wall",
+              "url": "/images/pages/chalkboard-counter.jpg"
+            },
+            {
+              "alt": "A corner of the gallery wall — gilt and black frames and a gold fox head — above the self-serve station with dried flowers, cups and sweeteners",
+              "url": "/images/pages/wall-and-bar.jpg"
+            }
+          ],
+          "fill_caption": "The shop today"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "e3e6c85d-dc13-4843-994b-b2b441b05252",
+        "page_slug": "timeline",
+        "type": "cta",
+        "display_order": 2,
+        "data": {
+          "body": "Pull up a chair at 514 Station Ave and stay a while.",
+          "heading": "Come be part of the next chapter",
+          "image_alt": "Inside Trouble Brewing: the round brass sign of the top-hatted fox leaning against the counter between potted plants, under a white pressed-tin ceiling",
+          "image_url": "/images/pages/room-fox-sign.jpg",
+          "button_url": "/location",
+          "frame_style": "gilt-thin",
+          "button_label": "Plan a visit",
+          "secondary_url": "/about",
+          "secondary_label": "Read our story"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T05:51:23.76545+00:00"
+      },
+      {
+        "id": "5b735318-b4de-44d7-8d66-be58a9b13c21",
+        "page_slug": "gift-cards",
+        "type": "gift_cards",
+        "display_order": 0,
+        "data": {
+          "intro": "For the regular, the early riser, the friend who could use a good morning: send a Trouble Brewing e-gift card straight to their inbox.",
+          "eyebrow": "Gift cards",
+          "heading": "Give someone Trouble",
+          "button_url": "",
+          "show_phone": true,
+          "button_label": "Buy an e-gift card",
+          "how_it_works": "Pick an amount, add a note, and we'll email it.",
+          "occasion_1_art": "cake",
+          "occasion_2_art": "thanks",
+          "occasion_3_art": "apple",
+          "occasion_4_art": "fox",
+          "occasions_hint": "Tap a card to send one.",
+          "occasion_1_note": "Another lap around the sun calls for a latte.",
+          "occasion_2_note": "For the neighbor, the sitter, the one who always shows up.",
+          "occasion_3_note": "Fuel for the people grading papers before first bell.",
+          "occasion_4_note": "No occasion needed. That’s the best kind of Trouble.",
+          "occasion_1_label": "Birthday",
+          "occasion_2_label": "Thank you",
+          "occasion_3_label": "Teacher gift",
+          "occasion_4_label": "Just because",
+          "occasions_heading": "A little Trouble for…"
+        },
+        "draft_data": null,
+        "status": "published",
+        "visible": true,
+        "updated_at": "2026-10-19T13:13:38.495449+00:00"
+      }
+    ],
+    "menu_items": [
+      {
+        "id": "b04d40ad-81b2-4ca0-b17f-476671d99188",
+        "name": "Hot Apple Cider",
+        "description": "",
+        "price": 3.25,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 210,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:13.764289+00:00"
+      },
+      {
+        "id": "fd0f9ce2-78b7-4f5a-b70d-2767f91773b8",
+        "name": "Croissant",
+        "description": "Buttery, flaky, baked-fresh.",
+        "price": 3.75,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 230,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:13.945498+00:00"
+      },
+      {
+        "id": "c6ce70b2-4d79-4f93-9c9f-b49e05fae9c7",
+        "name": "Danish",
+        "description": "",
+        "price": 3.95,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 240,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:14.009765+00:00"
+      },
+      {
+        "id": "eca18ac5-4984-4b53-b10a-2fdd0eb17fe0",
+        "name": "Hot Latte",
+        "description": "",
+        "price": 4,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370568439-hot-latte-cutout.webp",
+        "available": true,
+        "display_order": 20,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:43:07.598519+00:00"
+      },
+      {
+        "id": "1a99742e-024a-420c-b4ec-c230c15a1af0",
+        "name": "Sweet Bread",
+        "description": "",
+        "price": 3.01,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 260,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:14.138544+00:00"
+      },
+      {
+        "id": "01361828-34d5-4f1e-ab11-d1a34480f7fd",
+        "name": "Espresso",
+        "description": "",
+        "price": 2.75,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 50,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:43.934579+00:00"
+      },
+      {
+        "id": "e074e7ad-295a-410b-b70f-8a0c5c9fb487",
+        "name": "Flat White",
+        "description": "",
+        "price": 3.45,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 70,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:43.934579+00:00"
+      },
+      {
+        "id": "77eae551-a2ba-4be4-bb6a-802cb48342b3",
+        "name": "Cortado",
+        "description": "",
+        "price": 3.45,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 80,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:43.934579+00:00"
+      },
+      {
+        "id": "26fddccb-a049-4743-b731-e76594288c0d",
+        "name": "Machiatto",
+        "description": "",
+        "price": 3.45,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 90,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:43.934579+00:00"
+      },
+      {
+        "id": "d4b86aab-ee32-4b4d-82f4-f8492c5f9c3a",
+        "name": "Pup Cup!",
+        "description": "",
+        "price": null,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 100,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:43.934579+00:00"
+      },
+      {
+        "id": "51a3d64c-57f7-480d-88c4-ae24b5b9db09",
+        "name": "Frappe - 16oz",
+        "description": "Vanilla or Cookies n Creme (non-caffeinated)",
+        "price": 6,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 110,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:43.934579+00:00"
+      },
+      {
+        "id": "2dcda96f-df53-466c-8980-c495949110f5",
+        "name": "Milk Steamer",
+        "description": "",
+        "price": 2.85,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 200,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:43.934579+00:00"
+      },
+      {
+        "id": "af9849f4-09bc-49c9-9cb6-039f02bd0d72",
+        "name": "Brownie",
+        "description": "",
+        "price": 3.25,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 270,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:14.201158+00:00"
+      },
+      {
+        "id": "a8cdc725-29c3-4def-a3e9-1cccaf4fec7b",
+        "name": "Cake Pop",
+        "description": "",
+        "price": 3.85,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 280,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:14.271208+00:00"
+      },
+      {
+        "id": "56baafc4-47cd-4b1d-95e0-a6279ab5a4fa",
+        "name": "Caramel Apple Crumbcake",
+        "description": "",
+        "price": 3.75,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 290,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:14.333935+00:00"
+      },
+      {
+        "id": "8ceb4291-b5e0-4d43-bb24-bd91aceceb36",
+        "name": "Crumbcake",
+        "description": "",
+        "price": 3.6,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 300,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-26T13:43:14.410723+00:00"
+      },
+      {
+        "id": "9d671a92-c0a0-4d0c-ac25-2493874ac96a",
+        "name": "Hot Turmeric Latte",
+        "description": "",
+        "price": 4.55,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370636547-hot-turmeric-latte-cutout.webp",
+        "available": true,
+        "display_order": 180,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:43:57.34156+00:00"
+      },
+      {
+        "id": "3575d9ec-945a-4754-bef4-03177c1db532",
+        "name": "Ricotta Toast",
+        "description": "Whipped Ricotta on toasted rye topped with your choice of...",
+        "price": 7.25,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370677175-ricotta-toast-cutout.webp",
+        "available": true,
+        "display_order": 340,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:44:38.007073+00:00"
+      },
+      {
+        "id": "5a1282a5-88f0-4b5e-81b9-a3fb8db9984d",
+        "name": "The B.L.T",
+        "description": "The B is hot and crispy, the L is cold and crispy and the T is Jersey grown. Served on lightly toasted seedless rye bread.",
+        "price": 13.35,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370719710-the-b-l-t-cutout.webp",
+        "available": true,
+        "display_order": 430,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:45:20.459052+00:00"
+      },
+      {
+        "id": "1c4c1a3d-ba11-4379-b609-257fed537b78",
+        "name": "Muffin",
+        "description": "",
+        "price": 4.35,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370736476-muffin-cutout.webp",
+        "available": true,
+        "display_order": 250,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:45:37.202336+00:00"
+      },
+      {
+        "id": "51124469-ce69-4491-9abe-8d13f3c0e4c0",
+        "name": "Oatmeal",
+        "description": "",
+        "price": 3.65,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 360,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-02T15:39:00.463739+00:00"
+      },
+      {
+        "id": "2a4349e2-cdda-47dd-86ec-dbf87e975486",
+        "name": "Side Hashbrown",
+        "description": "",
+        "price": 1.75,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 350,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-02T15:39:00.341282+00:00"
+      },
+      {
+        "id": "a8b4a6b5-336c-4091-a9f7-86af7e6510e5",
+        "name": "Banana Split Coffee",
+        "description": "Our signature: a playful, dessert-inspired coffee you can't get anywhere else.",
+        "price": 6.5,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 2,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:44.275261+00:00"
+      },
+      {
+        "id": "f0d8bb2b-744f-4132-80b5-5eb524a9df61",
+        "name": "Coffee Flight",
+        "description": "A tasting flight to explore what La Colombe can do.",
+        "price": 9,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 3,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:44.556852+00:00"
+      },
+      {
+        "id": "fd67fe69-42cf-4ee4-abb5-307eaaeca214",
+        "name": "Brioche Breakfast Sandwich",
+        "description": "Egg and cheese on soft brioche. Add pork roll or bacon.",
+        "price": 7.5,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 5,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:44.68464+00:00"
+      },
+      {
+        "id": "6ff4e70f-7092-44ae-b28d-49c69571e727",
+        "name": "Buffalo Chicken Panini",
+        "description": "Spicy three-cheese, Frank's RedHot, fire-braised chicken on seeded rye.",
+        "price": 11,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 7,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:44.820898+00:00"
+      },
+      {
+        "id": "0b3f083c-7c64-451e-8edc-59928343353e",
+        "name": "Cranberry Walnut Chicken Salad Panini",
+        "description": "Our most popular — cranberry walnut chicken salad, pressed warm.",
+        "price": 11,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 8,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:44.947418+00:00"
+      },
+      {
+        "id": "b24fa5e4-b474-480e-be20-9c20c5e34645",
+        "name": "BLT",
+        "description": "Bacon, lettuce, tomato on seeded rye.",
+        "price": 9.5,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 9,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:45.067217+00:00"
+      },
+      {
+        "id": "7503dc76-d1e6-46ef-b6d1-f5669010dea7",
+        "name": "Gluten-Free Cookie",
+        "description": "All the cookie, none of the gluten.",
+        "price": 3.25,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": false,
+        "display_order": 10,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:45.187187+00:00"
+      },
+      {
+        "id": "83fe8345-11b9-47ad-88e3-a9dcc5095740",
+        "name": "Vegan Cookie",
+        "description": "Plant-based and genuinely good.",
+        "price": 3.25,
+        "category": "pastry",
+        "dietary_flags": [
+          "vegan"
+        ],
+        "image_url": null,
+        "available": false,
+        "display_order": 11,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T10:04:45.319694+00:00"
+      },
+      {
+        "id": "c2aea4e1-1e5f-4d27-8ded-96a81f93864c",
+        "name": "Drip Coffee",
+        "description": "",
+        "price": 2.65,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 10,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:55.187521+00:00"
+      },
+      {
+        "id": "4064de74-2989-46b3-8872-f82fd93cbdda",
+        "name": "Hot Americano",
+        "description": "",
+        "price": 2.75,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 40,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:55.692286+00:00"
+      },
+      {
+        "id": "165b6f5a-c1c4-4772-97fb-fd39492c80fd",
+        "name": "Cafe Au Lait",
+        "description": "",
+        "price": 3,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 60,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:55.836692+00:00"
+      },
+      {
+        "id": "6f3174a7-4067-43e3-bba7-9ddd5b964fff",
+        "name": "Frozen Chai",
+        "description": "",
+        "price": 5.25,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 120,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:55.94963+00:00"
+      },
+      {
+        "id": "2bbbb01e-0f8b-452e-b2e0-afc1a0b3dc94",
+        "name": "Frozen Coffee",
+        "description": "",
+        "price": 5.25,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 130,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:56.068419+00:00"
+      },
+      {
+        "id": "cc789030-dc1b-4a4c-a64d-614c8b5b0941",
+        "name": "Hot Tea",
+        "description": "",
+        "price": 2.75,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 140,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:56.190881+00:00"
+      },
+      {
+        "id": "625fc4b6-1ef1-41c9-bf78-f702162a4141",
+        "name": "Hot Chai Latte",
+        "description": "",
+        "price": 4.25,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 150,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:56.315634+00:00"
+      },
+      {
+        "id": "8f83c519-2c91-4696-8130-2585619c9571",
+        "name": "Hot Matcha Latte",
+        "description": "",
+        "price": 4.75,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 160,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:56.417982+00:00"
+      },
+      {
+        "id": "13e47420-b57d-472d-81de-ccce97a89546",
+        "name": "Hot London Fog",
+        "description": "",
+        "price": 3.75,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 170,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-11T13:50:56.526922+00:00"
+      },
+      {
+        "id": "a2506ae3-19e7-4591-bcfc-26fed80c6e05",
+        "name": "Caramel Pretzel Choc Chip (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": false,
+        "display_order": 820,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-07T16:17:07.576163+00:00"
+      },
+      {
+        "id": "cbb27796-66ee-4f3c-8537-8e13ae16ec91",
+        "name": "Dark Choc Sandwich (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": true,
+        "display_order": 860,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-11T15:31:59.482898+00:00"
+      },
+      {
+        "id": "7500d32c-7c56-40a9-be64-e3bd73275bcb",
+        "name": "Chickpea Pesto Chicken Salad",
+        "description": "",
+        "price": 14.35,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 390,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-12T18:51:20.011282+00:00"
+      },
+      {
+        "id": "87f89ea2-4a4a-463c-b9f2-d903e081fd54",
+        "name": "Grilled Cheese",
+        "description": "(+add tomato, + add bacon)",
+        "price": 11.25,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 420,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:34.457698+00:00"
+      },
+      {
+        "id": "19869a22-9fdd-4dc7-8cb0-e895198f1c4d",
+        "name": "Bagel/Breakfast Sandwich",
+        "description": "",
+        "price": 2.1,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 320,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-27T14:39:29.063564+00:00"
+      },
+      {
+        "id": "d94d4571-2a1d-45d8-86a1-36acad47ffd1",
+        "name": "Bottled Water",
+        "description": "",
+        "price": 1.75,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 440,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:34.723124+00:00"
+      },
+      {
+        "id": "21fc8421-512f-46e1-8574-b84fa900b076",
+        "name": "Pizza Bagel",
+        "description": "",
+        "price": 3.28,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 310,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-27T14:39:28.950671+00:00"
+      },
+      {
+        "id": "d97308ab-78e5-4d6f-8680-809746ba78df",
+        "name": "No Bread Breakfast Sandwich",
+        "description": "",
+        "price": 2.1,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 330,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-27T14:39:29.140454+00:00"
+      },
+      {
+        "id": "d0e528de-749c-464f-baa7-a9953ed35bd3",
+        "name": "San Pellegrino",
+        "description": "",
+        "price": 2.76,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 450,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:34.868223+00:00"
+      },
+      {
+        "id": "057169d9-c9b3-4c9b-8e11-f71b11f83c55",
+        "name": "Iced Chai Latte",
+        "description": "Spiced chai over ice with milk — cozy, even cold.",
+        "price": 4.75,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 730,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.929232+00:00"
+      },
+      {
+        "id": "1405b817-71ad-4124-b93f-b698df18328e",
+        "name": "Iced Apple Cider",
+        "description": "",
+        "price": 3.25,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 790,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:39.744336+00:00"
+      },
+      {
+        "id": "950d9fae-9bcf-4be1-a0f4-a484c7f8adae",
+        "name": "Cappuccino",
+        "description": "La Colombe espresso and steamed milk, balanced and classic.",
+        "price": 4,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370605242-cappuccino-cutout.webp",
+        "available": true,
+        "display_order": 30,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:43:29.099877+00:00"
+      },
+      {
+        "id": "33f54b3d-ef72-49de-9bd1-6b88bb392624",
+        "name": "Hot Chocolate",
+        "description": "",
+        "price": 3.25,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370644861-hot-chocolate-cutout.webp",
+        "available": true,
+        "display_order": 190,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:44:05.558763+00:00"
+      },
+      {
+        "id": "b0a7f7ab-a580-42c1-8b99-0c34fd30def2",
+        "name": "Iced Matcha Latte",
+        "description": "",
+        "price": 5.25,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370652789-iced-matcha-latte-cutout.webp",
+        "available": true,
+        "display_order": 740,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:44:14.173492+00:00"
+      },
+      {
+        "id": "adeab6e1-f2e3-43c3-b40b-7bb1fb1789e0",
+        "name": "Lemonade",
+        "description": "",
+        "price": 2.8,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370661597-lemonade-cutout.webp",
+        "available": true,
+        "display_order": 780,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:44:22.431138+00:00"
+      },
+      {
+        "id": "d3cf97fb-dc44-4525-8468-df35773db6b3",
+        "name": "Refreshers",
+        "description": "",
+        "price": 4.2,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370669413-refreshers-cutout.webp",
+        "available": true,
+        "display_order": 800,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:44:30.242362+00:00"
+      },
+      {
+        "id": "dd1d15d7-494a-48b2-ac95-39921cac6d57",
+        "name": "Caprese Melt",
+        "description": "Basil pesto, tomato, cheese, balsamic glaze",
+        "price": 13.25,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370693003-caprese-melt-cutout.webp",
+        "available": true,
+        "display_order": 380,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:44:54.468813+00:00"
+      },
+      {
+        "id": "a9ff1130-adb3-4d22-b315-620c06618701",
+        "name": "Chicken Bacon Ranch Melt",
+        "description": "Shredded ranch chicken, bacon, tomato and cheese",
+        "price": 14.35,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370701933-chicken-bacon-ranch-melt-cutout.webp",
+        "available": true,
+        "display_order": 400,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:45:03.27839+00:00"
+      },
+      {
+        "id": "55ef8c85-e79c-4644-b271-3a75aa7f43a6",
+        "name": "Cranberry Walnut Chicken Salad",
+        "description": "Our house made cranberry walnut chicken salad is our most popular sandwich, try it and you'll see why",
+        "price": 13.35,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370711353-cranberry-walnut-chicken-salad-cutout.webp",
+        "available": true,
+        "display_order": 410,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:45:12.370543+00:00"
+      },
+      {
+        "id": "2eb7658d-542e-45f6-97bc-d6a6434c8c5d",
+        "name": "Iced Latte",
+        "description": "",
+        "price": 4.5,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370746442-iced-latte-cutout.webp",
+        "available": true,
+        "display_order": 650,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:45:47.18353+00:00"
+      },
+      {
+        "id": "caddb697-6317-47e5-8976-84f3f96ca92d",
+        "name": "Blueberry Lemon Muffin (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": false,
+        "display_order": 820,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-06T15:49:39.631783+00:00"
+      },
+      {
+        "id": "5b37211d-d4c8-4ec4-92ae-f1ff2be70553",
+        "name": "Lemon Ricotta Cookie (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": false,
+        "display_order": 830,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-04T14:44:43.425134+00:00"
+      },
+      {
+        "id": "db99ec17-8ea0-4172-ad20-1865ab28fd87",
+        "name": "Animal Sugar Cookies (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": true,
+        "display_order": 850,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-11T15:31:59.366419+00:00"
+      },
+      {
+        "id": "35c8df1c-18de-4e88-a293-59bcfd4a2823",
+        "name": "Orange Juice",
+        "description": "",
+        "price": 3.69,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 460,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:35.199343+00:00"
+      },
+      {
+        "id": "9d6f6686-de3b-4ab8-80a6-2183c45723a9",
+        "name": "Apple Juice",
+        "description": "",
+        "price": 3.47,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 470,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:35.32358+00:00"
+      },
+      {
+        "id": "db1f288c-89f5-4fe8-82a6-7e0ac2a63aa3",
+        "name": "Chobani Protein",
+        "description": "",
+        "price": 3.75,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 480,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:35.464776+00:00"
+      },
+      {
+        "id": "8522f779-6f5e-4d0a-82f3-01b67c3db162",
+        "name": "Chocolate Milk",
+        "description": "",
+        "price": 2.96,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 490,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:35.592102+00:00"
+      },
+      {
+        "id": "30392f5b-ab91-4a34-b52b-ed2d734c90e3",
+        "name": "Draft Latte",
+        "description": "",
+        "price": 3.8,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 500,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:35.735912+00:00"
+      },
+      {
+        "id": "7b5c388f-3eeb-44cf-a106-d9908b015f49",
+        "name": "Sly Fox",
+        "description": "",
+        "price": 5.17,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 510,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:35.85964+00:00"
+      },
+      {
+        "id": "88711e9d-0b1f-417d-b1c6-20d1b7c725b9",
+        "name": "Macaron",
+        "description": "",
+        "price": 2.95,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 520,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:35.991055+00:00"
+      },
+      {
+        "id": "e4f7e6cb-7c45-4757-a157-fc76e9ac25c1",
+        "name": "Chocolate Chip Cookie",
+        "description": "",
+        "price": 1.98,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 530,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:36.116366+00:00"
+      },
+      {
+        "id": "d115d7e2-d282-4086-b809-90b5b45215a9",
+        "name": "Marshmallow Bar",
+        "description": "",
+        "price": 3.51,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 540,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:36.432343+00:00"
+      },
+      {
+        "id": "d6d0eb0a-1f1b-4ac1-94e8-2e5eeb592174",
+        "name": "Natures Bakery",
+        "description": "",
+        "price": 2.25,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 550,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:36.558373+00:00"
+      },
+      {
+        "id": "6cbea3a6-1497-4a5b-8077-e971108cb5d8",
+        "name": "Yes Bar",
+        "description": "",
+        "price": 3.27,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 560,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:36.685066+00:00"
+      },
+      {
+        "id": "89a8a8cd-5e18-47ba-a896-976f1e77de39",
+        "name": "Pretzel Sticks (GF)",
+        "description": "",
+        "price": 2.5,
+        "category": "food",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": true,
+        "display_order": 570,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:36.812188+00:00"
+      },
+      {
+        "id": "4dad9196-7e9a-4047-b567-451d7bf3852b",
+        "name": "Beef Jerky",
+        "description": "",
+        "price": 2.7,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 580,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:36.959488+00:00"
+      },
+      {
+        "id": "88f7bf75-56d9-4433-a41b-017a9c527cca",
+        "name": "Fruit Jerky",
+        "description": "",
+        "price": 2.35,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 590,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:37.088888+00:00"
+      },
+      {
+        "id": "b0fac670-839a-48d9-839b-636d1ac43c32",
+        "name": "Chickpea Chips",
+        "description": "",
+        "price": 2.5,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 600,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:37.209834+00:00"
+      },
+      {
+        "id": "b6c0d34b-210a-41b4-adac-45056b5fb96d",
+        "name": "Veggie Straws",
+        "description": "",
+        "price": 2.75,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 610,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:37.33171+00:00"
+      },
+      {
+        "id": "246c06e4-f71f-4781-b55b-50beb198abe9",
+        "name": "WILD Protein Chips",
+        "description": "",
+        "price": 4.75,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 620,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:37.48738+00:00"
+      },
+      {
+        "id": "8395b7f8-8d16-49cd-9c77-86638fe8fbb9",
+        "name": "Fresh Fruit",
+        "description": "",
+        "price": 1.25,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 630,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:37.646561+00:00"
+      },
+      {
+        "id": "7d3b7f9c-d10c-4bba-b8fd-5a34a1f2ed1d",
+        "name": "Cold Brew",
+        "description": "",
+        "price": 4.25,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 640,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:37.770362+00:00"
+      },
+      {
+        "id": "57bb517a-7d82-4b69-9b94-a77a3ff7d5c9",
+        "name": "Iced Americano",
+        "description": "",
+        "price": 3.6,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 660,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.021719+00:00"
+      },
+      {
+        "id": "7d3a43ec-4cfd-4586-8818-ac6caaca8f46",
+        "name": "Iced Espresso",
+        "description": "",
+        "price": 3,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 670,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.145592+00:00"
+      },
+      {
+        "id": "174cbdab-bce4-4766-b83e-b5253a979947",
+        "name": "Iced Cortado",
+        "description": "",
+        "price": 3.45,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 680,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.271202+00:00"
+      },
+      {
+        "id": "1353d64f-1123-4590-85cc-b79eca810df1",
+        "name": "Shaken Espresso - 20oz",
+        "description": "",
+        "price": 5.15,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 690,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.430341+00:00"
+      },
+      {
+        "id": "d26ba092-9f4c-4fd4-aa4f-f16a2249c038",
+        "name": "Aircano",
+        "description": "",
+        "price": 3.6,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 700,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.549213+00:00"
+      },
+      {
+        "id": "a5d22b21-8a42-4433-8f4d-d2dd72825df9",
+        "name": "Espresso Tonic",
+        "description": "",
+        "price": 4.25,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 710,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.674791+00:00"
+      },
+      {
+        "id": "6400cfea-37c7-443b-9318-387cad4cd877",
+        "name": "Coconut Water Americano",
+        "description": "",
+        "price": 4.25,
+        "category": "espresso",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 720,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:38.807765+00:00"
+      },
+      {
+        "id": "f932648e-18d8-4759-bb49-9fff1e6a5deb",
+        "name": "Iced London Fog",
+        "description": "",
+        "price": 5,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 750,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:39.17875+00:00"
+      },
+      {
+        "id": "7a5a1df4-2522-4cd7-9ec5-658ce7584efa",
+        "name": "Iced Turmeric Latte",
+        "description": "",
+        "price": 5.15,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 760,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:39.306713+00:00"
+      },
+      {
+        "id": "a603efac-a573-41fc-bc98-1083db7b684a",
+        "name": "Iced Tea",
+        "description": "",
+        "price": 2.8,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 770,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:39.479244+00:00"
+      },
+      {
+        "id": "12de7be9-e32a-4475-b1ab-fc859ddba89b",
+        "name": "Chobani",
+        "description": "",
+        "price": 2.75,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 440,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-09-05T12:32:13.807684+00:00"
+      },
+      {
+        "id": "8a4e73cf-ec60-4c16-91a0-46287becf182",
+        "name": "Bomb Pop Dirty Soda",
+        "description": "",
+        "price": 5.95,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 770,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-14T10:10:05.850712+00:00"
+      },
+      {
+        "id": "dd05785e-d3d2-4bca-949e-d50ff5f67f09",
+        "name": "Lychee Coconut Matcha Cloud",
+        "description": "",
+        "price": 5.95,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": false,
+        "display_order": 780,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-08-14T10:10:05.973358+00:00"
+      },
+      {
+        "id": "6e5c33f7-570c-4df4-a53e-bc9bf5d03319",
+        "name": "Water Cup",
+        "description": "",
+        "price": null,
+        "category": "specialty",
+        "dietary_flags": [],
+        "image_url": null,
+        "available": true,
+        "display_order": 810,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:40.001454+00:00"
+      },
+      {
+        "id": "98ddbea3-98c7-4f70-bba6-efeccb2ca999",
+        "name": "Jewish Apple Cake (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": true,
+        "display_order": 820,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:40.134494+00:00"
+      },
+      {
+        "id": "ebd15be1-1285-4685-b9b0-deefea2c1ce4",
+        "name": "Oatmeal Creme Pie (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": true,
+        "display_order": 830,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:40.271448+00:00"
+      },
+      {
+        "id": "e281c66d-e18a-4ea8-bec3-a0a65eca6e0f",
+        "name": "Dark Chocolate Brownie (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": true,
+        "display_order": 840,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:40.401036+00:00"
+      },
+      {
+        "id": "c9094c5b-c2b4-40da-9ed8-46a5263461f2",
+        "name": "CwanYUHberry Muffin (GF)",
+        "description": "",
+        "price": 6.29,
+        "category": "pastry",
+        "dietary_flags": [
+          "gluten-free"
+        ],
+        "image_url": null,
+        "available": false,
+        "display_order": 840,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-13T16:51:40.549892+00:00"
+      },
+      {
+        "id": "5abe343d-e134-4103-83e3-1815aea9f98c",
+        "name": "Buffalo Chicken Melt",
+        "description": "Our signature spicy buffalo chicken mixture made with a three cheese blend, fire braised chicken breast, Franks Redhot sauce and spices. Served on toasted seedless rye bread. Add bacon for an extra level of flavor!",
+        "price": 13.25,
+        "category": "food",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370685141-buffalo-chicken-melt-cutout.webp",
+        "available": true,
+        "display_order": 370,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:44:45.920722+00:00"
+      },
+      {
+        "id": "7924bb17-c26f-43fd-ba1e-2480edb3eced",
+        "name": "Scone",
+        "description": "Rotating flavors — ask what's in today.",
+        "price": 3.5,
+        "category": "pastry",
+        "dietary_flags": [],
+        "image_url": "https://gtxyvzglvvsfzstnngbr.supabase.co/storage/v1/object/public/media/menu_items/1792370727580-scone-cutout.webp",
+        "available": true,
+        "display_order": 220,
+        "status": "published",
+        "draft_data": null,
+        "updated_at": "2026-10-19T00:45:28.447472+00:00"
+      }
+    ],
+    "events": [],
+    "hours": [
+      {
+        "day_of_week": 0,
+        "open_time": "8:00 AM",
+        "close_time": "3:00 PM"
+      },
+      {
+        "day_of_week": 1,
+        "open_time": "7:30 AM",
+        "close_time": "7:00 PM"
+      },
+      {
+        "day_of_week": 2,
+        "open_time": "7:30 AM",
+        "close_time": "7:00 PM"
+      },
+      {
+        "day_of_week": 3,
+        "open_time": "7:30 AM",
+        "close_time": "7:00 PM"
+      },
+      {
+        "day_of_week": 4,
+        "open_time": "7:30 AM",
+        "close_time": "7:00 PM"
+      },
+      {
+        "day_of_week": 5,
+        "open_time": "7:30 AM",
+        "close_time": "5:00 PM"
+      },
+      {
+        "day_of_week": 6,
+        "open_time": "7:30 AM",
+        "close_time": "5:00 PM"
+      }
+    ],
+    "hours_overrides": [],
+    "content_blocks": [
+      {
+        "key": "loyalty_copy",
+        "data": {
+          "body_markdown": "Ask a Troublemaker about loyalty perks. Full program details coming soon."
+        },
+        "draft_data": null,
+        "status": "published",
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "key": "announcement_banner",
+        "data": {
+          "enabled": false,
+          "message": ""
+        },
+        "draft_data": null,
+        "status": "published",
+        "updated_at": "2026-07-13T16:07:29.386674+00:00"
+      },
+      {
+        "key": "social_links",
+        "data": {
+          "x": "",
+          "tiktok": "https://www.tiktok.com/@troublebrewingcoffee",
+          "youtube": "",
+          "facebook": "https://www.facebook.com/tbcoffeehouse",
+          "instagram": "https://instagram.com/troublebrewingcoffee"
+        },
+        "draft_data": null,
+        "status": "published",
+        "updated_at": "2026-10-18T21:11:34.025314+00:00"
+      },
+      {
+        "key": "staff_picks",
+        "data": {
+          "items": [
+            {
+              "label": "Flying off the menu",
+              "value": "Cranberry Walnut Chicken Salad"
+            },
+            {
+              "label": "This week's feature",
+              "value": "Iced Matcha Latte"
+            }
+          ]
+        },
+        "draft_data": null,
+        "status": "published",
+        "updated_at": "2026-10-19T02:05:22.880407+00:00"
+      },
+      {
+        "key": "featured_drink",
+        "data": {
+          "item": "Iced Matcha Latte",
+          "description": "Iced matcha over cold milk, finished with a fresh strawberry."
+        },
+        "draft_data": null,
+        "status": "published",
+        "updated_at": "2026-10-19T02:30:08.815331+00:00"
+      },
+      {
+        "key": "homepage_concept",
+        "data": {
+          "concept": "pastry_case"
+        },
+        "draft_data": null,
+        "status": "published",
+        "updated_at": "2026-10-19T04:32:56.095382+00:00"
+      }
+    ],
+    "testimonials": [
+      {
+        "id": "a85e67ed-0a65-46ab-977f-48a5b7b651e1",
+        "author": "Hazel Stjernelys",
+        "source": "Google",
+        "rating": 5,
+        "quote": "While browsing for coffee shops in the area, this one caught my eye. It did not disappoint! This shop is cozy, clearly loved by locals, and has plenty of seating without feeling overcrowded. Chosen decor includes foxes and mushrooms and adds the right touch of whimsy 🍄\nI'm not out this way often but I'll definitely stop again the next time I am!",
+        "featured": false,
+        "display_order": 0,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-07-13T21:04:20.842448+00:00",
+        "image_url": ""
+      },
+      {
+        "id": "e8d84e17-a1a9-4130-ae6e-d0acaeb39ca5",
+        "author": "Cory Mathews",
+        "source": "Google",
+        "rating": 5,
+        "quote": "Good coffee for a good price. Blueberry scone was very good massive Blueberrys barista Tyler was friendly and fast would visit again when on a trip from California",
+        "featured": false,
+        "display_order": 0,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-07-13T21:04:23.404874+00:00",
+        "image_url": ""
+      },
+      {
+        "id": "45f23059-8ca2-4a63-b4d9-53930c79eb07",
+        "author": "Leticia Vega",
+        "source": "Google",
+        "rating": 5,
+        "quote": "My son and I stopped in to have a hot chia and cold latte with breakfast sandwiches and pastries. Great service, drinks and food great. Beautiful town. Been there before. Bonus--it's dog friendly 🦮. Definitely will be back.",
+        "featured": false,
+        "display_order": 0,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-07-13T21:04:23.948377+00:00",
+        "image_url": ""
+      },
+      {
+        "id": "2239f639-cb08-46aa-9c9e-3d4dde8b7e68",
+        "author": "Heather Roth",
+        "source": "Google",
+        "rating": 5,
+        "quote": "Definitely one of my favorite coffee shops that I have come across. I love that they collaborate with other local businesses. I’m a big fan of their Milky Way iced coffee, and their breakfast sandwiches are delicious. I love hanging out inside or outside. Their staff are fantastic. I love chatting with them every time I go in.",
+        "featured": false,
+        "display_order": 0,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-07-13T21:04:24.298524+00:00",
+        "image_url": ""
+      }
+    ],
+    "google_profile": [
+      {
+        "id": 1,
+        "place_id": "ChIJaRXwqCHMxokR3omz5QWgCws",
+        "rating": 4.6,
+        "review_count": 310,
+        "reviews": [
+          {
+            "text": "While browsing for coffee shops in the area, this one caught my eye. It did not disappoint! This shop is cozy, clearly loved by locals, and has plenty of seating without feeling overcrowded. Chosen decor includes foxes and mushrooms and adds the right touch of whimsy 🍄\nI'm not out this way often but I'll definitely stop again the next time I am!",
+            "time": "4 months ago",
+            "author": "Hazel Stjernelys",
+            "photos": [],
+            "rating": 5,
+            "review_id": "places/ChIJaRXwqCHMxokR3omz5QWgCws/reviews/Ci9DQUlRQUNvZENodHljRjlvT25ZelVtc3hiRVZrWmtWdU1VWXlVbE15VEVkV1RVRRAB",
+            "author_url": "https://www.google.com/maps/contrib/112466012517271282566/reviews",
+            "review_url": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT25ZelVtc3hiRVZrWmtWdU1VWXlVbE15VEVkV1RVRRAB!2m1!1s0x89c6cc21a8f01569:0xb0ba005e5b389de",
+            "published_at": "2026-06-02T17:35:59.996624360Z",
+            "profile_photo": "https://lh3.googleusercontent.com/a/ACg8ocJ96fr6hk3y_fKoXrQgKDGMazMNX3TsuHOYDeItFGLXpQBoa2Y=s128-c0x00000000-cc-rp-mo-ba3"
+          },
+          {
+            "text": "Definitely one of my favorite coffee shops that I have come across. I love that they collaborate with other local businesses. I’m a big fan of their Milky Way iced coffee, and their breakfast sandwiches are delicious. I love hanging out inside or outside. Their staff are fantastic. I love chatting with them every time I go in.",
+            "time": "5 months ago",
+            "author": "Heather Roth",
+            "photos": [
+              "https://lh3.googleusercontent.com/grass-cs/AABkmLd66TEHA0LDE3Muah4Vne3lBv0tDThByMvrzKXJNrcNzIBzNGW4uQQS0VaZe4QqGHAQ8D_ME8WQLA1PQItNrT2GFKk3c8LU42nhBxmM-mce8xgaBRYoXw7IE4uXRR7j_j90b-fQEndHQpS_=s4800-w1000"
+            ],
+            "rating": 5,
+            "review_id": "places/ChIJaRXwqCHMxokR3omz5QWgCws/reviews/Ci9DQUlRQUNvZENodHljRjlvT2xGQlNYZEtVRzFWVUVoaFJEVXpUMm8wWWtjNE9VRRAB",
+            "author_url": "https://www.google.com/maps/contrib/110834527154146741860/reviews",
+            "review_url": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2xGQlNYZEtVRzFWVUVoaFJEVXpUMm8wWWtjNE9VRRAB!2m1!1s0x89c6cc21a8f01569:0xb0ba005e5b389de",
+            "published_at": "2026-05-16T18:25:07.846348590Z",
+            "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjXFNDoa4i64zjira6zPaR09Lzhb87FutnKuKDkw2HL04OZtyBy1Fg=s128-c0x00000000-cc-rp-mo-ba4"
+          },
+          {
+            "text": "Good coffee for a good price. Blueberry scone was very good massive Blueberrys barista Tyler was friendly and fast would visit again when on a trip from California",
+            "time": "5 months ago",
+            "author": "Cory Mathews",
+            "photos": [],
+            "rating": 5,
+            "review_id": "places/ChIJaRXwqCHMxokR3omz5QWgCws/reviews/Ci9DQUlRQUNvZENodHljRjlvT21jMk1VUldVa2RwV21oTldGbGtMVE5GTm14RGJtYxAB",
+            "author_url": "https://www.google.com/maps/contrib/111460117211547990151/reviews",
+            "review_url": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT21jMk1VUldVa2RwV21oTldGbGtMVE5GTm14RGJtYxAB!2m1!1s0x89c6cc21a8f01569:0xb0ba005e5b389de",
+            "published_at": "2026-05-12T14:09:29.121747514Z",
+            "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjUyDE5mKYcalKfpdkobshGDpZItAHMjrPITFjKMNd1O7K8PWSs6=s128-c0x00000000-cc-rp-mo-ba5"
+          },
+          {
+            "text": "My son and I stopped in to have a hot chia and cold latte with breakfast sandwiches and pastries. Great service, drinks and food great. Beautiful town. Been there before. Bonus--it's dog friendly 🦮. Definitely will be back.",
+            "time": "7 months ago",
+            "author": "Leticia Vega",
+            "photos": [],
+            "rating": 5,
+            "review_id": "places/ChIJaRXwqCHMxokR3omz5QWgCws/reviews/Ci9DQUlRQUNvZENodHljRjlvT21ScVptUlRReloxUTJOVVZpMUxUVE5zUVc5TVYxRRAB",
+            "author_url": "https://www.google.com/maps/contrib/112982713412659164016/reviews",
+            "review_url": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT21ScVptUlRReloxUTJOVVZpMUxUVE5zUVc5TVYxRRAB!2m1!1s0x89c6cc21a8f01569:0xb0ba005e5b389de",
+            "published_at": "2026-03-22T21:02:44.246384705Z",
+            "profile_photo": "https://lh3.googleusercontent.com/a/ACg8ocK2stLWFX1KLwwrysxqUDDVKWLZQ9mR7VR_aAi5xVpzJj5Djg=s128-c0x00000000-cc-rp-mo-ba3"
+          },
+          {
+            "text": "I love this coffee shop & I’m excited to come back and try more of the food/drinks on their menu. It was pretty busy this morning, but the staff was still very friendly and helpful. Our orders also came up pretty quickly for how busy it was! The restaurant itself is so cute - I love how it’s decorated with the gallery wall and variety of seating. Perfect place to get some work done because there is a lot of seating inside and outside with their wifi password on the wall. There’s also a free little library with some good book selections so I’ll definitely be back to exchange!!",
+            "time": "a year ago",
+            "author": "sammy williscroft",
+            "photos": [
+              "https://lh3.googleusercontent.com/grass-cs/AABkmLdgSnJo0mULVL6MYyx2Go6vE931-_rIU2dAHASqQjT4QvnugogWpNQNLQRnQGqmUmVsat2HUOJuP8qyXcX13r74DhAHdJC-v-4uqpwbH6naA4hc7pPzqbLTWD4YTp8apBM3Xg6yL6ZVfJad=s4800-w1000"
+            ],
+            "rating": 5,
+            "review_id": "places/ChIJaRXwqCHMxokR3omz5QWgCws/reviews/Ci9DQUlRQUNvZENodHljRjlvT2xCT2FsYzNiM2RPVmxSMVZETXpOakE1U0V0R2NYYxAB",
+            "author_url": "https://www.google.com/maps/contrib/108241308746328050424/reviews",
+            "review_url": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2xCT2FsYzNiM2RPVmxSMVZETXpOakE1U0V0R2NYYxAB!2m1!1s0x89c6cc21a8f01569:0xb0ba005e5b389de",
+            "published_at": "2025-08-02T14:56:29.820897981Z",
+            "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjVxUiB09wA-J_3lMQWijZh9XXnD-qoy1MhlkXJQnfk8JTkVsCAY-A=s128-c0x00000000-cc-rp-mo-ba4"
+          },
+          {
+            "text": "Definitely one of my favorite coffee shops that I have come across. I love that they collaborate with other local businesses. I’m a big fan of their Milky Way iced coffee, and their breakfast sandwiches are delicious. I love hanging out inside or outside. Their staff are fantastic. I love chatting with them every time I go in.",
+            "time": "5 months ago",
+            "author": "Heather Roth",
+            "photos": [
+              "https://lh3.googleusercontent.com/grass-cs/AABkmLd66TEHA0LDE3Muah4Vne3lBv0tDThByMvrzKXJNrcNzIBzNGW4uQQS0VaZe4QqGHAQ8D_ME8WQLA1PQItNrT2GFKk3c8LU42nhBxmM-mce8xgaBRYoXw7IE4uXRR7j_j90b-fQEndHQpS_=s4800-w1000"
+            ],
+            "rating": 5,
+            "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjXFNDoa4i64zjira6zPaR09Lzhb87FutnKuKDkw2HL04OZtyBy1Fg=s128-c0x00000000-cc-rp-mo-ba4"
+          },
+          {
+            "text": "Good coffee for a good price. Blueberry scone was very good massive Blueberrys barista Tyler was friendly and fast would visit again when on a trip from California",
+            "time": "5 months ago",
+            "author": "Cory Mathews",
+            "rating": 5,
+            "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjUyDE5mKYcalKfpdkobshGDpZItAHMjrPITFjKMNd1O7K8PWSs6=s128-c0x00000000-cc-rp-mo-ba5"
+          },
+          {
+            "text": "I love this coffee shop & I’m excited to come back and try more of the food/drinks on their menu. It was pretty busy this morning, but the staff was still very friendly and helpful. Our orders also came up pretty quickly for how busy it was! The restaurant itself is so cute - I love how it’s decorated with the gallery wall and variety of seating. Perfect place to get some work done because there is a lot of seating inside and outside with their wifi password on the wall. There’s also a free little library with some good book selections so I’ll definitely be back to exchange!!",
+            "time": "a year ago",
+            "author": "sammy williscroft",
+            "photos": [
+              "https://lh3.googleusercontent.com/grass-cs/AABkmLdgSnJo0mULVL6MYyx2Go6vE931-_rIU2dAHASqQjT4QvnugogWpNQNLQRnQGqmUmVsat2HUOJuP8qyXcX13r74DhAHdJC-v-4uqpwbH6naA4hc7pPzqbLTWD4YTp8apBM3Xg6yL6ZVfJad=s4800-w1000"
+            ],
+            "rating": 5,
+            "profile_photo": "https://lh3.googleusercontent.com/a-/ALV-UjVxUiB09wA-J_3lMQWijZh9XXnD-qoy1MhlkXJQnfk8JTkVsCAY-A=s128-c0x00000000-cc-rp-mo-ba4"
+          },
+          {
+            "text": "While browsing for coffee shops in the area, this one caught my eye. It did not disappoint! This shop is cozy, clearly loved by locals, and has plenty of seating without feeling overcrowded. Chosen decor includes foxes and mushrooms and adds the right touch of whimsy 🍄\nI'm not out this way often but I'll definitely stop again the next time I am!",
+            "time": "4 months ago",
+            "author": "Hazel Stjernelys",
+            "rating": 5,
+            "profile_photo": "https://lh3.googleusercontent.com/a/ACg8ocJ96fr6hk3y_fKoXrQgKDGMazMNX3TsuHOYDeItFGLXpQBoa2Y=s128-c0x00000000-cc-rp-mo-ba3"
+          },
+          {
+            "text": "My son and I stopped in to have a hot chia and cold latte with breakfast sandwiches and pastries. Great service, drinks and food great. Beautiful town. Been there before. Bonus--it's dog friendly 🦮. Definitely will be back.",
+            "time": "7 months ago",
+            "author": "Leticia Vega",
+            "rating": 5,
+            "profile_photo": "https://lh3.googleusercontent.com/a/ACg8ocK2stLWFX1KLwwrysxqUDDVKWLZQ9mR7VR_aAi5xVpzJj5Djg=s128-c0x00000000-cc-rp-mo-ba3"
+          }
+        ],
+        "formatted_address": "514 Station Ave, Haddon Heights, NJ 08035, USA",
+        "formatted_phone": "+1 856-617-6638",
+        "weekday_hours": [
+          "Monday: 7:30 AM – 7:00 PM",
+          "Tuesday: 7:30 AM – 7:00 PM",
+          "Wednesday: 7:30 AM – 7:00 PM",
+          "Thursday: 7:30 AM – 7:00 PM",
+          "Friday: 7:30 AM – 5:00 PM",
+          "Saturday: 7:30 AM – 5:00 PM",
+          "Sunday: 8:00 AM – 3:00 PM"
+        ],
+        "weekday_periods": [
+          {
+            "open": {
+              "day": 0,
+              "hour": 8,
+              "minute": 0
+            },
+            "close": {
+              "day": 0,
+              "hour": 15,
+              "minute": 0
+            }
+          },
+          {
+            "open": {
+              "day": 1,
+              "hour": 7,
+              "minute": 30
+            },
+            "close": {
+              "day": 1,
+              "hour": 19,
+              "minute": 0
+            }
+          },
+          {
+            "open": {
+              "day": 2,
+              "hour": 7,
+              "minute": 30
+            },
+            "close": {
+              "day": 2,
+              "hour": 19,
+              "minute": 0
+            }
+          },
+          {
+            "open": {
+              "day": 3,
+              "hour": 7,
+              "minute": 30
+            },
+            "close": {
+              "day": 3,
+              "hour": 19,
+              "minute": 0
+            }
+          },
+          {
+            "open": {
+              "day": 4,
+              "hour": 7,
+              "minute": 30
+            },
+            "close": {
+              "day": 4,
+              "hour": 19,
+              "minute": 0
+            }
+          },
+          {
+            "open": {
+              "day": 5,
+              "hour": 7,
+              "minute": 30
+            },
+            "close": {
+              "day": 5,
+              "hour": 17,
+              "minute": 0
+            }
+          },
+          {
+            "open": {
+              "day": 6,
+              "hour": 7,
+              "minute": 30
+            },
+            "close": {
+              "day": 6,
+              "hour": 17,
+              "minute": 0
+            }
+          }
+        ],
+        "lat": 39.882783599999996,
+        "lng": -75.057658,
+        "maps_url": "https://search.google.com/local/writereview?placeid=ChIJaRXwqCHMxokR3omz5QWgCws",
+        "fetched_at": "2026-10-19T01:31:01.861+00:00",
+        "photos": [
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLfNl4giB5zxwmBq4iQbzwuz0TE51VLgH2ZoBjkdfqc7zMx8Vmy5kG0ny-slp7Abo31kxoYl-Mho9DQ8ZwID4X9_-8EdzdbJhq2yaxrlipfd9577sRLLEAKmqs8dS9KVqj1CnTvO8g=s4800-w1000",
+            "author": "Joanna Wilson",
+            "author_url": "https://maps.google.com/maps/contrib/107051316014107113516"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLd66TEHA0LDE3Muah4Vne3lBv0tDThByMvrzKXJNrcNzIBzNGW4uQQS0VaZe4QqGHAQ8D_ME8WQLA1PQItNrT2GFKk3c8LU42nhBxmM-mce8xgaBRYoXw7IE4uXRR7j_j90b-fQEndHQpS_=s4800-w1000",
+            "author": "Heather Roth",
+            "author_url": "https://maps.google.com/maps/contrib/110834527154146741860"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLcNAFl0rFj1VglOVirmF2vsUPJNzxFDHpJ5A40raHjd_dbVZrh0C1hYDSp_WlXKqb8cPvAvkXTQz7XoRatFjMkh6Gs1H5aILRD-6Wh2LGw5v8m9kvuIveNMs-rckrRtASAFM_Q__WAVMO9D=s4800-w1000",
+            "author": "M",
+            "author_url": "https://maps.google.com/maps/contrib/109571693825402792465"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLdvdvD2Js_x9zlIYnDw0KcGjVAB1OJJ2eqLVGZSQ1ox4ZjlLX6NdrvhEUEnowHNU9vHPJwIpO9AZHvry0lWA2zpzzE-JA3KYjInfMWLq4-yNByks2rjxV-4K47GS09MKwfV2vJ_1g=s4800-w1000",
+            "author": "Heather Boswick",
+            "author_url": "https://maps.google.com/maps/contrib/104624932148989801681"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLfThcW9pcgZf2Z6C7zyQAp_7t_ne529JHFbbYJWaiYNToLVFBfiDIO-jscUe-20D1NzMaZUklQ5NOit7modsxx1iGvZzaykAkGZZwedXskHUB23Ox-E3ol5xJifQmA1ONuL2gp1NL9lwmM3=s4800-w1000",
+            "author": "Brett Morris",
+            "author_url": "https://maps.google.com/maps/contrib/106756352747827647570"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLelNHVKyBqJJT0X3FgoMcZhOvCjAEasxZEny2RaGwCENd43WRtWQc9gnRErddHe_X54DH-NyQIZhJj-4gANVlsltSutvCgtX_DUESw20eHFLV4BoSX0yGLwL9324LQFks5ZAm2_lqMWx8c=s4800-w1000",
+            "author": "Ansar M.",
+            "author_url": "https://maps.google.com/maps/contrib/107721432019219567491"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLdgSnJo0mULVL6MYyx2Go6vE931-_rIU2dAHASqQjT4QvnugogWpNQNLQRnQGqmUmVsat2HUOJuP8qyXcX13r74DhAHdJC-v-4uqpwbH6naA4hc7pPzqbLTWD4YTp8apBM3Xg6yL6ZVfJad=s4800-w1000",
+            "author": "sammy williscroft",
+            "author_url": "https://maps.google.com/maps/contrib/108241308746328050424"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLeST1vAYa7aJswf0sq0oDN4oT9dlvGo0Q92AucqaYKZ1iq4MIQJEEDoobp71jZoi7ZtcXSMOPR9JSDtFvhcd-4N3PjsGwyrR1rO2HIhuypSlAN9IBba09OxXN3TScfjr0NTS_oxSf-lzgc=s4800-w1000",
+            "author": "Brian Mudri",
+            "author_url": "https://maps.google.com/maps/contrib/115825854621626106215"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLd2axYVb3gVKy7VxLVrzvZ2_-l13dsj1a2K29HFJ1B1gjjSfYWfFvNxOLwLTCFOeSteC6qi6GLAJgmA80Hw08-IsQAv3aAcU8STHpZmDabLmp1jt3pQ8xXJXQSmpbOWtz4NHbjNgw=s4800-w1000",
+            "author": "Melissa Kleinberger",
+            "author_url": "https://maps.google.com/maps/contrib/103694440060028581563"
+          },
+          {
+            "url": "https://lh3.googleusercontent.com/grass-cs/AABkmLeulxsSy196Etw9CYDcY-mavs79pXAzi4FY93G8aAsitugZS2hu_3eYGBZ34eR6xv2VxbeF8ImhBCZIiK3EE3L9RaROYVPXNH_oS-HEA7DjunHate30a7A_Xvk0-RRgDJZWxnwdsQ=s4800-w1000",
+            "author": "Anonymous Users",
+            "author_url": "https://maps.google.com/maps/contrib/113172207032375623093"
+          }
+        ]
+      }
+    ],
+    "gallery_pieces": [],
+    "team_members": [
+      {
+        "id": "1fd03375-4851-4120-ac8b-2aa15fb0f3d0",
+        "name": "Katie",
+        "role": "General Manager",
+        "bio": "Keeps the whole operation running and somehow still remembers your usual.",
+        "photo_url": null,
+        "fun_facts": {
+          "favorite_book": "—",
+          "favorite_show": "—",
+          "favorite_movie": "—",
+          "favorite_artist": "—",
+          "favorite_local_food": "—"
+        },
+        "display_order": 0,
+        "active": true,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-07-13T16:07:29.386674+00:00",
+        "pronouns": null,
+        "drink": null,
+        "started_label": null
+      }
+    ],
+    "local_businesses": [
+      {
+        "id": "c925c1eb-99e0-4f09-8e7e-0f9ba7f1a39e",
+        "name": "Cabana Water Ice Co.",
+        "category": "other",
+        "blurb": "Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.",
+        "url": "",
+        "photo_url": null,
+        "display_order": 5,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": null,
+        "address": "603 Station Ave",
+        "we_love": null
+      },
+      {
+        "id": "7e2c3d5c-9209-4b4a-896c-689ca6eed60c",
+        "name": "John's Friendly Market",
+        "category": "other",
+        "blurb": "The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.",
+        "url": "",
+        "photo_url": null,
+        "display_order": 7,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": null,
+        "address": "622 Station Ave",
+        "we_love": null
+      },
+      {
+        "id": "704c6e22-725d-4524-aaf3-812f4d570966",
+        "name": "Lula's Empanadas",
+        "category": "restaurant",
+        "blurb": "Contemporary Dominican empanadas from Yaslyn Lora, named after her mother — up to eighteen flavors, now from a proper Station Ave storefront. They chipped in prizes for our ninth-birthday raffle.",
+        "url": "https://www.lulasempanadas.com/",
+        "photo_url": "https://images.squarespace-cdn.com/content/v1/60b6a9970f75812d3a397812/1624323609595-C29NVYDNWDR44QV4FISU/FA7A1970_websize.jpg",
+        "display_order": 1,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": "https://images.squarespace-cdn.com/content/v1/60b6a9970f75812d3a397812/63a9e7da-d51c-45ee-9179-7ddd2f37242c/Lulas_Empanadas-RGB_01-Full+Color.png?format=750w",
+        "address": "516 Station Ave",
+        "we_love": null
+      },
+      {
+        "id": "9d2ec39f-dc9b-489b-8c55-229fe6c84d83",
+        "name": "South Jersey Special",
+        "category": "retail",
+        "blurb": "Amy Murphy’s gift shop of South Jersey makers — cards, prints, jewelry and small-batch things, most of it funny, all of it local. Another of our birthday-raffle donors.",
+        "url": "https://southjerseyspecial.com/",
+        "photo_url": "https://southjerseyspecial.com/cdn/shop/files/south_jersey_special_garnet_collection-01.jpg?v=1790468286&width=1200",
+        "display_order": 3,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": "/images/neighbors/south-jersey-special.png",
+        "address": "531 Station Ave",
+        "we_love": null
+      },
+      {
+        "id": "6d3ada86-267a-4adc-8971-0d7df8289b8b",
+        "name": "Jane's Tea House",
+        "category": "cafe",
+        "blurb": "Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.",
+        "url": "https://janesteahouse.com/",
+        "photo_url": "https://janesteahouse.com/wp-content/uploads/2025/05/1.png",
+        "display_order": 4,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": "/images/neighbors/janes-tea-house.png",
+        "address": "602 Station Ave",
+        "we_love": null
+      },
+      {
+        "id": "732e3dd1-9e27-40c5-bc4b-8cb82fed9a8c",
+        "name": "April Robin Florist & Gift",
+        "category": "retail",
+        "blurb": "The florist at the top of the avenue — where the flowers on our counter usually come from.",
+        "url": "https://www.aprilrobinflorist.com/",
+        "photo_url": "https://assets.eflorist.com/assets/products/PHR_/T209-3A.jpg",
+        "display_order": 6,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": "/images/neighbors/april-robin.png",
+        "address": "620 Station Ave",
+        "we_love": null
+      },
+      {
+        "id": "8e4ae4fb-1f3e-4e68-91b4-f2290001bd19",
+        "name": "Anthony's Creative Italian Cuisine",
+        "category": "restaurant",
+        "blurb": "BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.",
+        "url": "https://www.anthonysonstation.com/",
+        "photo_url": "https://www.anthonysonstation.com/wp-content/uploads/2020/03/dish-02.png",
+        "display_order": 0,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": "/images/neighbors/anthonys.png",
+        "address": "512 Station Ave",
+        "we_love": null
+      },
+      {
+        "id": "51f57941-aed1-4527-bffb-f7ecc0e44cae",
+        "name": "Ralph's Pizza",
+        "category": "restaurant",
+        "blurb": "Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town. They donated to our ninth-birthday raffle, too.",
+        "url": "https://ralphspizzahaddonheights.com/",
+        "photo_url": "https://d2s742iet3d3t1.cloudfront.net/restaurants/restaurant-20459000000000000/restaurant_list_image_1565297144.jpg?size=xl",
+        "display_order": 2,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00",
+        "logo_url": "/images/neighbors/ralphs.jpg",
+        "address": "520 Station Ave",
+        "we_love": null
+      }
+    ],
+    "timeline_events": [
+      {
+        "id": "b7503796-19c9-43ee-bc74-4b84b16da841",
+        "date_label": "Friday the 13th · Oct 2017",
+        "sort_date": "2017-10-13",
+        "title": "Trouble opens on Station Ave",
+        "description": "Tom and Cat, Haddon Heights locals, open Trouble Brewing Coffee House at 514 Station Ave — on Friday the 13th, naturally. La Colombe in the grinder, breakfast all day.",
+        "image_url": null,
+        "display_order": 0,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00"
+      },
+      {
+        "id": "75eef8eb-bb97-408c-aa50-537651e857d1",
+        "date_label": "December 2019",
+        "sort_date": "2019-12-07",
+        "title": "The internet finds out",
+        "description": "New Jersey Isn’t Boring writes Trouble up as one of the best spots around to work from a coffee shop — comfy seats, free WiFi, a shelf of books and drinks sized Trouble and Big Trouble.",
+        "image_url": null,
+        "display_order": 1,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00"
+      },
+      {
+        "id": "152298fe-cbc7-40c8-b55e-1450c9d7cfae",
+        "date_label": "October 2026",
+        "sort_date": "2026-10-13",
+        "title": "Nine years of Trouble",
+        "description": "A birthday raffle with prizes from our Station Ave neighbors — Lula’s Empanadas, Ralph’s Pizza, South Jersey Special and Doc’s Unique Boutique — and two birthday lattes: The Max (a dirt-cake iced latte) and The Ruby (cake batter, strawberry cold foam, sprinkles).",
+        "image_url": null,
+        "display_order": 2,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00"
+      },
+      {
+        "id": "01523bf1-06d5-463d-9b3a-515c27105928",
+        "date_label": "October 2026",
+        "sort_date": "2026-10-14",
+        "title": "A Quick Bites review",
+        "description": "The Retrospect stops in for its Quick Bites column and comes away talking about the cappuccino, the pumpkin spice frozen coffee and the French toast muffin — \"a group favorite.\"",
+        "image_url": null,
+        "display_order": 3,
+        "status": "published",
+        "draft_data": null,
+        "created_at": "2026-10-18T21:11:34.025314+00:00"
+      }
+    ],
+    "instagram_feed": [
+      {
+        "id": 1,
+        "handle": "troublebrewingcoffee",
+        "posts": [],
+        "fetched_at": null
+      }
+    ]
+  }
+}
