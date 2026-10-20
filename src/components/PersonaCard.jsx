@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { FaDownload, FaLink, FaShareFromSquare, FaXmark } from 'react-icons/fa6';
+import { FaDownload, FaLink, FaRotateRight, FaShareFromSquare, FaXmark } from 'react-icons/fa6';
 import { track } from '../lib/analytics.js';
 import { asset } from '../lib/config.js';
 import { FOX_H, FOX_PATH, FOX_W } from '../lib/foxArt.js';
-import { PERSONA_LINK, SHOP_HANDLE, SHOP_SITE, personaFor, storyFileName } from '../lib/drinkPersona.js';
+import { PERSONA_LINK, SHOP_HANDLE, SHOP_SITE, personaFor, personaPhoto, storyFileName } from '../lib/drinkPersona.js';
+import { isCutout } from '../lib/productImage.js';
 import { canShareFiles, copyText, downloadBlob, shareStoryImage } from '../lib/storyShare.js';
-import { DrinkPhoto } from './FoxPlay.jsx';
 import '../styles/persona.css';
 
 /* "Get my drink personality": after the fox's quiz, a card that says who
@@ -19,21 +19,43 @@ import '../styles/persona.css';
    card). The card flips in; the Story image (src/lib/storyImage.js) is
    drawn in the background meanwhile, so Share is instant when tapped (the
    share sheet needs the tap's own user activation). Esc, the close button
-   or "Back to my match" close it and focus returns to the button. */
+   or "Back to my match" close it and focus returns to the button.
+
+   Real photos only. A persona card is only ever made for a match whose
+   menu item has a photo (its image_url) — never the drawn cup. The photo is
+   preloaded and the button only appears once it has really loaded, so a
+   drink without one (or with a broken link) leaves the quiz result exactly
+   as it was. The Story PNG is drawn from that same photo (storyImage.js
+   loads it robustly: fetch → Blob first, then a CORS Image, each retried).
+   Only if every way in fails do Share / Download step aside, with a
+   friendly "try again" and Copy link; if even the card's <img> fails, the
+   card closes and the button goes away. */
 
 const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-/** The drink's drawn cup, as standalone SVG markup (the story's fallback). */
-function cupMarkup(root) {
-  const svg = root?.querySelector('.fox-photo__art svg');
-  if (!svg || typeof XMLSerializer === 'undefined') return '';
-  const c = svg.cloneNode(true);
-  c.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-  c.setAttribute('width', '600');
-  c.setAttribute('height', '600');
-  c.removeAttribute('style');
-  c.querySelectorAll('.fox-pour__steam').forEach((g) => g.setAttribute('opacity', '0.35'));
-  return new XMLSerializer().serializeToString(c);
+/** Preload a photo: 'loading' → 'ok' once it has really loaded, or 'failed'. */
+function usePhoto(src) {
+  const [state, setState] = useState({ src, status: src ? 'loading' : 'failed' });
+  useEffect(() => {
+    if (!src) { setState({ src, status: 'failed' }); return undefined; }
+    let live = true;
+    setState({ src, status: 'loading' });
+    const img = new Image();
+    img.onload = () => { if (live) setState({ src, status: 'ok' }); };
+    img.onerror = () => { if (live) setState({ src, status: 'failed' }); };
+    img.src = src;
+    return () => { live = false; img.onload = null; img.onerror = null; };
+  }, [src]);
+  return state.src === src ? state.status : 'loading';
+}
+
+/** The drink's real photo in its little gilt frame (DrinkPhoto's look). */
+function PersonaPhoto({ src, alt, onError }) {
+  return (
+    <span className={`fox-photo fox-photo--md has-photo persona-card__photo${isCutout(src) ? ' is-cutout' : ''}`} data-photo="photo">
+      <img className="fox-photo__img" src={src} alt={alt} decoding="async" onError={onError} />
+    </span>
+  );
 }
 
 /** The brand's own fox (logo drawing, traced vector), in currentColor. */
@@ -55,7 +77,7 @@ const themeVars = (t) => ({
 });
 
 /** The card itself (the same design as the Story image, sized for the panel). */
-export function PersonaCardFace({ persona, item, titleId }) {
+export function PersonaCardFace({ persona, photo, titleId, onPhotoError }) {
   return (
     <article className={`persona-card${persona.theme.dark ? ' is-dark' : ''}`} style={themeVars(persona.theme)} data-persona={persona.id}>
       <p className="persona-card__eyebrow" aria-hidden="true">The fox says you’re {persona.article}…</p>
@@ -73,7 +95,7 @@ export function PersonaCardFace({ persona, item, titleId }) {
         </div>
         <div className="persona-card__art">
           <Fox className="persona-card__fox" />
-          <DrinkPhoto item={item} size="md" className="persona-card__photo" />
+          <PersonaPhoto src={photo} alt={persona.drink} onError={onPhotoError} />
         </div>
       </div>
       <footer className="persona-card__foot">
@@ -86,10 +108,11 @@ export function PersonaCardFace({ persona, item, titleId }) {
   );
 }
 
-function PersonaDialog({ persona, item, onClose }) {
+function PersonaDialog({ persona, item, photo, onClose, onPhotoError }) {
   const titleId = `persona-${useId().replace(/:/g, '')}`;
   const box = useRef(null);
   const [story, setStory] = useState({ state: 'making', blob: null });
+  const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
   const shareable = useMemo(() => canShareFiles(), []);
@@ -99,20 +122,21 @@ function PersonaDialog({ persona, item, onClose }) {
   useEffect(() => { box.current?.focus({ preventScroll: true }); }, []);
   useEffect(() => { track('persona_view', { persona: persona.id }); }, [persona.id]);
 
-  // draw the Story image in the background, so Share is ready when tapped
+  // draw the Story image as soon as the card opens, so Share is ready when tapped
   useEffect(() => {
     let live = true;
+    setStory({ state: 'making', blob: null });
     (async () => {
       try {
         const { storyBlob } = await import('../lib/storyImage.js');
-        const blob = await storyBlob({ persona, item, cupSvg: cupMarkup(box.current) });
+        const blob = await storyBlob({ persona, item });
         if (live) setStory({ state: 'ready', blob });
       } catch {
         if (live) setStory({ state: 'failed', blob: null });
       }
     })();
     return () => { live = false; };
-  }, [persona, item]);
+  }, [persona, item, attempt]);
 
   const onKeyDown = (e) => {
     if (e.key === 'Escape') {
@@ -167,21 +191,26 @@ function PersonaDialog({ persona, item, onClose }) {
               <Fox className="persona-flip__fox" />
               <span>The fox is thinking…</span>
             </div>
-            <PersonaCardFace persona={persona} item={item} titleId={titleId} />
+            <PersonaCardFace persona={persona} photo={photo} titleId={titleId} onPhotoError={onPhotoError} />
           </div>
           {!instant && <span className="persona-burst" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>}
         </div>
-        <div className="persona-actions">
+        <div className="persona-actions" aria-busy={making}>
           {story.state === 'failed' ? (
-            <p className="persona-actions__note">Hmm, I couldn’t draw the image just now. You can still copy the link.</p>
+            <div className="persona-actions__oops" role="alert">
+              <p>Couldn’t grab the photo for your card. Try again?</p>
+              <button type="button" className="persona-btn persona-btn--main" onClick={() => { setStatus(''); setAttempt((n) => n + 1); }}>
+                <FaRotateRight aria-hidden="true" /> Try again
+              </button>
+            </div>
           ) : (
             <>
               <button type="button" className="persona-btn persona-btn--main" onClick={shareable ? share : download} disabled={making || busy}>
-                {shareable ? <FaShareFromSquare aria-hidden="true" /> : <FaDownload aria-hidden="true" />}
-                {making ? 'Getting your image ready…' : shareable ? 'Share image' : 'Download image'}
+                {making ? <span className="persona-btn__spin" aria-hidden="true" /> : shareable ? <FaShareFromSquare aria-hidden="true" /> : <FaDownload aria-hidden="true" />}
+                {making ? 'Getting your card ready…' : shareable ? 'Share image' : 'Download image'}
               </button>
-              {shareable && (
-                <button type="button" className="persona-btn" onClick={download} disabled={making}>
+              {shareable && !making && (
+                <button type="button" className="persona-btn" onClick={download}>
                   <FaDownload aria-hidden="true" /> Download image
                 </button>
               )}
@@ -191,7 +220,9 @@ function PersonaDialog({ persona, item, onClose }) {
             <FaLink aria-hidden="true" /> Copy link
           </button>
         </div>
-        <p className="persona-help">Share to your Story and tag <strong>{SHOP_HANDLE}</strong></p>
+        <p className="persona-help">
+          {story.state === 'failed' ? 'Share the link and tag ' : 'Share to your Story and tag '}<strong>{SHOP_HANDLE}</strong>
+        </p>
         <p className="persona-status" role="status">{status}</p>
         <p className="persona-back">
           <button type="button" className="persona-back__btn" onClick={onClose}>Back to my match</button>
@@ -201,12 +232,16 @@ function PersonaDialog({ persona, item, onClose }) {
   );
 }
 
-/** The quiz result's "Get my drink personality" button, and the card it opens. */
+/** The quiz result's "Get my drink personality" button, and the card it
+    opens — only for a match whose real photo has loaded. */
 export function PersonaLauncher({ answers, item }) {
   const [open, setOpen] = useState(false);
   const [host, setHost] = useState(null);
+  const [broken, setBroken] = useState('');
   const btn = useRef(null);
   const persona = useMemo(() => personaFor({ answers, item }), [answers, item]);
+  const photo = personaPhoto(item);
+  const status = usePhoto(photo);
 
   const show = () => {
     setHost(btn.current?.closest('.fox-help') || null);
@@ -216,9 +251,15 @@ export function PersonaLauncher({ answers, item }) {
     setOpen(false);
     requestAnimationFrame(() => btn.current?.focus({ preventScroll: true }));
   }, []);
+  // the card's own <img> failed after all: close it and take the button away
+  const photoFailed = useCallback(() => {
+    setBroken(photo);
+    setOpen(false);
+    requestAnimationFrame(() => host?.focus?.({ preventScroll: true }));
+  }, [photo, host]);
 
-  if (!item) return null;
-  const dialog = open ? <PersonaDialog persona={persona} item={item} onClose={close} /> : null;
+  if (!item || !photo || status !== 'ok' || broken === photo) return null;
+  const dialog = open ? <PersonaDialog persona={persona} item={item} photo={photo} onClose={close} onPhotoError={photoFailed} /> : null;
   return (
     <>
       <p className="persona-launch">
