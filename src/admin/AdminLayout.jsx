@@ -104,7 +104,7 @@ export default function AdminLayout() {
             <Icon icon={LuExternalLink} size={16} />
             <span>View website</span>
           </a>
-          <span className="admin__user" title={user?.email}>{user?.email}</span>
+          <Link to="/admin/account" className="admin__user" title="Your account: password and sign out">{user?.email}</Link>
           <button type="button" className="btn btn--ghost btn--sm admin__signout" onClick={handleSignOut}>
             <Icon icon={LuLogOut} size={16} />
             <span>Sign out</span>
@@ -131,7 +131,7 @@ export default function AdminLayout() {
               aria-expanded={moreOpen}
               onClick={() => setMoreOpen((v) => !v)}
             >
-              <span className="admin__navsection admin__navsection--btn">More</span>
+              <span className="admin__navsection admin__navsection--btn">Settings &amp; more</span>
               <Icon icon={moreOpen ? LuChevronDown : LuChevronRight} size={16} />
             </button>
             {moreOpen && more.map((item) => <NavItem key={item.to} item={item} unread={unread} />)}

@@ -42,120 +42,120 @@ export const WALL_ART = [
   {
     id: 'ducks',
     title: 'The Rubber Ducks',
-    x: 14.0, y: 7.3, w: 30.3, h: 17.7,
+    x: 14.1, y: 7.5, w: 30.9, h: 18.9,
     blurb: 'A tall ship under full sail in heavy weather, with two rubber ducks paddling along beside it. Signed in the corner, and hung in the biggest gold frame on the wall.',
   },
   {
     id: 'oval-landscape',
     title: 'The Little Oval',
     shape: 'oval',
-    x: 21.7, y: 24.6, w: 10.6, h: 5.8,
+    x: 21.6, y: 24.6, w: 10.7, h: 5.7,
     blurb: 'A small painted scene in a slim gold oval — the quietest thing up here, and the one most people walk straight past.',
   },
   {
     id: 'botanical',
     title: 'Botanical Study',
-    x: 17.2, y: 30.4, w: 16.4, h: 17.2,
+    x: 17.0, y: 30.5, w: 17.4, h: 16.0,
     blurb: 'An orange-flowered botanical plate with its seed and leaf studies set out underneath, double-matted in cream inside a gold frame.',
   },
   {
     id: 'snow-chain',
     title: 'Snow Day',
-    x: 36.9, y: 34.3, w: 10.7, h: 5.9,
+    x: 35.6, y: 34.5, w: 12.1, h: 6.3,
     blurb: 'A winter scene — a low stone building across an empty white field — in a thin brass frame that hangs from its own chain.',
   },
   {
     id: 'balloon-fox',
     title: 'Foxes in a Balloon',
-    x: 48.4, y: 18.4, w: 21.0, h: 22.6,
+    x: 48.2, y: 17.6, w: 22.0, h: 23.6,
     blurb: 'Two foxes in waistcoats crossing a pale sky under a striped hot-air balloon, with a few small birds for company. Hung frame-within-a-frame.',
   },
   {
     id: 'butterflies',
     title: 'The Butterfly Plate',
     shape: 'oval',
-    x: 70.3, y: 17.6, w: 11.8, h: 15.5,
+    x: 70.8, y: 18.2, w: 14.4, h: 13.9,
     blurb: 'A specimen plate of butterflies, printed and labelled the old way, in a gold oval.',
   },
   {
     id: 'lady-in-red',
     title: 'The Lady in Red',
-    x: 84.4, y: 20.4, w: 7.2, h: 7.0,
+    x: 86.9, y: 20.5, w: 5.2, h: 6.8,
     blurb: 'A figure in a long red costume, lifted from an old illustrated card, in a small black frame.',
   },
   {
     id: 'grey-room',
     title: 'The Grey Room',
-    x: 83.5, y: 26.7, w: 15.3, h: 11.3,
+    x: 85.9, y: 27.3, w: 13.8, h: 11.7,
     blurb: 'A soft grey photograph of a room full of people under hanging lamps — the only piece on the wall with no colour in it at all.',
   },
   {
     id: 'hare',
     title: 'The Brass Hare',
     kind: 'object',
-    x: 74.2, y: 31.6, w: 5.4, h: 10.0,
+    x: 74.1, y: 32.2, w: 7.6, h: 9.4,
     blurb: 'Not a picture: a gilded hare’s head mounted straight onto the paint, ears up, watching the espresso machine.',
   },
   {
     id: 'daisies',
     title: 'Daisies',
-    x: 80.7, y: 35.6, w: 5.6, h: 6.9,
+    x: 80.0, y: 36.2, w: 5.3, h: 6.8,
     blurb: 'A close, warm little painting of white daisies, in a slim black frame.',
   },
   {
     id: 'early-bird',
     title: 'Early Bird',
-    x: 87.8, y: 38.6, w: 9.0, h: 9.8,
+    x: 87.7, y: 39.1, w: 8.0, h: 8.8,
     blurb: 'A pen drawing captioned EARLY BIRD, floated on a wide brown mat inside a bronze frame.',
   },
   {
     id: 'fox-head',
     title: 'The Gold Fox',
     kind: 'object',
-    x: 37.0, y: 41.5, w: 7.9, h: 8.2,
+    x: 37.0, y: 42.1, w: 6.8, h: 6.5,
     blurb: 'The wall’s other sculpture — a gilded fox’s head in spectacles, with a fine chain looped under its chin. More or less the house mascot.',
   },
   {
     id: 'pumpkin',
     title: 'The Pumpkin House',
     shape: 'oval',
-    x: 44.6, y: 41.3, w: 9.8, h: 9.3,
+    x: 44.5, y: 41.9, w: 9.6, h: 9.2,
     blurb: 'A pumpkin with a front door, two lit windows and a curl of vine over the top, painted inside a black oval.',
   },
   {
     id: 'the-company',
     title: 'The Company',
-    x: 55.6, y: 41.5, w: 11.0, h: 8.3,
+    x: 55.7, y: 41.9, w: 10.4, h: 6.6,
     blurb: 'A painted crowd of hares and long-eared characters, caught mid-conversation, in a plain black frame.',
   },
   {
     id: 'bicycle-fox',
     title: 'Fox on a Bicycle',
-    x: 17.4, y: 48.6, w: 23.0, h: 13.8,
+    x: 17.6, y: 48.8, w: 22.8, h: 13.5,
     blurb: 'A butterfly-winged fox riding a bicycle past a blue-doored shopfront, window boxes and a row of corn. The most Haddon Heights thing on the wall.',
   },
   {
     id: 'cold-out',
     title: 'Cold Out',
-    x: 41.8, y: 52.4, w: 14.8, h: 13.4,
+    x: 42.1, y: 52.9, w: 14.4, h: 10.7,
     blurb: 'A French press and a striped scarf, captioned COLD OUT, sunk deep inside a heavy carved gold frame.',
   },
   {
     id: 'silhouette',
     title: 'The Silhouette',
-    x: 58.4, y: 49.8, w: 10.2, h: 11.6,
+    x: 58.0, y: 49.6, w: 9.7, h: 9.5,
     blurb: 'A dark cut-paper figure on a dusty violet ground, in a bright gold frame.',
   },
   {
     id: 'town-hall',
     title: 'The Town Hall Drawing',
-    x: 69.4, y: 44.0, w: 17.6, h: 19.6,
+    x: 67.8, y: 43.5, w: 15.8, h: 17.7,
     blurb: 'A pen-and-ink drawing of a domed civic building with bare trees around it, captioned along the bottom edge, in the wide woven-gold frame.',
   },
   {
     id: 'the-cup',
     title: 'The Cup',
-    x: 86.6, y: 48.6, w: 9.8, h: 12.0,
+    x: 84.5, y: 48.6, w: 10.5, h: 11.2,
     blurb: 'A cup and saucer, a spoon and a scatter of shapes — the one piece on this wall that is unmistakably about coffee.',
   },
 ];
@@ -198,6 +198,128 @@ export function mergeWallArt(pieces) {
       forSale: Boolean(p.for_sale),
     };
   });
+}
+
+/* ---- the owner's own wall ------------------------------------------------
+
+   Since the wall editor, the whole wall can live in the Gallery Wall room
+   section's own data (`sections.data.pieces`) — one entry per frame with its
+   name, credits, story, close-up photo and its box on the photograph — so it
+   publishes and discards with the rest of the page, like every other section.
+   Until the owner first changes something, that list is absent and the wall
+   is exactly what it always was: WALL_ART plus any `gallery_pieces` row
+   pinned to a spot with `wall_spot`. The first edit copies that wall in whole
+   (seedWallPieces), so nothing on it changes or goes missing. */
+
+const r1 = (n) => Math.round(Number(n) * 10) / 10;
+const num = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
+const str = (v) => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+/** Smallest box the editor allows, in % of the photograph. */
+export const MIN_BOX = 1.5;
+
+/** A box kept on the photograph and at least MIN_BOX across, rounded to 0.1%. */
+export function clampBox({ x, y, w, h }, min = MIN_BOX) {
+  const W = Math.min(100, Math.max(min, num(w, 10)));
+  const H = Math.min(100, Math.max(min, num(h, 10)));
+  return {
+    x: r1(Math.min(100 - W, Math.max(0, num(x, 0)))),
+    y: r1(Math.min(100 - H, Math.max(0, num(y, 0)))),
+    w: r1(W),
+    h: r1(H),
+  };
+}
+
+/** One editable piece, every field present and the box on the photograph. */
+export function normalizeWallPiece(p = {}, i = 0) {
+  return {
+    id: str(p.id).trim() || `piece-${i + 1}`,
+    title: str(p.title),
+    artist: str(p.artist),
+    artist_url: str(p.artist_url),
+    story: str(p.story),
+    blurb: str(p.blurb),
+    photo: str(p.photo),
+    medium: str(p.medium),
+    year_label: str(p.year_label),
+    for_sale: Boolean(p.for_sale),
+    shape: p.shape === 'oval' ? 'oval' : 'rect',
+    kind: p.kind === 'object' ? 'object' : '',
+    ...clampBox(p),
+  };
+}
+
+/** The owner's list from section data, or null when they haven't made one. */
+export function ownWallPieces(data) {
+  const list = data && Array.isArray(data.pieces) ? data.pieces : null;
+  if (!list || !list.length) return null;
+  const seen = new Set();
+  return list.map(normalizeWallPiece).filter((p) => (seen.has(p.id) ? false : seen.add(p.id)));
+}
+
+/**
+ * The wall as it hangs today, as an editable list in walking order: every
+ * built-in frame, with the credits and story of any catalogued piece pinned
+ * to it folded in. This is what the first edit copies into the section.
+ */
+export function seedWallPieces(rows) {
+  return spatialOrder(mergeWallArt(rows)).map((a, i) => normalizeWallPiece({
+    id: a.id,
+    title: a.title,
+    artist: a.artist,
+    artist_url: a.artistUrl,
+    story: a.story,
+    blurb: a.blurb,
+    photo: a.photo,
+    medium: a.medium,
+    year_label: a.yearLabel,
+    for_sale: a.forSale,
+    shape: a.shape,
+    kind: a.kind,
+    x: a.x, y: a.y, w: a.w, h: a.h,
+  }, i));
+}
+
+/**
+ * The art the room hangs: the owner's list (in their order) when there is
+ * one, otherwise the built-in wall in walking order. A catalogued row pinned
+ * to a spot still fills any field the owner left blank, so a wall edited
+ * before a row was added never hides that row's credits.
+ */
+export function resolveWall(data, rows) {
+  const own = ownWallPieces(data);
+  if (!own) return spatialOrder(mergeWallArt(rows));
+  const pinned = new Map();
+  (Array.isArray(rows) ? rows : []).forEach((r) => {
+    const spot = str(r?.wall_spot).trim();
+    if (spot && !pinned.has(spot)) pinned.set(spot, r);
+  });
+  return own.map((p) => {
+    const r = pinned.get(p.id) || {};
+    const pick = (a, b) => (str(a).trim() ? a : str(b));
+    return {
+      id: p.id,
+      title: p.title.trim() || str(r.title).trim() || 'Untitled',
+      x: p.x, y: p.y, w: p.w, h: p.h,
+      shape: p.shape === 'oval' ? 'oval' : undefined,
+      kind: p.kind || undefined,
+      blurb: p.blurb,
+      artist: pick(p.artist, r.artist),
+      artistUrl: pick(p.artist_url, r.artist_url),
+      story: pick(p.story, r.story),
+      photo: pick(p.photo, r.image_url),
+      medium: pick(p.medium, r.medium),
+      yearLabel: pick(p.year_label, r.year_label),
+      forSale: p.for_sale || Boolean(r.for_sale),
+      linked: true,
+    };
+  });
+}
+
+/** Stage width / height for a photograph of the given aspect (w / h). */
+export function stageRatioFor(imageRatio) {
+  const r = Number(imageRatio) > 0 ? Number(imageRatio) : IMAGE_W / IMAGE_H;
+  return (WALL_FOCUS.w * r) / WALL_FOCUS.h;
 }
 
 /**

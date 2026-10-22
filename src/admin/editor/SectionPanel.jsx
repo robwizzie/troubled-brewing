@@ -8,7 +8,8 @@ import CollectionManager from '../components/CollectionManager.jsx';
 import { useToast, Spinner } from '../components/ui.jsx';
 import { managerFor } from './sectionMeta.js';
 import { usePublishScope, useUnsaved } from '../lib/publishing.jsx';
-import { LuArrowLeft, LuArrowRight, LuX } from 'react-icons/lu';
+import { LuArrowLeft, LuArrowRight, LuFrame, LuX } from 'react-icons/lu';
+import { ownWallPieces, seedWallPieces } from '../../lib/galleryWall.js';
 import { Icon } from '../components/Icon.jsx';
 
 /* Fields for a section whose content lives in a content_blocks row (e.g. the
@@ -52,7 +53,7 @@ function BlockFields({ spec, blockApi }) {
    Collection-backed sections (menu, events, team…) get a "Manage —" button
    that swaps the panel to the embedded collection manager. Its changes join
    the same Publish button at the bottom of the editor. */
-export default function SectionPanel({ section, isNew, effectiveType, focusTarget, onChangeData, onClose, onCollectionChanged, blockApi, children }) {
+export default function SectionPanel({ section, isNew, effectiveType, focusTarget, onChangeData, onClose, onCollectionChanged, onOpenWall, blockApi, children }) {
   const toast = useToast();
   const { guard, isDirty } = useUnsaved();
   const scope = usePublishScope();
@@ -61,6 +62,8 @@ export default function SectionPanel({ section, isNew, effectiveType, focusTarge
   const manager = managerFor(type);
   const [managing, setManaging] = useState(false);
   const [autoLabel, setAutoLabel] = useState(null);
+  const [itemOpen, setItemOpen] = useState(false);
+  const cmRef = useRef(null);
   const bodyRef = useRef(null);
   const data = section.data || {};
   const set = (name, val) => onChangeData(section.id, { ...data, [name]: val });
@@ -99,22 +102,24 @@ export default function SectionPanel({ section, isNew, effectiveType, focusTarge
   }, [focusTarget?.nonce]);
 
   if (managing && manager) {
+    const leaveList = () =>
+      guard(() => setManaging(false), {
+        when: () => Boolean(scope?.unitDirty((id) => id !== 'editor:page')) || isDirty((id) => id.startsWith('form:')),
+        title: 'Leave this list without publishing?',
+        body: 'You changed items in this list but haven’t published them. If you go back now those changes are thrown away. Stay and press Publish to keep them.',
+        confirmLabel: 'Go back and discard',
+      });
     return (
       <aside className="tb-panel" aria-label={`Manage ${manager.title}`}>
         <div className="tb-panel__head">
+          {/* ONE way back, and it says where it goes: to the list while an
+              item is open, to the section's own fields from the list. */}
           <button
-            className="btn btn--ghost btn--sm"
-            onClick={() =>
-              guard(() => setManaging(false), {
-                when: () => Boolean(scope?.unitDirty((id) => id !== 'editor:page')) || isDirty((id) => id.startsWith('form:')),
-                title: 'Leave this list without publishing?',
-                body: 'You changed items in this list but haven’t published them. If you go back now those changes are thrown away. Stay and press Publish to keep them.',
-                confirmLabel: 'Go back and discard',
-              })
-            }
+            className="btn btn--ghost btn--sm tb-panel__back"
+            onClick={() => (itemOpen ? cmRef.current?.requestClose() : leaveList())}
           >
             <Icon icon={LuArrowLeft} size={16} />
-            Back to the section
+            <span>{itemOpen ? `All ${manager.title.toLowerCase()}` : 'Back to the section'}</span>
           </button>
           <button className="iconbtn" aria-label="Close" onClick={onClose}><Icon icon={LuX} /></button>
         </div>
@@ -123,9 +128,11 @@ export default function SectionPanel({ section, isNew, effectiveType, focusTarge
             <manager.component embedded onChanged={onCollectionChanged} />
           ) : (
             <CollectionManager
+              ref={cmRef}
               key={autoLabel || 'manager'}
               {...manager}
               embedded
+              onEditingChange={setItemOpen}
               onChanged={onCollectionChanged}
               autoOpenLabel={autoLabel}
             />
@@ -149,7 +156,18 @@ export default function SectionPanel({ section, isNew, effectiveType, focusTarge
       </div>
       <div className="tb-panel__body" ref={bodyRef}>
         {children}
-        {manager ? (
+        {type === 'gallery_wall_room' && onOpenWall ? (
+          <button type="button" className="tb-panel__wall" onClick={onOpenWall}>
+            <span className="tb-panel__wallicon"><Icon icon={LuFrame} size={20} /></span>
+            <span className="tb-panel__walltext">
+              <strong>Edit the pieces on the wall</strong>
+              <span>
+                {(ownWallPieces(data) || seedWallPieces(null)).length} pieces: names, artists, stories, and the box around each one
+              </span>
+            </span>
+            <Icon icon={LuArrowRight} size={18} />
+          </button>
+        ) : manager ? (
           <button className="btn btn--primary tb-panel__manage" onClick={() => setManaging(true)}>
             Manage {manager.title.toLowerCase()}
             <Icon icon={LuArrowRight} size={16} />

@@ -6,7 +6,7 @@
    ============================================================================= */
 import {
   LuAtSign, LuCalendarDays, LuCamera, LuChartLine, LuCircleHelp, LuClock, LuCoffee, LuCroissant, LuFrame, LuHistory, LuHouse,
-  LuImages, LuInbox, LuLink, LuMegaphone, LuPanelsTopLeft, LuQuote, LuSquarePen, LuStar, LuStore, LuUsers, LuVote, LuWandSparkles,
+  LuImages, LuInbox, LuLink, LuMegaphone, LuPanelsTopLeft, LuSettings, LuSquarePen, LuStar, LuStore, LuUserRound, LuUsers, LuVote, LuWandSparkles,
 } from 'react-icons/lu';
 
 /* Friendly page names — the owner picks "Menu", never a slug. */
@@ -27,12 +27,16 @@ export const PAGE_NAMES = {
 
 /* Every screen. `nav` places it in the sidebar: 'top' (always visible, in
    order), a group name (groups appear in the order they first show up here),
-   'more' (folded away under "More") or 'bottom' (Help, at the foot).
+   'more' (folded away under "Settings & more") or 'bottom' (Help, at the foot).
    `icon` is a Lucide component from react-icons/lu.
 
    Adding a screen is ONE line here (plus its <Route> in AdminApp.jsx); the
    sidebar, breadcrumbs, quick-jump and home page all pick it up:
-     { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'Every day' }, */
+     { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'Every day' },
+
+   Hand-picked quotes are no longer a screen of their own: Reviews has
+   "+ Favorite", which makes the same quote. The old screen still opens from
+   a link on Reviews for editing the quotes already picked. */
 export const SCREENS = [
   { to: '/admin', icon: LuHouse, label: 'Home', nav: 'top', end: true },
   { to: '/admin/chalkboard', icon: LuCamera, label: 'Today’s chalkboard', nav: 'top', star: true },
@@ -40,17 +44,18 @@ export const SCREENS = [
   { to: '/admin/hours', icon: LuClock, label: 'Hours & holidays', nav: 'Every day' },
   { to: '/admin/quick-blocks', icon: LuMegaphone, label: 'Banner & links', nav: 'Every day' },
   { to: '/admin/inbox', icon: LuInbox, label: 'Messages', nav: 'Every day', badge: 'inbox' },
-  { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'Every day' },
   { to: '/admin/wishes', icon: LuWandSparkles, label: 'Wish list', nav: 'Every day' },
   { to: '/admin/menu', icon: LuCoffee, label: 'Menu', nav: 'On the site' },
-  { to: '/admin/pairings', icon: LuCroissant, label: 'Drink pairings', nav: 'On the site' },
   { to: '/admin/events', icon: LuCalendarDays, label: 'Events', nav: 'On the site' },
   { to: '/admin/reviews', icon: LuStar, label: 'Google reviews', nav: 'On the site' },
+  { to: '/admin/gallery', icon: LuFrame, label: 'Gallery Wall', nav: 'On the site' },
+  { to: '/admin/troublemakers', icon: LuUsers, label: 'Troublemakers', nav: 'On the site' },
+  { to: '/admin/pairings', icon: LuCroissant, label: 'Drink pairings', nav: 'On the site' },
   { to: '/admin/look', icon: LuPanelsTopLeft, label: 'Homepage look', nav: 'On the site' },
   { to: '/admin/polls', icon: LuVote, label: 'This or that polls', nav: 'On the site' },
-  { to: '/admin/testimonials', icon: LuQuote, label: 'Hand-picked quotes', nav: 'more' },
-  { to: '/admin/gallery', icon: LuFrame, label: 'Gallery Wall', nav: 'more' },
-  { to: '/admin/troublemakers', icon: LuUsers, label: 'Troublemakers', nav: 'more' },
+  { to: '/admin/settings', icon: LuSettings, label: 'Settings', nav: 'more', end: true },
+  { to: '/admin/account', icon: LuUserRound, label: 'Your account', nav: 'more' },
+  { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'more' },
   { to: '/admin/neighborhood', icon: LuStore, label: 'Local Love', nav: 'more' },
   { to: '/admin/timeline', icon: LuHistory, label: 'Timeline', nav: 'more' },
   { to: '/admin/media', icon: LuImages, label: 'Photo library', nav: 'more' },
@@ -65,7 +70,7 @@ export const NAV_GROUPS = [...new Set(SCREENS.map((s) => s.nav).filter((n) => n 
 /** The sidebar group a screen sits in ("Every day", "More"…), or ''. */
 export function groupOf(screen) {
   if (!screen) return '';
-  if (screen.nav === 'more') return 'More';
+  if (screen.nav === 'more') return 'Settings & more';
   return PLACES.has(screen.nav) ? '' : screen.nav;
 }
 
@@ -91,9 +96,12 @@ export function describePath(pathname) {
 }
 
 /* ---- The jobs people actually come here to do ----------------------------
-   The cards on the home page, in the words staff use, most common first (the
-   first COMMON_COUNT after the chalkboard are the "Most days" row). `keywords` feed the
-   search box; include the words a barista would type, misspelled or not. */
+   The home page, in the words staff use. `TASKS` are the big cards (the
+   chalkboard has its own banner, then the first COMMON_COUNT are "Most
+   days"); `SITE_TASKS` and `VISITOR_TASKS` are the two short lists under
+   them; `SETTINGS_TASKS` live on the Settings screen, out of the way.
+   `keywords` feed the search box; include the words a barista would type,
+   misspelled or not. */
 export const TASKS = [
   {
     id: 'chalkboard', to: '/admin/chalkboard', icon: LuCamera,
@@ -120,17 +128,15 @@ export const TASKS = [
     keywords: 'event events calendar open mic music live night class workshop party date trivia show',
   },
   {
-    id: 'reviews', to: '/admin/reviews', icon: LuStar,
-    title: 'Hide or feature a review',
-    desc: 'Choose which Google reviews show and which one leads.',
-    keywords: 'review reviews google stars star rating hide feature pin bad good testimonial customer',
-  },
-  {
     id: 'banner', to: '/admin/quick-blocks', icon: LuMegaphone,
     title: 'Post an announcement banner',
     desc: 'The message bar across the top of every page.',
-    keywords: 'banner announcement announce message notice alert news bar top heads up instagram facebook tiktok social links featured drink',
+    keywords: 'banner announcement announce message notice alert news bar top heads up featured drink',
   },
+];
+
+/* "On the website": the rest of what's on the public pages. */
+export const SITE_TASKS = [
   {
     id: 'pages', to: '/admin/editor', icon: LuSquarePen,
     title: 'Edit a page’s words or photos',
@@ -138,35 +144,48 @@ export const TASKS = [
     keywords: 'page pages words text writing wording photo photos picture image about story homepage home heading title section hero typo spelling paragraph contact',
   },
   {
+    id: 'reviews', to: '/admin/reviews', icon: LuStar,
+    title: 'Hide or feature a review',
+    desc: 'Choose which Google reviews show, and which one leads.',
+    keywords: 'review reviews google stars star rating hide feature pin bad good testimonial testimonials customer quote quotes favourite favorite hand picked',
+  },
+  { id: 'gallery', to: '/admin/gallery', icon: LuFrame, title: 'Edit the Gallery Wall', desc: 'Names, artists and stories, and the box around each piece.', keywords: 'gallery art artist artists painting paintings wall piece pieces frame frames hotspot box for sale story' },
+  { id: 'team', to: '/admin/troublemakers', icon: LuUsers, title: 'Edit the staff cards', desc: 'The Troublemakers page: photos, roles and fun facts.', keywords: 'troublemakers staff team barista baristas employee employees people bio new hire' },
+  {
     id: 'pairings', to: '/admin/pairings', icon: LuCroissant,
     title: 'Pair a drink with a treat',
-    desc: '“Goes great with…” under a drink on the Menu page — your staff’s picks.',
+    desc: '“Goes great with…” under a drink on the Menu page.',
     keywords: 'pair pairs pairing pairings goes great with treat treats combo combos match together muffin scone cookie croissant bakery snack recommend recommendation suggestion',
   },
   {
     id: 'look', to: '/admin/look', icon: LuPanelsTopLeft,
     title: 'Change the homepage look',
-    desc: 'Compare the homepage styles side by side and preview one before it goes live.',
+    desc: 'Compare the homepage styles and preview one before it goes live.',
     keywords: 'look style styles design theme concept layout hero front homepage appearance seasonal refresh redesign',
   },
 ];
 
-/* Less common jobs: not cards, but the search box still finds them. */
-export const MORE_TASKS = [
-  { id: 'inbox', to: '/admin/inbox', icon: LuInbox, title: 'Read messages from the site', desc: 'Contact and catering form messages.', keywords: 'inbox message messages email contact catering form enquiry inquiry request order' },
-  { id: 'quotes', to: '/admin/testimonials', icon: LuQuote, title: 'Add a hand-picked quote', desc: 'Favourite quotes shown above the Google reviews.', keywords: 'quote quotes testimonial testimonials favourite favorite' },
-  { id: 'gallery', to: '/admin/gallery', icon: LuFrame, title: 'Add or edit art on the Gallery Wall', desc: 'Pieces, artists and their stories.', keywords: 'gallery art artist artists painting paintings wall piece frame for sale' },
-  { id: 'team', to: '/admin/troublemakers', icon: LuUsers, title: 'Add or edit a staff card', desc: 'The Troublemakers page — photos, roles and fun facts.', keywords: 'troublemakers staff team barista baristas employee employees people bio new hire' },
-  { id: 'local', to: '/admin/neighborhood', icon: LuStore, title: 'Add a local business', desc: 'The neighbours on the Local Love page.', keywords: 'local love business businesses neighbor neighbour neighborhood shop shops station ave partner' },
-  { id: 'timeline', to: '/admin/timeline', icon: LuHistory, title: 'Add a milestone to the Timeline', desc: 'The shop’s story, year by year.', keywords: 'timeline history milestone milestones year anniversary' },
-  { id: 'photos', to: '/admin/media', icon: LuImages, title: 'See every uploaded photo', desc: 'The photo library.', keywords: 'photo library photos images uploads upload pictures media' },
-  { id: 'social', to: '/admin/quick-blocks', icon: LuAtSign, title: 'Change social media links', desc: 'Instagram, Facebook and friends in the footer.', keywords: 'social instagram facebook tiktok links footer x twitter' },
+/* "From your visitors": what people sent or did on the site. */
+export const VISITOR_TASKS = [
+  { id: 'inbox', to: '/admin/inbox', icon: LuInbox, title: 'Read messages', desc: 'Contact and catering forms.', keywords: 'inbox message messages email contact catering form enquiry inquiry request order' },
+  { id: 'wishes', to: '/admin/wishes', icon: LuWandSparkles, title: 'Read the menu wishes', desc: 'Drinks and treats people wished for.', keywords: 'wish wishes wishlist suggestion suggestions idea ideas request requests feedback customer customers want menu new drink fox' },
+  { id: 'polls', to: '/admin/polls', icon: LuVote, title: 'Ask a “This or that” poll', desc: 'A one-tap question in the fox, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
+];
+
+/* Settings: setup and rarely changed pages, one quiet screen. */
+export const SETTINGS_TASKS = [
+  { id: 'account', to: '/admin/account', icon: LuUserRound, title: 'Your account', desc: 'Your email, your password, and signing out.', keywords: 'account password change password email login log in sign out signout logout me profile' },
+  { id: 'social', to: '/admin/quick-blocks', icon: LuAtSign, title: 'Social media links', desc: 'Instagram, Facebook and friends in the footer.', keywords: 'social instagram facebook tiktok links footer x twitter' },
   { id: 'google', to: '/admin/google', icon: LuLink, title: 'Google connection', desc: 'Where your rating, reviews and address come from.', keywords: 'google connection connect rating maps address place refresh fetch' },
-  { id: 'polls', to: '/admin/polls', icon: LuVote, title: 'Ask a “This or that” poll in the fox', desc: 'A one-tap question like “Iced or hot today?”, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
-  { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'See site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visit visits visitors traffic views pages numbers clicks orders dashboard report how many people busy' },
-  { id: 'wishes', to: '/admin/wishes', icon: LuWandSparkles, title: 'Read the menu wishes', desc: 'Drinks and treats people wished for with the fox.', keywords: 'wish wishes wishlist suggestion suggestions idea ideas request requests feedback customer customers want menu new drink fox' },
+  { id: 'photos', to: '/admin/media', icon: LuImages, title: 'Photo library', desc: 'Every photo you have uploaded.', keywords: 'photo library photos images uploads upload pictures media' },
+  { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'Site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visit visits visitors traffic views pages numbers clicks orders dashboard report how many people busy' },
+  { id: 'local', to: '/admin/neighborhood', icon: LuStore, title: 'Local Love', desc: 'The neighbours on the Local Love page.', keywords: 'local love business businesses neighbor neighbour neighborhood shop shops station ave partner' },
+  { id: 'timeline', to: '/admin/timeline', icon: LuHistory, title: 'Timeline', desc: 'The shop’s story, year by year.', keywords: 'timeline history milestone milestones year anniversary' },
   { id: 'help', to: '/admin/help', icon: LuCircleHelp, title: 'Help', desc: 'Plain-English how-tos.', keywords: 'help how stuck guide tutorial question undo mistake' },
 ];
+
+/** Kept for older imports: everything that isn't a big card. */
+export const MORE_TASKS = [...SITE_TASKS, ...VISITOR_TASKS, ...SETTINGS_TASKS];
 
 const ALL_TASKS = [...TASKS, ...MORE_TASKS];
 

@@ -409,14 +409,21 @@
 .homeactivity__list a { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; }
 .homeactivity__when { color: var(--adm-ink-3); font-size: 0.85rem; white-space: nowrap; }
 
-.homelinks { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
-.homelinks a { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border: 1px solid var(--adm-line); border-radius: var(--adm-radius); background: var(--adm-surface); color: var(--adm-ink); text-decoration: none; transition: border-color 0.15s ease; }
+/* Short task lists: one quiet card per group, rows split by hairlines. */
+.homelinks { list-style: none; padding: 0; margin: 0; display: grid; background: var(--adm-surface); border: 1px solid var(--adm-line); border-radius: var(--adm-radius-lg); overflow: hidden; }
+.homelinks li + li { border-top: 1px solid var(--adm-line); }
+.homelinks a, .homesettings { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; color: var(--adm-ink); text-decoration: none; transition: background-color 0.15s ease; }
 .adm .homelinks a { color: var(--adm-ink); }
-.homelinks a:hover { border-color: var(--adm-sage); }
+.homelinks a:hover, .homelinks a:focus-visible { background: var(--adm-sage-50); }
+.homelinks a:focus-visible { outline-offset: -2px; }
 .homelinks__icon { display: inline-grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: var(--adm-radius-sm); background: var(--adm-sunk); color: var(--adm-ink-2); }
-.homelinks__text { display: grid; min-width: 0; }
-.homelinks__text strong { font-weight: 600; font-size: 0.93rem; }
-.homelinks__text span { font-size: 0.82rem; color: var(--adm-ink-3); }
+.homelinks__text { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.homelinks__text strong { font-weight: 600; font-size: 0.95rem; line-height: 1.3; }
+.homelinks__text span { font-size: 0.84rem; line-height: 1.4; color: var(--adm-ink-3); }
+.homelinks__go { flex-shrink: 0; color: var(--adm-ink-3); }
+.adminhome__lists { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.adminhome__col { display: grid; gap: 28px; }
+@media (max-width: 760px) { .adminhome__lists { grid-template-columns: minmax(0, 1fr); } }
 
 /* a "this moved / go here" card (e.g. Banner & links → Homepage look) */
 .linkcard { display: flex; align-items: center; gap: 14px; padding: 16px 18px; margin-bottom: 20px; border: 1px dashed var(--adm-line-strong); border-radius: var(--adm-radius-lg); background: var(--adm-surface); text-decoration: none; transition: border-color 0.15s ease; }
@@ -545,6 +552,9 @@
 .imagefield__url { font-size: 0.875rem; }
 .imagefield__buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .imagefield__pick { cursor: pointer; }
+/* a <label> styled as a button: `.field label` (block, bottom margin) must not
+   win over `.btn`, or its icon sits on top of the words */
+.adm .field label.btn { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 0; font-size: 0.875rem; }
 .imagefield__pick:focus-within { box-shadow: var(--adm-focus); }
 .imagefield__pick.is-busy { opacity: 0.7; pointer-events: none; }
 .imagefield__advanced > summary { font-size: 0.875rem; }
@@ -749,3 +759,20 @@
   .pairpick__list { max-height: 216px; }
   .pairings-admin__add { width: 100%; }
 }
+
+/* ---- Settings + Your account --------------------------------------------- */
+.settingshome { display: grid; gap: 24px; max-width: 720px; }
+.settingshome .screenhead { margin-bottom: 0; }
+.account { max-width: 560px; }
+.account__card { display: grid; gap: 4px; justify-items: start; }
+.account__card .field { width: 100%; margin-bottom: 12px; }
+.adm .account__h { font-size: 1.05rem; margin: 0 0 6px; }
+.account__email { margin: 0 0 14px; font-size: 1.05rem; font-weight: 600; overflow-wrap: anywhere; }
+.account__msg { display: flex; align-items: flex-start; gap: 8px; width: 100%; margin: 0 0 12px; padding: 10px 12px; border-radius: var(--adm-radius-sm); font-size: 0.92rem; line-height: 1.45; }
+.account__msg .adm-icon { flex-shrink: 0; margin-top: 1px; }
+.account__msg.is-ok { background: var(--adm-ok-50); color: var(--adm-ok); }
+.account__msg.is-error { background: var(--adm-danger-50); color: var(--adm-danger-600); }
+.account__actions { display: flex; gap: 8px; }
+.admin__user { text-decoration: none; }
+.adm a.admin__user { color: var(--adm-ink-3); }
+.adm a.admin__user:hover { color: var(--adm-ink); text-decoration: underline; }

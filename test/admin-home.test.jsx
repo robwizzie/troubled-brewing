@@ -76,14 +76,40 @@ describe('admin home', () => {
     [/post an announcement banner/i, '/admin/quick-blocks'],
     [/edit the menu descriptions or photos/i, '/admin/menu'],
     [/add an event/i, '/admin/events'],
-    [/edit a page’s words or photos/i, '/admin/editor'],
-    [/hide or feature a review/i, '/admin/reviews'],
   ])('the "%s" card goes to %s and says what it changes', (name, to) => {
     renderAdmin();
     const card = within(main()).getByRole('link', { name });
     expect(card.querySelector('.taskcard__desc').textContent.length).toBeGreaterThan(10);
     fireEvent.click(card);
     expect(where()).toBe(to);
+  });
+
+  it.each([
+    [/edit a page’s words or photos/i, '/admin/editor'],
+    [/hide or feature a review/i, '/admin/reviews'],
+    [/edit the gallery wall/i, '/admin/gallery'],
+    [/edit the staff cards/i, '/admin/troublemakers'],
+    [/read messages/i, '/admin/inbox'],
+    [/settings and more/i, '/admin/settings'],
+  ])('the "%s" row goes to %s and says what it changes', (name, to) => {
+    renderAdmin();
+    const row = within(main()).getByRole('link', { name });
+    expect(row.querySelector('.homelinks__text span').textContent.length).toBeGreaterThan(10);
+    fireEvent.click(row);
+    expect(where()).toBe(to);
+  });
+
+  it('keeps the home page short: four cards, two short lists, and setup tucked into Settings', () => {
+    renderAdmin();
+    expect(main().querySelectorAll('.taskcard')).toHaveLength(4);
+    const rows = main().querySelectorAll('.homelinks a');
+    expect(rows.length).toBeLessThanOrEqual(10);
+    const names = [...main().querySelectorAll('a')].map((a) => a.textContent).join('|');
+    // no hand-picked quotes screen, and the setup-only jobs live in Settings
+    expect(names).not.toMatch(/hand-picked quote/i);
+    expect(names).not.toMatch(/google connection|photo library|social media links/i);
+    const nav = screen.getByRole('navigation', { name: /admin sections/i });
+    expect(within(nav).queryByRole('link', { name: /hand-picked/i })).toBeNull();
   });
 
   it('"What do you want to change?" finds screens by the words people use', () => {
@@ -190,8 +216,9 @@ describe('sidebar and breadcrumbs', () => {
     const names = within(nav).getAllByRole('link').map((a) => a.textContent);
     expect(names.slice(0, 3).join('|')).toMatch(/Home\|.*Today’s chalkboard\|.*Edit your pages/);
     expect(within(nav).queryByRole('link', { name: /timeline/i })).toBeNull();
-    fireEvent.click(within(nav).getByRole('button', { name: /more/i }));
+    fireEvent.click(within(nav).getByRole('button', { name: /settings & more/i }));
     expect(within(nav).getByRole('link', { name: /timeline/i })).toBeTruthy();
+    expect(within(nav).getByRole('link', { name: /your account/i })).toBeTruthy();
   });
 
   it('marks the current screen and opens More by itself when you are in it', () => {

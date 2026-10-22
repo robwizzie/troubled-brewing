@@ -28,6 +28,8 @@ import WishList from './managers/WishList.jsx'; // wishes-tricks
 import HomepageLook from './managers/HomepageLook.jsx';
 import PollsManager from './managers/PollsManager.jsx'; // poll-insights
 import SiteStats from './managers/SiteStats.jsx'; // poll-insights
+import SettingsHome from './SettingsHome.jsx';
+import AccountScreen from './AccountScreen.jsx';
 import './admin.css';
 
 /* /admin is a task launcher ("Update the chalkboard", "Change hours"…); the
@@ -61,13 +63,17 @@ export default function AdminApp() {
               }
             >
               <Route index element={<AdminHome />} />
-              <Route path="settings" element={<Navigate to="/admin" replace />} />
+              <Route path="settings" element={<SettingsHome />} />
+              <Route path="account" element={<AccountScreen />} />
               <Route path="menu" element={screen(<MenuManager />, 'menu', 'View the live Menu page')} />
               <Route path="pairings" element={screen(<PairingsManager />, 'menu', 'View the live Menu page')} />
               <Route path="events" element={screen(<EventsManager />, 'events', 'View the live Events page')} />
               <Route path="testimonials" element={screen(<TestimonialsManager />, 'reviews', 'View the live Reviews page')} />
               <Route path="reviews" element={screen(<ReviewsManager />, 'reviews', 'View the live Reviews page')} />
-              <Route path="gallery" element={screen(<GalleryManager />, 'gallery-wall', 'View the live Gallery Wall')} />
+              {/* The wall is edited on its page, photo and all: the old list
+                  screen opens the wall editor instead. */}
+              <Route path="gallery" element={<Navigate to="/admin/editor/gallery-wall?wall=1" replace />} />
+              <Route path="gallery/list" element={screen(<GalleryManager />, 'gallery-wall', 'View the live Gallery Wall')} />
               <Route path="troublemakers" element={screen(<TroublemakersManager />, 'troublemakers', 'View the live Troublemakers page')} />
               <Route path="neighborhood" element={screen(<LocalBusinessManager />, 'neighborhood', 'View the live Local Love page')} />
               <Route path="timeline" element={screen(<TimelineManager />, 'timeline', 'View the live Timeline')} />

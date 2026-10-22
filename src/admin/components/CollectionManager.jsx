@@ -36,7 +36,7 @@ const withDraft = (row) => ({ ...row, ...(row.draft_data && typeof row.draft_dat
 const CollectionManager = forwardRef(function CollectionManager(
   {
     table, title, singular, fields, defaultItem = {}, labelKey = 'name', orderable = true,
-    summary, embedded = false, onChanged, autoOpenLabel, help, intro,
+    summary, embedded = false, onChanged, autoOpenLabel, help, intro, onEditingChange,
   },
   ref
 ) {
@@ -166,7 +166,14 @@ const CollectionManager = forwardRef(function CollectionManager(
     stageNew(item) {
       setWork((w) => [...(w || []), { ...defaultItem, ...item, id: tempId(), status: 'published' }]);
     },
+    /** Close the open item (asking first if it has typing in it). */
+    requestClose,
   }));
+
+  /* The docked panel shows ONE back button: while an item is open it reads
+     "All <items>" and comes back here, so this needs to know. */
+  const isEditing = Boolean(editing);
+  useEffect(() => { onEditingChange?.(isEditing); }, [isEditing, onEditingChange]);
 
   /* One-shot deep link from the on-page editor: open the clicked item. */
   const autoOpenedRef = useRef(false);
@@ -368,8 +375,12 @@ const CollectionManager = forwardRef(function CollectionManager(
         {editing ? (
           <div>
             <div className="cm-embedded__head">
-              <button className="btn btn--ghost btn--sm" onClick={requestClose}><Icon icon={LuArrowLeft} size={16} />All {title.toLowerCase()}</button>
-              <strong>{editing === 'new' ? `Add ${singular}` : `Edit ${singular}`}</strong>
+              {!onEditingChange && (
+                <button className="btn btn--ghost btn--sm" onClick={requestClose}><Icon icon={LuArrowLeft} size={16} />All {title.toLowerCase()}</button>
+              )}
+              <h3 className="cm-embedded__title">
+                {editing === 'new' ? `Add ${singular.toLowerCase()}` : (editingItem?.[labelKey] || `Edit ${singular.toLowerCase()}`)}
+              </h3>
             </div>
             {editorForm}
             {formHint}
@@ -378,7 +389,7 @@ const CollectionManager = forwardRef(function CollectionManager(
         ) : (
           <div>
             <div className="cm-embedded__head">
-              <strong>{title}</strong>
+              <h3 className="cm-embedded__title">{title}</h3>
               <button className="btn btn--primary btn--sm" onClick={() => openEditor(null)}><Icon icon={LuPlus} size={16} />Add {singular}</button>
             </div>
             {list}
