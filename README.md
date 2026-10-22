@@ -1,6 +1,38 @@
-# Trouble Brewing Coffee House
+# ☕ Trouble Brewing Coffee House
 
 Website **and** a Squarespace-style self-editing CMS for Trouble Brewing Coffee House — an independent coffee shop in Haddon Heights, NJ. Static React app on **GitHub Pages** (free), editable content in **Supabase** (free), read client-side via the RLS-gated anon key. Zero ongoing hosting cost beyond the domain.
+
+<p align="center">
+  <img src=".github/readme/demo.gif" alt="Scrolling the Trouble Brewing homepage" width="800" />
+</p>
+
+<table>
+<tr>
+<td width="50%"><img src=".github/readme/hero.png" alt="Homepage hero with the chalkboard menu" /><p align="center"><sub>Fresh out of the case, with today's chalkboard</sub></p></td>
+<td width="50%"><img src=".github/readme/fox-mascot.png" alt="Ask the fox panel picking a drink" /><p align="center"><sub>Ask the fox: he picks your drink, answers questions and takes wishes</sub></p></td>
+</tr>
+<tr>
+<td width="50%"><img src=".github/readme/menu.png" alt="Filterable menu page" /><p align="center"><sub>Menu synced from SpotOn, with category and dietary filters</sub></p></td>
+<td width="50%"><img src=".github/readme/reviews.png" alt="Google reviews section" /><p align="center"><sub>Google reviews, pinned up like notes on the wall</sub></p></td>
+</tr>
+</table>
+
+<p align="center">
+  <img src=".github/readme/mobile-hero.png" alt="Homepage on a phone" width="220" />
+  &nbsp;
+  <img src=".github/readme/mobile-fox.png" alt="Ask the fox on a phone" width="220" />
+  &nbsp;
+  <img src=".github/readme/mobile-menu.png" alt="Menu on a phone" width="220" />
+</p>
+
+## Highlights
+
+- 🦊 **The Trouble fox**: the logo's top-hatted fox, animated (waves, sips, seasonal outfits). He answers visitor questions from the site's own data (hours, parking, gluten-free, dog-friendly) and runs little games: Surprise me, Pick my drink, daily fox facts and a make-a-wish box.
+- 🧾 **"On the board today"** chalkboard specials and a live open-now hours board
+- 📋 **Menu synced from SpotOn**, plus Order on SpotOn buttons on every page
+- ✨ **GSAP** entrance and scroll animations
+- 🛠️ **Owner CMS at `/admin`**: menu, chalkboard, events, hours, reviews, gallery, polls, the wish list, a media library and a homepage design switcher
+- 🧯 **Never looks broken**: if the backend is down, everything falls back to bundled seed content
 
 ## Quick start
 
