@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
-  LuArrowDown, LuArrowLeft, LuArrowUp, LuChevronLeft, LuChevronRight, LuMinus, LuPlus, LuTrash2, LuZoomIn,
+  LuArrowDown, LuArrowLeft, LuArrowUp, LuChevronLeft, LuChevronRight, LuMinus, LuPlus, LuRotateCw, LuTrash2, LuZoomIn,
 } from 'react-icons/lu';
 import { getGalleryPieces } from '../../lib/dataService.js';
 import { wallZoomPhoto } from '../../lib/wallPhoto.js';
 import {
-  WALL_FOCUS, WALL_IMAGE, ownWallPieces, seedWallPieces, normalizeWallPiece, stageRatioFor,
+  WALL_FOCUS, WALL_IMAGE, MAX_TILT, boxCorners, clampBox, clampTilt, ownWallPieces, piecesAt, seedWallPieces, normalizeWallPiece, stageRatioFor,
 } from '../../lib/galleryWall.js';
-import { HANDLES, dragBox, moveItem, newBoxAt, newPieceId, nudgeBox, pxToPercent } from '../lib/hotspotMath.js';
+import {
+  HANDLES, angleAt, dragBox, moveItem, newBoxAt, newPieceId, nudgeBox, pointInPhoto, pxToPercent, rotateDrag,
+} from '../lib/hotspotMath.js';
 import ImageField from '../components/ImageField.jsx';
 import { ConfirmModal, Hint } from '../components/ui.jsx';
 import { Icon } from '../components/Icon.jsx';
@@ -30,18 +32,18 @@ import './wall-editor.css';
 
 const ZOOMS = [1, 1.6, 2.4];
 
-function NumberInput({ label, value, onChange }) {
+function NumberInput({ label, value, onChange, min = 0, max = 100, step = 0.1, className = '' }) {
   const id = useId();
   return (
-    <div className="wed-num">
+    <div className={`wed-num ${className}`.trim()}>
       <label htmlFor={id}>{label}</label>
       <input
         id={id}
         type="number"
         inputMode="decimal"
-        step="0.1"
-        min="0"
-        max="100"
+        step={step}
+        min={min}
+        max={max}
         value={value}
         onChange={(e) => {
           const n = parseFloat(e.target.value);
@@ -69,7 +71,7 @@ function TextField({ label, value, onChange, hint, multiline = false, rows = 4, 
   );
 }
 
-export default function WallEditor({ section, onChangeData, onClose }) {
+export default function WallEditor({ section, onChangeData, onClose, initialPiece = null }) {
   const data = useMemo(() => section.data || {}, [section.data]);
   const own = useMemo(() => ownWallPieces(data), [data]);
   const [rows, setRows] = useState(null);
@@ -81,7 +83,7 @@ export default function WallEditor({ section, onChangeData, onClose }) {
 
   /* What's on screen: the owner's list, or the wall as it hangs today. */
   const pieces = useMemo(() => own || seedWallPieces(rows || []), [own, rows]);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useState(initialPiece);
   const selIndex = pieces.findIndex((p) => p.id === selectedId);
   const selected = selIndex >= 0 ? pieces[selIndex] : null;
   const [zoom, setZoom] = useState(0);
@@ -95,6 +97,7 @@ export default function WallEditor({ section, onChangeData, onClose }) {
   const imageOverride = data.image_url || '';
   const imageRatio = imageOverride && Number(data.image_ratio) > 0 ? Number(data.image_ratio) : WALL_IMAGE.w / WALL_IMAGE.h;
   const stageRatio = stageRatioFor(imageRatio);
+  const aspect = imageRatio;
   const photo = imageOverride || wallZoomPhoto(false);
 
   /* Every change writes the WHOLE list, so the first one also copies the
@@ -110,34 +113,79 @@ export default function WallEditor({ section, onChangeData, onClose }) {
     writeAll(list.map((p) => (p.id === id ? { ...p, ...patch } : p)));
   }, [writeAll]);
 
-  /* ---- dragging -------------------------------------------------------- */
-  function startDrag(e, piece, handle) {
+  /* ---- picking and dragging ------------------------------------------------
+     One pointer handler for the whole photo: it works out which pieces are
+     under the pointer (tilt and oval shape included, smallest first), so a
+     little frame hung over a big one can always be picked. Pressing on the
+     chosen piece drags it; a tap that doesn't move, where pieces overlap,
+     steps to the next one under the pointer. Handles start their own drags. */
+  function beginDrag(e, piece, handle, el) {
+    const rect = photoRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const d = {
+      id: piece.id, handle, sx: e.clientX, sy: e.clientY, rect, moved: false,
+      start: { x: piece.x, y: piece.y, w: piece.w, h: piece.h, r: piece.r || 0 },
+    };
+    if (handle === 'rotate') {
+      d.cx = rect.left + ((piece.x + piece.w / 2) / 100) * rect.width;
+      d.cy = rect.top + ((piece.y + piece.h / 2) / 100) * rect.height;
+      d.a0 = angleAt(d.cx, d.cy, e.clientX, e.clientY);
+    }
+    drag.current = d;
+    try { el.setPointerCapture(e.pointerId); } catch { /* old browsers: still works while over it */ }
+  }
+
+  function onPhotoDown(e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    const rect = photoRef.current?.getBoundingClientRect();
+    if (!rect || !Number.isFinite(e.clientX)) return;
+    const pt = pointInPhoto(e.clientX, e.clientY, rect);
+    const hits = piecesAt(pieces, pt.x, pt.y, aspect);
+    if (!hits.length) return;
+    e.preventDefault();
+    const current = hits.find((h) => h.id === selectedId);
+    const target = current || hits[0];
+    if (!current) setSelectedId(target.id);
+    beginDrag(e, target, 'move', e.currentTarget);
+    drag.current.hits = hits.map((h) => h.id);
+    drag.current.wasSelected = Boolean(current);
+  }
+
+  function onHandleDown(e, piece, handle) {
     if (e.button !== undefined && e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
     setSelectedId(piece.id);
-    const rect = photoRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    drag.current = { id: piece.id, handle, sx: e.clientX, sy: e.clientY, start: { x: piece.x, y: piece.y, w: piece.w, h: piece.h }, rect, moved: false };
-    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* old browsers: still works while over the box */ }
+    beginDrag(e, piece, handle, e.currentTarget);
   }
+
   function onDragMove(e) {
     const d = drag.current;
-    if (!d) return;
-    const { dx, dy } = pxToPercent(e.clientX - d.sx, e.clientY - d.sy, d.rect);
-    if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+    if (!d || !Number.isFinite(e.clientX) || !Number.isFinite(e.clientY)) return;
     if (!d.moved && Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) < 3) return;
     d.moved = true;
-    update(d.id, dragBox(d.start, d.handle, dx, dy));
+    if (d.handle === 'rotate') {
+      update(d.id, { r: rotateDrag(d.start.r, d.a0, angleAt(d.cx, d.cy, e.clientX, e.clientY), { shift: e.shiftKey }) });
+      return;
+    }
+    const { dx, dy } = pxToPercent(e.clientX - d.sx, e.clientY - d.sy, d.rect);
+    update(d.id, dragBox(d.start, d.handle, dx, dy, undefined, aspect));
   }
+
   function endDrag() {
+    const d = drag.current;
     drag.current = null;
+    // a still tap on the chosen piece where several overlap: the next one down
+    if (d && !d.moved && d.wasSelected && d.hits && d.hits.length > 1) {
+      const i = d.hits.indexOf(d.id);
+      setSelectedId(d.hits[(i + 1) % d.hits.length]);
+    }
   }
 
   function onBoxKey(e, piece) {
     if (e.key === 'Escape') { setSelectedId(null); return; }
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(piece.id); return; }
-    const next = nudgeBox(piece, e.key, { shift: e.shiftKey, alt: e.altKey });
+    const next = nudgeBox(piece, e.key, { shift: e.shiftKey, alt: e.altKey, aspect });
     if (!next) return;
     e.preventDefault();
     setSelectedId(piece.id);
@@ -196,6 +244,8 @@ export default function WallEditor({ section, onChangeData, onClose }) {
   }
 
   const scale = ZOOMS[zoom];
+  /* bigger boxes underneath, so a small frame over a big one shows on top */
+  const stacked = useMemo(() => [...pieces].sort((a, b) => b.w * b.h - a.w * a.h), [pieces]);
   const photoTop = `${(-WALL_FOCUS.y / WALL_FOCUS.h) * 100}%`;
   const photoHeight = `${(100 / WALL_FOCUS.h) * 100}%`;
 
@@ -217,7 +267,15 @@ export default function WallEditor({ section, onChangeData, onClose }) {
 
         <div className="wed__view" ref={viewRef} onPointerDown={(e) => { if (e.target === e.currentTarget) setSelectedId(null); }}>
           <div className="wed__canvas" style={{ width: `calc(min(100cqw, 100cqh * ${stageRatio}) * ${scale})`, aspectRatio: stageRatio }}>
-            <div className="wed__photo" ref={photoRef} style={{ top: photoTop, height: photoHeight }}>
+            <div
+              className="wed__photo"
+              ref={photoRef}
+              style={{ top: photoTop, height: photoHeight }}
+              onPointerDown={onPhotoDown}
+              onPointerMove={onDragMove}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
+            >
               <img src={photo} alt="" draggable="false" onLoad={onPhotoLoad} />
               {/* the rest of the wall dims around the chosen piece, as it does
                   on the site when a visitor opens one */}
@@ -226,11 +284,11 @@ export default function WallEditor({ section, onChangeData, onClose }) {
                   className="wed__dim"
                   aria-hidden="true"
                   style={{
-                    clipPath: `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${selected.x}% ${selected.y}%, ${selected.x + selected.w}% ${selected.y}%, ${selected.x + selected.w}% ${selected.y + selected.h}%, ${selected.x}% ${selected.y + selected.h}%, ${selected.x}% ${selected.y}%)`,
+                    clipPath: `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${[...boxCorners(selected, aspect), boxCorners(selected, aspect)[0]].map((c) => `${c.x}% ${c.y}%`).join(', ')})`,
                   }}
                 />
               )}
-              {pieces.map((p) => {
+              {stacked.map((p) => {
                 const isSel = p.id === selectedId;
                 return (
                   <div
@@ -241,11 +299,11 @@ export default function WallEditor({ section, onChangeData, onClose }) {
                     aria-pressed={isSel}
                     aria-label={`${p.title || 'Untitled'}: ${isSel ? 'selected. Drag to move, or use the arrow keys' : 'select'}`}
                     className={`wed-box${isSel ? ' is-selected' : ''}${p.shape === 'oval' ? ' wed-box--oval' : ''}`}
-                    style={{ left: `${p.x}%`, top: `${p.y}%`, width: `${p.w}%`, height: `${p.h}%`, zIndex: isSel ? 50 : undefined }}
-                    onPointerDown={(e) => startDrag(e, p, 'move')}
-                    onPointerMove={onDragMove}
-                    onPointerUp={endDrag}
-                    onPointerCancel={endDrag}
+                    style={{
+                      left: `${p.x}%`, top: `${p.y}%`, width: `${p.w}%`, height: `${p.h}%`,
+                      transform: p.r ? `rotate(${p.r}deg)` : undefined,
+                      zIndex: isSel ? 50 : undefined,
+                    }}
                     onKeyDown={(e) => onBoxKey(e, p)}
                     onFocus={() => setSelectedId(p.id)}
                   >
@@ -254,12 +312,19 @@ export default function WallEditor({ section, onChangeData, onClose }) {
                         key={h}
                         className={`wed-handle wed-handle--${h}`}
                         aria-hidden="true"
-                        onPointerDown={(e) => startDrag(e, p, h)}
-                        onPointerMove={onDragMove}
-                        onPointerUp={endDrag}
-                        onPointerCancel={endDrag}
+                        onPointerDown={(e) => onHandleDown(e, p, h)}
                       />
                     ))}
+                    {isSel && (
+                      <span
+                        className="wed-rotate"
+                        aria-hidden="true"
+                        title="Drag to tilt. Shift: 5 degree steps"
+                        onPointerDown={(e) => onHandleDown(e, p, 'rotate')}
+                      >
+                        <Icon icon={LuRotateCw} size={12} />
+                      </span>
+                    )}
                     <span className={`wed-plate${p.y + p.h > 56 ? ' wed-plate--above' : ''}${p.x + p.w / 2 > 82 ? ' wed-plate--right' : ''}${p.x + p.w / 2 < 14 ? ' wed-plate--left' : ''}`}>{p.title || 'Untitled'}</span>
                   </div>
                 );
@@ -268,7 +333,7 @@ export default function WallEditor({ section, onChangeData, onClose }) {
           </div>
         </div>
         <p className="wed__keys">
-          Drag a box to move it, or a corner to resize it. Keyboard: arrow keys move, Shift for bigger steps, Alt (Option) + arrows resize.
+          Drag a box to move it, a corner to resize it, or the round handle to tilt it. Keyboard: arrows move, Alt (Option) + arrows resize, [ and ] tilt, Shift for bigger steps.
         </p>
       </section>
 
@@ -295,14 +360,30 @@ export default function WallEditor({ section, onChangeData, onClose }) {
             <ImageField label="Close-up photo" value={selected.photo} preset="card" folder="gallery" onChange={(url) => update(selected.id, { photo: url })} />
             <p className="field__hint wed-hint">Blank uses a close-up cut from the wall photo.</p>
 
-            <fieldset className="wed-shape">
-              <legend>Box shape</legend>
-              {[['rect', 'Rectangle'], ['oval', 'Oval']].map(([v, l]) => (
-                <label key={v} className={`chip ${selected.shape === v ? 'chip--on' : ''}`}>
-                  <input type="radio" name={`shape-${selected.id}`} value={v} checked={selected.shape === v} onChange={() => update(selected.id, { shape: v })} className="sr-only" />
-                  {l}
-                </label>
-              ))}
+            <fieldset className="wed-boxctl">
+              <legend>The box on the photo</legend>
+              <div className="wed-shape" role="radiogroup" aria-label="Box shape">
+                {[['rect', 'Rectangle'], ['oval', 'Oval']].map(([v, l]) => (
+                  <label key={v} className={`chip ${selected.shape === v ? 'chip--on' : ''}`}>
+                    <input type="radio" name={`shape-${selected.id}`} value={v} checked={selected.shape === v} onChange={() => update(selected.id, { shape: v })} className="sr-only" />
+                    {l}
+                  </label>
+                ))}
+              </div>
+              <div className="wed-tilt">
+                <NumberInput
+                  label="Tilt (degrees)"
+                  className="wed-num--tilt"
+                  value={selected.r || 0}
+                  min={-MAX_TILT}
+                  max={MAX_TILT}
+                  step={0.5}
+                  onChange={(n) => update(selected.id, { r: clampTilt(n) })}
+                />
+                <button type="button" className="btn btn--ghost btn--sm" disabled={!selected.r} onClick={() => update(selected.id, { r: 0 })}>
+                  Straighten
+                </button>
+              </div>
             </fieldset>
 
             <details className="advanced wed-more">
@@ -319,10 +400,10 @@ export default function WallEditor({ section, onChangeData, onClose }) {
               </label>
               <p className="wed-more__label">Exact position, in % of the photo</p>
               <div className="wed-nums">
-                <NumberInput label="Left" value={selected.x} onChange={(n) => update(selected.id, dragBox(selected, 'move', n - selected.x, 0))} />
-                <NumberInput label="Top" value={selected.y} onChange={(n) => update(selected.id, dragBox(selected, 'move', 0, n - selected.y))} />
-                <NumberInput label="Width" value={selected.w} onChange={(n) => update(selected.id, dragBox(selected, 'e', n - selected.w, 0))} />
-                <NumberInput label="Height" value={selected.h} onChange={(n) => update(selected.id, dragBox(selected, 's', 0, n - selected.h))} />
+                <NumberInput label="Left" value={selected.x} onChange={(n) => update(selected.id, clampBox({ ...selected, x: n }))} />
+                <NumberInput label="Top" value={selected.y} onChange={(n) => update(selected.id, clampBox({ ...selected, y: n }))} />
+                <NumberInput label="Width" value={selected.w} onChange={(n) => update(selected.id, clampBox({ ...selected, w: n }))} />
+                <NumberInput label="Height" value={selected.h} onChange={(n) => update(selected.id, clampBox({ ...selected, h: n }))} />
               </div>
             </details>
 

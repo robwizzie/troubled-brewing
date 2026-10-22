@@ -69,3 +69,10 @@
 
 /* Developer-managed regions read as untouchable, not broken. */
 [data-tb-locked] * { cursor: not-allowed !important; user-select: none; }
+
+/* Gallery Wall pieces in the editor preview: a click edits the piece (the
+   room's own walk-up zoom is swallowed by the click handler above), so the
+   cursor says "click", not "zoom in" */
+[data-tb-section-id] [data-tb-piece],
+[data-tb-section-id] .gwr__stage,
+[data-tb-section-id] .gwr__stage * { cursor: pointer !important; }

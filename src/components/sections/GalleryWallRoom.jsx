@@ -7,7 +7,7 @@ import { track } from '../../lib/analytics.js';
 import { getGalleryPieces } from '../../lib/dataService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 import {
-  WALL_IMAGE, REST_VIEW, resolveWall, ownWallPieces, stageRatioFor, viewFor,
+  WALL_IMAGE, REST_VIEW, resolveWall, ownWallPieces, stageRatioFor, viewFor, rotatedBounds,
   spatialOrder, mergeWallArt, stepIndex, pieceAt, toFocusBox, fromFocusPoint, visibleBox,
   readPieceParam, withPieceParam,
 } from '../../lib/galleryWall.js';
@@ -98,7 +98,9 @@ function headerOffset() {
 
 /* A native-resolution crop of one piece out of the wall photograph — the
    panel's close-up when the owner hasn't photographed that piece on its own. */
-function WallCrop({ art, photo, imageRatio }) {
+function WallCrop({ art: piece, photo, imageRatio }) {
+  // a tilted piece is cut out by the level box around it
+  const art = rotatedBounds(piece, imageRatio);
   return (
     <span
       className="gwr-card__crop"
@@ -117,13 +119,13 @@ function WallCrop({ art, photo, imageRatio }) {
    under (or nearest) the tap. It's a pointer shortcut — keyboard and screen
    reader visitors have Prev / Next and the index, so it stays out of the
    accessibility tree rather than adding nineteen more tab stops. */
-function MiniMap({ art, openId, view, photo, stageRatio, onPick }) {
+function MiniMap({ art, openId, view, photo, stageRatio, aspect, onPick }) {
   const here = toFocusBox(visibleBox(view));
   const onClick = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
     if (!r.width || !r.height) return;
     const p = fromFocusPoint(((e.clientX - r.left) / r.width) * 100, ((e.clientY - r.top) / r.height) * 100);
-    const hit = pieceAt(art, p.x, p.y);
+    const hit = pieceAt(art, p.x, p.y, aspect);
     if (hit) onPick(hit.id);
   };
   return (
@@ -205,7 +207,7 @@ export default function GalleryWallRoom({ data = {} }) {
 
   const wide = useMediaQuery('(min-width: 860px)');
   const reduced = useMediaQuery('(prefers-reduced-motion: reduce)');
-  const view = open ? viewFor(open, wide ? FIT_WIDE : FIT_NARROW) : REST_VIEW;
+  const view = open ? viewFor(open, wide ? FIT_WIDE : FIT_NARROW, imageRatio) : REST_VIEW;
 
   const [hintSeen, setHintSeen] = useState(readHintSeen);
 
@@ -424,20 +426,30 @@ export default function GalleryWallRoom({ data = {} }) {
               {open && (
                 <span
                   className={`gwr__spotlight${open.shape === 'oval' ? ' gwr__spotlight--oval' : ''}`}
-                  style={{ left: `${open.x}%`, top: `${open.y}%`, width: `${open.w}%`, height: `${open.h}%` }}
+                  style={{
+                    left: `${open.x}%`, top: `${open.y}%`, width: `${open.w}%`, height: `${open.h}%`,
+                    transform: open.r ? `rotate(${open.r}deg)` : undefined,
+                  }}
                   aria-hidden="true"
                 />
               )}
 
-              {stacked.map((a) => (
+              {stacked.map((a, i) => (
                 <button
                   key={a.id}
                   type="button"
                   data-piece={a.id}
+                  data-tb-piece={a.id}
+                  data-tb-piece-label={a.title}
                   className={`gwr__spot${a.shape === 'oval' ? ' gwr__spot--oval' : ''}${openId === a.id ? ' is-open' : ''}`}
                   style={{
                     left: `${a.x}%`, top: `${a.y}%`, width: `${a.w}%`, height: `${a.h}%`,
-                    zIndex: a.order + 2,
+                    /* tilted frames: the box (and so its outline, its tap
+                       area and the nameplate riding on it) turns with them */
+                    transform: a.r ? `rotate(${a.r}deg)` : undefined,
+                    zIndex: i + 2,
+                    /* past a gentle tilt the nameplate turns back level, so it always reads */
+                    '--plate-unrot': Math.abs(a.r || 0) > 15 ? `${-a.r}deg` : '0deg',
                   }}
                   aria-label={`Look closer at ${a.title}`}
                   tabIndex={open ? -1 : 0}
@@ -532,6 +544,7 @@ export default function GalleryWallRoom({ data = {} }) {
                       view={view}
                       photo={photo}
                       stageRatio={stageRatio}
+                      aspect={imageRatio}
                       onPick={(id) => id !== openId && openPiece(id, { via: 'map' })}
                     />
                     <button type="button" className="gwr-btn gwr-btn--back" onClick={close}>

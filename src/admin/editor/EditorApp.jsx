@@ -82,6 +82,7 @@ function Editor() {
   /* The Gallery Wall room's own editor (the photo with every piece's box)
      takes over the canvas while it's open; its changes are page changes. */
   const [wallId, setWallId] = useState(null);
+  const [wallPiece, setWallPiece] = useState(null); // the piece it opens on
   const [search, setSearch] = useSearchParams();
 
   const loadSections = useCallback(async () => {
@@ -134,10 +135,12 @@ function Editor() {
     const room = work.find((w) => w.type === 'gallery_wall_room');
     if (room) {
       setSelectedId(room.id);
+      setWallPiece(search.get('piece') || null);
       setWallId(room.id);
     }
     const next = new URLSearchParams(search);
     next.delete('wall');
+    next.delete('piece');
     setSearch(next, { replace: true });
   }, [wantsWall, work, search, setSearch]);
 
@@ -332,6 +335,12 @@ function Editor() {
     const go = () => {
       setSelectedId(p.id);
       setFocusTarget({ field: p.field ?? null, index: p.index ?? null, itemLabel: p.itemLabel ?? null, nonce: Date.now() });
+      /* a piece on the Gallery Wall: straight into the wall editor, on it */
+      const row = work?.find((w) => String(w.id) === String(p.id));
+      if (p.piece && row?.type === 'gallery_wall_room') {
+        setWallPiece(p.piece);
+        setWallId(row.id);
+      }
     };
     if (String(p.id) === String(selectedId) && !p.itemLabel) go();
     else listGuard(go);
@@ -429,7 +438,8 @@ function Editor() {
           <WallEditor
             section={work.find((w) => String(w.id) === String(wallId))}
             onChangeData={handleChangeData}
-            onClose={() => setWallId(null)}
+            onClose={() => { setWallId(null); setWallPiece(null); }}
+            initialPiece={wallPiece}
           />
         ) : (
         <>
@@ -481,7 +491,7 @@ function Editor() {
             onClose={closePanel}
             blockApi={blockApi}
             onCollectionChanged={(table) => canvasRef.current?.invalidate(table)}
-            onOpenWall={() => setWallId(selected.id)}
+            onOpenWall={() => { setWallPiece(null); setWallId(selected.id); }}
           >
             {isHomeHero && (
               <div className="tb-panel__concepts">

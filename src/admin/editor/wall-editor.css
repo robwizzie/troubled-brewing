@@ -144,9 +144,35 @@
 .wed-side__step { display: inline-flex; align-items: center; gap: 6px; }
 .wed-side__count { min-width: 56px; text-align: center; font-size: 0.85rem; color: var(--adm-ink-3); font-variant-numeric: tabular-nums; }
 .wed-hint { margin: -8px 0 16px; }
-.wed-shape { border: 0; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.wed-shape legend { float: left; width: 100%; margin-bottom: 6px; padding: 0; font-weight: 600; font-size: 0.92rem; }
+.wed-boxctl { border: 0; margin: 0 0 16px; padding: 0; display: grid; gap: 10px; min-width: 0; }
+.wed-boxctl legend { padding: 0; margin-bottom: 8px; font-weight: 600; font-size: 0.92rem; }
+.wed-shape { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .wed-shape .chip:focus-within { box-shadow: var(--adm-focus); }
+.wed-tilt { display: flex; align-items: flex-end; gap: 10px; }
+.wed-num--tilt { width: 120px; }
+
+/* the tilt handle: a round knob on a short stem above the box's top edge,
+   turning with the box */
+.wed-rotate {
+  position: absolute;
+  left: 50%;
+  top: -34px;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fffdf7;
+  border: 2px solid #b58a2e;
+  color: #82621a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  cursor: grab;
+  touch-action: none;
+}
+.wed-rotate:active { cursor: grabbing; }
+.wed-rotate::before { content: ''; position: absolute; inset: -12px; border-radius: 50%; }
+.wed-rotate::after { content: ''; position: absolute; left: 50%; top: 100%; width: 2px; height: 12px; margin-left: -1px; background: #f3dc9f; }
 .wed-more { margin: 4px 0 16px; }
 .wed-more > summary { display: flex; align-items: center; min-height: 40px; font-weight: 600; cursor: pointer; }
 .wed-more[open] > summary { margin-bottom: 8px; }

@@ -138,6 +138,13 @@ const BODY_RE = /sub|lead|body|desc|blurb|quote|story|sig|label|brand|eyebrow/;
 /** Main entry: what field does this element render?
     Returns { field, index, el } | { itemLabel, el } | null. */
 export function matchField({ target, sectionEl, fields, data, hasManager }) {
+  /* A piece on the Gallery Wall (any element marked data-tb-piece): it has
+     its own editor, opened on exactly that piece. */
+  const start = target instanceof Element ? target : target?.parentElement;
+  const pieceEl = start?.closest?.('[data-tb-piece]');
+  if (pieceEl && sectionEl.contains(pieceEl)) {
+    return { piece: pieceEl.getAttribute('data-tb-piece'), pieceLabel: pieceEl.getAttribute('data-tb-piece-label') || '', el: pieceEl };
+  }
   const els = chain(target, sectionEl);
   // value + BEM matches, nearest element wins
   for (const el of els) {
