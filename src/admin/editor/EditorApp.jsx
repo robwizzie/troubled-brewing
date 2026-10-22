@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase.js';
 import { getContentBlock } from '../../lib/dataService.js';
 import { updateRecord, deleteRecord, clearDraft, saveDataDraftQuiet } from '../lib/adminData.js';
@@ -16,6 +16,7 @@ import { useToast, Spinner } from '../components/ui.jsx';
 import Canvas from './Canvas.jsx';
 import SectionPanel from './SectionPanel.jsx';
 import PagePanel from './PagePanel.jsx';
+import WallEditor from './WallEditor.jsx';
 import './editor.css';
 import { PAGE_NAMES } from '../lib/nav.js';
 
@@ -78,6 +79,10 @@ function Editor() {
   const [selectedId, setSelectedId] = useState(null);
   const [focusTarget, setFocusTarget] = useState(null);
   const [viewport, setViewport] = useState('desktop');
+  /* The Gallery Wall room's own editor (the photo with every piece's box)
+     takes over the canvas while it's open; its changes are page changes. */
+  const [wallId, setWallId] = useState(null);
+  const [search, setSearch] = useSearchParams();
 
   const loadSections = useCallback(async () => {
     if (!isSupabaseConfigured) {
@@ -94,6 +99,7 @@ function Editor() {
 
   useEffect(() => {
     setSelectedId(null);
+    setWallId(null);
     setLive(null);
     setWork(null);
     loadSections();
@@ -120,10 +126,31 @@ function Editor() {
     });
   }, []);
 
+  /* /admin/editor/gallery-wall?wall=1 (where "Edit the Gallery Wall" goes)
+     opens straight into the wall editor. */
+  const wantsWall = search.get('wall') === '1';
+  useEffect(() => {
+    if (!wantsWall || !work || !isSupabaseConfigured) return;
+    const room = work.find((w) => w.type === 'gallery_wall_room');
+    if (room) {
+      setSelectedId(room.id);
+      setWallId(room.id);
+    }
+    const next = new URLSearchParams(search);
+    next.delete('wall');
+    setSearch(next, { replace: true });
+  }, [wantsWall, work, search, setSearch]);
+
   // Escape closes the section panel (back to the page outline).
   useEffect(() => {
     function onKeyDown(e) {
-      if (e.key === 'Escape') closePanel();
+      if (e.key !== 'Escape') return;
+      if (wallId) {
+        // the wall editor uses Escape to let go of a box; only leave when nothing is chosen
+        if (!document.activeElement?.closest?.('.wed')) setWallId(null);
+        return;
+      }
+      closePanel();
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -398,6 +425,14 @@ function Editor() {
       )}
 
       <div className="tb-editor__body">
+        {wallId && work && work.some((w) => String(w.id) === String(wallId)) ? (
+          <WallEditor
+            section={work.find((w) => String(w.id) === String(wallId))}
+            onChangeData={handleChangeData}
+            onClose={() => setWallId(null)}
+          />
+        ) : (
+        <>
         {work === null ? (
           <Spinner label="Loading page…" />
         ) : (
@@ -446,6 +481,7 @@ function Editor() {
             onClose={closePanel}
             blockApi={blockApi}
             onCollectionChanged={(table) => canvasRef.current?.invalidate(table)}
+            onOpenWall={() => setWallId(selected.id)}
           >
             {isHomeHero && (
               <div className="tb-panel__concepts">
@@ -457,6 +493,8 @@ function Editor() {
               </div>
             )}
           </SectionPanel>
+        )}
+        </>
         )}
       </div>
 

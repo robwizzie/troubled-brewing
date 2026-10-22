@@ -109,8 +109,8 @@ describe('walking the wall', () => {
       'ducks', 'oval-landscape', 'botanical', 'bicycle-fox',
       'snow-chain', 'fox-head', 'pumpkin', 'cold-out',
       'balloon-fox', 'the-company', 'silhouette',
-      'butterflies', 'hare', 'town-hall',
-      'lady-in-red', 'grey-room', 'daisies', 'early-bird', 'the-cup',
+      'butterflies', 'hare', 'daisies', 'town-hall',
+      'lady-in-red', 'grey-room', 'early-bird', 'the-cup',
     ]);
   });
 

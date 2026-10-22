@@ -321,6 +321,12 @@ export default function ReviewsManager({ embedded = false }) {
             {visible.length === 0 && <Empty>No reviews match that filter. Tap “All” above to see every review.</Empty>}
           </>
         )}
+        {!embedded && (
+          <p className="field__hint rv-quotes-link">
+            <strong>+ Favorite</strong> turns a review into a hand-picked quote on the Reviews page.
+            To re-word or remove quotes you already picked, open <Link to="/admin/testimonials">your hand-picked quotes</Link>.
+          </p>
+        )}
       </section>
     </div>
   );

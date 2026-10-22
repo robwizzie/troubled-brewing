@@ -1,8 +1,8 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
-import { LuArrowRight, LuCamera, LuCircleCheck, LuCircleDot, LuSearch, LuSquarePen, LuUpload, LuX } from 'react-icons/lu';
-import { COMMON_COUNT, MORE_TASKS, PAGE_NAMES, TASKS, agoLabel, readRecent, searchTasks } from './lib/nav.js';
+import { LuArrowRight, LuCamera, LuChevronRight, LuCircleCheck, LuCircleDot, LuSearch, LuSettings, LuSquarePen, LuUpload, LuX } from 'react-icons/lu';
+import { COMMON_COUNT, PAGE_NAMES, SITE_TASKS, TASKS, VISITOR_TASKS, agoLabel, readRecent, searchTasks } from './lib/nav.js';
 import { Icon } from './components/Icon.jsx';
 import { StatusChip } from './components/ui.jsx';
 import { chalkStatus, loadChalkboard } from './lib/chalkStatus.js';
@@ -204,10 +204,36 @@ function TaskCard({ t }) {
   );
 }
 
+/* The one way into setup and rarely used screens (account, social links,
+   Google, photo library, stats, help): kept off the home page itself. */
+const SETTINGS_ENTRY = {
+  id: 'settings', to: '/admin/settings', icon: LuSettings,
+  title: 'Settings and more',
+  desc: 'Your password, social links, Google, photos, stats and help.',
+};
+
+/* A short list of jobs: icon, name, one line. Calmer than a wall of cards. */
+function TaskList({ id, title, tasks }) {
+  return (
+    <section aria-labelledby={id}>
+      <h2 id={id} className="adminhome__h">{title}</h2>
+      <ul className="homelinks">
+        {tasks.map((t) => (
+          <li key={t.id}>
+            <Link to={t.to}>
+              <span className="homelinks__icon"><Icon icon={t.icon} /></span>
+              <span className="homelinks__text"><strong>{t.title}</strong><span>{t.desc}</span></span>
+              <Icon icon={LuChevronRight} size={18} className="homelinks__go" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export default function AdminHome() {
-  const cards = TASKS.filter((t) => t.id !== 'chalkboard');
-  const common = cards.slice(0, COMMON_COUNT);
-  const handy = cards.slice(COMMON_COUNT);
+  const common = TASKS.filter((t) => t.id !== 'chalkboard').slice(0, COMMON_COUNT);
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
   return (
     <div className="adminhome">
@@ -227,28 +253,15 @@ export default function AdminHome() {
         </ul>
       </section>
 
-      <section aria-labelledby="home-handy">
-        <h2 id="home-handy" className="adminhome__h">Also handy</h2>
-        <ul className="taskcards taskcards--quiet">
-          {handy.map((t) => <TaskCard key={t.id} t={t} />)}
-        </ul>
-      </section>
+      <div className="adminhome__lists">
+        <TaskList id="home-site" title="On the website" tasks={SITE_TASKS} />
+        <div className="adminhome__col">
+          <TaskList id="home-visitors" title="From your visitors" tasks={VISITOR_TASKS} />
+          <TaskList id="home-settings" title="Settings" tasks={[SETTINGS_ENTRY]} />
+        </div>
+      </div>
 
       <Activity />
-
-      <section aria-labelledby="home-more">
-        <h2 id="home-more" className="adminhome__h">Everything else</h2>
-        <ul className="homelinks">
-          {MORE_TASKS.map((t) => (
-            <li key={t.id}>
-              <Link to={t.to}>
-                <span className="homelinks__icon"><Icon icon={t.icon} /></span>
-                <span className="homelinks__text"><strong>{t.title}</strong><span>{t.desc}</span></span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 }

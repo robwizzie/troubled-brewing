@@ -7,8 +7,8 @@ import { track } from '../../lib/analytics.js';
 import { getGalleryPieces } from '../../lib/dataService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
 import {
-  WALL_ART, WALL_IMAGE, WALL_STAGE_RATIO, REST_VIEW, mergeWallArt, viewFor,
-  spatialOrder, stepIndex, pieceAt, toFocusBox, fromFocusPoint, visibleBox,
+  WALL_IMAGE, REST_VIEW, resolveWall, ownWallPieces, stageRatioFor, viewFor,
+  spatialOrder, mergeWallArt, stepIndex, pieceAt, toFocusBox, fromFocusPoint, visibleBox,
   readPieceParam, withPieceParam,
 } from '../../lib/galleryWall.js';
 
@@ -98,12 +98,12 @@ function headerOffset() {
 
 /* A native-resolution crop of one piece out of the wall photograph — the
    panel's close-up when the owner hasn't photographed that piece on its own. */
-function WallCrop({ art, photo }) {
+function WallCrop({ art, photo, imageRatio }) {
   return (
     <span
       className="gwr-card__crop"
       style={{
-        aspectRatio: `${art.w * WALL_IMAGE.w} / ${art.h * WALL_IMAGE.h}`,
+        aspectRatio: `${art.w * imageRatio} / ${art.h}`,
         backgroundImage: `url("${photo}")`,
         backgroundSize: `${(100 / art.w) * 100}% ${(100 / art.h) * 100}%`,
         backgroundPosition: `${(art.x / (100 - art.w)) * 100}% ${(art.y / (100 - art.h)) * 100}%`,
@@ -117,7 +117,7 @@ function WallCrop({ art, photo }) {
    under (or nearest) the tap. It's a pointer shortcut — keyboard and screen
    reader visitors have Prev / Next and the index, so it stays out of the
    accessibility tree rather than adding nineteen more tab stops. */
-function MiniMap({ art, openId, view, photo, onPick }) {
+function MiniMap({ art, openId, view, photo, stageRatio, onPick }) {
   const here = toFocusBox(visibleBox(view));
   const onClick = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -129,7 +129,7 @@ function MiniMap({ art, openId, view, photo, onPick }) {
   return (
     <div
       className="gwr-map"
-      style={{ '--gwr-ratio': WALL_STAGE_RATIO }}
+      style={{ '--gwr-ratio': stageRatio }}
       onClick={onClick}
       aria-hidden="true"
       title="Wall map — tap to jump to a piece"
@@ -165,7 +165,15 @@ export default function GalleryWallRoom({ data = {} }) {
     intro = 'Every frame on this wall arrived some other way — found, gifted, or made by somebody who drinks here. Have a proper look at any of them.',
     hint = 'Tap a frame to look closer',
     image_url: imageOverride,
+    image_ratio: storedRatio,
   } = data;
+
+  /* The photograph's shape. Ours is 934 x 1400; an owner's replacement
+     records its own when it's chosen in the wall editor, so the room frames
+     the same slice of whatever photo hangs. Hotspots are % of the photo
+     either way, so they ride along. */
+  const imageRatio = imageOverride && Number(storedRatio) > 0 ? Number(storedRatio) : WALL_IMAGE.w / WALL_IMAGE.h;
+  const stageRatio = stageRatioFor(imageRatio);
 
   const photo = imageOverride || WALL_PHOTO;
   const cropPhoto = imageOverride || WALL_PHOTO_LARGE;
@@ -181,13 +189,16 @@ export default function GalleryWallRoom({ data = {} }) {
   /* The wall is complete from the first paint — the owner's catalogue only
      adds credits and stories to frames already hanging — and it is always in
      walking order, so the counter, Prev / Next and the index agree. */
-  const art = useMemo(() => spatialOrder(mergeWallArt(pieces)), [pieces]);
+  const ownPieces = data.pieces;
+  const art = useMemo(() => resolveWall({ pieces: ownPieces }, pieces), [ownPieces, pieces]);
 
   /* ?piece=<id> opens the room on that piece. Read once, synchronously, so the
      first paint is already the right view rather than a jump to it. */
   const [openId, setOpenId] = useState(() => {
     if (typeof window === 'undefined') return null;
-    return readPieceParam(window.location.search, WALL_ART.map((a) => a.id));
+    const own = ownWallPieces(data);
+    const ids = (own || spatialOrder(mergeWallArt(null))).map((a) => a.id);
+    return readPieceParam(window.location.search, ids);
   });
   const openIndex = art.findIndex((a) => a.id === openId);
   const open = openIndex >= 0 ? art[openIndex] : null;
@@ -265,9 +276,9 @@ export default function GalleryWallRoom({ data = {} }) {
     setHintSeen(true);
     writeHintSeen();
     requestHiRes();
-    const piece = WALL_ART.find((a) => a.id === id);
+    const piece = art.find((a) => a.id === id);
     track('gallery_piece_open', { piece: id, title: piece?.title || id, via });
-  }, [openId, ensureInView, requestHiRes]);
+  }, [openId, ensureInView, requestHiRes, art]);
 
   const close = useCallback(() => {
     pendingFocus.current = 'return';
@@ -385,7 +396,7 @@ export default function GalleryWallRoom({ data = {} }) {
         </header>
       </div>
 
-      <div className="gwr__band" style={{ '--gwr-ambient': `url("${photo}")`, '--gwr-ratio': WALL_STAGE_RATIO }}>
+      <div className="gwr__band" style={{ '--gwr-ambient': `url("${photo}")`, '--gwr-ratio': stageRatio }}>
         <div className="gwr__room" ref={roomRef}>
           <div className="gwr__stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div
@@ -400,8 +411,8 @@ export default function GalleryWallRoom({ data = {} }) {
                 {...wallPhotoProps(imageOverride, BASE_SIZES)}
                 fetchpriority="high"
                 alt="The gallery wall at Trouble Brewing — dozens of framed pictures hung together on a green wall"
-                width={WALL_IMAGE.w}
-                height={WALL_IMAGE.h}
+                width={imageOverride ? undefined : WALL_IMAGE.w}
+                height={imageOverride ? undefined : WALL_IMAGE.h}
                 decoding="async"
               />
               {hiRes && hiRes === zoomSrc && everOpened && (
@@ -476,7 +487,7 @@ export default function GalleryWallRoom({ data = {} }) {
                       {open.photo ? (
                         <img className="gwr-card__photo" src={open.photo} alt={open.title} decoding="async" />
                       ) : (
-                        <WallCrop art={open} photo={cropPhoto} />
+                        <WallCrop art={open} photo={cropPhoto} imageRatio={imageRatio} />
                       )}
                     </div>
                     <p className="gwr-card__eyebrow">{open.kind === 'object' ? 'Not a picture' : 'On the wall'}</p>
@@ -520,6 +531,7 @@ export default function GalleryWallRoom({ data = {} }) {
                       openId={openId}
                       view={view}
                       photo={photo}
+                      stageRatio={stageRatio}
                       onPick={(id) => id !== openId && openPiece(id, { via: 'map' })}
                     />
                     <button type="button" className="gwr-btn gwr-btn--back" onClick={close}>
