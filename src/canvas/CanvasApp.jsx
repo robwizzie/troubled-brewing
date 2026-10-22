@@ -157,7 +157,9 @@ function Interactions({ pushed }) {
       const hintField = !m?.field && wrap.getAttribute('data-tb-field');
       const fieldName = m?.field || hintField || null;
       const fieldLabel = fieldName ? info?.fields.find((f) => f.name === fieldName)?.label || null : null;
-      const label = m?.itemLabel ? `“${truncate(m.itemLabel)}”` : fieldLabel || info?.label || 'Section';
+      const label = m?.piece
+        ? `${truncate(m.pieceLabel || 'This piece')} ·`
+        : m?.itemLabel ? `“${truncate(m.itemLabel)}”` : fieldLabel || info?.label || 'Section';
       const anchor = rectOf(m?.el) || rectOf(wrap.firstElementChild);
       if (!anchor) { setChip(null); setHoverRect(null); return; }
       setChip({ label, x: Math.max(anchor.left, 10), y: Math.max(anchor.top - 34, 10) });
@@ -203,6 +205,7 @@ function Interactions({ pushed }) {
           if (m?.index != null) payload.index = m.index;
         }
         if (m?.itemLabel) payload.itemLabel = m.itemLabel;
+        if (m?.piece) payload.piece = m.piece;
         selRef.current = { sectionId: payload.id, field: m?.field ?? null, index: m?.index ?? null, el: m?.el || null };
         setSelRect(rectOf(m?.el));
         postToParent(MSG.SELECT, payload);

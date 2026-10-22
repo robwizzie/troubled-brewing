@@ -6,13 +6,16 @@ import { WALL_FOCUS } from './galleryWall.js';
    a point into % of that slice. */
 
 /** A WALL_ART % box (of the whole photo) → CSS box in % of the cropped stage. */
-export function stageBox({ x, y, w, h }) {
-  return {
+export function stageBox({ x, y, w, h, r }) {
+  const box = {
     left: `${x}%`,
     top: `${((y - WALL_FOCUS.y) / WALL_FOCUS.h) * 100}%`,
     width: `${w}%`,
     height: `${(h / WALL_FOCUS.h) * 100}%`,
   };
+  // a frame that reads as tilted in the photograph: the box turns with it
+  if (Number(r)) box.transform = `rotate(${r}deg)`;
+  return box;
 }
 
 /** The point (fx, fy) — 0–1 across a WALL_ART box — as numbers in stage %. */

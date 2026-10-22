@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { AuthProvider } from './lib/auth.jsx';
 import { ToastProvider } from './components/ui.jsx';
 import { UnsavedProvider, EditScreen } from './lib/publishing.jsx';
@@ -41,6 +41,15 @@ import './admin.css';
    (or, for the editor and the chalkboard, its own PublishScope) with the same
    sticky action bar, and <UnsavedProvider> warns before unpublished changes
    are lost — closing the tab, a sidebar link, switching pages. */
+/* /admin/gallery (and ?piece=<id>) opens the wall editor, on that piece. */
+export function GalleryRedirect() {
+  const [search] = useSearchParams();
+  const piece = search.get('piece');
+  const q = new URLSearchParams({ wall: '1' });
+  if (piece) q.set('piece', piece);
+  return <Navigate to={`/admin/editor/gallery-wall?${q}`} replace />;
+}
+
 const screen = (el, slug, viewLabel) => (
   <EditScreen viewHref={slug !== undefined ? publicUrl(slug) : undefined} viewLabel={viewLabel}>{el}</EditScreen>
 );
@@ -74,7 +83,7 @@ export default function AdminApp() {
               <Route path="reviews" element={screen(<ReviewsManager />, 'reviews', 'View the live Reviews page')} />
               {/* The wall is edited on its page, photo and all: the old list
                   screen opens the wall editor instead. */}
-              <Route path="gallery" element={<Navigate to="/admin/editor/gallery-wall?wall=1" replace />} />
+              <Route path="gallery" element={<GalleryRedirect />} />
               <Route path="gallery/list" element={screen(<GalleryManager />, 'gallery-wall', 'View the live Gallery Wall')} />
               <Route path="troublemakers" element={screen(<TroublemakersManager />, 'troublemakers', 'View the live Troublemakers page')} />
               <Route path="neighborhood" element={screen(<LocalBusinessManager />, 'neighborhood', 'View the live Local Love page')} />

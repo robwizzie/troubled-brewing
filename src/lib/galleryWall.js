@@ -20,6 +20,9 @@
    to a spot with that row's `wall_spot`. Until a row is pinned, the page shows
    the description and says, honestly, that the story isn't written up yet.
 
+   `r` is the box's tilt in degrees, clockwise, about its own centre — for
+   frames that read as rotated in the photograph. Absent means level.
+
    `shape: 'oval'` only softens the highlight ring; `kind: 'object'` marks the
    two pieces that aren't pictures at all (the gilded fox and hare heads), so
    the page can call them what they are. */
@@ -42,14 +45,16 @@ export const WALL_ART = [
   {
     id: 'ducks',
     title: 'The Rubber Ducks',
-    x: 14.1, y: 7.5, w: 30.9, h: 18.9,
+    /* the photo looks up at this frame from the left, so it reads as tilted
+       12 degrees: a level box left a wedge of wall above and below it */
+    x: 12.3, y: 9.9, w: 34.8, h: 13.9, r: 12,
     blurb: 'A tall ship under full sail in heavy weather, with two rubber ducks paddling along beside it. Signed in the corner, and hung in the biggest gold frame on the wall.',
   },
   {
     id: 'oval-landscape',
     title: 'The Little Oval',
     shape: 'oval',
-    x: 21.6, y: 24.6, w: 10.7, h: 5.7,
+    x: 21.1, y: 24.7, w: 11.0, h: 5.4, r: 9,
     blurb: 'A small painted scene in a slim gold oval — the quietest thing up here, and the one most people walk straight past.',
   },
   {
@@ -218,6 +223,61 @@ const str = (v) => (typeof v === 'string' ? v : v == null ? '' : String(v));
 /** Smallest box the editor allows, in % of the photograph. */
 export const MIN_BOX = 1.5;
 
+/** The most a box tilts either way, in degrees. */
+export const MAX_TILT = 45;
+
+/** A tilt kept within ±MAX_TILT and rounded to 0.1 degree; anything else is level. */
+export function clampTilt(deg) {
+  const d = Number(deg);
+  if (!Number.isFinite(d)) return 0;
+  const r = Math.round(Math.min(MAX_TILT, Math.max(-MAX_TILT, d)) * 10) / 10;
+  return Object.is(r, -0) ? 0 : r;
+}
+
+/** The photograph's width / height — what turns % boxes into true angles. */
+export const WALL_ASPECT = IMAGE_W / IMAGE_H;
+
+/* Boxes are % of the photograph, which isn't square, so before turning one
+   they're put into units where both axes are the same size (1 unit = 1% of
+   the photo's HEIGHT): x is multiplied by the aspect. */
+
+/** The four corners of a (possibly tilted) box, in % of the photograph, clockwise from top-left. */
+export function boxCorners({ x, y, w, h, r = 0 }, aspect = WALL_ASPECT) {
+  const th = ((Number(r) || 0) * Math.PI) / 180;
+  const cx = (x + w / 2) * aspect;
+  const cy = y + h / 2;
+  const hw = (w * aspect) / 2;
+  const hh = h / 2;
+  return [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([u, v]) => ({
+    x: (cx + u * Math.cos(th) - v * Math.sin(th)) / aspect,
+    y: cy + u * Math.sin(th) + v * Math.cos(th),
+  }));
+}
+
+/** The level box that just contains a tilted one — what zooming and cropping fit to. */
+export function rotatedBounds(rect, aspect = WALL_ASPECT) {
+  if (!rect || !Number(rect.r)) return rect && { x: rect.x, y: rect.y, w: rect.w, h: rect.h };
+  const c = boxCorners(rect, aspect);
+  const xs = c.map((p) => p.x);
+  const ys = c.map((p) => p.y);
+  const x0 = Math.min(...xs);
+  const y0 = Math.min(...ys);
+  return { x: x0, y: y0, w: Math.max(...xs) - x0, h: Math.max(...ys) - y0 };
+}
+
+/** Is the point (x, y), in % of the photograph, inside the box — tilt and all? */
+export function pointInBox(rect, x, y, aspect = WALL_ASPECT) {
+  const th = (-(Number(rect.r) || 0) * Math.PI) / 180;
+  const dx = (x - (rect.x + rect.w / 2)) * aspect;
+  const dy = y - (rect.y + rect.h / 2);
+  const u = dx * Math.cos(th) - dy * Math.sin(th);
+  const v = dx * Math.sin(th) + dy * Math.cos(th);
+  const hw = (rect.w * aspect) / 2;
+  const hh = rect.h / 2;
+  if (rect.shape === 'oval') return (u * u) / (hw * hw) + (v * v) / (hh * hh) <= 1;
+  return Math.abs(u) <= hw && Math.abs(v) <= hh;
+}
+
 /** A box kept on the photograph and at least MIN_BOX across, rounded to 0.1%. */
 export function clampBox({ x, y, w, h }, min = MIN_BOX) {
   const W = Math.min(100, Math.max(min, num(w, 10)));
@@ -246,6 +306,7 @@ export function normalizeWallPiece(p = {}, i = 0) {
     shape: p.shape === 'oval' ? 'oval' : 'rect',
     kind: p.kind === 'object' ? 'object' : '',
     ...clampBox(p),
+    r: clampTilt(p.r),
   };
 }
 
@@ -276,7 +337,7 @@ export function seedWallPieces(rows) {
     for_sale: a.forSale,
     shape: a.shape,
     kind: a.kind,
-    x: a.x, y: a.y, w: a.w, h: a.h,
+    x: a.x, y: a.y, w: a.w, h: a.h, r: a.r,
   }, i));
 }
 
@@ -300,7 +361,7 @@ export function resolveWall(data, rows) {
     return {
       id: p.id,
       title: p.title.trim() || str(r.title).trim() || 'Untitled',
-      x: p.x, y: p.y, w: p.w, h: p.h,
+      x: p.x, y: p.y, w: p.w, h: p.h, r: p.r,
       shape: p.shape === 'oval' ? 'oval' : undefined,
       kind: p.kind || undefined,
       blurb: p.blurb,
@@ -335,7 +396,9 @@ export function stageRatioFor(imageRatio) {
  * zooms, so a small frame can come right up to the glass and stay sharp —
  * past ~5× even that runs out of real detail.
  */
-export function viewFor(rect, fit) {
+export function viewFor(box, fit, aspect = WALL_ASPECT) {
+  // a tilted piece is fitted by the level box around it
+  const rect = rotatedBounds(box, aspect);
   const raw = Math.min((100 * fit.w) / rect.w, (WALL_FOCUS.h * fit.h) / rect.h);
   const scale = Math.min(Math.max(raw, 1), 5);
   const cx = rect.x + rect.w / 2;
@@ -404,11 +467,9 @@ export function stepIndex(index, delta, length, wrap = true) {
  * otherwise the nearest frame, measured in real pixels of the photograph.
  * This is what a tap on the mini-map lands on.
  */
-export function pieceAt(art, x, y) {
+export function pieceAt(art, x, y, aspect = WALL_ASPECT) {
   const list = Array.isArray(art) ? art : [];
-  const inside = list
-    .filter((a) => x >= a.x && x <= a.x + a.w && y >= a.y && y <= a.y + a.h)
-    .sort((p, q) => p.w * p.h - q.w * q.h);
+  const inside = piecesAt(list, x, y, aspect);
   if (inside.length) return inside[0];
   let best = null;
   let bestD = Infinity;
@@ -419,6 +480,17 @@ export function pieceAt(art, x, y) {
     if (d < bestD) { bestD = d; best = a; }
   });
   return best;
+}
+
+/**
+ * Every piece under a point (x, y in % of the photograph), tilt and shape
+ * included, smallest first — so a little frame hung over a big one wins, and
+ * tapping again can step to the next one down.
+ */
+export function piecesAt(art, x, y, aspect = WALL_ASPECT) {
+  return (Array.isArray(art) ? art : [])
+    .filter((a) => pointInBox(a, x, y, aspect))
+    .sort((p, q) => p.w * p.h - q.w * q.h);
 }
 
 /**

@@ -160,6 +160,7 @@
 
 .gwr__spot {
   position: absolute;
+  transform-origin: 50% 50%;
   padding: 0;
   border: 0;
   background: transparent;
@@ -198,7 +199,7 @@
   position: absolute;
   left: 50%;
   bottom: 0;
-  transform: translate(var(--plate-x, -50%), var(--plate-y, 130%)) scale(calc(1 / var(--gwr-scale, 1)));
+  transform: translate(var(--plate-x, -50%), var(--plate-y, 130%)) scale(calc(1 / var(--gwr-scale, 1))) rotate(var(--plate-unrot, 0deg));
   transform-origin: var(--plate-ox, 50%) var(--plate-oy, 0%);
   padding: 0.28em 0.7em;
   border-radius: 2px;
@@ -253,6 +254,7 @@
    and glides to the next frame on the same clock as the pan. */
 .gwr__spotlight {
   position: absolute;
+  transform-origin: 50% 50%;
   border-radius: 4px;
   pointer-events: none;
   z-index: 1;
@@ -262,7 +264,8 @@
     0 0 0 100vmax rgba(16, 13, 10, 0.8);
   transition:
     left var(--gwr-move) var(--gwr-ease), top var(--gwr-move) var(--gwr-ease),
-    width var(--gwr-move) var(--gwr-ease), height var(--gwr-move) var(--gwr-ease);
+    width var(--gwr-move) var(--gwr-ease), height var(--gwr-move) var(--gwr-ease),
+    transform var(--gwr-move) var(--gwr-ease);
   animation: gwr-lightup var(--gwr-move) var(--gwr-ease) both;
 }
 .gwr__spotlight--oval { border-radius: 50%; }
