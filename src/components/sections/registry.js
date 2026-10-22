@@ -171,7 +171,7 @@ export const SECTION_LABELS = {
   wall_tour_hero: 'Wall Tour hero (real wall photo)',
   pastry_case_hero: 'Pastry Case hero (real counter photo)',
   step_inside_hero: 'Step Inside (scroll walk along the real wall)',
-  gallery_wall_room: 'Gallery Wall room (explorable photo)',
+  gallery_wall_room: 'Gallery Wall photo',
   gallery_pieces_grid: 'Gallery pieces',
   troublemakers_grid: 'Troublemakers',
   local_businesses_grid: 'Local businesses',

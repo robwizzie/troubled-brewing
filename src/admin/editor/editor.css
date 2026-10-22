@@ -59,6 +59,7 @@
 
 /* ---- Section panel ---------------------------------------------------------- */
 .tb-panel {
+  position: relative;
   width: 360px;
   flex-shrink: 0;
   display: flex;
@@ -238,4 +239,13 @@
   .tb-editor__viewsite { margin-left: auto; }
   .tb-editor > .actionbar { padding: var(--space-2) var(--space-3); padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px)); }
   .tb-panel { max-height: 50dvh; }
+}
+/* phones: one row of chrome — the live-site link keeps its icon only */
+@media (max-width: 560px) {
+  .tb-editor__topbar { flex-wrap: nowrap; }
+  .tb-editor__pagepick { min-width: 0; }
+  .tb-editor__pagepick select { max-width: 46vw; }
+  .tb-editor__viewsite span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .tb-editor__viewsite { display: inline-grid; place-items: center; min-width: 40px; min-height: 40px; }
+  .tb-editor__back { white-space: nowrap; }
 }

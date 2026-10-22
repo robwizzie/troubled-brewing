@@ -357,7 +357,7 @@
 .homechalk__text { display: grid; gap: 4px; flex: 1; min-width: 0; }
 .homechalk__title { font-family: var(--font-display); font-weight: 600; font-size: 1.45rem; line-height: 1.15; color: #fbf3dc; }
 .homechalk__desc { color: #cdc8b8; font-size: 0.95rem; }
-.homechalk__status { display: inline-flex; align-items: center; gap: 6px; justify-self: start; margin-top: 6px; padding: 5px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); font-size: 0.82rem; font-weight: 600; color: #e9e3d2; }
+.homechalk__status { display: inline-flex; align-items: flex-start; gap: 6px; justify-self: start; margin-top: 6px; padding: 5px 10px; border-radius: 12px; line-height: 1.35; background: rgba(255, 255, 255, 0.08); font-size: 0.82rem; font-weight: 600; color: #e9e3d2; }
 .homechalk__status.is-live { background: rgba(120, 190, 140, 0.16); color: #bfe3c9; }
 .homechalk__go { display: inline-grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: var(--adm-gold); color: var(--adm-ink); }
 
@@ -551,7 +551,7 @@
 .imagefield__controls { display: grid; gap: 8px; flex: 1; min-width: 0; }
 .imagefield__url { font-size: 0.875rem; }
 .imagefield__buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-.imagefield__pick { cursor: pointer; }
+.imagefield__pick { position: relative; cursor: pointer; }
 /* a <label> styled as a button: `.field label` (block, bottom margin) must not
    win over `.btn`, or its icon sits on top of the words */
 .adm .field label.btn { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 0; font-size: 0.875rem; }
@@ -761,9 +761,13 @@
 }
 
 /* ---- Settings + Your account --------------------------------------------- */
-.settingshome { display: grid; gap: 24px; max-width: 720px; }
+.settingshome { display: grid; gap: 24px; }
+.admin__main > .settingshome { max-width: 760px; }
+.admin__main > .account { max-width: 600px; }
+.adm .crumbs__link { color: var(--adm-ink-3); text-decoration: none; }
+.adm .crumbs__link:hover { color: var(--adm-ink); text-decoration: underline; }
 .settingshome .screenhead { margin-bottom: 0; }
-.account { max-width: 560px; }
+
 .account__card { display: grid; gap: 4px; justify-items: start; }
 .account__card .field { width: 100%; margin-bottom: 12px; }
 .adm .account__h { font-size: 1.05rem; margin: 0 0 6px; }

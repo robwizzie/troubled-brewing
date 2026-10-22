@@ -70,7 +70,8 @@ export const NAV_GROUPS = [...new Set(SCREENS.map((s) => s.nav).filter((n) => n 
 /** The sidebar group a screen sits in ("Every day", "More"…), or ''. */
 export function groupOf(screen) {
   if (!screen) return '';
-  if (screen.nav === 'more') return 'Settings & more';
+  if (screen.to === '/admin/settings') return '';
+  if (screen.nav === 'more') return 'Settings';
   return PLACES.has(screen.nav) ? '' : screen.nav;
 }
 

@@ -219,6 +219,17 @@ export default function WallEditor({ section, onChangeData, onClose }) {
           <div className="wed__canvas" style={{ width: `calc(min(100cqw, 100cqh * ${stageRatio}) * ${scale})`, aspectRatio: stageRatio }}>
             <div className="wed__photo" ref={photoRef} style={{ top: photoTop, height: photoHeight }}>
               <img src={photo} alt="" draggable="false" onLoad={onPhotoLoad} />
+              {/* the rest of the wall dims around the chosen piece, as it does
+                  on the site when a visitor opens one */}
+              {selected && (
+                <span
+                  className="wed__dim"
+                  aria-hidden="true"
+                  style={{
+                    clipPath: `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${selected.x}% ${selected.y}%, ${selected.x + selected.w}% ${selected.y}%, ${selected.x + selected.w}% ${selected.y + selected.h}%, ${selected.x}% ${selected.y + selected.h}%, ${selected.x}% ${selected.y}%)`,
+                  }}
+                />
+              )}
               {pieces.map((p) => {
                 const isSel = p.id === selectedId;
                 return (
@@ -249,7 +260,7 @@ export default function WallEditor({ section, onChangeData, onClose }) {
                         onPointerCancel={endDrag}
                       />
                     ))}
-                    <span className={`wed-plate${p.y + p.h > 56 ? ' wed-plate--above' : ''}`}>{p.title || 'Untitled'}</span>
+                    <span className={`wed-plate${p.y + p.h > 56 ? ' wed-plate--above' : ''}${p.x + p.w / 2 > 82 ? ' wed-plate--right' : ''}${p.x + p.w / 2 < 14 ? ' wed-plate--left' : ''}`}>{p.title || 'Untitled'}</span>
                   </div>
                 );
               })}

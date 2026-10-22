@@ -141,7 +141,12 @@ export default function AdminLayout() {
                 <Icon icon={LuArrowLeft} size={16} />
                 Admin home
               </Link>
-              {group && <span className="crumbs__group"><span className="crumbs__sep" aria-hidden="true">/</span>{group}</span>}
+              {group && (
+                <span className="crumbs__group">
+                  <span className="crumbs__sep" aria-hidden="true">/</span>
+                  {here?.nav === 'more' ? <Link to="/admin/settings" className="crumbs__link">{group}</Link> : group}
+                </span>
+              )}
               {here && (
                 <span className="crumbs__here" aria-current="page">
                   <span className="crumbs__sep" aria-hidden="true">/</span>{here.label}
