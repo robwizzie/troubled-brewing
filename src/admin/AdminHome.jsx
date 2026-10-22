@@ -206,11 +206,11 @@ function TaskCard({ t }) {
 }
 
 /* The one way into setup and rarely used screens (account, social links,
-   Google, photo library, stats, help): kept off the home page itself. */
+   Google, photo library, help): kept off the home page itself. */
 const SETTINGS_ENTRY = {
   id: 'settings', to: '/admin/settings', icon: LuSettings,
   title: 'Settings and more',
-  desc: 'Your password, social links, Google, photos, stats and help.',
+  desc: 'Your password, social links, Google, photos and help.',
 };
 
 /* A short list of jobs: icon, name, one line. Calmer than a wall of cards. */

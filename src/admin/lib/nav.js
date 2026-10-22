@@ -45,6 +45,7 @@ export const SCREENS = [
   { to: '/admin/quick-blocks', icon: LuMegaphone, label: 'Banner & links', nav: 'Every day' },
   { to: '/admin/inbox', icon: LuInbox, label: 'Messages', nav: 'Every day', badge: 'inbox' },
   { to: '/admin/wishes', icon: LuWandSparkles, label: 'Wish list', nav: 'Every day', badge: 'wishes' },
+  { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'Every day' },
   { to: '/admin/menu', icon: LuCoffee, label: 'Menu', nav: 'On the site' },
   { to: '/admin/events', icon: LuCalendarDays, label: 'Events', nav: 'On the site' },
   { to: '/admin/reviews', icon: LuStar, label: 'Google reviews', nav: 'On the site' },
@@ -55,7 +56,6 @@ export const SCREENS = [
   { to: '/admin/polls', icon: LuVote, label: 'This or that polls', nav: 'On the site' },
   { to: '/admin/settings', icon: LuSettings, label: 'Settings', nav: 'more', end: true },
   { to: '/admin/account', icon: LuUserRound, label: 'Your account', nav: 'more' },
-  { to: '/admin/stats', icon: LuChartLine, label: 'Site stats', nav: 'more' },
   { to: '/admin/neighborhood', icon: LuStore, label: 'Local Love', nav: 'more' },
   { to: '/admin/timeline', icon: LuHistory, label: 'Timeline', nav: 'more' },
   { to: '/admin/media', icon: LuImages, label: 'Photo library', nav: 'more' },
@@ -171,6 +171,7 @@ export const VISITOR_TASKS = [
   { id: 'inbox', badge: 'inbox', to: '/admin/inbox', icon: LuInbox, title: 'Read messages', desc: 'Contact and catering forms.', keywords: 'inbox message messages email contact catering form enquiry inquiry request order' },
   { id: 'wishes', badge: 'wishes', to: '/admin/wishes', icon: LuWandSparkles, title: 'Read the menu wishes', desc: 'Drinks and treats people wished for.', keywords: 'wish wishes wishlist suggestion suggestions idea ideas request requests feedback customer customers want menu new drink fox' },
   { id: 'polls', to: '/admin/polls', icon: LuVote, title: 'Ask a “This or that” poll', desc: 'A one-tap question in the fox, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
+  { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'Site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visit visits visitors traffic views pages numbers clicks orders dashboard report how many people busy' },
 ];
 
 /* Settings: setup and rarely changed pages, one quiet screen. */
@@ -179,7 +180,6 @@ export const SETTINGS_TASKS = [
   { id: 'social', to: '/admin/quick-blocks', icon: LuAtSign, title: 'Social media links', desc: 'Instagram, Facebook and friends in the footer.', keywords: 'social instagram facebook tiktok links footer x twitter' },
   { id: 'google', to: '/admin/google', icon: LuLink, title: 'Google connection', desc: 'Where your rating, reviews and address come from.', keywords: 'google connection connect rating maps address place refresh fetch' },
   { id: 'photos', to: '/admin/media', icon: LuImages, title: 'Photo library', desc: 'Every photo you have uploaded.', keywords: 'photo library photos images uploads upload pictures media' },
-  { id: 'stats', to: '/admin/stats', icon: LuChartLine, title: 'Site stats', desc: 'Visits, top pages, Order clicks and fox use.', keywords: 'stats statistics analytics visit visits visitors traffic views pages numbers clicks orders dashboard report how many people busy' },
   { id: 'local', to: '/admin/neighborhood', icon: LuStore, title: 'Local Love', desc: 'The neighbours on the Local Love page.', keywords: 'local love business businesses neighbor neighbour neighborhood shop shops station ave partner' },
   { id: 'timeline', to: '/admin/timeline', icon: LuHistory, title: 'Timeline', desc: 'The shop’s story, year by year.', keywords: 'timeline history milestone milestones year anniversary' },
   { id: 'help', to: '/admin/help', icon: LuCircleHelp, title: 'Help', desc: 'Plain-English how-tos.', keywords: 'help how stuck guide tutorial question undo mistake' },

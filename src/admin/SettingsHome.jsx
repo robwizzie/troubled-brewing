@@ -11,7 +11,7 @@ const GROUPS = [
   { title: 'You', ids: ['account'] },
   { title: 'Connections', ids: ['social', 'google'] },
   { title: 'Other pages', ids: ['local', 'timeline'] },
-  { title: 'Photos, numbers and help', ids: ['photos', 'stats', 'help'] },
+  { title: 'Photos and help', ids: ['photos', 'help'] },
 ];
 
 export default function SettingsHome() {
