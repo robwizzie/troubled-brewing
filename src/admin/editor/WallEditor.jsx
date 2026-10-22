@@ -125,6 +125,7 @@ export default function WallEditor({ section, onChangeData, onClose }) {
     const d = drag.current;
     if (!d) return;
     const { dx, dy } = pxToPercent(e.clientX - d.sx, e.clientY - d.sy, d.rect);
+    if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
     if (!d.moved && Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) < 3) return;
     d.moved = true;
     update(d.id, dragBox(d.start, d.handle, dx, dy));
@@ -146,7 +147,8 @@ export default function WallEditor({ section, onChangeData, onClose }) {
   /* keep the chosen box in sight when zoomed in */
   useEffect(() => {
     if (!selectedId || !viewRef.current) return;
-    const el = viewRef.current.querySelector(`[data-id="${CSS.escape(selectedId)}"]`);
+    const safe = window.CSS?.escape ? window.CSS.escape(selectedId) : selectedId;
+    const el = viewRef.current.querySelector(`[data-id="${safe}"]`);
     el?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
   }, [selectedId, zoom]);
 

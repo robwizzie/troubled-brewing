@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LuArrowLeft, LuChevronDown, LuChevronRight, LuExternalLink, LuLogOut, LuMenu, LuX } from 'react-icons/lu';
 import { useAuth } from './lib/auth.jsx';
-import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { publicUrl } from '../lib/config.js';
 import { useUnsaved } from './lib/publishing.jsx';
 import { NAV_GROUPS, SCREENS, groupOf, screenFor } from './lib/nav.js';
 import { Icon } from './components/Icon.jsx';
 import QuickJump from './components/QuickJump.jsx';
+import { CountBadge, unreadLabel, useUnread } from './lib/unread.jsx';
 
 /* Admin shell: top bar, sidebar, breadcrumb, screen.
 
@@ -18,7 +18,8 @@ import QuickJump from './components/QuickJump.jsx';
    sidebar is a slide-in menu with big rows; the Menu button opens it. The
    quick-jump ("Find a screen", or press /) reaches any screen from anywhere. */
 
-function NavItem({ item, unread }) {
+function NavItem({ item, counts }) {
+  const n = item.badge ? counts[item.badge] || 0 : 0;
   return (
     <NavLink
       to={item.to}
@@ -27,9 +28,7 @@ function NavItem({ item, unread }) {
     >
       <span className="admin__navicon"><Icon icon={item.icon} /></span>
       <span className="admin__navlabel">{item.label}</span>
-      {item.badge === 'inbox' && unread > 0 && (
-        <span className="admin__navbadge" aria-label={`${unread} unread`}>{unread}</span>
-      )}
+      <CountBadge n={n} label={unreadLabel(item.badge, n)} className="admin__navbadge" />
     </NavLink>
   );
 }
@@ -40,7 +39,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
-  const [unread, setUnread] = useState(0);
+  const { counts } = useUnread();
   const here = screenFor(pathname);
   const inMore = here?.nav === 'more';
   const [moreOpen, setMoreOpen] = useState(inMore);
@@ -55,16 +54,6 @@ export default function AdminLayout() {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
-
-  // Unread messages badge.
-  useEffect(() => {
-    if (!isSupabaseConfigured) return;
-    supabase
-      .from('submissions')
-      .select('id', { count: 'exact', head: true })
-      .eq('read', false)
-      .then(({ count }) => setUnread(count || 0), () => {});
-  }, []);
 
   function handleSignOut() {
     guard(async () => {
@@ -116,12 +105,12 @@ export default function AdminLayout() {
         {open && <div className="admin__scrim" onClick={() => setOpen(false)} aria-hidden="true" />}
         <nav id="admin-sidebar" className={`admin__sidebar ${open ? 'is-open' : ''}`} aria-label="Admin sections">
           <div className="admin__navgroup">
-            {top.map((item) => <NavItem key={item.to} item={item} unread={unread} />)}
+            {top.map((item) => <NavItem key={item.to} item={item} counts={counts} />)}
           </div>
           {NAV_GROUPS.map((g) => (
             <div key={g} className="admin__navgroup" role="group" aria-label={g}>
               <p className="admin__navsection">{g}</p>
-              {SCREENS.filter((s) => s.nav === g).map((item) => <NavItem key={item.to} item={item} unread={unread} />)}
+              {SCREENS.filter((s) => s.nav === g).map((item) => <NavItem key={item.to} item={item} counts={counts} />)}
             </div>
           ))}
           <div className="admin__navgroup">
@@ -134,10 +123,10 @@ export default function AdminLayout() {
               <span className="admin__navsection admin__navsection--btn">Settings &amp; more</span>
               <Icon icon={moreOpen ? LuChevronDown : LuChevronRight} size={16} />
             </button>
-            {moreOpen && more.map((item) => <NavItem key={item.to} item={item} unread={unread} />)}
+            {moreOpen && more.map((item) => <NavItem key={item.to} item={item} counts={counts} />)}
           </div>
           <div className="admin__navgroup admin__navgroup--end">
-            {bottom.map((item) => <NavItem key={item.to} item={item} unread={unread} />)}
+            {bottom.map((item) => <NavItem key={item.to} item={item} counts={counts} />)}
             <a href={publicUrl()} target="_blank" rel="noreferrer" className="admin__navlink admin__navlink--site">
               <span className="admin__navicon"><Icon icon={LuExternalLink} /></span>
               <span className="admin__navlabel">View website</span>
