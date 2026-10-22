@@ -103,7 +103,9 @@ describe('admin home', () => {
     renderAdmin();
     expect(main().querySelectorAll('.taskcard')).toHaveLength(4);
     const rows = main().querySelectorAll('.homelinks a');
-    expect(rows.length).toBeLessThanOrEqual(10);
+    expect(rows.length).toBeLessThanOrEqual(11);
+    // Site stats is right on the home page and in the sidebar, not tucked away
+    expect(within(main()).getByRole('link', { name: /site stats/i })).toBeTruthy();
     const names = [...main().querySelectorAll('a')].map((a) => a.textContent).join('|');
     // no hand-picked quotes screen, and the setup-only jobs live in Settings
     expect(names).not.toMatch(/hand-picked quote/i);
