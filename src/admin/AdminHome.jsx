@@ -1,11 +1,12 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
-import { LuArrowRight, LuCamera, LuChevronRight, LuCircleCheck, LuCircleDot, LuSearch, LuSettings, LuSquarePen, LuUpload, LuX } from 'react-icons/lu';
+import { LuArrowRight, LuBell, LuCamera, LuChevronRight, LuCircleCheck, LuCircleDot, LuSearch, LuSettings, LuSquarePen, LuUpload, LuX } from 'react-icons/lu';
 import { COMMON_COUNT, PAGE_NAMES, SITE_TASKS, TASKS, VISITOR_TASKS, agoLabel, readRecent, searchTasks } from './lib/nav.js';
 import { Icon } from './components/Icon.jsx';
 import { StatusChip } from './components/ui.jsx';
 import { chalkStatus, loadChalkboard } from './lib/chalkStatus.js';
+import { CountBadge, UNREAD_SOURCES, unreadLabel, useUnread } from './lib/unread.jsx';
 
 /* Admin home — a calm task launcher. The first thing on screen is the job
    staff do every morning (the chalkboard); under it, "What do you want to
@@ -214,6 +215,7 @@ const SETTINGS_ENTRY = {
 
 /* A short list of jobs: icon, name, one line. Calmer than a wall of cards. */
 function TaskList({ id, title, tasks }) {
+  const { counts } = useUnread();
   return (
     <section aria-labelledby={id}>
       <h2 id={id} className="adminhome__h">{title}</h2>
@@ -223,8 +225,27 @@ function TaskList({ id, title, tasks }) {
             <Link to={t.to}>
               <span className="homelinks__icon"><Icon icon={t.icon} /></span>
               <span className="homelinks__text"><strong>{t.title}</strong><span>{t.desc}</span></span>
+              {t.badge && <CountBadge n={counts[t.badge]} label={unreadLabel(t.badge, counts[t.badge])} />}
               <Icon icon={LuChevronRight} size={18} className="homelinks__go" />
             </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* "New since you last looked": one calm line, only when there is something. */
+function WhatsNew() {
+  const { counts, total } = useUnread();
+  if (!total) return null;
+  return (
+    <section className="homenew" aria-labelledby="home-new">
+      <h2 id="home-new" className="homenew__h"><Icon icon={LuBell} size={18} />New since you last looked</h2>
+      <ul className="homenew__list">
+        {UNREAD_SOURCES.filter((s) => counts[s.key] > 0).map((s) => (
+          <li key={s.key}>
+            <Link to={s.to}>{unreadLabel(s.key, counts[s.key])}<Icon icon={LuArrowRight} size={16} /></Link>
           </li>
         ))}
       </ul>
@@ -242,6 +263,7 @@ export default function AdminHome() {
         <h1 className="adminhome__hello">{greeting()}</h1>
         <p className="adminhome__sub">What would you like to update? Nothing goes on the website until you press Publish.</p>
       </header>
+      <WhatsNew />
       <ChalkboardCard />
       <FirstTimeTip />
       <TaskSearch />

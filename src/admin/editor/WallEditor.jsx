@@ -125,6 +125,7 @@ export default function WallEditor({ section, onChangeData, onClose }) {
     const d = drag.current;
     if (!d) return;
     const { dx, dy } = pxToPercent(e.clientX - d.sx, e.clientY - d.sy, d.rect);
+    if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
     if (!d.moved && Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) < 3) return;
     d.moved = true;
     update(d.id, dragBox(d.start, d.handle, dx, dy));
@@ -146,7 +147,8 @@ export default function WallEditor({ section, onChangeData, onClose }) {
   /* keep the chosen box in sight when zoomed in */
   useEffect(() => {
     if (!selectedId || !viewRef.current) return;
-    const el = viewRef.current.querySelector(`[data-id="${CSS.escape(selectedId)}"]`);
+    const safe = window.CSS?.escape ? window.CSS.escape(selectedId) : selectedId;
+    const el = viewRef.current.querySelector(`[data-id="${safe}"]`);
     el?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
   }, [selectedId, zoom]);
 
@@ -217,6 +219,17 @@ export default function WallEditor({ section, onChangeData, onClose }) {
           <div className="wed__canvas" style={{ width: `calc(min(100cqw, 100cqh * ${stageRatio}) * ${scale})`, aspectRatio: stageRatio }}>
             <div className="wed__photo" ref={photoRef} style={{ top: photoTop, height: photoHeight }}>
               <img src={photo} alt="" draggable="false" onLoad={onPhotoLoad} />
+              {/* the rest of the wall dims around the chosen piece, as it does
+                  on the site when a visitor opens one */}
+              {selected && (
+                <span
+                  className="wed__dim"
+                  aria-hidden="true"
+                  style={{
+                    clipPath: `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${selected.x}% ${selected.y}%, ${selected.x + selected.w}% ${selected.y}%, ${selected.x + selected.w}% ${selected.y + selected.h}%, ${selected.x}% ${selected.y + selected.h}%, ${selected.x}% ${selected.y}%)`,
+                  }}
+                />
+              )}
               {pieces.map((p) => {
                 const isSel = p.id === selectedId;
                 return (
@@ -247,7 +260,7 @@ export default function WallEditor({ section, onChangeData, onClose }) {
                         onPointerCancel={endDrag}
                       />
                     ))}
-                    <span className={`wed-plate${p.y + p.h > 56 ? ' wed-plate--above' : ''}`}>{p.title || 'Untitled'}</span>
+                    <span className={`wed-plate${p.y + p.h > 56 ? ' wed-plate--above' : ''}${p.x + p.w / 2 > 82 ? ' wed-plate--right' : ''}${p.x + p.w / 2 < 14 ? ' wed-plate--left' : ''}`}>{p.title || 'Untitled'}</span>
                   </div>
                 );
               })}

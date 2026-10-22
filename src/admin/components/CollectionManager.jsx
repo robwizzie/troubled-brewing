@@ -277,7 +277,7 @@ const CollectionManager = forwardRef(function CollectionManager(
             type="search"
             className="admin-find__input"
             value={find}
-            placeholder={`Find a ${singular} by name`}
+            placeholder={`Find ${/^[aeiou]/i.test(singular) ? 'an' : 'a'} ${singular} by name`}
             aria-label={`Find a ${singular}`}
             onChange={(e) => setFind(e.target.value)}
           />

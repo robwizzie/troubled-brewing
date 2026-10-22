@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './lib/auth.jsx';
 import { ToastProvider } from './components/ui.jsx';
 import { UnsavedProvider, EditScreen } from './lib/publishing.jsx';
+import { UnreadProvider } from './lib/unread.jsx';
 import { publicUrl } from '../lib/config.js';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import AdminLayout from './AdminLayout.jsx';
@@ -50,6 +51,7 @@ export default function AdminApp() {
     <AuthProvider>
       <ToastProvider>
         <UnsavedProvider>
+          <UnreadProvider>
           <Routes>
             <Route path="login" element={<Login />} />
             {/* On-page editor — full-bleed, outside the sidebar layout */}
@@ -91,6 +93,7 @@ export default function AdminApp() {
             </Route>
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
+          </UnreadProvider>
         </UnsavedProvider>
       </ToastProvider>
     </AuthProvider>

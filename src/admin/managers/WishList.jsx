@@ -3,6 +3,7 @@ import { LuCheck, LuDownload, LuEyeOff, LuSearch, LuStickyNote, LuWandSparkles, 
 import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, StatusChip } from '../components/ui.jsx';
 import { ScreenHead } from '../lib/publishing.jsx';
+import { useUnread } from '../lib/unread.jsx';
 import {
   CATEGORIES, STATUSES, categoryLabel, countByCategory, groupWishes, relativeDate, statusLabel, wishTokens, wishesToCsv,
 } from '../../lib/wishes.js';
@@ -115,6 +116,7 @@ function NoteEditor({ wish, onSave }) {
 
 export default function WishList() {
   const toast = useToast();
+  const { refresh: refreshUnread } = useUnread();
   const [rows, setRows] = useState(null);
   const [missing, setMissing] = useState(false);
   const [status, setStatus] = useState('active');
@@ -175,6 +177,7 @@ export default function WishList() {
       toast('That didn’t save. Check your connection and try again.', 'error');
       return false;
     }
+    refreshUnread(); // the "new wishes" badge clears as soon as one is marked
     toast(message);
     return true;
   }

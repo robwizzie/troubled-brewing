@@ -44,7 +44,7 @@ export const SCREENS = [
   { to: '/admin/hours', icon: LuClock, label: 'Hours & holidays', nav: 'Every day' },
   { to: '/admin/quick-blocks', icon: LuMegaphone, label: 'Banner & links', nav: 'Every day' },
   { to: '/admin/inbox', icon: LuInbox, label: 'Messages', nav: 'Every day', badge: 'inbox' },
-  { to: '/admin/wishes', icon: LuWandSparkles, label: 'Wish list', nav: 'Every day' },
+  { to: '/admin/wishes', icon: LuWandSparkles, label: 'Wish list', nav: 'Every day', badge: 'wishes' },
   { to: '/admin/menu', icon: LuCoffee, label: 'Menu', nav: 'On the site' },
   { to: '/admin/events', icon: LuCalendarDays, label: 'Events', nav: 'On the site' },
   { to: '/admin/reviews', icon: LuStar, label: 'Google reviews', nav: 'On the site' },
@@ -70,7 +70,8 @@ export const NAV_GROUPS = [...new Set(SCREENS.map((s) => s.nav).filter((n) => n 
 /** The sidebar group a screen sits in ("Every day", "More"…), or ''. */
 export function groupOf(screen) {
   if (!screen) return '';
-  if (screen.nav === 'more') return 'Settings & more';
+  if (screen.to === '/admin/settings') return '';
+  if (screen.nav === 'more') return 'Settings';
   return PLACES.has(screen.nav) ? '' : screen.nav;
 }
 
@@ -167,8 +168,8 @@ export const SITE_TASKS = [
 
 /* "From your visitors": what people sent or did on the site. */
 export const VISITOR_TASKS = [
-  { id: 'inbox', to: '/admin/inbox', icon: LuInbox, title: 'Read messages', desc: 'Contact and catering forms.', keywords: 'inbox message messages email contact catering form enquiry inquiry request order' },
-  { id: 'wishes', to: '/admin/wishes', icon: LuWandSparkles, title: 'Read the menu wishes', desc: 'Drinks and treats people wished for.', keywords: 'wish wishes wishlist suggestion suggestions idea ideas request requests feedback customer customers want menu new drink fox' },
+  { id: 'inbox', badge: 'inbox', to: '/admin/inbox', icon: LuInbox, title: 'Read messages', desc: 'Contact and catering forms.', keywords: 'inbox message messages email contact catering form enquiry inquiry request order' },
+  { id: 'wishes', badge: 'wishes', to: '/admin/wishes', icon: LuWandSparkles, title: 'Read the menu wishes', desc: 'Drinks and treats people wished for.', keywords: 'wish wishes wishlist suggestion suggestions idea ideas request requests feedback customer customers want menu new drink fox' },
   { id: 'polls', to: '/admin/polls', icon: LuVote, title: 'Ask a “This or that” poll', desc: 'A one-tap question in the fox, and its results.', keywords: 'poll polls vote votes voting question this or that survey fox quiz results ask' },
 ];
 

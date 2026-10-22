@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase.js';
 import { useToast, Spinner, Empty, ConfirmModal } from '../components/ui.jsx';
 import { LuInbox } from 'react-icons/lu';
 import { ScreenHead } from '../lib/publishing.jsx';
+import { useUnread } from '../lib/unread.jsx';
 
 const when = (iso) => new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
@@ -12,11 +13,13 @@ export default function Inbox() {
   const [items, setItems] = useState(null);
   const [filter, setFilter] = useState('all');
   const [confirmDel, setConfirmDel] = useState(null);
+  const { refresh } = useUnread();
 
   async function load() {
     const { data, error } = await supabase.from('submissions').select('*').order('created_at', { ascending: false });
     if (error) { toast('Couldn’t load your messages. Check your internet connection, then refresh the page.', 'error'); setItems([]); return; }
     setItems(data || []);
+    refresh(); // the badges follow what's on screen
   }
   // load-once on mount: `load` is a new identity every render.
   // eslint-disable-next-line react-hooks/exhaustive-deps
