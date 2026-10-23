@@ -9,9 +9,9 @@
 --    Places' possibly-lagging copy) for 3 days afterwards.
 -- 3. Local Love: Michael's Jewelers and Gemologist (519 Station Ave) and
 --    Doc's Finds Records (606 Station Ave). Logos + photos are hosted by the
---    site (public/images/neighbors/). Michael's links to its Facebook page —
---    the michaelsjewels.com domain listed in old directories now belongs to a
---    gambling spam site, so it must not be linked.
+--    site (public/images/neighbors/), from each shop's own website
+--    (michaelsnj.com, docsfindsrecords.com). Note: the michaelsjewels.com
+--    domain in old directory listings is no longer Michael's — don't use it.
 --    Inserted only if a row with that name doesn't exist yet; the page lays
 --    neighbors out by street number, so display_order only matters if the
 --    section is switched to manual order (they go to the end of the list).
@@ -23,7 +23,7 @@ alter table google_profile add column if not exists hours_pushed_at timestamptz;
 insert into local_businesses (name, category, address, blurb, url, logo_url, photo_url, display_order)
 select 'Michael''s Jewelers and Gemologist', 'retail', '519 Station Ave',
        'Custom, one-of-a-kind jewelry designed and made right in the shop by Michael Bartorelli, a GIA graduate gemologist who started out on Philadelphia’s Jewelers Row at thirteen. Repairs, too — just across the street from us.',
-       'https://www.facebook.com/michaelshaddonheights',
+       'https://michaelsnj.com/',
        '/images/neighbors/michaels-jewelers.png', '/images/neighbors/michaels-ring.jpg',
        coalesce((select max(display_order) + 1 from local_businesses), 0)
  where not exists (select 1 from local_businesses where name ilike 'Michael%Jewel%');
