@@ -116,7 +116,8 @@ describe('unread counts', () => {
     const main = screen.getByRole('main');
     const wishRow = within(main).getByRole('link', { name: /read the menu wishes/i });
     expect(wishRow.querySelector('.countbadge').textContent).toBe('1');
-    expect(document.title).toBe('(3) Admin · Trouble Brewing');
+    // the tab title is written in an effect after the badges render
+    await waitFor(() => expect(document.title).toBe('(3) Admin · Trouble Brewing'));
   });
 
   it('clears when the items are marked, as soon as the window gets focus back', async () => {
