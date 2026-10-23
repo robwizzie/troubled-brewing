@@ -40,7 +40,7 @@ describe('what the fox says', () => {
   it('names only menu items that are actually available', async () => {
     const { items } = (await import('../src/data/spoton-menu.json')).default;
     const available = new Set(items.filter((i) => i.available !== false).map((i) => i.name));
-    ['Pup Cup!', 'Oatmeal Creme Pie (GF)', 'Dark Chocolate Brownie (GF)', 'Cranberry Walnut Chicken Salad', 'Bagel/Breakfast Sandwich', 'No Bread Breakfast Sandwich']
+    ['Pup Cup!', 'Dark Chocolate Brownie (GF)', 'Cranberry Walnut Chicken Salad', 'Bagel/Breakfast Sandwich', 'No Bread Breakfast Sandwich']
       .forEach((n) => expect(available.has(n)).toBe(true));
     expect(QUIPS.some((q) => /Pup Cup/.test(q))).toBe(true);
     expect(items.find((i) => i.name === 'Cappuccino').description).toMatch(/La Colombe/);

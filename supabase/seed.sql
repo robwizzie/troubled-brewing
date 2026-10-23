@@ -221,12 +221,14 @@ insert into team_members (name, role, bio, fun_facts, display_order, active) val
 insert into local_businesses (name, category, address, blurb, url, display_order) values
 ('Anthony''s Creative Italian Cuisine', 'restaurant', '512 Station Ave', 'BYOB Italian right next door, in three dining rooms inside a 1930s building. Our closest neighbor by about twenty feet.', 'https://www.anthonysonstation.com/', 0),
 ('Lula''s Empanadas', 'restaurant', '516 Station Ave', 'Contemporary Dominican empanadas from Yaslyn Lora, named after her mother — up to eighteen flavors, now from a proper Station Ave storefront. They chipped in prizes for our ninth-birthday raffle.', 'https://www.facebook.com/lulasempanadas/', 1),
-('Ralph''s Pizza', 'restaurant', '520 Station Ave', 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town. They donated to our ninth-birthday raffle, too.', 'https://ralphspizzahaddonheights.com/', 2),
-('South Jersey Special', 'retail', '531 Station Ave', 'Amy Murphy’s gift shop of South Jersey makers — cards, prints, jewelry and small-batch things, most of it funny, all of it local. Another of our birthday-raffle donors.', 'https://southjerseyspecial.com/', 3),
-('Jane''s Tea House', 'cafe', '602 Station Ave', 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', 'https://janesteahouse.com/', 4),
-('Cabana Water Ice Co.', 'other', '603 Station Ave', 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', '', 5),
-('April Robin Florist & Gift', 'retail', '620 Station Ave', 'The florist at the top of the avenue — where the flowers on our counter usually come from.', 'https://www.aprilrobinflorist.com/', 6),
-('John''s Friendly Market', 'other', '622 Station Ave', 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', '', 7);
+('Michael''s Jewelers and Gemologist', 'retail', '519 Station Ave', 'Custom, one-of-a-kind jewelry designed and made right in the shop by Michael Bartorelli, a GIA graduate gemologist who started out on Philadelphia’s Jewelers Row at thirteen. Repairs, too — just across the street from us.', 'https://www.facebook.com/michaelshaddonheights', 2),
+('Ralph''s Pizza', 'restaurant', '520 Station Ave', 'Family-run pizza on Station Ave for more than thirty years, with a back room that has hosted half the birthdays in town. They donated to our ninth-birthday raffle, too.', 'https://ralphspizzahaddonheights.com/', 3),
+('South Jersey Special', 'retail', '531 Station Ave', 'Amy Murphy’s gift shop of South Jersey makers — cards, prints, jewelry and small-batch things, most of it funny, all of it local. Another of our birthday-raffle donors.', 'https://southjerseyspecial.com/', 4),
+('Jane''s Tea House', 'cafe', '602 Station Ave', 'Proper afternoon tea a few doors up. The one place on the street we happily send people for a hot drink.', 'https://janesteahouse.com/', 5),
+('Cabana Water Ice Co.', 'other', '603 Station Ave', 'Homemade water ice and hand-dipped ice cream, going since 1989. The summer half of a Station Ave afternoon.', '', 6),
+('Doc''s Finds Records', 'retail', '606 Station Ave', 'Records, new and hard to find — fresh releases and original pressings of classic rock, jazz, blues and more, with new stock in the bins every week. An online shop that put down roots on Station Ave in 2022, and the reason for the occasional sidewalk sale with a live band.', 'https://docsfindsrecords.com/', 7),
+('April Robin Florist & Gift', 'retail', '620 Station Ave', 'The florist at the top of the avenue — where the flowers on our counter usually come from.', 'https://www.aprilrobinflorist.com/', 8),
+('John''s Friendly Market', 'other', '622 Station Ave', 'The old-fashioned neighborhood grocery and deli. Exactly the sort of place a main street stops being a main street without.', '', 9);
 
 -- -----------------------------------------------------------------------------
 -- TB Timeline milestones — real, sourced dates (see src/lib/seed.js)

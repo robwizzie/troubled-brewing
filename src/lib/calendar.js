@@ -4,6 +4,7 @@
    Pure (no DOM) so it's unit-tested end to end (test/event-calendar.test.js).
 
    An event row is { id, title, description, event_date: 'YYYY-MM-DD',
+   end_date: optional last day 'YYYY-MM-DD' (multi-day events),
    event_time: free text the owner typed, e.g. "6:00–8:00 PM", "7 PM",
    "11am-1pm", "All day" }. eventWindow() reads that text into a start and an
    end on the SHOP's wall clock (America/New_York):
@@ -11,12 +12,16 @@
      · only a start → the end is 2 hours later (DEFAULT_DURATION_MIN);
      · no usable time ("All day", blank, or "7" with no am/pm — better a
        date-only entry than a wrong time) → an all-day event (DATE values).
+   With an end_date, the span runs from the start time on the first day to
+   the end time on the last day (all-day events cover every day).
 
    Calendars get the wall time WITH its zone, never the visitor's: the .ics
    uses TZID=America/New_York plus a VTIMEZONE block, Google gets ctz=, and
    Outlook gets the UTC offset in force on that date. So 7 PM is 7 PM in
    Haddon Heights whether you add it from Philly or Phoenix.
    ============================================================================= */
+
+import { eventLastDay, formatEventDays, isMultiDay } from './eventDates.js';
 
 export const SHOP_TZ = 'America/New_York';
 export const EVENT_LOCATION = 'Trouble Brewing Coffee House, 514 Station Ave, Haddon Heights, NJ 08035';
@@ -97,8 +102,9 @@ const hm = (mins) => `${pad(Math.floor(mins / 60))}:${pad(mins % 60)}`;
 export function eventWindow(ev) {
   if (!ev || !isIsoDate(ev.event_date)) return null;
   const date = ev.event_date;
+  const last = eventLastDay(ev);
   const t = parseEventTime(ev.event_time);
-  if (!t) return { allDay: true, startDate: date, endDate: addDays(date, 1) };
+  if (!t) return { allDay: true, startDate: date, endDate: addDays(last, 1) };
   let endMin = t.end == null ? t.start + DEFAULT_DURATION_MIN : t.end;
   if (endMin <= t.start) endMin += 24 * 60; // runs past midnight
   const dayCarry = Math.floor(endMin / (24 * 60));
@@ -106,7 +112,7 @@ export function eventWindow(ev) {
     allDay: false,
     startDate: date,
     startTime: hm(t.start),
-    endDate: addDays(date, dayCarry),
+    endDate: addDays(last, dayCarry),
     endTime: hm(endMin % (24 * 60)),
   };
 }
@@ -211,7 +217,10 @@ function slugify(s) {
 
 /** The description calendars get: the blurb, the owner's own time text, the link. */
 function details(ev, url) {
-  return [ev.description, ev.event_time && `When: ${ev.event_time}`, url].filter(Boolean).join('\n\n');
+  const when = isMultiDay(ev)
+    ? `When: ${formatEventDays(ev)}${ev.event_time ? `, ${ev.event_time}` : ''}`
+    : ev.event_time && `When: ${ev.event_time}`;
+  return [ev.description, when, url].filter(Boolean).join('\n\n');
 }
 
 /** "trouble-brewing-trivia-night-2026-11-08.ics" */
@@ -290,10 +299,12 @@ export function outlookCalendarUrl(ev, { url = '' } = {}) {
 
 /* ---- "Text a friend" -------------------------------------------------------- */
 
-/** "Sat, Nov 8 at 7 PM" / "Sat, Nov 8 at 7:30 PM" / "Sat, Nov 8" (all day). */
+/** "Sat, Nov 8 at 7 PM" / "Sat, Nov 8 at 7:30 PM" / "Sat, Nov 8" (all day)
+    / "Sat, Oct 24 – Mon, Oct 26" (multi-day). */
 export function friendlyWhen(ev) {
   const w = eventWindow(ev);
   if (!w) return '';
+  if (isMultiDay(ev)) return formatEventDays(ev, 'short');
   const [y, m, d] = w.startDate.split('-').map(Number);
   const day = new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
   if (w.allDay) return day;

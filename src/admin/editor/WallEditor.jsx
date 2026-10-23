@@ -87,7 +87,7 @@ export default function WallEditor({ section, onChangeData, onClose, initialPiec
   const selIndex = pieces.findIndex((p) => p.id === selectedId);
   const selected = selIndex >= 0 ? pieces[selIndex] : null;
   const [zoom, setZoom] = useState(0);
-  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(null); // the piece being taken down
 
   const photoRef = useRef(null);
   const viewRef = useRef(null);
@@ -213,11 +213,12 @@ export default function WallEditor({ section, onChangeData, onClose, initialPiec
     writeAll([...pieces, normalizeWallPiece({ id, title: 'New piece', ...newBoxAt(cx, cy) })]);
     setSelectedId(id);
   }
-  function removeSelected() {
-    setConfirmRemove(false);
-    if (!selected) return;
-    writeAll(pieces.filter((p) => p.id !== selected.id));
-    setSelectedId(null);
+  function removePiece() {
+    const target = confirmRemove;
+    setConfirmRemove(null);
+    if (!target) return;
+    writeAll(pieces.filter((p) => p.id !== target.id));
+    if (selectedId === target.id) setSelectedId(null);
   }
   function move(index, dir) {
     const next = moveItem(pieces, index, dir);
@@ -355,7 +356,13 @@ export default function WallEditor({ section, onChangeData, onClose, initialPiec
             <TextField label="Name on the label" value={selected.title} onChange={(v) => update(selected.id, { title: v })} hint="Shown on the gold plate and as the heading when someone opens this piece." />
             <TextField label="Who made it" value={selected.artist} onChange={(v) => update(selected.id, { artist: v })} placeholder="Artist’s name" />
             <TextField label="Link for the artist" value={selected.artist_url} onChange={(v) => update(selected.id, { artist_url: v })} placeholder="Website or Instagram" hint="Their name becomes a link to it." />
-            <TextField label="The story" multiline rows={5} value={selected.story} onChange={(v) => update(selected.id, { story: v })} hint="Where it came from, why it’s on the wall. Blank shows “ask a Troublemaker”." />
+            <TextField label="The story" multiline rows={5} value={selected.story} onChange={(v) => update(selected.id, { story: v })} hint="Where it came from, why it’s on the wall. Leave it blank and nothing shows in its place." />
+            {selected.story ? (
+              <button type="button" className="btn btn--ghost btn--sm wed-clear" onClick={() => update(selected.id, { story: '' })}>
+                <Icon icon={LuTrash2} size={14} />
+                Remove the story
+              </button>
+            ) : null}
             <TextField label="What’s in the frame" multiline rows={3} value={selected.blurb} onChange={(v) => update(selected.id, { blurb: v })} hint="A plain description of the picture, shown above the story." />
             <ImageField label="Close-up photo" value={selected.photo} preset="card" folder="gallery" onChange={(url) => update(selected.id, { photo: url })} />
             <p className="field__hint wed-hint">Blank uses a close-up cut from the wall photo.</p>
@@ -408,7 +415,7 @@ export default function WallEditor({ section, onChangeData, onClose, initialPiec
             </details>
 
             <div className="wed-side__foot">
-              <button type="button" className="btn btn--ghost btn--sm wed-remove" onClick={() => setConfirmRemove(true)}>
+              <button type="button" className="btn btn--ghost btn--sm wed-remove" onClick={() => setConfirmRemove(selected)}>
                 <Icon icon={LuTrash2} size={16} />
                 Remove from the wall
               </button>
@@ -417,9 +424,14 @@ export default function WallEditor({ section, onChangeData, onClose, initialPiec
         ) : (
           <div className="wed-list">
             <p className="wed-list__intro">
-              Tap a box on the photo, or a name below, to edit that piece. Changes show here straight away and go on the
-              site when you press <strong>Publish</strong>.
+              Tap a box on the photo, or a name below, to edit that piece. Hung something new? <strong>Add a piece</strong>,
+              drag its box onto it and give it a story. Took one down? Use the bin next to its name. Changes show here
+              straight away and go on the site when you press <strong>Publish</strong>.
             </p>
+            <button type="button" className="btn btn--primary btn--sm wed-add" onClick={addPiece}>
+              <Icon icon={LuPlus} size={16} />
+              Add a piece
+            </button>
             <ol className="wed-list__items" aria-label="Pieces, in the order visitors walk the wall">
               {pieces.map((p, i) => (
                 <li key={p.id} className="wed-list__row">
@@ -433,14 +445,11 @@ export default function WallEditor({ section, onChangeData, onClose, initialPiec
                   <span className="wed-list__order">
                     <button type="button" className="iconbtn" aria-label={`Move ${p.title || 'piece'} earlier`} disabled={i === 0} onClick={() => move(i, -1)}><Icon icon={LuArrowUp} size={16} /></button>
                     <button type="button" className="iconbtn" aria-label={`Move ${p.title || 'piece'} later`} disabled={i === pieces.length - 1} onClick={() => move(i, 1)}><Icon icon={LuArrowDown} size={16} /></button>
+                    <button type="button" className="iconbtn" aria-label={`Remove ${p.title || 'piece'} from the wall`} onClick={() => setConfirmRemove(p)}><Icon icon={LuTrash2} size={16} /></button>
                   </span>
                 </li>
               ))}
             </ol>
-            <button type="button" className="btn btn--ghost btn--sm" onClick={addPiece}>
-              <Icon icon={LuPlus} size={16} />
-              Add a piece
-            </button>
             <p className="field__hint">The order here is the order Prev and Next walk the wall on the site.</p>
 
             <div className="wed-photo-field">
@@ -455,12 +464,12 @@ export default function WallEditor({ section, onChangeData, onClose, initialPiec
       </aside>
 
       <ConfirmModal
-        open={confirmRemove}
-        title={`Remove “${selected?.title || 'this piece'}” from the wall?`}
-        body="Its box and details come off the wall when you press Publish. Discard brings it back until then."
+        open={Boolean(confirmRemove)}
+        title={`Remove “${confirmRemove?.title || 'this piece'}” from the wall?`}
+        body="Its box, story and photo come off the wall when you press Publish. Discard brings it back until then."
         confirmLabel="Remove"
-        onConfirm={removeSelected}
-        onCancel={() => setConfirmRemove(false)}
+        onConfirm={removePiece}
+        onCancel={() => setConfirmRemove(null)}
       />
     </div>
   );

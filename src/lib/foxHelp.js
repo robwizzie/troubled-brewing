@@ -1,5 +1,6 @@
 import { computeStatus, dayName, nextOpening } from './hours.js';
 import { MENU_CATEGORY_ORDER } from './menuService.js';
+import { formatEventDays, isMultiDay } from './eventDates.js';
 
 // how the fox says each menu category out loud
 const SAY_CATEGORY = { espresso: 'espresso', specialty: 'specialty drinks', food: 'food', pastry: 'pastries', seasonal: 'seasonal specials' };
@@ -159,7 +160,7 @@ export function foxAnswers({
   const next = (events || []).find((e) => e && e.title);
   if (next || hostCopy) {
     const lines = [];
-    if (next) lines.push(`Next up: ${next.title}${next.event_date ? `, ${fmtEventDate(next.event_date)}` : ''}${next.event_time ? ` at ${next.event_time}` : ''}.`);
+    if (next) lines.push(`Next up: ${next.title}${next.event_date ? `, ${isMultiDay(next) ? formatEventDays(next) : fmtEventDate(next.event_date)}` : ''}${next.event_time ? ` at ${next.event_time}` : ''}.`);
     if (hostCopy) lines.push(`Hosting? ${hostCopy}`);
     out.push({
       id: 'events',

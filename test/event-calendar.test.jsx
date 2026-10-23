@@ -248,3 +248,46 @@ describe('on the posters', () => {
     }
   });
 });
+
+/* Multi-day events: an optional end_date (the last day, inclusive). */
+describe('multi-day events (end_date)', () => {
+  const FEST = { id: 'fest', title: 'Art Walk Fall Fest', event_date: '2026-10-24', end_date: '2026-10-26', event_time: '10am-4pm' };
+
+  it('timed: starts on the first day, ends on the last', () => {
+    expect(cal.eventWindow(FEST)).toEqual({ allDay: false, startDate: '2026-10-24', startTime: '10:00', endDate: '2026-10-26', endTime: '16:00' });
+  });
+
+  it('all-day: covers every day (end exclusive)', () => {
+    expect(cal.eventWindow({ ...FEST, event_time: '' })).toEqual({ allDay: true, startDate: '2026-10-24', endDate: '2026-10-27' });
+  });
+
+  it('a blank, malformed or earlier end date is a one-day event', () => {
+    for (const end_date of ['', null, 'soon', '2026-10-20', '2026-10-24']) {
+      expect(cal.eventWindow({ ...FEST, end_date }).endDate).toBe('2026-10-24');
+    }
+  });
+
+  it('the invite and the calendar description name the span', () => {
+    expect(cal.friendlyWhen(FEST)).toBe('Sat, Oct 24 – Mon, Oct 26');
+    expect(unfold(cal.buildIcs(FEST, { now: NOW }))).toContain('When: Saturday\\, October 24 – Monday\\, October 26\\, 10am-4pm');
+  });
+
+  it('stays upcoming until its last day has passed', async () => {
+    const { isUpcoming } = await import('../src/lib/eventDates.js');
+    expect(isUpcoming(FEST, '2026-10-26')).toBe(true);
+    expect(isUpcoming(FEST, '2026-10-27')).toBe(false);
+    expect(isUpcoming({ ...FEST, end_date: '' }, '2026-10-25')).toBe(false);
+  });
+
+  it('the poster’s date block shows the span', async () => {
+    ds.getEvents.mockReset();
+    const y = Number(shopNow().isoDate.slice(0, 4)) + 1;
+    ds.getEvents.mockResolvedValue([{ ...FEST, event_date: `${y}-10-30`, end_date: `${y}-11-02` }]);
+    render(<MemoryRouter><EventsList data={{}} /></MemoryRouter>);
+    await screen.findByRole('heading', { level: 3, name: 'Art Walk Fall Fest' });
+    const block = document.querySelector('.ev-poster__date');
+    expect(block.classList.contains('ev-poster__date--span')).toBe(true);
+    expect(block.textContent).toContain('Oct–Nov');
+    expect(block.textContent).toContain('30–2');
+  });
+});

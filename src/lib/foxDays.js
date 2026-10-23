@@ -53,8 +53,9 @@ export function specialDay(date = new Date()) {
                        are live items in src/data/spoton-menu.json
       · chicken salad — the menu's Cranberry Walnut Chicken Salad description
                        ("our most popular sandwich")
-      · gluten-free  — the "Gluten Free Sweeties" category: Oatmeal Creme Pie
-                       (GF) and Dark Chocolate Brownie (GF) are available
+      · gluten-free  — the "Gluten Free Sweeties" category: Dark Chocolate
+                       Brownie (GF) is available (the Oatmeal Creme Pie comes
+                       and goes, so it isn't named)
       · Pup Cup      — the "Pup Cup!" item (Coffee & Espresso Drinks)
       · parking      — the Location page's Parking block
       · events       — the Events & Community page (/events)
@@ -66,7 +67,7 @@ export const QUIPS = [
   'Our espresso is La Colombe, and our teas are Metolius.',
   'Breakfast is served all day. Try a breakfast sandwich on a bagel, or the no-bread one.',
   'The Cranberry Walnut Chicken Salad is our most popular sandwich.',
-  'Gluten-free? Look for the Gluten Free Sweeties, like the Oatmeal Creme Pie and the Dark Chocolate Brownie.',
+  'Gluten-free? Look for the Gluten Free Sweeties, like the Dark Chocolate Brownie.',
   'Bringing your dog? There’s a Pup Cup on the menu just for them.',
   'Parking: there’s street parking out front and a lot behind the shop. Enter from White Horse Pike or Atlantic Ave.',
   'Check the Events page to see what’s coming up at the shop.',

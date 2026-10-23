@@ -67,8 +67,11 @@ describe('Today’s fox fact', () => {
       expect(d.text.length).toBeGreaterThan(10);
       expect(`${d.text} ${d.answer || ''}`).not.toMatch(/glasses|spectacles|monocle/i);
       if (d.kind === 'riddle') expect(d.answer).toBeTruthy();
-      if (d.item) expect(availableNames.has(d.item)).toBe(true);
+      // a real menu item (dailyFact skips it on days SpotOn marks it unavailable)
+      if (d.item) expect(MENU_ITEMS.some((i) => i.name === d.item)).toBe(true);
     });
+    // and the pool never runs dry on today's menu
+    expect(DAILY.filter((d) => !d.item || availableNames.has(d.item)).length).toBeGreaterThan(8);
     const ids = DAILY.map((d) => d.id);
     expect(new Set(ids).size).toBe(ids.length);
   });

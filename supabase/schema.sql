@@ -86,6 +86,7 @@ create table if not exists events (
   title text not null,
   description text,
   event_date date not null,
+  end_date date,                 -- optional last day of a multi-day event (inclusive)
   event_time text,
   image_url text,
   status text not null default 'published',
@@ -157,6 +158,7 @@ create table if not exists google_profile (
   lat numeric, lng numeric,
   maps_url text,                           -- "leave a review" / GBP url
   fetched_at timestamptz default now(),
+  hours_pushed_at timestamptz,             -- last time admin sent hours TO Google (google-hours fn); Places' hours are held off for 3 days after
   constraint google_profile_singleton check (id = 1)
 );
 

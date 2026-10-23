@@ -526,14 +526,9 @@ export default function GalleryWallRoom({ data = {} }) {
                       </p>
                     )}
 
-                    <p className="gwr-card__blurb">{open.blurb}</p>
-                    {open.story ? (
-                      <p className="gwr-card__story">{open.story}</p>
-                    ) : (
-                      <p className="gwr-card__untold">
-                        The story behind this one isn&rsquo;t written down yet &mdash; ask a Troublemaker.
-                      </p>
-                    )}
+                    {open.blurb && <p className="gwr-card__blurb">{open.blurb}</p>}
+                    {/* no story yet → nothing at all, not a placeholder */}
+                    {open.story && <p className="gwr-card__story">{open.story}</p>}
                     {open.forSale && <p className="gwr-card__sale">Ask us &mdash; this one&rsquo;s for sale</p>}
                   </div>
 

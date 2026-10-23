@@ -4,6 +4,7 @@ import { useDataVersion } from '../../lib/dataVersion.js';
 import { shopNow } from '../../lib/hours.js';
 import { mediaUrl, BRAND, SITE_URL } from '../../lib/config.js';
 import { absoluteUrl } from '../../lib/seo.js';
+import { eventLastDay, isMultiDay, isUpcoming } from '../../lib/eventDates.js';
 
 /* The calendar / share buttons (and the .ics builder behind them) load on
    their own, only once there's an upcoming event to put them on. */
@@ -21,9 +22,17 @@ import FramedPhoto from '../PagePhoto.jsx';
    weekday) torn off a calendar, the event's own picture if it has one (a
    printed poster with the fox if not), then the title, time and blurb.
 
+   A multi-day event (an `end_date` after its `event_date`) gets a span on
+   its date block ("OCT 24–26 / SAT – MON") and stays up until its last day.
+
+   Whatever shape the owner's picture is, it fits the poster: a photo close
+   to the poster's 4:3 fills it, anything else (a wide banner, a tall flyer,
+   a square logo) is shown whole over a soft, blurred copy of itself — never
+   cropped mid-word.
+
    Past events with a photo can be shown underneath as a photo wall
    (`show_past`), newest first — nothing to tidy: an event moves from the
-   posters to the wall by itself once its date has passed.
+   posters to the wall by itself once its (last) date has passed.
 
    Each upcoming poster with a real date carries "Add to calendar" and "Text
    a friend" (EventActions.jsx); the link they share is this poster's own
@@ -46,8 +55,47 @@ function parts(iso) {
   };
 }
 
+/** The date block's three lines; a span for multi-day events. */
+function dateBlock(ev) {
+  const a = parts(ev.event_date);
+  if (!a) return null;
+  if (!isMultiDay(ev)) return { ...a, span: false };
+  const b = parts(eventLastDay(ev));
+  const short = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short' });
+  const sameMonth = a.month === b.month;
+  return {
+    month: sameMonth ? a.month : `${a.month}–${b.month}`,
+    day: `${a.day}–${b.day}`,
+    weekday: `${short(ev.event_date)} – ${short(eventLastDay(ev))}`,
+    long: `${a.long} to ${b.long}`,
+    span: true,
+  };
+}
+
+/* The poster is 4:3. Pictures within this much of that shape fill it (a
+   sliver trimmed off is fine on a photo); anything further off is shown
+   whole instead. */
+const POSTER_RATIO = 4 / 3;
+const COVER_TOLERANCE = 0.12;
+
+/** An event picture that always fits its poster — see the note at the top. */
+function PosterArt({ src }) {
+  const [fit, setFit] = useState('contain');
+  const onLoad = (e) => {
+    const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+    if (!w || !h) return;
+    setFit(Math.abs(w / h - POSTER_RATIO) / POSTER_RATIO <= COVER_TOLERANCE ? 'cover' : 'contain');
+  };
+  return (
+    <>
+      {fit === 'contain' && <img className="ev-poster__backdrop" src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />}
+      <img className={`ev-poster__img ev-poster__img--${fit}`} src={src} alt="" loading="lazy" decoding="async" onLoad={onLoad} />
+    </>
+  );
+}
+
 function Poster({ ev, index }) {
-  const p = parts(ev.event_date);
+  const p = dateBlock(ev);
   const img = mediaUrl(ev.image_url);
   const anchor = eventAnchor(ev);
   const canAdd = /^\d{4}-\d{2}-\d{2}$/.test(String(ev.event_date || ''));
@@ -56,7 +104,7 @@ function Poster({ ev, index }) {
       <article className="ev-poster__card">
         <span className="ev-poster__pin" aria-hidden="true" />
         {p && (
-          <p className="ev-poster__date" aria-label={p.long}>
+          <p className={`ev-poster__date${p.span ? ' ev-poster__date--span' : ''}`} aria-label={p.long}>
             <span className="ev-poster__month" aria-hidden="true">{p.month}</span>
             <span className="ev-poster__day" aria-hidden="true">{p.day}</span>
             <span className="ev-poster__weekday" aria-hidden="true">{p.weekday}</span>
@@ -64,7 +112,7 @@ function Poster({ ev, index }) {
         )}
         <div className="ev-poster__art">
           {img ? (
-            <img src={img} alt="" loading="lazy" decoding="async" />
+            <PosterArt key={img} src={img} />
           ) : (
             <img className="ev-poster__mark" src={BRAND.logoFox} alt="" aria-hidden="true" loading="lazy" />
           )}
@@ -106,9 +154,9 @@ export default function EventsList({ data = {} }) {
   }, [version, showPast]);
 
   const today = shopNow().isoDate;
-  const upcoming = (events || []).filter((e) => !e.event_date || e.event_date >= today);
+  const upcoming = (events || []).filter((e) => isUpcoming(e, today));
   const past = showPast
-    ? (events || []).filter((e) => e.event_date && e.event_date < today && e.image_url).sort((a, b) => (a.event_date < b.event_date ? 1 : -1)).slice(0, 8)
+    ? (events || []).filter((e) => e.event_date && !isUpcoming(e, today) && e.image_url).sort((a, b) => (a.event_date < b.event_date ? 1 : -1)).slice(0, 8)
     : [];
 
   return (

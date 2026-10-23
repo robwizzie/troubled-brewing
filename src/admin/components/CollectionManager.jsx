@@ -36,7 +36,7 @@ const withDraft = (row) => ({ ...row, ...(row.draft_data && typeof row.draft_dat
 const CollectionManager = forwardRef(function CollectionManager(
   {
     table, title, singular, fields, defaultItem = {}, labelKey = 'name', orderable = true,
-    summary, embedded = false, onChanged, autoOpenLabel, help, intro, onEditingChange,
+    summary, embedded = false, onChanged, autoOpenLabel, help, intro, onEditingChange, validate,
   },
   ref
 ) {
@@ -209,11 +209,18 @@ const CollectionManager = forwardRef(function CollectionManager(
   /* "Done": validate and fold the form into the working list. Not live. */
   function applyForm() {
     const payload = {};
-    for (const f of fields) payload[f.name] = coerceFieldValue(f, form[f.name]);
+    const current = editing === 'new' ? null : work.find((r) => r.id === editing);
+    for (const f of fields) {
+      payload[f.name] = coerceFieldValue(f, form[f.name]);
+      // A newer, optional column left blank stays out of the write unless the
+      // row already has it, so saving works before its migration has run.
+      if (f.omitWhenBlank && (payload[f.name] === '' || payload[f.name] == null) && !(current && f.name in current)) delete payload[f.name];
+    }
     const errs = {};
     for (const f of fields) {
       if (f.required && (payload[f.name] === '' || payload[f.name] == null)) errs[f.name] = `${f.label} is required.`;
     }
+    Object.assign(errs, validate ? validate(payload) || {} : {});
     setErrors(errs);
     if (Object.keys(errs).length) {
       toast('Please fill in the highlighted fields.', 'error');

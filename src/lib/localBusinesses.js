@@ -20,6 +20,8 @@ const NEIGHBOR_LOGOS = {
   'south-jersey-special': { bg: '#ffffff', ink: '#111111', ratio: 480 / 79 },
   'janes-tea-house': { bg: '#ffffff', ink: '#c9787a', ratio: 480 / 168 },
   'april-robin': { bg: '#dacce0', ink: '#141414', ratio: 480 / 163 },
+  'michaels-jewelers': { bg: '#ffffff', ink: '#111111', ratio: 480 / 137 },
+  'docs-finds': { bg: '#025b07', ink: '#ffffff', ratio: 480 / 202 },
 };
 const HOSTED_LOGO = /^\/?images\/neighbors\/([a-z0-9-]+)\.(png|jpe?g|webp)$/i;
 

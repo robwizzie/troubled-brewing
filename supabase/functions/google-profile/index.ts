@@ -32,6 +32,9 @@
 // Schedule: add a daily cron (Supabase Dashboard → Database → Cron, or
 //           pg_cron calling net.http_post) to invoke this once a day.
 // Manual:   the admin "Refresh now" button invokes it with { manual: true }.
+// Hours:    edited in admin and sent TO Google by the google-hours function;
+//           for 3 days after such a push this function keeps those hours
+//           rather than Places' (possibly not yet updated) copy.
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -154,7 +157,18 @@ Deno.serve(async (req) => {
     // small enough for one jsonb row.
     const reviews = merged.slice(0, 1500);
 
-    const row = {
+    // Hours just sent to Google from admin (google-hours) win over Places'
+    // copy for a few days: a Business Profile edit can take a while to reach
+    // Places, and the site shouldn't flip back to the old hours meanwhile.
+    // (Tolerates the hours_pushed_at column not existing yet.)
+    const HOLD_MS = 3 * 24 * 60 * 60 * 1000;
+    const pushedRes = await fetch(`${SUPABASE_URL}/rest/v1/google_profile?id=eq.1&select=hours_pushed_at`, {
+      headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` },
+    }).catch(() => null);
+    const pushedAt = pushedRes?.ok ? Date.parse((await pushedRes.json())?.[0]?.hours_pushed_at || '') : NaN;
+    const holdHours = Number.isFinite(pushedAt) && Date.now() - pushedAt < HOLD_MS;
+
+    const row: Record<string, unknown> = {
       id: 1,
       rating: p.rating ?? null,
       review_count: p.userRatingCount ?? null,
@@ -178,6 +192,10 @@ Deno.serve(async (req) => {
         : `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}`,
       fetched_at: new Date().toISOString(),
     };
+    if (holdHours) {
+      delete row.weekday_hours;
+      delete row.weekday_periods;
+    }
 
     const up = await fetch(`${SUPABASE_URL}/rest/v1/google_profile?id=eq.1`, {
       method: 'PATCH',
