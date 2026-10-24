@@ -182,6 +182,8 @@ export function coerceFieldValue(field, v) {
       return v === '' || v == null ? null : Number(v);
     case 'checkbox':
       return Boolean(v);
+    case 'date':
+      return v ? v : null; // a cleared date is NULL, never '' (Postgres rejects '')
     default:
       return v;
   }

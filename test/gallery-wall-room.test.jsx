@@ -206,8 +206,8 @@ describe('the room', () => {
     const card = screen.getByRole('complementary', { name: 'About The Pumpkin House' });
     const title = within(card).getByRole('heading', { name: 'The Pumpkin House' });
     expect(within(card).getByText(/front door/i)).toBeTruthy();
-    // no owner story yet: the card says so rather than inventing one
-    expect(within(card).getByText(/isn’t written down yet/i)).toBeTruthy();
+    // no owner story yet: nothing is shown in its place (no placeholder line)
+    expect(within(card).queryByText(/isn’t written down yet|ask a Troublemaker/i)).toBeNull();
     // focus goes to the story, not off into the other hotspots
     expect(document.activeElement).toBe(title);
 

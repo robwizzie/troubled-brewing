@@ -1,6 +1,7 @@
 import { SITE_URL } from './config.js';
 import { SITE, HOURS, GOOGLE_PROFILE, CONTENT_BLOCKS } from './seed.js';
 import { HOME_ROUTE, SITE_NAME, absoluteUrl, normalizePath, ogImageUrl, routeForPath, siteRoot } from './seo.js';
+import { eventLastDay, isMultiDay } from './eventDates.js';
 
 /* =============================================================================
    Structured data (schema.org JSON-LD).
@@ -85,6 +86,7 @@ export function businessNode({ siteUrl = SITE_URL, hours = HOURS } = {}) {
     description: HOME_ROUTE.description,
     url: `${root}/`,
     telephone: '+1-856-617-6638',
+    email: SITE.email,
     image: [ogImageUrl(siteUrl, 'home'), `${root}/images/wall/our-story-so-far.jpg`, `${root}/images/wall/gallery-wall.jpg`],
     logo: `${root}/images/brand/logo-fox.png`,
     priceRange: '$$',
@@ -207,6 +209,7 @@ export function eventNodes(events, { siteUrl = SITE_URL } = {}) {
         '@type': 'Event',
         name: e.title,
         startDate: time ? `${e.event_date}T${time}` : e.event_date,
+        ...(isMultiDay(e) ? { endDate: eventLastDay(e) } : {}),
         eventStatus: 'https://schema.org/EventScheduled',
         eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
         location: { '@type': 'Place', name: SITE_NAME, address: ADDRESS },

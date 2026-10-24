@@ -524,14 +524,6 @@
 }
 .gwr-card__blurb { margin: var(--space-3) 0 0; }
 .gwr-card__story { margin: var(--space-3) 0 0; }
-.gwr-card__untold {
-  margin: var(--space-3) 0 0;
-  padding-left: var(--space-3);
-  border-left: 3px solid var(--color-accent);
-  font-size: var(--text-sm);
-  font-style: italic;
-  color: var(--color-text-soft);
-}
 .gwr-card__sale {
   margin: var(--space-3) 0 0;
   font-weight: 600;

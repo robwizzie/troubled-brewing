@@ -185,6 +185,8 @@
 .adm .wed-remove { color: var(--adm-danger); }
 .adm .wed-remove:hover { background: var(--adm-danger-50); color: var(--adm-danger-600); border-color: #efc6be; }
 
+.wed-add { margin: 0 0 12px; }
+.wed-clear { margin: -6px 0 12px; }
 .wed-list__intro { margin: 0 0 14px; color: var(--adm-ink-2); font-size: 0.92rem; line-height: 1.5; }
 .wed-list__items { list-style: none; margin: 0 0 12px; padding: 0; background: var(--adm-surface); border: 1px solid var(--adm-line); border-radius: var(--adm-radius); overflow: hidden; }
 .wed-list__row { display: flex; align-items: center; gap: 4px; padding-right: 6px; }

@@ -106,9 +106,16 @@ export async function getContentBlock(key) {
 export async function getEvents({ upcomingOnly = true } = {}) {
   if (!isSupabaseConfigured) return seed.EVENTS;
   try {
-    let q = supabase.from('events').select('*').order('event_date', { ascending: true });
-    if (upcomingOnly) q = q.gte('event_date', todayISO());
-    const { data, error } = await q;
+    const today = todayISO();
+    const query = (withEnd) => {
+      let q = supabase.from('events').select('*').order('event_date', { ascending: true });
+      // A multi-day event stays "upcoming" until its last day has passed.
+      if (upcomingOnly) q = withEnd ? q.or(`event_date.gte.${today},end_date.gte.${today}`) : q.gte('event_date', today);
+      return q;
+    };
+    let { data, error } = await query(true);
+    // Before the end_date migration has run, the column doesn't exist yet.
+    if (error && upcomingOnly) ({ data, error } = await query(false));
     if (error) throw error;
     return data || [];
   } catch {

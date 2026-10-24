@@ -1,15 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useToast, ConfirmModal, Spinner } from '../components/ui.jsx';
 import { ScreenHead, usePublishUnit } from '../lib/publishing.jsx';
 import { same } from '../lib/publishHelpers.js';
-import { dayName } from '../../lib/hours.js';
-import { LuCircleCheck, LuPlus } from 'react-icons/lu';
+import { dayName, googleWeekly, toMinutes } from '../../lib/hours.js';
+import { LuCircleCheck, LuPlus, LuRefreshCw } from 'react-icons/lu';
 import { Icon } from '../components/Icon.jsx';
 
-/* Weekly hours grid + holiday overrides. Google Business hours win when they're
-   connected (this grid is the fallback); holiday closures always apply. Both
-   halves stay on this screen until Publish. */
+/* Weekly hours grid + holiday overrides. Both halves stay on this screen
+   until Publish.
+
+   With the Business Profile connected (the google-hours Edge Function has its
+   GBP_* secrets), this screen is where hours are changed: Publish saves them
+   AND sends them to Google, so the site, Google Search and Maps all agree.
+   The grid then starts from the hours Google has now, so publishing never
+   pushes stale fallback hours over the real ones.
+
+   Without that connection, Google's hours (when cached) still win on the site
+   and this grid is only the fallback — change regular hours on Google then.
+   Holiday closures always apply on the site either way. */
 
 const toRows = (hours) =>
   hours.map((r) => ({ day_of_week: r.day_of_week, open_time: r.open_time || null, close_time: r.close_time || null }));
@@ -19,6 +28,26 @@ function prettyDate(iso) {
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 }
+/* Why a day's times won't work, or '' when they're fine (both blank = closed). */
+function badTimes(open, close) {
+  const o = String(open || '').trim();
+  const c = String(close || '').trim();
+  if (!o && !c) return '';
+  if (!o || !c) return 'needs both an opening and a closing time.';
+  if (toMinutes(o) == null || toMinutes(c) == null) return 'write times like “7:30 AM” or “3 PM”.';
+  return '';
+}
+
+/* Is the Business Profile connected, so hours can be sent to Google? */
+async function googleStatus() {
+  try {
+    const { data, error } = await supabase.functions.invoke('google-hours', { body: { action: 'status' } });
+    return !error && Boolean(data?.connected);
+  } catch {
+    return false;
+  }
+}
+
 const BLANK_OVERRIDE = { override_date: '', label: '', open_time: '', close_time: '', closed: false };
 
 export default function HoursEditor() {
@@ -30,21 +59,51 @@ export default function HoursEditor() {
   const [googleLive, setGoogleLive] = useState(false);
   const [newOverride, setNewOverride] = useState(BLANK_OVERRIDE);
   const [confirmDel, setConfirmDel] = useState(null);
+  const [canPush, setCanPush] = useState(false); // Business Profile connected
+  const [pushing, setPushing] = useState(false);
+  const pushTimer = useRef(null);
 
   async function load() {
-    const [{ data: h }, { data: o }, { data: g }] = await Promise.all([
+    const [{ data: h }, { data: o }, { data: g }, connected] = await Promise.all([
       supabase.from('hours').select('*').order('day_of_week'),
       supabase.from('hours_overrides').select('*').order('override_date'),
       supabase.from('google_profile').select('weekday_periods').eq('id', 1).maybeSingle(),
+      googleStatus(),
     ]);
-    const byDay = Object.fromEntries((h || []).map((r) => [r.day_of_week, r]));
+    const fromGoogle = connected ? googleWeekly(g) : [];
+    const byDay = Object.fromEntries((fromGoogle.length ? fromGoogle : h || []).map((r) => [r.day_of_week, r]));
     const week = toRows(Array.from({ length: 7 }, (_, d) => byDay[d] || { day_of_week: d }));
     setSavedHours(week);
     setHours(week);
     setSavedOverrides(o || []);
     setOverrides(o || []);
     setGoogleLive(Array.isArray(g?.weekday_periods) && g.weekday_periods.length > 0);
+    setCanPush(connected);
   }
+
+  /* Send what's saved to Google. Both halves publish in one press, so the
+     push waits a beat and goes once. */
+  async function pushToGoogle({ quiet = false } = {}) {
+    setPushing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('google-hours', { body: { action: 'push' } });
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.detail || data?.error || 'Google said no');
+      toast('Hours sent to Google — Search and Maps usually update within minutes.', 'success');
+    } catch (e) {
+      const why = e?.message && /needs both/.test(e.message) ? ` (${e.message})` : '';
+      toast(`Saved on the site, but Google didn’t take the new hours just now${why}. Press “Send to Google” to try again.`, 'error', { duration: 9000 });
+      if (!quiet) console.warn(e); // eslint-disable-line no-console
+    } finally {
+      setPushing(false);
+    }
+  }
+  function queuePush() {
+    if (!canPush) return;
+    clearTimeout(pushTimer.current);
+    pushTimer.current = setTimeout(() => pushToGoogle(), 400);
+  }
+  useEffect(() => () => clearTimeout(pushTimer.current), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load().catch(() => toast('Could not load hours — refresh the page to try again.', 'error')); }, []);
 
@@ -54,9 +113,12 @@ export default function HoursEditor() {
     dirty: weekDirty,
     async publish() {
       const rows = toRows(hours);
+      const bad = rows.find((r) => badTimes(r.open_time, r.close_time));
+      if (bad) throw new Error(`${dayName(bad.day_of_week)}: ${badTimes(bad.open_time, bad.close_time)}`);
       const { error } = await supabase.from('hours').upsert(rows, { onConflict: 'day_of_week' });
       if (error) throw error;
       setSavedHours(rows);
+      queuePush();
     },
     discard() { setHours(savedHours); },
   });
@@ -81,6 +143,7 @@ export default function HoursEditor() {
         if (error) throw error;
       }
       setSavedOverrides(overrides);
+      queuePush();
     },
     discard() { setOverrides(savedOverrides); setNewOverride(BLANK_OVERRIDE); },
   });
@@ -91,6 +154,8 @@ export default function HoursEditor() {
 
   function addOverride() {
     if (!newOverride.override_date) { toast('Pick a date for the holiday first.', 'error'); return; }
+    const problem = !newOverride.closed && badTimes(newOverride.open_time, newOverride.close_time);
+    if (problem) { toast(`${problem} Or tick “Closed all day”.`, 'error'); return; }
     const row = {
       override_date: newOverride.override_date,
       label: newOverride.label || null,
@@ -112,15 +177,30 @@ export default function HoursEditor() {
       />
       <section className="admin__panel">
         <h2>Weekly hours {weekDirty && <span className="badge badge--draft panel-badge">Changed — not live yet</span>}</h2>
-        {googleLive && (
+        {canPush ? (
+          <div className="field__hint callout callout--ok">
+            <Icon icon={LuCircleCheck} size={18} />
+            <span>
+              <strong>Connected to Google.</strong> Change your hours here and press <strong>Publish</strong>: they go
+              on the site and to your Google Business Profile (Search and Maps) together, holidays included.
+              {googleLive && ' The grid below shows the hours Google has right now.'}
+              {' '}
+              <button type="button" className="btn btn--ghost btn--sm" onClick={() => pushToGoogle()} disabled={pushing || weekDirty || holidaysDirty} title={weekDirty || holidaysDirty ? 'Publish your changes first' : undefined}>
+                <Icon icon={LuRefreshCw} size={14} />
+                {pushing ? 'Sending…' : 'Send to Google'}
+              </button>
+            </span>
+          </div>
+        ) : googleLive ? (
           <p className="field__hint callout callout--ok">
             <Icon icon={LuCircleCheck} size={18} />
             <span><strong>Your Google Business hours are live on the site.</strong> This grid is only the
             backup if Google is ever unavailable — to change your regular hours, update them on your
-            Google Business Profile (they refresh here daily). Holiday closures below always apply.</span>
+            Google Business Profile (they refresh here daily), or ask your developer to connect Google so
+            hours can be changed right here. Holiday closures below always apply.</span>
           </p>
-        )}
-        <p className="field__hint">Leave both blank for a day you’re closed. Use a consistent format like “7:30 AM”.</p>
+        ) : null}
+        <p className="field__hint">Leave both blank for a day you’re closed. Write times like “7:30 AM” or “3 PM”.</p>
         <table className="admin-hours">
           <thead><tr><th>Day</th><th>Opens</th><th>Closes</th></tr></thead>
           <tbody>
