@@ -225,7 +225,8 @@ const STARS: Record<string, number> = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE:
    The ids may be pasted bare ("123") or as Google prints them ("accounts/123",
    "locations/456"). The v4 path needs the account that OWNS the location, and
    a Google login often has two (the personal account and a business "location
-   group"), so when the configured account answers 404 every account the login
+   group"), so when the configured account answers "not found" (404, or 400
+   "Resource could not be found") every account the login
    can see is tried, and the one that works is logged so the secret can be
    corrected. GBP_ACCOUNT_ID may even be left out. */
 async function fetchAllBusinessReviews(): Promise<Record<string, any>[]> {
@@ -262,11 +263,16 @@ async function fetchAllBusinessReviews(): Promise<Record<string, any>[]> {
     if (!a || tried.has(a)) return false;
     tried.add(a);
     const res = await page(a);
-    if (res.status === 404) { await res.body?.cancel(); return false; }
-    if (!res.ok) throw new Error(`reviews ${res.status}: ${await res.text()}`);
-    found.account = a;
-    found.res = res;
-    return true;
+    if (res.ok) {
+      found.account = a;
+      found.res = res;
+      return true;
+    }
+    const text = await res.text();
+    // "not under this account" comes back as 404, or as 400 with "Resource
+    // could not be found" — either way, try the next account
+    if (res.status === 404 || (res.status === 400 && /could not be found/i.test(text))) return false;
+    throw new Error(`reviews ${res.status}: ${text}`);
   };
   if (!(await attempt(configured))) {
     const list = await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts?pageSize=20', { headers: auth });
