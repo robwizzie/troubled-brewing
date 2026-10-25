@@ -220,14 +220,21 @@ const STARS: Record<string, number> = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE:
 /* All of the location's reviews from the Business Profile API (v4 reviews
    endpoint), newest first. Empty when the GBP_* secrets aren't set. The refresh
    token comes from the owner signing in once with the Google account that
-   manages the listing (scope business.manage) — see docs/INTEGRATIONS.md. */
+   manages the listing (scope business.manage) — see docs/INTEGRATIONS.md.
+
+   The ids may be pasted bare ("123") or as Google prints them ("accounts/123",
+   "locations/456"). The v4 path needs the account that OWNS the location, and
+   a Google login often has two (the personal account and a business "location
+   group"), so when the configured account answers 404 every account the login
+   can see is tried, and the one that works is logged so the secret can be
+   corrected. GBP_ACCOUNT_ID may even be left out. */
 async function fetchAllBusinessReviews(): Promise<Record<string, any>[]> {
   const id = Deno.env.get('GBP_CLIENT_ID');
   const secret = Deno.env.get('GBP_CLIENT_SECRET');
   const refresh = Deno.env.get('GBP_REFRESH_TOKEN');
-  const account = Deno.env.get('GBP_ACCOUNT_ID');
-  const location = Deno.env.get('GBP_LOCATION_ID');
-  if (!id || !secret || !refresh || !account || !location) return [];
+  const configured = bareId(Deno.env.get('GBP_ACCOUNT_ID'), 'accounts');
+  const location = bareId(Deno.env.get('GBP_LOCATION_ID'), 'locations');
+  if (!id || !secret || !refresh || !location) return [];
 
   const tok = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
@@ -236,16 +243,48 @@ async function fetchAllBusinessReviews(): Promise<Record<string, any>[]> {
   });
   if (!tok.ok) throw new Error(`token ${tok.status}: ${await tok.text()}`);
   const { access_token } = await tok.json();
+  const auth = { Authorization: `Bearer ${access_token}` };
 
-  const out: Record<string, any>[] = [];
-  let pageToken = '';
-  for (let page = 0; page < 40; page++) { // 40 × 50 = 2000 reviews, far past this shop
+  const page = (account: string, pageToken = '') => {
     const url = new URL(`https://mybusiness.googleapis.com/v4/accounts/${account}/locations/${location}/reviews`);
     url.searchParams.set('pageSize', '50');
     url.searchParams.set('orderBy', 'updateTime desc');
     if (pageToken) url.searchParams.set('pageToken', pageToken);
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${access_token}` } });
+    return fetch(url, { headers: auth });
+  };
+
+  // Find the account that owns the location: the configured one first, then
+  // every account this login can see.
+  // (an object, so TypeScript sees the writes made inside attempt())
+  const found: { account: string; res: Response | null } = { account: '', res: null };
+  const tried = new Set<string>();
+  const attempt = async (a: string) => {
+    if (!a || tried.has(a)) return false;
+    tried.add(a);
+    const res = await page(a);
+    if (res.status === 404) { await res.body?.cancel(); return false; }
     if (!res.ok) throw new Error(`reviews ${res.status}: ${await res.text()}`);
+    found.account = a;
+    found.res = res;
+    return true;
+  };
+  if (!(await attempt(configured))) {
+    const list = await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts?pageSize=20', { headers: auth });
+    const accounts: string[] = list.ok ? ((await list.json()).accounts || []).map((x: Record<string, any>) => bareId(x.name, 'accounts')) : [];
+    for (const a of accounts) if (await attempt(a)) break;
+    if (!found.account) throw new Error(`reviews 404: location ${location} not found under account(s) ${[...tried].join(', ') || '(none)'}`);
+    console.log(`Business Profile reviews: location ${location} belongs to account ${found.account} — set GBP_ACCOUNT_ID=${found.account}`);
+  }
+  const account = found.account;
+
+  const out: Record<string, any>[] = [];
+  let pageToken = '';
+  let res = found.res as Response;
+  for (let p = 0; p < 40; p++) { // 40 × 50 = 2000 reviews, far past this shop
+    if (p > 0) {
+      res = await page(account, pageToken);
+      if (!res.ok) throw new Error(`reviews ${res.status}: ${await res.text()}`);
+    }
     const body = await res.json();
     for (const r of body.reviews || []) {
       // star-only reviews have no comment; the site skips wordless ones itself
@@ -267,6 +306,11 @@ async function fetchAllBusinessReviews(): Promise<Record<string, any>[]> {
     if (!pageToken) break;
   }
   return out;
+}
+
+/** "accounts/123" / " 123 " → "123" (Google prints ids with their prefix). */
+function bareId(v: string | undefined | null, prefix: string) {
+  return String(v || '').trim().replace(new RegExp(`^${prefix}/`), '');
 }
 
 function dedupePhotos(list: { url: string }[]) {
