@@ -571,7 +571,79 @@
 .reviews-feed__more { text-align: center; max-width: 60ch; margin: calc(-1 * var(--space-4)) auto var(--space-5); font-size: var(--text-sm); color: var(--color-text-soft); }
 /* the scroll sentinel that loads the next batch: invisible, but it needs a
    box for IntersectionObserver to see */
-.reviews-feed__sentinel { height: 1px; }
+/* ---- the toolbar over the complete feed: search · sort · chips · status ---- */
+.reviews-toolbar {
+  max-width: 920px; margin: 0 auto var(--space-6);
+  padding: var(--space-4) var(--space-5); border-radius: 18px;
+  background: var(--color-surface); border: 1.5px solid var(--color-border);
+  box-shadow: 0 6px 18px rgba(40, 30, 14, 0.06);
+  scroll-margin-top: calc(var(--nav-h, 72px) + var(--space-4));
+}
+.reviews-toolbar__row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+.reviews-toolbar__search { position: relative; flex: 1 1 260px; display: flex; align-items: center; }
+.reviews-toolbar__search svg { position: absolute; left: 14px; color: var(--color-text-soft); pointer-events: none; }
+.reviews-toolbar__search input {
+  width: 100%; min-height: 46px; padding: 0 16px 0 42px; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border); background: #fff; font: inherit; color: var(--color-text);
+}
+.reviews-toolbar__sort { display: flex; align-items: center; gap: var(--space-2); flex: 0 0 auto; }
+.reviews-toolbar__sort label { font-size: var(--text-sm); font-weight: 700; color: var(--color-text-soft); }
+.reviews-toolbar__sort select {
+  min-height: 46px; padding: 0 38px 0 16px; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border); font: inherit; font-weight: 600; color: var(--color-text); cursor: pointer;
+  appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232c2722' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 14px center;
+}
+.reviews-toolbar__search input:focus-visible, .reviews-toolbar__sort select:focus-visible {
+  outline: none; border-color: var(--color-yellow-deep); box-shadow: 0 0 0 3px rgba(212, 173, 87, 0.35);
+}
+.reviews-toolbar .reviews-toolbar__chips { flex-wrap: wrap; margin: var(--space-4) 0 0; justify-content: flex-start; }
+.reviews-toolbar__count {
+  display: inline-block; min-width: 1.6em; margin-left: 4px; padding: 0 6px; border-radius: var(--radius-pill);
+  background: rgba(44, 39, 34, 0.08); font-size: 0.78em; font-weight: 700; text-align: center;
+}
+.testimonials-filter__chip.is-active .reviews-toolbar__count { background: rgba(44, 39, 34, 0.14); }
+.reviews-toolbar__status { margin: var(--space-3) 0 0; font-size: var(--text-sm); color: var(--color-text-soft); }
+.reviews-toolbar__clear {
+  margin-left: var(--space-2); padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-weight: 700; color: var(--color-accent-text); text-decoration: underline;
+}
+@media (max-width: 560px) {
+  .reviews-toolbar { padding: var(--space-3); border-radius: 14px; }
+  .reviews-toolbar__sort { flex: 1 1 100%; }
+  .reviews-toolbar__search { flex-basis: 100%; }
+  .reviews-toolbar__sort select { flex: 1; }
+  /* chips scroll sideways instead of stacking five rows deep */
+  .reviews-toolbar .reviews-toolbar__chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-right: calc(-1 * var(--space-3)); }
+  .reviews-toolbar__chips::-webkit-scrollbar { display: none; }
+  .reviews-toolbar__chips .testimonials-filter__chip { flex: 0 0 auto; }
+}
+/* search matches, like a highlighter pen across the words */
+.reviews-feed__quote mark { background: linear-gradient(transparent 45%, rgba(233, 196, 106, 0.7) 45%); color: inherit; padding: 0 1px; }
+/* long reviews: clamp with a soft fade, "Read more" opens the rest */
+.reviews-feed__quote.is-clamped {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 8; overflow: hidden;
+}
+.reviews-feed__more-btn {
+  margin: 0 0 var(--space-2); padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: var(--text-sm); font-weight: 700; color: var(--color-accent-text);
+}
+.reviews-feed__more-btn:hover { text-decoration: underline; }
+.reviews-feed__empty { text-align: center; padding: var(--space-6) 0; color: var(--color-text-soft); }
+/* numbered pages under the wall */
+.reviews-pager { display: flex; align-items: center; justify-content: center; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-6); }
+.reviews-pager__pages { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center; }
+.reviews-pager__num, .reviews-pager__step {
+  min-width: 44px; min-height: 44px; padding: 0 14px; border-radius: var(--radius-pill); cursor: pointer;
+  border: 1.5px solid var(--color-border); background: var(--color-surface);
+  font: inherit; font-weight: 700; color: var(--color-text);
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.reviews-pager__num:hover, .reviews-pager__step:hover:not(:disabled) { border-color: var(--color-yellow-deep); }
+.reviews-pager__num.is-current { background: var(--color-ink); border-color: var(--color-ink); color: #fff; cursor: default; }
+.reviews-pager__step:disabled { opacity: 0.4; cursor: default; }
+.reviews-pager__gap { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--color-text-soft); }
+@media (max-width: 560px) { .reviews-pager__num, .reviews-pager__step { min-width: 40px; min-height: 40px; padding: 0 10px; } }
 .testimonials--grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: var(--space-5); }
 .testimonial blockquote { font-family: var(--font-display); font-size: var(--text-lg); margin: var(--space-2) 0; line-height: 1.4; }
 /* photo attached to a review — sits above the quote like a print in the card */

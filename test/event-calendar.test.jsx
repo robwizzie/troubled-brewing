@@ -291,3 +291,20 @@ describe('multi-day events (end_date)', () => {
     expect(block.textContent).toContain('30–2');
   });
 });
+
+describe('Lately at Trouble (past events)', () => {
+  it('hangs each past event with a photo as a snapshot: the whole picture, its title and its dates', async () => {
+    ds.getEvents.mockReset();
+    const y = Number(shopNow().isoDate.slice(0, 4)) - 1;
+    ds.getEvents.mockResolvedValue([
+      { id: 'fest', title: 'Art Walk', event_date: `${y}-10-17`, end_date: `${y}-10-18`, image_url: '/images/pages/latte-art.jpg' },
+      { id: 'nopic', title: 'No photo', event_date: `${y}-09-01`, image_url: '' },
+    ]);
+    render(<MemoryRouter><EventsList data={{ show_past: true, past_heading: 'Lately at Trouble' }} /></MemoryRouter>);
+    await screen.findByRole('heading', { level: 3, name: 'Lately at Trouble' });
+    const snaps = document.querySelectorAll('.ev-snap');
+    expect(snaps).toHaveLength(1);
+    expect(snaps[0].querySelector('img.ev-poster__img').getAttribute('alt')).toBe('Art Walk');
+    expect(snaps[0].textContent).toContain(`Oct 17–18, ${y}`);
+  });
+});

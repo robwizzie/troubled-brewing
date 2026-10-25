@@ -30,8 +30,9 @@ import FramedPhoto from '../PagePhoto.jsx';
    a square logo) is shown whole over a soft, blurred copy of itself — never
    cropped mid-word.
 
-   Past events with a photo can be shown underneath as a photo wall
-   (`show_past`), newest first — nothing to tidy: an event moves from the
+   Past events with a photo can be shown underneath as snapshots taped up
+   on the wall (`show_past`) — square prints that, like the posters, show a
+   flyer whole instead of cropping it — newest first — nothing to tidy: an event moves from the
    posters to the wall by itself once its (last) date has passed.
 
    Each upcoming poster with a real date carries "Add to calendar" and "Text
@@ -50,9 +51,21 @@ function parts(iso) {
     month: d.toLocaleDateString('en-US', { month: 'short' }),
     day: d.getDate(),
     weekday: d.toLocaleDateString('en-US', { weekday: 'long' }),
-    monthYear: d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
     long: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
   };
+}
+
+/** "Oct 24, 2026" · "Oct 24–25, 2026" · "Oct 30 – Nov 2, 2026" — under a past snapshot. */
+function pastWhen(ev) {
+  const fmt = (iso, o) => new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', o);
+  const year = fmt(ev.event_date, { year: 'numeric' });
+  const first = fmt(ev.event_date, { month: 'short', day: 'numeric' });
+  if (!isMultiDay(ev)) return `${first}, ${year}`;
+  const last = eventLastDay(ev);
+  const sameMonth = last.slice(0, 7) === ev.event_date.slice(0, 7);
+  return sameMonth
+    ? `${first}–${fmt(last, { day: 'numeric' })}, ${year}`
+    : `${first} – ${fmt(last, { month: 'short', day: 'numeric' })}, ${fmt(last, { year: 'numeric' })}`;
 }
 
 /** The date block's three lines; a span for multi-day events. */
@@ -78,18 +91,19 @@ function dateBlock(ev) {
 const POSTER_RATIO = 4 / 3;
 const COVER_TOLERANCE = 0.12;
 
-/** An event picture that always fits its poster — see the note at the top. */
-function PosterArt({ src }) {
+/** An event picture that always fits its frame — see the note at the top.
+    `ratio` is the frame's shape (the poster's 4:3, a snapshot's 1:1). */
+function PosterArt({ src, ratio = POSTER_RATIO, alt = '' }) {
   const [fit, setFit] = useState('contain');
   const onLoad = (e) => {
     const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
     if (!w || !h) return;
-    setFit(Math.abs(w / h - POSTER_RATIO) / POSTER_RATIO <= COVER_TOLERANCE ? 'cover' : 'contain');
+    setFit(Math.abs(w / h - ratio) / ratio <= COVER_TOLERANCE ? 'cover' : 'contain');
   };
   return (
     <>
       {fit === 'contain' && <img className="ev-poster__backdrop" src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />}
-      <img className={`ev-poster__img ev-poster__img--${fit}`} src={src} alt="" loading="lazy" decoding="async" onLoad={onLoad} />
+      <img className={`ev-poster__img ev-poster__img--${fit}`} src={src} alt={alt} loading="lazy" decoding="async" onLoad={onLoad} />
     </>
   );
 }
@@ -192,17 +206,19 @@ export default function EventsList({ data = {} }) {
         {past.length > 0 && (
           <div className="ev-past">
             <h3 className="ev-past__heading">{pastHeading}</h3>
-            <ul className="ev-past__wall">
+            <ul className="ev-past__wall" data-count={past.length}>
               {past.map((ev, i) => (
-                <li key={ev.id || i}>
-                  <FramedPhoto
-                    url={ev.image_url}
-                    alt={ev.title}
-                    caption={`${ev.title} · ${parts(ev.event_date)?.monthYear || ''}`}
-                    frame={['black-mat', 'gilt-thin', 'bronze-carved', 'black-flat'][i % 4]}
-                    ratio={1}
-                    sizes="(min-width: 900px) 260px, 45vw"
-                  />
+                <li key={ev.id || i} className={`ev-snap ev-snap--tilt-${i % 4}`}>
+                  <figure className="ev-snap__card">
+                    <span className="ev-snap__tape" aria-hidden="true" />
+                    <div className="ev-poster__art ev-snap__photo">
+                      <PosterArt key={ev.image_url} src={mediaUrl(ev.image_url)} ratio={1} alt={ev.title} />
+                    </div>
+                    <figcaption className="ev-snap__caption">
+                      <span className="ev-snap__title">{ev.title}</span>
+                      <span className="ev-snap__when">{pastWhen(ev)}</span>
+                    </figcaption>
+                  </figure>
                 </li>
               ))}
             </ul>

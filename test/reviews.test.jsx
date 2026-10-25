@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, cleanup, within } from '@testing-library/react';
 
 /* The data layer is mocked so each test can hand loadReviews exactly the
    cache, testimonials and owner settings it needs. */
@@ -65,34 +65,52 @@ describe('loadReviews — the Google feed is the complete list', () => {
 });
 
 describe('the Reviews page Google feed', () => {
-  let savedIO;
   afterEach(() => {
     cleanup();
-    if (savedIO) { window.IntersectionObserver = savedIO; global.IntersectionObserver = savedIO; savedIO = null; }
+    window.history.replaceState(null, '', '/');
   });
 
-  it('renders all 30 reviews (no IntersectionObserver → render everything), ignoring the old count cap', async () => {
-    savedIO = window.IntersectionObserver;
-    delete window.IntersectionObserver;
-    delete global.IntersectionObserver;
-    state.profile.reviews = Array.from({ length: 30 }, (_, i) => g(i + 1));
-    const { container } = render(<GoogleReviewsFeed data={{ count: 5 }} />);
-    await waitFor(() => expect(container.querySelectorAll('.testimonial')).toHaveLength(30));
-    expect(screen.getByText(/All 30 reviews from Google/)).toBeTruthy();
-    expect(screen.queryByRole('button', { name: /Show all/ })).toBeNull();
-  });
-
-  it('starts with a batch of at least 12 and offers a "Show all" button when scrolling has not loaded the rest', async () => {
-    // an observer that never reports an intersection: the visitor hasn't scrolled
-    savedIO = window.IntersectionObserver;
-    const Idle = class { observe() {} unobserve() {} disconnect() {} takeRecords() { return []; } };
-    window.IntersectionObserver = Idle;
-    global.IntersectionObserver = Idle;
+  it('pages through every review, 12 at a time (ignoring the old count cap), and keeps the page in the URL', async () => {
     state.profile.reviews = Array.from({ length: 30 }, (_, i) => g(i + 1));
     const { container } = render(<GoogleReviewsFeed data={{ count: 5 }} />);
     await waitFor(() => expect(container.querySelectorAll('.testimonial')).toHaveLength(12));
-    fireEvent.click(screen.getByRole('button', { name: 'Show all 30 reviews' }));
-    await waitFor(() => expect(container.querySelectorAll('.testimonial')).toHaveLength(30));
+    expect(screen.getByText(/All 30 reviews from Google/)).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toMatch(/Showing 1–12 of 30 reviews/);
+    const pager = screen.getByRole('navigation', { name: 'Review pages' });
+    expect(within(pager).getByRole('button', { name: 'Page 1' }).getAttribute('aria-current')).toBe('page');
+    fireEvent.click(within(pager).getByRole('button', { name: 'Page 3' }));
+    await waitFor(() => expect(container.querySelectorAll('.testimonial')).toHaveLength(6));
+    expect(screen.getByRole('status').textContent).toMatch(/Showing 25–30 of 30/);
+    expect(new URLSearchParams(window.location.search).get('page')).toBe('3');
+    expect(within(pager).getByRole('button', { name: /Next/ }).disabled).toBe(true);
+  });
+
+  it('sorts oldest first and filters to reviews with photos', async () => {
+    state.profile.reviews = [
+      { ...g(1), published_at: '2026-05-01T00:00:00Z', photos: ['https://x/a.jpg'] },
+      { ...g(2), published_at: '2024-01-01T00:00:00Z' },
+      { ...g(3), published_at: '2025-01-01T00:00:00Z' },
+    ];
+    const { container } = render(<GoogleReviewsFeed />);
+    await screen.findByText('Reviewer 1');
+    fireEvent.change(screen.getByLabelText('Sort'), { target: { value: 'oldest' } });
+    const names = () => [...container.querySelectorAll('.testimonial strong')].map((n) => n.textContent);
+    expect(names()).toEqual(['Reviewer 2', 'Reviewer 3', 'Reviewer 1']);
+    fireEvent.click(screen.getByRole('button', { name: /With photos/ }));
+    expect(names()).toEqual(['Reviewer 1']);
+    fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    expect(names()).toHaveLength(3);
+  });
+
+  it('searches the words of every review and highlights the matches', async () => {
+    state.profile.reviews = [g(1, { text: 'The matcha latte is unreal.' }), g(2), g(3)];
+    const { container } = render(<GoogleReviewsFeed />);
+    await screen.findByText('Reviewer 1');
+    fireEvent.change(screen.getByLabelText('Search reviews'), { target: { value: 'Matcha' } });
+    expect(container.querySelectorAll('.testimonial')).toHaveLength(1);
+    expect(container.querySelector('mark').textContent).toBe('matcha');
+    fireEvent.change(screen.getByLabelText('Search reviews'), { target: { value: 'nothing-like-this' } });
+    expect(screen.getByText(/Nothing matches/)).toBeTruthy();
   });
 
   it('shows a testimonial-twin, and says when Google holds more than we cached', async () => {
@@ -102,7 +120,7 @@ describe('the Reviews page Google feed', () => {
     render(<GoogleReviewsFeed />);
     await screen.findByText('Reviewer 1');
     expect(screen.getByText('Reviewer 2')).toBeTruthy();
-    expect(screen.getByText(/The latest 2 of our 310 Google reviews/)).toBeTruthy();
+    expect(screen.getByText(/2 of our 310 Google reviews/)).toBeTruthy();
     expect(screen.getByRole('link', { name: 'read them all on Google' }).getAttribute('href')).toBe('https://maps.google.com/?cid=1');
   });
 
@@ -113,5 +131,34 @@ describe('the Reviews page Google feed', () => {
     await screen.findByText('Reviewer 2');
     expect(container.querySelectorAll('.testimonial')).toHaveLength(1);
     expect(screen.getByText(/1 review from Google/)).toBeTruthy();
+  });
+});
+
+describe('review filters (pure)', async () => {
+  const { pageList, availableFilters, selectReviews } = await import('../src/lib/reviewFilters.js');
+
+  it('pageList keeps the ends and a window, with gaps', () => {
+    expect(pageList(1, 1)).toEqual([1]);
+    expect(pageList(1, 5)).toEqual([1, 2, 3, 4, 5]);
+    expect(pageList(7, 20)).toEqual([1, '…', 6, 7, 8, '…', 20]);
+    expect(pageList(3, 20)).toEqual([1, 2, 3, 4, '…', 20]);
+  });
+
+  it('offers topic chips only when enough reviews mention them', () => {
+    const rows = [
+      { quote: 'Great coffee' }, { quote: 'coffee again' }, { quote: 'more coffee' },
+      { quote: 'a muffin' }, { quote: 'quiet room' },
+    ];
+    const ids = availableFilters(rows).map((c) => c.id);
+    expect(ids).toContain('coffee');
+    expect(ids).not.toContain('food'); // one mention isn't a topic
+    expect(selectReviews(rows, { filter: 'coffee' })).toHaveLength(3);
+  });
+
+  it('most detailed sorts by length; undated reviews go last when sorting by date', () => {
+    const rows = [{ quote: 'a', published_at: null }, { quote: 'abc', published_at: '2025-01-01' }, { quote: 'ab', published_at: '2026-01-01' }];
+    expect(selectReviews(rows, { sort: 'detailed' }).map((r) => r.quote)).toEqual(['abc', 'ab', 'a']);
+    expect(selectReviews(rows, { sort: 'oldest' }).map((r) => r.quote)).toEqual(['abc', 'ab', 'a']);
+    expect(selectReviews(rows, { sort: 'newest' }).map((r) => r.quote)).toEqual(['ab', 'abc', 'a']);
   });
 });

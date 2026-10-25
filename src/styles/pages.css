@@ -490,9 +490,38 @@ h3.hours-sign__label { margin-top: 0; }
 }
 .ev-past { margin-top: var(--space-8); }
 .ev-past__heading { text-align: center; font-family: var(--font-hand); font-size: 2.2rem; color: var(--color-green-deep); margin: 0 0 var(--space-6); }
-.ev-past__wall { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-6) var(--space-4); }
-.ev-past__wall > li { width: calc(50% - var(--space-2)); }
-@media (min-width: 900px) { .ev-past__wall { gap: var(--space-6); } .ev-past__wall > li { width: calc(25% - var(--space-5)); } }
+/* "Lately at Trouble": past events as instant-camera snapshots taped to the
+   wall. Fixed-size prints (never one giant frame when there's only one),
+   centred, a little crooked, straightening when you point at them. The
+   picture sits in a square and is never cropped (PosterArt: a flyer shows
+   whole over a blurred copy of itself; a near-square photo fills it). */
+.ev-past__wall {
+  list-style: none; padding: var(--space-3) 0 0; margin: 0;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-6) var(--space-4);
+}
+.ev-snap { width: min(240px, calc(50% - var(--space-2))); }
+@media (min-width: 700px) { .ev-past__wall { gap: var(--space-7) var(--space-6); } }
+.ev-snap__card {
+  position: relative; margin: 0; padding: 10px 10px 0; background: #fffdf8;
+  box-shadow: 0 10px 22px rgba(40, 30, 14, 0.18), 0 2px 4px rgba(40, 30, 14, 0.12);
+  transform: rotate(var(--r, -2deg)); transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.ev-snap--tilt-1 .ev-snap__card { --r: 1.6deg; }
+.ev-snap--tilt-2 .ev-snap__card { --r: -0.8deg; }
+.ev-snap--tilt-3 .ev-snap__card { --r: 2.4deg; }
+.ev-snap__card:hover { transform: rotate(0deg) scale(1.03); box-shadow: 0 16px 30px rgba(40, 30, 14, 0.22), 0 3px 6px rgba(40, 30, 14, 0.12); }
+@media (prefers-reduced-motion: reduce) { .ev-snap__card { transition: none; } .ev-snap__card:hover { transform: rotate(var(--r, -2deg)); } }
+.ev-snap__tape {
+  position: absolute; top: -12px; left: 50%; z-index: 3; width: 84px; height: 24px; margin-left: -42px;
+  background: rgba(233, 143, 176, 0.55); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); transform: rotate(-3deg);
+}
+.ev-snap--tilt-1 .ev-snap__tape { background: rgba(212, 173, 87, 0.6); transform: rotate(4deg); }
+.ev-snap--tilt-2 .ev-snap__tape { background: rgba(126, 140, 84, 0.45); transform: rotate(-6deg); }
+.ev-snap__photo { aspect-ratio: 1; background: #efe8d8; }
+.ev-snap__photo > .ev-poster__img--contain { padding: 6px; filter: none; }
+.ev-snap__caption { display: grid; gap: 2px; padding: var(--space-3) var(--space-2) var(--space-4); text-align: center; }
+.ev-snap__title { font-family: var(--font-hand); font-size: 1.45rem; line-height: 1.1; color: var(--color-ink); }
+.ev-snap__when { font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-soft); }
 
 /* ---- Gift cards: "Give someone Trouble" ------------------------------------
    Sage #545f33, gold #d4ad57 / #a87c1c, cream #f7f1e4, ink #2c2722,
