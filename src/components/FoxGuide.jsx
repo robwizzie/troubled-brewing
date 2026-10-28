@@ -404,6 +404,8 @@ export default function FoxGuide() {
   // the wish owns the whole card: its own title and a back button in the
   // header, no game tiles, chips or footer underneath
   const isWish = picked === 'wish';
+  // the card's first view (no answer or game up): your usual and his greeting
+  const isHome = !isWish && !chosen && picked !== 'quiz' && picked !== 'surprise' && !(picked === 'fact' && data);
   const backFromWish = () => {
     setPicked(null);
     requestAnimationFrame(() => panel.current?.querySelector('.fox-wish-btn')?.focus());
@@ -461,7 +463,7 @@ export default function FoxGuide() {
               only the chips below it scroll when the card is short. While a
               game (quiz / Surprise) is up, the answer area scrolls instead. */}
           <div className="fox-help__say" aria-live="polite">
-            <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}${isWish ? ' is-wish' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
+            <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}${isWish ? ' is-wish' : ''}${isHome ? ' is-home' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
               {isWish ? <FoxWish onDone={backFromWish} /> /* wishes-tricks */
                 : (picked === 'quiz' || picked === 'surprise') && !data ? <p className="fox-help__a" aria-busy="true">One sec, checking today’s menu…</p> /* wishes-tricks: a deep link before the menu loads */
                 : picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
@@ -482,8 +484,12 @@ export default function FoxGuide() {
                   {/* fox-outfits: your usual (only on the card's first view, never
                       after coming back from a game), then his line about the outfit */}
                   {data && !browsed && <FoxUsual menu={data.menu} onSomethingDifferent={() => ask('quiz')} />}
-                  <p className="fox-help__a">{greeting}</p>
-                  <FoxOutfitLine outfit={outfit} />
+                  {/* only his words get the speech bubble, so the usual's card
+                      never sits in a box inside a box */}
+                  <div className="fox-help__hello">
+                    <p className="fox-help__a">{greeting}</p>
+                    <FoxOutfitLine outfit={outfit} />
+                  </div>
                 </>
               )}
             </div>
@@ -537,7 +543,7 @@ export default function FoxGuide() {
           {!isWish && (
           <footer className="fox-help__foot">
             <Link to="/contact" className="fox-help__else" onClick={() => close(false)}>
-              Ask something else <FaArrowRight aria-hidden="true" /> <span>Contact us</span>
+              <span className="fox-help__else-lead">Ask something else <FaArrowRight aria-hidden="true" /></span> <span>Contact us</span>
             </Link>
             <button type="button" className="fox-help__hide" onClick={hide}>
               <FaEyeSlash aria-hidden="true" /> Hide the fox

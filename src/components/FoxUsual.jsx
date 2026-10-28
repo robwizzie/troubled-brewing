@@ -28,7 +28,10 @@ export default function FoxUsual({ menu, onSomethingDifferent }) {
       <DrinkPhoto item={item} size="sm" />
       <div className="fox-usual__info">
         <p className="fox-usual__q">Back for {articleFor(item.name)} {item.name}?</p>
-        {Number(item.price) > 0 && <p className="fox-usual__price">{fmtPrice(item.price)}</p>}
+        <p className="fox-usual__meta">
+          {Number(item.price) > 0 && <span className="fox-usual__price">{fmtPrice(item.price)}</span>}
+          <span className="fox-usual__note">Saved on this device only.</span>
+        </p>
       </div>
       <p className="fox-usual__actions">
         <a className="fox-help__link" href={orderUrlFor(item)} target="_blank" rel="noopener noreferrer" aria-label={orderLabelFor(item)}
@@ -39,7 +42,6 @@ export default function FoxUsual({ menu, onSomethingDifferent }) {
           <FaWandMagicSparkles aria-hidden="true" /> Something different
         </button>
       </p>
-      <p className="fox-usual__note">Saved on this device only.</p>
     </div>
   );
 }

@@ -173,6 +173,10 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
   background: var(--color-green-soft); border-radius: 4px 14px 14px 14px;
   animation: fox-answer 0.22s ease-out both; /* a new answer fades up into place */
 }
+/* the first view: your usual sits on the card's own paper and only his
+   greeting is the speech bubble — no box inside a box */
+.fox-help__say-in.is-home { padding: 0; background: none; border-radius: 0; }
+.fox-help__hello { padding: 11px 14px 12px; background: var(--color-green-soft); border-radius: 4px 14px 14px 14px; }
 /* only the chips scroll, beneath the answer, when the card is short */
 .fox-help__body {
   flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
@@ -214,7 +218,8 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 }
 .fox-help__else { display: inline-flex; align-items: center; gap: 5px; color: var(--color-ink-soft); text-decoration: none; min-height: 32px; }
 .fox-help__else svg { font-size: 0.75em; }
-.fox-help__else span { color: var(--color-green-deep); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.fox-help__else > span:last-child { color: var(--color-green-deep); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.fox-help__else-lead { display: inline-flex; align-items: center; gap: 5px; }
 .fox-help__else:focus-visible, .fox-help__hide:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; border-radius: 6px; }
 .fox-help__hide {
   display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; margin-right: -6px;
@@ -609,8 +614,31 @@ button.fox-help__link { font: 600 0.88rem/1 var(--font-body); border: 0; cursor:
 
 @keyframes fox-z { 0% { opacity: 0; transform: translate(0, 0) rotate(-8deg); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(18px, -30px) rotate(8deg); } }
 
+/* Phones: the same card with more air. Shorter game tiles, a one-line wish
+   button, and the questions in a two-row strip that scrolls sideways instead
+   of wrapping into a wall of chips. */
 @media (max-width: 600px) {
-  .fox-help__tile { min-height: 60px; font-size: 0.82rem; }
+  .fox-help__say { padding: 12px 16px 8px; }
+  .fox-help__hello { padding: 10px 14px; }
+  .fox-help__play { gap: 8px; margin-bottom: 10px; }
+  .fox-help__tile { min-height: 52px; padding: 6px 4px; gap: 3px; font-size: 0.82rem; }
+  .fox-wish-btn { min-height: 44px; gap: 10px; padding: 6px 12px 6px 6px; margin-bottom: 12px; font-size: 0.9rem; }
+  .fox-wish-btn__ico { width: 32px; height: 32px; font-size: 17px; }
+  .fox-wish-btn small { display: none; }
+  .fox-help__chips {
+    display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto); justify-content: start; gap: 8px;
+    margin: 0 -16px; padding: 2px 16px 8px; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-padding-inline: 16px; scrollbar-width: none;
+  }
+  .fox-help__chips::-webkit-scrollbar { display: none; }
+  .fox-help__chip { white-space: nowrap; }
+}
+/* the narrowest phones (iPhone SE): keep the usual's two buttons and the
+   footer on one line each */
+@media (max-width: 360px) {
+  .fox-usual__actions .fox-help__link { padding: 0 12px; }
+  .fox-usual__actions .fox-help__link--ghost svg { display: none; }
+  .fox-help__else-lead { display: none; }
   .fox-quiz__choice { min-height: 56px; }
   .fox-acc--pumpkin { width: 24px; right: -8px; }
 }
