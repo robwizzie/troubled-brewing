@@ -55,6 +55,7 @@ const MET_KEY = 'tb-fox-met'; // '1' = the first-visit hello has happened
 const QUIP_I_KEY = 'tb-fox-quip'; // which quip is next (localStorage)
 const QUIPPED_KEY = 'tb-fox-quipped'; // already offered a quip this visit (sessionStorage)
 const FACT_SEEN_KEY = 'tb-fox-fact-seen'; // shop date of the last daily fact opened
+const SWIPE_HIDE = 56; // px a finger drags him toward the edge to tuck him away
 
 const store = {
   get(s, k) { try { return window[s].getItem(k); } catch { return null; } },
@@ -161,6 +162,9 @@ export default function FoxGuide() {
   const openTimer = useRef(0);
   const pointerType = useRef('mouse');
   const lastTap = useRef(0);
+  const bodyRef = useRef(null);
+  const swipe = useRef(null); // a finger dragging him toward the edge
+  const swiped = useRef(false); // …which isn't also a tap
   useEffect(() => () => { clearTimeout(openTimer.current); clearTimeout(moveTimer.current); }, []);
   const base = useFoxHours();
   const outfit = useFoxOutfit(); // fox-outfits: seasonal / weather accessories
@@ -316,13 +320,15 @@ export default function FoxGuide() {
 
   const todayIso = shopNow().isoDate;
 
-  const hide = () => {
+  // a click or key hands focus to the tab he leaves behind; a swipe
+  // (focusTab false) doesn't, so no focus ring lands on a finger's gesture
+  const hide = (focusTab = true) => {
     setOpen(false);
     setLine(null);
     setHidden(true);
     store.set('localStorage', HIDDEN_KEY, '1');
     track('fox_hide');
-    requestAnimationFrame(() => tabBtn.current?.focus());
+    if (focusTab !== false) requestAnimationFrame(() => tabBtn.current?.focus());
   };
 
   const bringBack = () => {
@@ -353,7 +359,51 @@ export default function FoxGuide() {
      tap opens the card at once. On a touch screen the card is a bottom sheet
      that would cover him, so he hops straight away and the sheet opens once
      the taps stop (QUICK_MS later). */
+  /* On a touch screen he can be swiped off to the left edge, like a
+     picture-in-picture video: past SWIPE_HIDE px he tucks away (same as
+     "Hide the fox"); short of it he springs back. Vertical drags are left
+     to the page. */
+  const onFoxDown = (e) => {
+    pointerType.current = e.pointerType;
+    swiped.current = false;
+    swipe.current = e.pointerType === 'touch' && !open ? { x: e.clientX, y: e.clientY, dx: 0, on: false } : null;
+  };
+  const onFoxMove = (e) => {
+    const s = swipe.current;
+    if (!s) return;
+    const dx = e.clientX - s.x;
+    const dy = e.clientY - s.y;
+    if (!s.on) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      if (dx > -8 || Math.abs(dy) > Math.abs(dx)) { swipe.current = null; return; }
+      s.on = true;
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    }
+    s.dx = Math.min(0, dx);
+    const el = bodyRef.current;
+    if (el) {
+      el.style.transition = 'none';
+      el.style.transform = `translateX(${s.dx}px)`;
+      el.style.opacity = String(Math.max(0.3, 1 + s.dx / 220));
+    }
+  };
+  const onFoxUp = () => {
+    const s = swipe.current;
+    swipe.current = null;
+    if (!s?.on) return;
+    swiped.current = true;
+    clearTimeout(openTimer.current);
+    if (s.dx <= -SWIPE_HIDE) { hide(false); return; }
+    const el = bodyRef.current;
+    if (el) {
+      el.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+      el.style.transform = '';
+      el.style.opacity = '';
+    }
+  };
+
   const onFoxTap = (e) => {
+    if (swiped.current) { swiped.current = false; return; }
     const touch = pointerType.current === 'touch' && e.detail !== 0;
     const now = Date.now();
     const quick = now - lastTap.current < QUICK_MS;
@@ -404,6 +454,8 @@ export default function FoxGuide() {
   // the wish owns the whole card: its own title and a back button in the
   // header, no game tiles, chips or footer underneath
   const isWish = picked === 'wish';
+  // the card's first view (no answer or game up): your usual and his greeting
+  const isHome = !isWish && !chosen && picked !== 'quiz' && picked !== 'surprise' && !(picked === 'fact' && data);
   const backFromWish = () => {
     setPicked(null);
     requestAnimationFrame(() => panel.current?.querySelector('.fox-wish-btn')?.focus());
@@ -461,7 +513,7 @@ export default function FoxGuide() {
               only the chips below it scroll when the card is short. While a
               game (quiz / Surprise) is up, the answer area scrolls instead. */}
           <div className="fox-help__say" aria-live="polite">
-            <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}${isWish ? ' is-wish' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
+            <div className={`fox-help__say-in${isPlay ? ' is-play' : ''}${isWish ? ' is-wish' : ''}${isHome ? ' is-home' : ''}`} key={picked && (chosen || isPlay) ? picked : 'hello'}>
               {isWish ? <FoxWish onDone={backFromWish} /> /* wishes-tricks */
                 : (picked === 'quiz' || picked === 'surprise') && !data ? <p className="fox-help__a" aria-busy="true">One sec, checking today’s menu…</p> /* wishes-tricks: a deep link before the menu loads */
                 : picked === 'surprise' && data ? <SurprisePane menu={data.menu} hours={data.hours} overrides={data.overrides} />
@@ -482,8 +534,12 @@ export default function FoxGuide() {
                   {/* fox-outfits: your usual (only on the card's first view, never
                       after coming back from a game), then his line about the outfit */}
                   {data && !browsed && <FoxUsual menu={data.menu} onSomethingDifferent={() => ask('quiz')} />}
-                  <p className="fox-help__a">{greeting}</p>
-                  <FoxOutfitLine outfit={outfit} />
+                  {/* only his words get the speech bubble, so the usual's card
+                      never sits in a box inside a box */}
+                  <div className="fox-help__hello">
+                    <p className="fox-help__a">{greeting}</p>
+                    <FoxOutfitLine outfit={outfit} />
+                  </div>
                 </>
               )}
             </div>
@@ -537,7 +593,7 @@ export default function FoxGuide() {
           {!isWish && (
           <footer className="fox-help__foot">
             <Link to="/contact" className="fox-help__else" onClick={() => close(false)}>
-              Ask something else <FaArrowRight aria-hidden="true" /> <span>Contact us</span>
+              <span className="fox-help__else-lead">Ask something else <FaArrowRight aria-hidden="true" /></span> <span>Contact us</span>
             </Link>
             <button type="button" className="fox-help__hide" onClick={hide}>
               <FaEyeSlash aria-hidden="true" /> Hide the fox
@@ -547,13 +603,16 @@ export default function FoxGuide() {
         </section>
       )}
 
-      <div className="fox-guide__body">
+      <div className="fox-guide__body" ref={bodyRef}>
         <button
           type="button"
           ref={foxBtn}
           className="fox-guide__fox"
           onClick={onFoxTap}
-          onPointerDown={(e) => { pointerType.current = e.pointerType; }}
+          onPointerDown={onFoxDown}
+          onPointerMove={onFoxMove}
+          onPointerUp={onFoxUp}
+          onPointerCancel={onFoxUp}
           onPointerEnter={() => setWanted(true)}
           onFocus={() => setWanted(true)}
           aria-expanded={open}

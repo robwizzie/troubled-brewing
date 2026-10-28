@@ -76,8 +76,9 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
   box-shadow: 0 0 0 2px var(--color-paper), 0 3px 8px rgba(30, 22, 8, 0.25);
 }
 
-/* the little × on him — shows on hover / keyboard focus on a desktop; on a
-   touch screen the card's "Hide the fox" does the job */
+/* the little × on him — shows on hover / keyboard focus on a desktop, and
+   always on a touch screen (with a finger-sized hit area), where he can
+   also be swiped off to the left edge */
 .fox-guide__x {
   position: absolute; top: -9px; right: -9px; z-index: 1;
   display: grid; place-items: center; width: 26px; height: 26px; padding: 0;
@@ -91,7 +92,11 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
   .fox-guide__body:hover .fox-guide__x { opacity: 1; }
 }
 @media (hover: none) {
-  .fox-guide__x:not(:focus-visible) { display: none; }
+  .fox-guide__x { opacity: 1; width: 24px; height: 24px; top: -8px; right: -8px; font-size: 12px; }
+  .fox-guide__x::before { content: ''; position: absolute; inset: -10px; }
+  /* the × has the top-right corner: the "new fox fact" dot moves down the edge */
+  .fox-guide__dot { top: 26px; right: -5px; }
+  .fox-guide__fox { touch-action: pan-y; } /* a sideways drag is his, not the page's */
 }
 
 /* his speech bubble (special days, the first hello, the occasional quip) */
@@ -173,6 +178,10 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
   background: var(--color-green-soft); border-radius: 4px 14px 14px 14px;
   animation: fox-answer 0.22s ease-out both; /* a new answer fades up into place */
 }
+/* the first view: your usual sits on the card's own paper and only his
+   greeting is the speech bubble — no box inside a box */
+.fox-help__say-in.is-home { padding: 0; background: none; border-radius: 0; }
+.fox-help__hello { padding: 11px 14px 12px; background: var(--color-green-soft); border-radius: 4px 14px 14px 14px; }
 /* only the chips scroll, beneath the answer, when the card is short */
 .fox-help__body {
   flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
@@ -214,7 +223,8 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
 }
 .fox-help__else { display: inline-flex; align-items: center; gap: 5px; color: var(--color-ink-soft); text-decoration: none; min-height: 32px; }
 .fox-help__else svg { font-size: 0.75em; }
-.fox-help__else span { color: var(--color-green-deep); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.fox-help__else > span:last-child { color: var(--color-green-deep); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.fox-help__else-lead { display: inline-flex; align-items: center; gap: 5px; }
 .fox-help__else:focus-visible, .fox-help__hide:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; border-radius: 6px; }
 .fox-help__hide {
   display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; margin-right: -6px;
@@ -278,6 +288,10 @@ body:has(.consent) .fox-guide { --fox-b: 120px; }
   .fox-help__chip, .fox-help__link { min-height: 40px; }
   /* the fox steps behind the sheet while it's up */
   .fox-guide.is-open .fox-guide__body { visibility: hidden; }
+  /* tucked away: a slim tab peeking from the left edge instead of a whole
+     tile sitting on the page */
+  .fox-guide.is-hidden { left: 0; }
+  .fox-guide__tab { width: 44px; height: 52px; padding: 5px 5px 4px 2px; border-radius: 0 14px 14px 0; }
 }
 
 /* On Step Inside the chapter cards own the left/bottom of the screen, so the
@@ -295,7 +309,7 @@ body:has(.sih) .fox-help { left: auto; right: 0; transform-origin: calc(100% - 3
    way (top-left, under the nav) instead of sitting on its buttons */
 @media (max-width: 600px) {
   body:has(.sih) .fox-guide, body:has(.wish-page) .fox-guide { right: auto; left: 12px; bottom: auto; top: 86px; flex-direction: row; align-items: flex-start; }
-  body:has(.sih) .fox-guide.is-hidden, body:has(.wish-page) .fox-guide.is-hidden { left: max(10px, env(safe-area-inset-left, 0px)); right: auto; }
+  body:has(.sih) .fox-guide.is-hidden, body:has(.wish-page) .fox-guide.is-hidden { left: 0; right: auto; }
   body:has(.sih) .fox-guide__tab, body:has(.wish-page) .fox-guide__tab { animation-name: fox-tab; }
   body:has(.sih) .fox-guide__peek, body:has(.wish-page) .fox-guide__peek { transform: scaleX(-1); }
   body:has(.sih) .fox-guide.is-back .fox-guide__body, body:has(.wish-page) .fox-guide.is-back .fox-guide__body { animation-name: fox-return-l; }
@@ -609,8 +623,31 @@ button.fox-help__link { font: 600 0.88rem/1 var(--font-body); border: 0; cursor:
 
 @keyframes fox-z { 0% { opacity: 0; transform: translate(0, 0) rotate(-8deg); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(18px, -30px) rotate(8deg); } }
 
+/* Phones: the same card with more air. Shorter game tiles, a one-line wish
+   button, and the questions in a two-row strip that scrolls sideways instead
+   of wrapping into a wall of chips. */
 @media (max-width: 600px) {
-  .fox-help__tile { min-height: 60px; font-size: 0.82rem; }
+  .fox-help__say { padding: 12px 16px 8px; }
+  .fox-help__hello { padding: 10px 14px; }
+  .fox-help__play { gap: 8px; margin-bottom: 10px; }
+  .fox-help__tile { min-height: 52px; padding: 6px 4px; gap: 3px; font-size: 0.82rem; }
+  .fox-wish-btn { min-height: 44px; gap: 10px; padding: 6px 12px 6px 6px; margin-bottom: 12px; font-size: 0.9rem; }
+  .fox-wish-btn__ico { width: 32px; height: 32px; font-size: 17px; }
+  .fox-wish-btn small { display: none; }
+  .fox-help__chips {
+    display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto); justify-content: start; gap: 8px;
+    margin: 0 -16px; padding: 2px 16px 8px; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-padding-inline: 16px; scrollbar-width: none;
+  }
+  .fox-help__chips::-webkit-scrollbar { display: none; }
+  .fox-help__chip { white-space: nowrap; }
+}
+/* the narrowest phones (iPhone SE): keep the usual's two buttons and the
+   footer on one line each */
+@media (max-width: 360px) {
+  .fox-usual__actions .fox-help__link { padding: 0 12px; }
+  .fox-usual__actions .fox-help__link--ghost svg { display: none; }
+  .fox-help__else-lead { display: none; }
   .fox-quiz__choice { min-height: 56px; }
   .fox-acc--pumpkin { width: 24px; right: -8px; }
 }
