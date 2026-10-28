@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { act, render, screen, fireEvent, cleanup, within } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import FoxGuide from '../src/components/FoxGuide.jsx';
 import { foxAnswers, hoursAnswer } from '../src/lib/foxHelp.js';
@@ -143,51 +143,37 @@ describe('the fox’s help card', () => {
     expect(localStorage.getItem('tb-fox-hidden')).toBeNull();
   });
 
-  // jsdom's pointer events don't carry pointerType/clientX, so set them on the event
-  const touch = (type, el, x, y = 300) => {
-    const ev = new Event(type, { bubbles: true, cancelable: true });
-    Object.assign(ev, { pointerType: 'touch', pointerId: 1, clientX: x, clientY: y });
-    fireEvent(el, ev);
+  // a phone-sized screen: matchMedia answers the fox's phone query
+  const asPhone = () => {
+    const real = window.matchMedia;
+    window.matchMedia = (q) => ({ ...real(q), matches: q.includes('max-width: 600px') || real(q).matches });
+    return () => { window.matchMedia = real; };
   };
 
-  it('on a touch screen, swiping him toward the left edge tucks him away', () => {
-    renderFox();
-    touch('pointerdown', fox(), 60);
-    touch('pointermove', fox(), 30);
-    touch('pointermove', fox(), -10);
-    touch('pointerup', fox(), -10);
-    fireEvent.click(screen.getByRole('button', { name: 'Bring back the fox' })); // no stray tap opened the card first
-    expect(fox()).toBeTruthy();
-    expect(screen.queryByRole('dialog')).toBeNull();
-  });
-
-  it('a short swipe springs back and does not count as a tap', () => {
-    vi.useFakeTimers();
+  it('on a phone he lives as a tab at the edge, with nothing to close or hide', async () => {
+    const restore = asPhone();
     try {
       renderFox();
-      touch('pointerdown', fox(), 60);
-      touch('pointermove', fox(), 30);
-      touch('pointerup', fox(), 30);
-      fireEvent.click(fox(), { detail: 1 });
-      act(() => { vi.advanceTimersByTime(1000); });
-      expect(fox()).toBeTruthy();
-      expect(screen.queryByRole('dialog')).toBeNull();
-      expect(localStorage.getItem('tb-fox-hidden')).toBeNull();
+      expect(fox().querySelector('.fox-guide__mini .fox-guide__bust')).toBeTruthy();
+      expect(screen.queryByRole('button', { name: 'Hide the fox' })).toBeNull(); // no × on him
+      fireEvent.click(fox());
+      await screen.findByRole('button', { name: 'Are you open?' });
+      expect(screen.queryByRole('button', { name: /Hide the fox/ })).toBeNull(); // nor in the card
     } finally {
-      vi.useRealTimers();
+      restore();
     }
   });
 
-  it('a sideways drag to the right or a vertical drag leaves him be', () => {
-    renderFox();
-    touch('pointerdown', fox(), 60);
-    touch('pointermove', fox(), 140);
-    touch('pointerup', fox(), 140);
-    touch('pointerdown', fox(), 60, 300);
-    touch('pointermove', fox(), 30, 200);
-    touch('pointerup', fox(), 30, 200);
-    expect(fox()).toBeTruthy();
-    expect(localStorage.getItem('tb-fox-hidden')).toBeNull();
+  it('on a phone, a fox hidden on a bigger screen still shows as the edge tab', () => {
+    localStorage.setItem('tb-fox-hidden', '1');
+    const restore = asPhone();
+    try {
+      renderFox();
+      expect(fox()).toBeTruthy();
+      expect(screen.queryByRole('button', { name: 'Bring back the fox' })).toBeNull();
+    } finally {
+      restore();
+    }
   });
 
   it('the × on the fox hides him too', () => {

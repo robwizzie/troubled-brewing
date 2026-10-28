@@ -176,6 +176,9 @@ describe('the games in the fox’s card', () => {
     await screen.findByRole('button', { name: /ask the fox/i });
     await vi.waitFor(() => expect(container.querySelector('.fox-guide').classList.contains('is-sleepy')).toBe(true));
     expect(container.querySelector('.fox-acc--nightcap')).toBeTruthy();
+    // …on his phone tab too, with the z's
+    expect(container.querySelector('.fox-guide__mini .fox-acc--nightcap')).toBeTruthy();
+    expect(container.querySelector('.fox-guide__mini-zzz')).toBeTruthy();
     const card = await openCard();
     expect(card.querySelector('.fox-help__say').textContent).toMatch(/back tomorrow at 8:00 AM/);
   });

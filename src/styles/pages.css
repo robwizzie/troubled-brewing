@@ -606,3 +606,26 @@ h3.hours-sign__label { margin-top: 0; }
   .gc-occ__list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); }
   .gc-hero__fox { width: 120px; }
 }
+
+/* =============================================================================
+   Phones: centred
+   On a narrow screen the short, poster-like blocks read better centred — page
+   heroes, call-to-action panels and section intros — with their buttons
+   centred under them. Long reading (story chapters, menus, forms, reviews,
+   policies) stays left-aligned. `main` adds the weight to beat each block's
+   own rules, wherever its stylesheet loads.
+   ========================================================================== */
+@media (max-width: 640px) {
+  main :is(.pch__copy, .pg-hero__copy, .gc-hero__copy, .pg-cta__copy, .featured__body,
+    .showcase__head > :first-child, .pastpage__head, .gwr-panel__rest, .fox-wish__intro) { text-align: center; }
+
+  /* the measure-limited lines sit in the middle, not hugging the left */
+  main :is(.pch__title, .pch__sub, .pg-hero__sub, .gc-hero__intro, .pg-cta__body, .showcase__sub, .pastpage__head > p) { margin-inline: auto; }
+  main .showcase__head > :first-child { flex: 1 1 100%; } /* the full width, so its centre is the page's */
+  main .pch__eyebrow { transform-origin: center; }
+
+  /* button rows centred under their words */
+  main :is(.pch__cta, .pg-hero__actions, .gc-hero__actions, .pg-cta__actions) { justify-content: center; }
+  main .gc-hero__actions { display: flex; }
+  main .featured__body { align-items: center; }
+}

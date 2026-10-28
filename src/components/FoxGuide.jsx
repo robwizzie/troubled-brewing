@@ -55,7 +55,7 @@ const MET_KEY = 'tb-fox-met'; // '1' = the first-visit hello has happened
 const QUIP_I_KEY = 'tb-fox-quip'; // which quip is next (localStorage)
 const QUIPPED_KEY = 'tb-fox-quipped'; // already offered a quip this visit (sessionStorage)
 const FACT_SEEN_KEY = 'tb-fox-fact-seen'; // shop date of the last daily fact opened
-const SWIPE_HIDE = 56; // px a finger drags him toward the edge to tuck him away
+const PHONE_MQ = '(max-width: 600px)'; // matches the CSS's phone breakpoint
 
 const store = {
   get(s, k) { try { return window[s].getItem(k); } catch { return null; } },
@@ -74,6 +74,21 @@ const telHref = (phone) => {
   if (d.length === 11 && d[0] === '1') return `tel:+${d}`;
   return SITE.phoneHref;
 };
+
+/** True on a phone-sized screen, following rotation and resizes. */
+function usePhone() {
+  const query = () => (typeof window.matchMedia === 'function' ? window.matchMedia(PHONE_MQ) : null);
+  const [phone, setPhone] = useState(() => Boolean(query()?.matches));
+  useEffect(() => {
+    const mq = query();
+    if (!mq) return undefined;
+    const on = () => setPhone(mq.matches);
+    on();
+    mq.addEventListener?.('change', on);
+    return () => mq.removeEventListener?.('change', on);
+  }, []);
+  return phone;
+}
 
 /** The shop's hours (Google weekly when cached, else the table) + overrides
     + the Google profile, loaded at once, because his mood follows them. */
@@ -162,9 +177,7 @@ export default function FoxGuide() {
   const openTimer = useRef(0);
   const pointerType = useRef('mouse');
   const lastTap = useRef(0);
-  const bodyRef = useRef(null);
-  const swipe = useRef(null); // a finger dragging him toward the edge
-  const swiped = useRef(false); // …which isn't also a tap
+  const phone = usePhone();
   useEffect(() => () => { clearTimeout(openTimer.current); clearTimeout(moveTimer.current); }, []);
   const base = useFoxHours();
   const outfit = useFoxOutfit(); // fox-outfits: seasonal / weather accessories
@@ -320,15 +333,13 @@ export default function FoxGuide() {
 
   const todayIso = shopNow().isoDate;
 
-  // a click or key hands focus to the tab he leaves behind; a swipe
-  // (focusTab false) doesn't, so no focus ring lands on a finger's gesture
-  const hide = (focusTab = true) => {
+  const hide = () => {
     setOpen(false);
     setLine(null);
     setHidden(true);
     store.set('localStorage', HIDDEN_KEY, '1');
     track('fox_hide');
-    if (focusTab !== false) requestAnimationFrame(() => tabBtn.current?.focus());
+    requestAnimationFrame(() => tabBtn.current?.focus());
   };
 
   const bringBack = () => {
@@ -359,51 +370,7 @@ export default function FoxGuide() {
      tap opens the card at once. On a touch screen the card is a bottom sheet
      that would cover him, so he hops straight away and the sheet opens once
      the taps stop (QUICK_MS later). */
-  /* On a touch screen he can be swiped off to the left edge, like a
-     picture-in-picture video: past SWIPE_HIDE px he tucks away (same as
-     "Hide the fox"); short of it he springs back. Vertical drags are left
-     to the page. */
-  const onFoxDown = (e) => {
-    pointerType.current = e.pointerType;
-    swiped.current = false;
-    swipe.current = e.pointerType === 'touch' && !open ? { x: e.clientX, y: e.clientY, dx: 0, on: false } : null;
-  };
-  const onFoxMove = (e) => {
-    const s = swipe.current;
-    if (!s) return;
-    const dx = e.clientX - s.x;
-    const dy = e.clientY - s.y;
-    if (!s.on) {
-      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-      if (dx > -8 || Math.abs(dy) > Math.abs(dx)) { swipe.current = null; return; }
-      s.on = true;
-      e.currentTarget.setPointerCapture?.(e.pointerId);
-    }
-    s.dx = Math.min(0, dx);
-    const el = bodyRef.current;
-    if (el) {
-      el.style.transition = 'none';
-      el.style.transform = `translateX(${s.dx}px)`;
-      el.style.opacity = String(Math.max(0.3, 1 + s.dx / 220));
-    }
-  };
-  const onFoxUp = () => {
-    const s = swipe.current;
-    swipe.current = null;
-    if (!s?.on) return;
-    swiped.current = true;
-    clearTimeout(openTimer.current);
-    if (s.dx <= -SWIPE_HIDE) { hide(false); return; }
-    const el = bodyRef.current;
-    if (el) {
-      el.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
-      el.style.transform = '';
-      el.style.opacity = '';
-    }
-  };
-
   const onFoxTap = (e) => {
-    if (swiped.current) { swiped.current = false; return; }
     const touch = pointerType.current === 'touch' && e.detail !== 0;
     const now = Date.now();
     const quick = now - lastTap.current < QUICK_MS;
@@ -462,7 +429,9 @@ export default function FoxGuide() {
   };
   const moodCls = `${mood.sleepy ? ' is-sleepy' : ''}${mood.morning ? ' is-morning' : ''}${mood.october ? ' is-october' : ''}`;
 
-  if (hidden) {
+  // on a phone he already lives tucked into the edge (the tab below), so
+  // there's nothing to hide him from: "hidden" only applies on bigger screens
+  if (hidden && !phone) {
     return (
       <div className="fox-guide is-hidden">
         <button type="button" ref={tabBtn} className="fox-guide__tab" onClick={bringBack} aria-label="Bring back the fox" title="Bring back the fox">
@@ -595,24 +564,23 @@ export default function FoxGuide() {
             <Link to="/contact" className="fox-help__else" onClick={() => close(false)}>
               <span className="fox-help__else-lead">Ask something else <FaArrowRight aria-hidden="true" /></span> <span>Contact us</span>
             </Link>
-            <button type="button" className="fox-help__hide" onClick={hide}>
-              <FaEyeSlash aria-hidden="true" /> Hide the fox
-            </button>
+            {!phone && (
+              <button type="button" className="fox-help__hide" onClick={hide}>
+                <FaEyeSlash aria-hidden="true" /> Hide the fox
+              </button>
+            )}
           </footer>
           )}
         </section>
       )}
 
-      <div className="fox-guide__body" ref={bodyRef}>
+      <div className="fox-guide__body">
         <button
           type="button"
           ref={foxBtn}
           className="fox-guide__fox"
           onClick={onFoxTap}
-          onPointerDown={onFoxDown}
-          onPointerMove={onFoxMove}
-          onPointerUp={onFoxUp}
-          onPointerCancel={onFoxUp}
+          onPointerDown={(e) => { pointerType.current = e.pointerType; }}
           onPointerEnter={() => setWanted(true)}
           onFocus={() => setWanted(true)}
           aria-expanded={open}
@@ -640,9 +608,22 @@ export default function FoxGuide() {
             {open && <span className="fox-guide__closex" aria-hidden="true"><FaXmark /></span>}
             {factNew && !open && <span className="fox-guide__dot" aria-hidden="true" />}
           </span>
+          {/* phones: his head and top hat on a slim tab at the left edge, with
+              his moods kept — nightcap and z's when the shop's closed, the
+              special-day badge, the October pumpkin, the new-fact dot */}
+          <span className="fox-guide__mini" aria-hidden="true">
+            <span className="fox-guide__mini-fig">
+              <FoxArt bust />
+              {mood.sleepy && <Nightcap />}
+            </span>
+            {mood.sleepy && <span className="fox-guide__mini-zzz"><i>z</i><i>z</i></span>}
+            {mood.october && <Pumpkin />}
+            {Badge && !open && <span className="fox-guide__badge"><Badge /></span>}
+            {factNew && !open && <span className="fox-guide__dot" />}
+          </span>
         </button>
         <FoxTipBubble tricks={tricks} />{/* wishes-tricks: "Why, thank you." */}
-        {!open && (
+        {!open && !phone && (
           <button type="button" className="fox-guide__x" onClick={hide} aria-label="Hide the fox">
             <FaXmark aria-hidden="true" />
           </button>

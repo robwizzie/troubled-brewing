@@ -87,7 +87,7 @@ describe('the fox stays off the wish on phones', () => {
   it('on /wish he steps aside like on Step Inside, and the menu block leaves room under its button', () => {
     const fox = readFileSync('src/styles/fox-guide.css', 'utf8');
     const phone = fox.slice(fox.indexOf('@media (max-width: 600px) {\n  body:has(.sih) .fox-guide'));
-    expect(phone).toMatch(/body:has\(\.wish-page\) \.fox-guide \{ right: auto; left: 12px; bottom: auto; top: 86px;/);
+    expect(phone).toMatch(/body:has\(\.wish-page\) \.fox-guide \{ right: auto; left: 0; bottom: auto; top: 86px;/);
     const wish = readFileSync('src/styles/fox-wish.css', 'utf8');
     expect(wish).toMatch(/@media \(max-width: 600px\) \{\s*\.wish-page \{ padding-top: 84px; \}/);
     expect(wish).toMatch(/@media \(max-width: 600px\) \{\s*\.section\.wish-section \{ padding-bottom:/);
