@@ -16,7 +16,7 @@ import {
 } from '../lib/chalkStatus.js';
 import {
   DEFAULT_MAX_AGE_DAYS, KEEP, MAX_AGE_CHOICES, MIN_PAST_BOARDS, addToHistory, boardDate, durationOf, entryFor, historyBoards,
-  isChalkboardLive, keepsUntilReplaced, updatedLabel,
+  isChalkboardLive, keepsUntilReplaced, photoSize, updatedLabel,
 } from '../../lib/chalkboard.js';
 import './ChalkboardManager.css';
 
@@ -30,8 +30,8 @@ import './ChalkboardManager.css';
    Nothing leaves the phone before step 3: the preview is a local copy. Step 3
    compresses + uploads the photo (media bucket, chalkboard/<timestamp>-…, a
    new file every time) and makes the content_blocks.chalkboard_photo write:
-     { url, path, caption, updated_at, enabled: true, max_age_days, keep_until_replaced }
-   The homepage then shows it until it's `max_age_days` old, when the drawn
+     { url, path, caption, updated_at, enabled: true, max_age_days, keep_until_replaced, width, height }
+   (width/height when the preview could measure the photo). The homepage then shows it until it's `max_age_days` old, when the drawn
    menu board comes back by itself — or, with "Until I replace it", until the
    next photo goes up.
 
@@ -91,7 +91,12 @@ function chalkError(e) {
 
 /** The homepage's real chalkboard markup (src/styles/real-wall.css), so the
     preview is the homepage, not an approximation of it. */
-function HomepageBoard({ url, caption, when, drawn, onError }) {
+function HomepageBoard({ url, caption, when, drawn, onError, onSize }) {
+  const [loadedUrl, setLoadedUrl] = useState('');
+  const onLoad = (e) => {
+    setLoadedUrl(url);
+    onSize?.(photoSize(e.currentTarget));
+  };
   return (
     <div className="chalkprev__stage">
       {drawn ? (
@@ -100,9 +105,15 @@ function HomepageBoard({ url, caption, when, drawn, onError }) {
           <p className="chalkprev__drawn-text">Your menu, written out in chalk — it updates by itself.</p>
         </aside>
       ) : (
-        <aside className="pch__board pch__board--photo">
+        <aside className="pch__board pch__board--photo is-ready">
           <div className="pch__chalk chalkprev__chalk">
-            <img src={url} alt={caption ? `Preview: ${caption}` : 'Preview of the chalkboard photo on the homepage'} onError={onError} />
+            <img
+              className={loadedUrl === url ? 'is-loaded' : undefined}
+              src={url}
+              alt={caption ? `Preview: ${caption}` : 'Preview of the chalkboard photo on the homepage'}
+              onLoad={onLoad}
+              onError={onError}
+            />
             <span className="pch__chalk-zoom" aria-hidden="true">Tap to read</span>
           </div>
           <div className="pch__chalk-meta">
@@ -144,6 +155,7 @@ function ChalkboardScreen() {
   const [block, setBlock] = useState(EMPTY_CHALKBOARD);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState('');
+  const [previewSize, setPreviewSize] = useState(null); // the picked photo's { width, height }
   const [caption, setCaption] = useState('');
   const [duration, setDuration] = useState(DEFAULT_MAX_AGE_DAYS); // KEEP or a number of days
   const [history, setHistory] = useState([]); // as stored (hidden ones included)
@@ -170,6 +182,7 @@ function ChalkboardScreen() {
 
   // a local preview of the picked photo — nothing is uploaded until "Put it on the website"
   useEffect(() => {
+    setPreviewSize(null);
     if (!file) { setPreview(''); return undefined; }
     const u = URL.createObjectURL(file);
     setPreview(u);
@@ -218,9 +231,13 @@ function ChalkboardScreen() {
       // a new, uniquely named file every time — the old one stays for the history
       if (file) ({ url, path } = await uploadImage(file, { preset: 'chalkboard', folder: 'chalkboard' }));
       const goesUp = Boolean(file || keepUp);
+      // its shape (compression keeps the aspect), so the homepage can hold the
+      // board's exact place before the photo loads
+      const size = file ? previewSize : photoSize(block);
       next = {
         url,
         path: path || '',
+        ...(size || {}),
         caption: caption.trim().slice(0, MAX_CAPTION),
         updated_at: goesUp ? new Date().toISOString() : block.updated_at,
         enabled: goesUp ? true : block.enabled,
@@ -403,6 +420,7 @@ function ChalkboardScreen() {
                 url={preview}
                 caption={caption.trim()}
                 when="Updated today"
+                onSize={setPreviewSize}
                 onError={() => { setFile(null); setError(isHeic(file) ? IMAGE_MESSAGES.heic : IMAGE_MESSAGES.unreadable); }}
               />
               <button type="button" className="btn btn--primary chalk__big chalk__publish" onClick={putLive} disabled={busy}>
