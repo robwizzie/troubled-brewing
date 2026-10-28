@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
+import { act, render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import FoxGuide from '../src/components/FoxGuide.jsx';
 import { foxAnswers, hoursAnswer } from '../src/lib/foxHelp.js';
@@ -140,6 +140,53 @@ describe('the fox’s help card', () => {
     expect(fox()).toBeTruthy();
     // he comes back with the slide-in-from-the-edge entrance, not the page-load rise
     expect(document.querySelector('.fox-guide').classList.contains('is-back')).toBe(true);
+    expect(localStorage.getItem('tb-fox-hidden')).toBeNull();
+  });
+
+  // jsdom's pointer events don't carry pointerType/clientX, so set them on the event
+  const touch = (type, el, x, y = 300) => {
+    const ev = new Event(type, { bubbles: true, cancelable: true });
+    Object.assign(ev, { pointerType: 'touch', pointerId: 1, clientX: x, clientY: y });
+    fireEvent(el, ev);
+  };
+
+  it('on a touch screen, swiping him toward the left edge tucks him away', () => {
+    renderFox();
+    touch('pointerdown', fox(), 60);
+    touch('pointermove', fox(), 30);
+    touch('pointermove', fox(), -10);
+    touch('pointerup', fox(), -10);
+    fireEvent.click(screen.getByRole('button', { name: 'Bring back the fox' })); // no stray tap opened the card first
+    expect(fox()).toBeTruthy();
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('a short swipe springs back and does not count as a tap', () => {
+    vi.useFakeTimers();
+    try {
+      renderFox();
+      touch('pointerdown', fox(), 60);
+      touch('pointermove', fox(), 30);
+      touch('pointerup', fox(), 30);
+      fireEvent.click(fox(), { detail: 1 });
+      act(() => { vi.advanceTimersByTime(1000); });
+      expect(fox()).toBeTruthy();
+      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(localStorage.getItem('tb-fox-hidden')).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('a sideways drag to the right or a vertical drag leaves him be', () => {
+    renderFox();
+    touch('pointerdown', fox(), 60);
+    touch('pointermove', fox(), 140);
+    touch('pointerup', fox(), 140);
+    touch('pointerdown', fox(), 60, 300);
+    touch('pointermove', fox(), 30, 200);
+    touch('pointerup', fox(), 30, 200);
+    expect(fox()).toBeTruthy();
     expect(localStorage.getItem('tb-fox-hidden')).toBeNull();
   });
 
