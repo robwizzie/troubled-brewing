@@ -142,6 +142,42 @@ describe('Pastry Case hero: real chalkboard photo', () => {
     expect(photoImg()).toBeNull();
   });
 
+  it('holds the board\'s place while loading instead of flashing the drawn board', async () => {
+    let resolve;
+    getContentBlock.mockImplementation((key) => (key === 'chalkboard_photo' ? new Promise((r) => { resolve = r; }) : Promise.resolve({})));
+    const { container } = renderHero();
+    expect(container.querySelector('.pch__board--pending')).toBeTruthy();
+    await new Promise((r) => setTimeout(r, 30)); // the menu loads meanwhile
+    expect(screen.queryByText('Sips')).toBeNull();
+    resolve({ enabled: true, url: PHOTO, updated_at: iso() });
+    await waitFor(() => expect(photoImg()).toBeTruthy());
+    expect(container.querySelector('.pch__board--pending')).toBeNull();
+  });
+
+  it('lays a landscape board out wide, reserving its shape from the recorded size', async () => {
+    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso(), width: 1600, height: 1000 });
+    const { container } = renderHero();
+    const img = await waitFor(() => { const i = photoImg(); expect(i).toBeTruthy(); return i; });
+    expect(img.getAttribute('width')).toBe('1600');
+    expect(img.getAttribute('height')).toBe('1000');
+    expect(container.querySelector('.pch').className).toMatch(/pch--wide-board/);
+    expect(img.closest('.pch__board--photo').className).toMatch(/is-ready/);
+  });
+
+  it('measures an older row (no recorded size) once the photo loads', async () => {
+    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso() });
+    const { container } = renderHero();
+    const img = await waitFor(() => { const i = photoImg(); expect(i).toBeTruthy(); return i; });
+    // not shown until its shape is known, so it never pops from one size to another
+    expect(img.closest('.pch__board--photo').className).not.toMatch(/is-ready/);
+    Object.defineProperty(img, 'naturalWidth', { configurable: true, value: 900 });
+    Object.defineProperty(img, 'naturalHeight', { configurable: true, value: 1200 });
+    fireEvent.load(img);
+    expect(img.closest('.pch__board--photo').className).toMatch(/is-ready/);
+    expect(img.className).toMatch(/is-loaded/);
+    expect(container.querySelector('.pch').className).not.toMatch(/pch--wide-board/); // portrait stays narrow
+  });
+
   it('falls back when the image itself fails to load', async () => {
     getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso() });
     renderHero();
@@ -245,6 +281,18 @@ describe("admin: Today's chalkboard", () => {
     expect(see.getAttribute('target')).toBe('_blank');
     expect(screen.getByRole('link', { name: /back to admin home/i }).getAttribute('href')).toBe('/admin');
     expect(screen.getByRole('status').textContent).toMatch(/on the website now — taken this (morning|afternoon|evening) at \d{1,2}:\d{2}, comes down \w+/i);
+  });
+
+  it('records the photo\'s size so the homepage can lay a landscape board out before it loads', async () => {
+    renderAdmin();
+    fireEvent.change(await camera(), { target: { files: [photo()] } });
+    const img = await screen.findByAltText(/preview of the chalkboard photo on the homepage/i);
+    Object.defineProperty(img, 'naturalWidth', { configurable: true, value: 1600 });
+    Object.defineProperty(img, 'naturalHeight', { configurable: true, value: 1200 });
+    fireEvent.load(img);
+    fireEvent.click(putLiveBtn());
+    expect(await screen.findByRole('heading', { name: /it’s on the website/i })).toBeTruthy();
+    expect(upsertsFor('chalkboard_photo')[0][0].data).toMatchObject({ width: 1600, height: 1200 });
   });
 
   it('Retake swaps the photo without publishing anything', async () => {

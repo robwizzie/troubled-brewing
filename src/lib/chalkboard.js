@@ -7,7 +7,12 @@ import { SHOP_TZ, shopNow, dayName } from './hours.js';
    chalkboard) and stored in content_blocks.chalkboard_photo:
 
      { url, path, caption, updated_at (ISO), enabled, max_age_days,
-       keep_until_replaced }
+       keep_until_replaced, width?, height? }
+
+   `width`/`height` are the photo's pixel size, recorded at publish so the hero
+   can reserve the board's exact shape before the image arrives (and lay a
+   landscape board out wide). Older rows don't have them; the hero measures
+   those once the image loads.
 
    The Pastry Case hero shows it in place of its drawn, live-menu board — but
    only while it's fresh. A photo older than `max_age_days` (default 3, counted
@@ -185,16 +190,42 @@ export function useChalkboardHistory() {
   return boards;
 }
 
-/** The live chalkboard block, or null when the drawn board should show. */
-export function useChalkboardPhoto({ maxAgeDays } = {}) {
-  const [block, setBlock] = useState(null);
+/* ---- photo shape ---------------------------------------------------------- */
+
+/** A board this much wider than tall gets the wide hero layout. */
+export const WIDE_RATIO = 1.2;
+
+/** { width, height } from a block (or an <img>'s natural size), or null. */
+export function photoSize(src) {
+  // an <img> also has width/height, but those are its rendered size
+  const el = src != null && typeof src === 'object' && 'naturalWidth' in src;
+  const w = Math.round(Number(el ? src.naturalWidth : src?.width));
+  const h = Math.round(Number(el ? src.naturalHeight : src?.height));
+  return w > 0 && h > 0 ? { width: w, height: h } : null;
+}
+
+/** True for a landscape (horizontal) board photo. */
+export function isWide(size) {
+  return Boolean(size) && size.width / size.height >= WIDE_RATIO;
+}
+
+/** The chalkboard block plus whether the read has finished:
+    { ready: false, photo: null } while loading, then { ready: true, photo }
+    where photo is the live block or null (the drawn board should show). */
+export function useChalkboard({ maxAgeDays } = {}) {
+  const [state, setState] = useState({ ready: false, block: null });
   const version = useDataVersion('content_blocks');
   useEffect(() => {
     let alive = true;
     getContentBlock(CHALKBOARD_KEY)
-      .then((b) => alive && setBlock(b || null))
-      .catch(() => alive && setBlock(null));
+      .then((b) => alive && setState({ ready: true, block: b || null }))
+      .catch(() => alive && setState({ ready: true, block: null }));
     return () => { alive = false; };
   }, [version]);
-  return isChalkboardLive(block, { maxAgeDays }) ? block : null;
+  return { ready: state.ready, photo: isChalkboardLive(state.block, { maxAgeDays }) ? state.block : null };
+}
+
+/** The live chalkboard block, or null when the drawn board should show. */
+export function useChalkboardPhoto(opts) {
+  return useChalkboard(opts).photo;
 }
