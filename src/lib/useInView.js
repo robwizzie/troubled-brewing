@@ -21,6 +21,7 @@ export default function useInView(ref, { threshold = 0.2, rootMargin = '0px 0px 
     const io = new IntersectionObserver((entries) => {
       const seen = entries.some((e) => {
         if (!e.isIntersecting) return false;
+        if (!e.intersectionRect) return true; // an entry without geometry: trust isIntersecting
         const screen = e.rootBounds?.height || window.innerHeight;
         return e.intersectionRatio >= threshold || e.intersectionRect.height >= screen / 3;
       });
