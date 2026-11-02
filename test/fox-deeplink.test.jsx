@@ -52,6 +52,14 @@ describe('parsing', () => {
 });
 
 describe('opening the card', () => {
+  // an ordinary day: on a special day (Halloween, his birthday…) the card's
+  // greeting is the day's line instead of the home-view hello checked below
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-18T16:00:00Z'));
+  });
+  afterEach(() => { vi.useRealTimers(); });
+
   it('?fox=open opens the home view and tracks the table-card scan', async () => {
     window.history.pushState({}, '', '/events?fox=open&src=table');
     renderAt('/events?fox=open&src=table');
