@@ -246,12 +246,20 @@ export function useCutout(block) {
   useEffect(() => {
     if (!url || known !== null) return undefined;
     let alive = true;
+    let giveUp = 0;
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    const settle = (cutout) => { if (alive) setChecked({ url, cutout }); };
+    // the first answer wins: a load, an error, or the give-up timer — never
+    // the timer overwriting a real answer a few seconds later
+    const settle = (cutout) => {
+      if (!alive) return;
+      alive = false;
+      clearTimeout(giveUp);
+      setChecked({ url, cutout });
+    };
     img.onload = () => settle(isCutoutImage(img));
     img.onerror = () => settle(false);
-    const giveUp = setTimeout(() => settle(false), 6000); // never hold the board back for long
+    giveUp = setTimeout(() => settle(false), 6000); // never hold the board back for long
     img.src = url;
     return () => { alive = false; clearTimeout(giveUp); };
   }, [url, known]);
