@@ -16,7 +16,7 @@ import {
 } from '../lib/chalkStatus.js';
 import {
   DEFAULT_MAX_AGE_DAYS, KEEP, MAX_AGE_CHOICES, MIN_PAST_BOARDS, addToHistory, boardDate, durationOf, entryFor, historyBoards,
-  isChalkboardLive, keepsUntilReplaced, photoSize, updatedLabel,
+  isChalkboardLive, isCutoutImage, keepsUntilReplaced, photoSize, updatedLabel, useCutout,
 } from '../../lib/chalkboard.js';
 import './ChalkboardManager.css';
 
@@ -91,11 +91,12 @@ function chalkError(e) {
 
 /** The homepage's real chalkboard markup (src/styles/real-wall.css), so the
     preview is the homepage, not an approximation of it. */
-function HomepageBoard({ url, caption, when, drawn, onError, onSize }) {
+function HomepageBoard({ url, caption, when, drawn, cutout, onError, onSize, onCutout }) {
   const [loadedUrl, setLoadedUrl] = useState('');
   const onLoad = (e) => {
     setLoadedUrl(url);
     onSize?.(photoSize(e.currentTarget));
+    onCutout?.(isCutoutImage(e.currentTarget));
   };
   return (
     <div className="chalkprev__stage">
@@ -105,7 +106,7 @@ function HomepageBoard({ url, caption, when, drawn, onError, onSize }) {
           <p className="chalkprev__drawn-text">Your menu, written out in chalk — it updates by itself.</p>
         </aside>
       ) : (
-        <aside className="pch__board pch__board--photo is-ready">
+        <aside className={`pch__board pch__board--photo${cutout ? ' pch__board--cutout' : ''} is-ready`}>
           <div className="pch__chalk chalkprev__chalk">
             <img
               className={loadedUrl === url ? 'is-loaded' : undefined}
@@ -156,6 +157,8 @@ function ChalkboardScreen() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [previewSize, setPreviewSize] = useState(null); // the picked photo's { width, height }
+  const [previewCutout, setPreviewCutout] = useState(null); // its background removed? (read once it loads)
+  const liveCutout = useCutout(block.url ? block : null); // the photo that's up now
   const [caption, setCaption] = useState('');
   const [duration, setDuration] = useState(DEFAULT_MAX_AGE_DAYS); // KEEP or a number of days
   const [history, setHistory] = useState([]); // as stored (hidden ones included)
@@ -183,6 +186,7 @@ function ChalkboardScreen() {
   // a local preview of the picked photo — nothing is uploaded until "Put it on the website"
   useEffect(() => {
     setPreviewSize(null);
+    setPreviewCutout(null);
     if (!file) { setPreview(''); return undefined; }
     const u = URL.createObjectURL(file);
     setPreview(u);
@@ -234,10 +238,13 @@ function ChalkboardScreen() {
       // its shape (compression keeps the aspect), so the homepage can hold the
       // board's exact place before the photo loads
       const size = file ? previewSize : photoSize(block);
+      // a cut-out board stands on its own on the homepage (see chalkboard.js)
+      const cut = file ? previewCutout : liveCutout;
       next = {
         url,
         path: path || '',
         ...(size || {}),
+        ...(typeof cut === 'boolean' ? { cutout: cut } : {}),
         caption: caption.trim().slice(0, MAX_CAPTION),
         updated_at: goesUp ? new Date().toISOString() : block.updated_at,
         enabled: goesUp ? true : block.enabled,
@@ -421,6 +428,8 @@ function ChalkboardScreen() {
                 caption={caption.trim()}
                 when="Updated today"
                 onSize={setPreviewSize}
+                onCutout={setPreviewCutout}
+                cutout={previewCutout}
                 onError={() => { setFile(null); setError(isHeic(file) ? IMAGE_MESSAGES.heic : IMAGE_MESSAGES.unreadable); }}
               />
               <button type="button" className="btn btn--primary chalk__big chalk__publish" onClick={putLive} disabled={busy}>
@@ -444,6 +453,7 @@ function ChalkboardScreen() {
                     caption={caption.trim()}
                     when={staged === 'kept' ? 'Updated today' : updatedLabel(block.updated_at)}
                     drawn={staged === 'down' || !block.url}
+                    cutout={liveCutout}
                   />
                   <button type="button" className="btn btn--primary chalk__big chalk__publish" onClick={putLive} disabled={busy}>
                     {busy ? 'Saving…' : publishLabel}
@@ -457,7 +467,7 @@ function ChalkboardScreen() {
               {(!staged || staged === 'history') && live && (
                 <>
                   <p className="chalk__steplabel">On the homepage now:</p>
-                  <HomepageBoard url={block.url} caption={(block.caption || '').trim()} when={updatedLabel(block.updated_at)} />
+                  <HomepageBoard url={block.url} caption={(block.caption || '').trim()} when={updatedLabel(block.updated_at)} cutout={liveCutout} />
                 </>
               )}
             </section>

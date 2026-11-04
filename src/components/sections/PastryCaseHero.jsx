@@ -5,7 +5,7 @@ import HoursToday from '../HoursToday.jsx';
 import { asset } from '../../lib/config.js';
 import { getMenu, pickProducts } from '../../lib/menuService.js';
 import { useDataVersion } from '../../lib/dataVersion.js';
-import { MIN_PAST_BOARDS, isWide, photoSize, useChalkboard, useChalkboardHistory, updatedLabel } from '../../lib/chalkboard.js';
+import { MIN_PAST_BOARDS, isWide, photoSize, useChalkboard, useChalkboardHistory, useCutout, updatedLabel } from '../../lib/chalkboard.js';
 import PhotoLightbox from '../PhotoLightbox.jsx';
 import PastBoards from '../PastBoards.jsx';
 
@@ -90,6 +90,10 @@ export default function PastryCaseHero({ data = {} }) {
   const onSize = useCallback((size) => size && setMeasured({ ...size, url: chalk?.url }), [chalk?.url]);
   const size = showPhoto ? photoSize(chalk) || (measured?.url === chalk.url ? measured : null) : null;
   const wide = isWide(size);
+  // a cut-out board (background removed) stands on its own, unframed; the
+  // board waits for this answer too so it never swaps frames on screen
+  const cutout = useCutout(showPhoto ? chalk : null);
+  const ready = Boolean(size) && cutout !== null;
   // "See past boards": the staff's old chalkboard photos, once there are a few
   const past = useChalkboardHistory();
   const [pastOpen, setPastOpen] = useState(false);
@@ -132,7 +136,7 @@ export default function PastryCaseHero({ data = {} }) {
           // quietly instead of flashing the drawn board and then swapping
           <div className="pch__board pch__board--pending" aria-hidden="true" />
         ) : showPhoto ? (
-          <aside className={`pch__board pch__board--photo${size ? ' is-ready' : ''}`} aria-label={boardTitle}>
+          <aside className={`pch__board pch__board--photo${cutout ? ' pch__board--cutout' : ''}${ready ? ' is-ready' : ''}`} aria-label={boardTitle}>
             <button type="button" className="pch__chalk" onClick={() => setZoomed(true)} aria-label={`${boardTitle}: open the photo of our chalkboard full-size`}>
               <ChalkImage
                 chalk={chalk}

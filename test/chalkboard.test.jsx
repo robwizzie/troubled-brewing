@@ -155,7 +155,7 @@ describe('Pastry Case hero: real chalkboard photo', () => {
   });
 
   it('lays a landscape board out wide, reserving its shape from the recorded size', async () => {
-    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso(), width: 1600, height: 1000 });
+    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso(), width: 1600, height: 1000, cutout: false });
     const { container } = renderHero();
     const img = await waitFor(() => { const i = photoImg(); expect(i).toBeTruthy(); return i; });
     expect(img.getAttribute('width')).toBe('1600');
@@ -165,7 +165,7 @@ describe('Pastry Case hero: real chalkboard photo', () => {
   });
 
   it('measures an older row (no recorded size) once the photo loads', async () => {
-    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso() });
+    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso(), cutout: false });
     const { container } = renderHero();
     const img = await waitFor(() => { const i = photoImg(); expect(i).toBeTruthy(); return i; });
     // not shown until its shape is known, so it never pops from one size to another
@@ -176,6 +176,37 @@ describe('Pastry Case hero: real chalkboard photo', () => {
     expect(img.closest('.pch__board--photo').className).toMatch(/is-ready/);
     expect(img.className).toMatch(/is-loaded/);
     expect(container.querySelector('.pch').className).not.toMatch(/pch--wide-board/); // portrait stays narrow
+  });
+
+  it('stands a cut-out board (background removed) on its own, without the slate frame', async () => {
+    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso(), width: 1600, height: 1207, cutout: true });
+    renderHero();
+    const img = await waitFor(() => { const i = photoImg(); expect(i).toBeTruthy(); return i; });
+    const board = img.closest('.pch__board--photo');
+    expect(board.className).toMatch(/pch__board--cutout/);
+    expect(board.className).toMatch(/is-ready/);
+  });
+
+  it('a row from before cut-outs were recorded checks the image itself, and shows once that answers', async () => {
+    const RealImage = window.Image;
+    // jsdom loads no images: a stand-in that "fails" like a photo whose pixels can't be read
+    window.Image = class { set src(_) { setTimeout(() => this.onerror?.(), 0); } };
+    try {
+      getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso(), width: 1600, height: 1200 });
+      renderHero();
+      const img = await waitFor(() => { const i = photoImg(); expect(i).toBeTruthy(); return i; });
+      await waitFor(() => expect(img.closest('.pch__board--photo').className).toMatch(/is-ready/));
+      expect(img.closest('.pch__board--photo').className).not.toMatch(/pch__board--cutout/);
+    } finally {
+      window.Image = RealImage;
+    }
+  });
+
+  it('frames an ordinary photo as before', async () => {
+    getContentBlock.mockResolvedValue({ enabled: true, url: PHOTO, updated_at: iso(), width: 1600, height: 1200, cutout: false });
+    renderHero();
+    const img = await waitFor(() => { const i = photoImg(); expect(i).toBeTruthy(); return i; });
+    expect(img.closest('.pch__board--photo').className).not.toMatch(/pch__board--cutout/);
   });
 
   it('falls back when the image itself fails to load', async () => {
