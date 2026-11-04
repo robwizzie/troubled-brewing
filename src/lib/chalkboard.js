@@ -7,12 +7,17 @@ import { SHOP_TZ, shopNow, dayName } from './hours.js';
    chalkboard) and stored in content_blocks.chalkboard_photo:
 
      { url, path, caption, updated_at (ISO), enabled, max_age_days,
-       keep_until_replaced, width?, height? }
+       keep_until_replaced, width?, height?, cutout? }
 
    `width`/`height` are the photo's pixel size, recorded at publish so the hero
    can reserve the board's exact shape before the image arrives (and lay a
    landscape board out wide). Older rows don't have them; the hero measures
    those once the image loads.
+
+   `cutout` is true when the photo's background was removed (a board on a
+   transparent background): the hero then stands the board on its own, with
+   a shadow that follows its shape, instead of framing it again. Also recorded
+   at publish; older rows are checked from the image itself.
 
    The Pastry Case hero shows it in place of its drawn, live-menu board — but
    only while it's fresh. A photo older than `max_age_days` (default 3, counted
@@ -207,6 +212,52 @@ export function photoSize(src) {
 /** True for a landscape (horizontal) board photo. */
 export function isWide(size) {
   return Boolean(size) && size.width / size.height >= WIDE_RATIO;
+}
+
+/** True when an image has a see-through background — a cut-out board: most
+    of its corners and edge midpoints are (nearly) transparent. False for an
+    ordinary photo, or when the pixels can't be read. */
+export function isCutoutImage(img) {
+  try {
+    const n = 24;
+    const c = document.createElement('canvas');
+    c.width = n;
+    c.height = n;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return false;
+    ctx.drawImage(img, 0, 0, n, n);
+    const { data } = ctx.getImageData(0, 0, n, n);
+    const m = n - 1;
+    const h = n >> 1;
+    const spots = [[0, 0], [m, 0], [0, m], [m, m], [h, 0], [0, h], [m, h], [h, m]];
+    const clear = spots.filter(([x, y]) => data[(y * n + x) * 4 + 3] < 64).length;
+    return clear >= 5;
+  } catch {
+    return false; // a cross-origin image without CORS can't be read
+  }
+}
+
+/** Whether `block`'s photo is a cut-out: its recorded `cutout` flag, else
+    checked from the image itself — null while that check runs. */
+export function useCutout(block) {
+  const url = block?.url || '';
+  const known = typeof block?.cutout === 'boolean' ? block.cutout : null;
+  const [checked, setChecked] = useState(null); // { url, cutout }
+  useEffect(() => {
+    if (!url || known !== null) return undefined;
+    let alive = true;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const settle = (cutout) => { if (alive) setChecked({ url, cutout }); };
+    img.onload = () => settle(isCutoutImage(img));
+    img.onerror = () => settle(false);
+    const giveUp = setTimeout(() => settle(false), 6000); // never hold the board back for long
+    img.src = url;
+    return () => { alive = false; clearTimeout(giveUp); };
+  }, [url, known]);
+  if (!url) return false;
+  if (known !== null) return known;
+  return checked?.url === url ? checked.cutout : null;
 }
 
 /** The chalkboard block plus whether the read has finished:
