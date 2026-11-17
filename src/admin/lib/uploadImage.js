@@ -13,6 +13,10 @@ export const PRESETS = {
   hero: { maxWidthOrHeight: 2000, maxSizeMB: 0.4 },
   card: { maxWidthOrHeight: 1200, maxSizeMB: 0.28 },
   avatar: { maxWidthOrHeight: 600, maxSizeMB: 0.15 },
+  // Troublemakers polaroids: the photo is a ~300px square crop shown on
+  // 2–3x phone screens, and a 3:4 portrait loses a quarter of its long edge
+  // to that crop — so keep ~1200px on the long side to stay sharp.
+  portrait: { maxWidthOrHeight: 1200, maxSizeMB: 0.3 },
   // a phone shot of the shop's chalkboard: big enough to read the chalk
   // full-screen, small enough that a daily photo costs ~300 KB
   chalkboard: { maxWidthOrHeight: 1600, maxSizeMB: 0.45 },

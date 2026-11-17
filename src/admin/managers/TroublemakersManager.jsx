@@ -13,7 +13,7 @@ export const TROUBLEMAKERS_COLLECTION = {
   summary: (m) => [m.role, m.drink, m.active === false ? 'not currently on the team' : null].filter(Boolean).join(' · '),
   fields: [
     { name: 'name', label: 'Name', type: 'text', required: true, hint: 'However they want to be known to customers — first name is usually right.' },
-    { name: 'photo_url', label: 'Photo', type: 'image', preset: 'avatar', folder: 'team', hint: 'A friendly head-and-shoulders shot. Ask first, and let people skip it — the card looks fine with just their initial.' },
+    { name: 'photo_url', label: 'Photo', type: 'image', preset: 'portrait', folder: 'team', hint: 'A friendly head-and-shoulders shot. Ask first, and let people skip it — the card looks fine with just their initial.' },
     { name: 'role', label: 'What they do', type: 'text', hint: 'e.g. Barista, General Manager, Baker.' },
     { name: 'pronouns', label: 'Pronouns', type: 'text', hint: 'Only if they want it shown — ask, don’t assume. e.g. she/her, they/them.' },
     {
