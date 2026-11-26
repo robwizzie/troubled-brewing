@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LuCircleAlert, LuCircleCheck, LuKeyRound, LuLogOut } from 'react-icons/lu';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { useAuth } from './lib/auth.jsx';
@@ -36,6 +36,9 @@ export default function AccountScreen() {
   const { user, signOut } = useAuth();
   const { guard } = useUnsaved();
   const navigate = useNavigate();
+  // arrived from a password-reset email: point straight at the form
+  const [params] = useSearchParams();
+  const fromReset = params.get('reset') === '1';
   const pwId = useId();
   const confirmId = useId();
   const [password, setPassword] = useState('');
@@ -93,6 +96,9 @@ export default function AccountScreen() {
 
       <form className="admin__panel account__card" onSubmit={onSubmit} aria-labelledby="account-pw" noValidate>
         <h2 id="account-pw" className="account__h">Change your password</h2>
+        {fromReset && (
+          <p className="panel-help" role="status"><strong>You’re signed in from your reset email.</strong> Choose a new password below and tap Change password.</p>
+        )}
         <p className="panel-help">At least {MIN_PASSWORD} characters. You stay signed in here after changing it.</p>
         <div className="field">
           <label htmlFor={pwId}>New password</label>

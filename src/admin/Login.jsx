@@ -14,12 +14,27 @@ function friendlyLogin(msg) {
 }
 
 export default function Login() {
-  const { signIn, configured } = useAuth();
+  const { signIn, sendPasswordReset, configured } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState('');
+
+  async function onForgot() {
+    setError('');
+    setNotice('');
+    if (!email) {
+      setError('Type your email above first, then tap “Forgot password?” again.');
+      return;
+    }
+    setBusy(true);
+    const res = await sendPasswordReset(email);
+    setBusy(false);
+    if (res.ok) setNotice('Check your email for a reset link. It opens your account page, where you can choose a new password.');
+    else setError(res.error || 'Could not send the reset email.');
+  }
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -51,10 +66,14 @@ export default function Login() {
           <input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
 
+        {notice && <p className="field__hint" role="status">{notice}</p>}
         {error && <p className="login__error" role="alert"><Icon icon={LuCircleAlert} size={16} />{friendlyLogin(error)}</p>}
 
         <button className="btn btn--primary btn--block" type="submit" disabled={busy || !configured}>
           {busy ? 'Signing in…' : 'Sign in'}
+        </button>
+        <button type="button" className="login__back" onClick={onForgot} disabled={busy || !configured}>
+          Forgot password?
         </button>
         <a className="login__back" href={publicUrl()}><Icon icon={LuArrowLeft} size={16} />Back to the website</a>
       </form>

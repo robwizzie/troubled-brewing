@@ -28,6 +28,20 @@ export const supabase = isSupabaseConfigured
     })
   : null;
 
+/* Password reset: the emailed link signs the owner in and lands wherever the
+   project's Site URL points (usually the homepage), with the session in the
+   "#…type=recovery" fragment. supabase-js reads that fragment on any page and
+   fires PASSWORD_RECOVERY — send the owner straight to the admin's
+   "Your account" screen, where they set the new password. */
+export const ACCOUNT_PATH = 'admin/account';
+if (supabase && typeof window !== 'undefined') {
+  supabase.auth.onAuthStateChange((event) => {
+    if (event !== 'PASSWORD_RECOVERY') return;
+    const target = `${import.meta.env.BASE_URL}${ACCOUNT_PATH}?reset=1`;
+    if (!window.location.pathname.endsWith(`/${ACCOUNT_PATH}`)) window.location.replace(target);
+  });
+}
+
 if (!isSupabaseConfigured && import.meta.env.DEV) {
   // eslint-disable-next-line no-console
   console.info(

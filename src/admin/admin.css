@@ -126,6 +126,7 @@
 .login__error { display: flex; align-items: flex-start; gap: 8px; color: var(--adm-danger-600); background: var(--adm-danger-50); border-radius: var(--adm-radius-sm); padding: 10px 12px; font-size: 0.9rem; line-height: 1.4; }
 .login__back { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; font-size: 0.9rem; color: var(--adm-ink-2); text-decoration: none; }
 .login__back:hover { color: var(--adm-sage-700); }
+button.login__back { background: none; border: 0; padding: 0; font: inherit; font-size: 0.9rem; cursor: pointer; margin-right: 16px; }
 
 /* ---- Shell: top bar ------------------------------------------------------- */
 .admin { min-height: 100vh; background: var(--adm-bg); color: var(--adm-ink); }
