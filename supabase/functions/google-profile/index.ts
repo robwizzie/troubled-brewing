@@ -108,21 +108,20 @@ Deno.serve(async (req) => {
     // Review objects carry no pictures, but the place's photos do say who
     // took them. A photo whose author is also a reviewer is that reviewer's
     // photo, so it rides along on their review — that's how a review becomes a
-    // "with photo" review without the owners attaching one by hand. The media
-    // endpoint is asked for the final image URL (skipHttpRedirect) so the site
-    // never needs the API key to show it.
+    // "with photo" review without the owners attaching one by hand.
+    //
+    // Google's image links (the media endpoint's photoUri) EXPIRE within
+    // hours-to-days and then answer 403 — caching them is what left the site
+    // full of broken pictures. So each photo is copied ONCE into our own
+    // public `media` bucket (google-photos/<id>.jpg) and the site only ever
+    // sees that permanent URL. Already-copied photos are not downloaded again.
     const placePhotos: { url: string; author: string; author_url: string }[] = [];
     for (const ph of (p.photos || []).slice(0, 10)) {
       try {
-        const m = await fetch(
-          `https://places.googleapis.com/v1/${ph.name}/media?maxWidthPx=1000&skipHttpRedirect=true`,
-          { headers: { 'X-Goog-Api-Key': PLACES_KEY } },
-        );
-        if (!m.ok) continue;
-        const { photoUri } = await m.json();
         const by = ph.authorAttributions?.[0] || {};
-        if (photoUri) placePhotos.push({ url: photoUri, author: by.displayName || '', author_url: by.uri || '' });
-      } catch { /* one bad photo never sinks the refresh */ }
+        const url = await mirrorPhoto(ph.name, PLACES_KEY, SUPABASE_URL, SERVICE_KEY);
+        if (url) placePhotos.push({ url, author: by.displayName || '', author_url: by.uri || '' });
+      } catch (e) { console.error('photo', ph?.name, e); /* one bad photo never sinks the refresh */ }
     }
     const photosFor = (r: Record<string, any>) =>
       placePhotos
@@ -143,12 +142,14 @@ Deno.serve(async (req) => {
     const prevByKey = new Map(prev.map((r) => [key(r), r]));
     fresh.forEach((r: Record<string, any>) => {
       const old = prevByKey.get(key(r));
-      if (old?.photos?.length) r.photos = [...new Set([...r.photos, ...old.photos])];
+      const kept = (old?.photos || []).filter(isLasting);
+      if (kept.length) r.photos = [...new Set([...r.photos, ...kept])];
     });
     // Older cached reviews pick up any photo of theirs that turns up today.
     const older = prev.filter((r) => !seen.has(key(r))).map((r) => {
       const found = photosFor(r);
-      return found.length ? { ...r, photos: [...new Set([...(r.photos || []), ...found])] } : r;
+      const kept = (r.photos || []).filter(isLasting);
+      return { ...r, photos: [...new Set([...kept, ...found])] };
     });
     const merged = [...fresh, ...older];
     // Newest first, undated (pre-publish_time) rows last, keeping their order.
@@ -175,7 +176,9 @@ Deno.serve(async (req) => {
       reviews,
       // every customer photo seen so far (newest first, capped), whether or not
       // its author left a written review — the reviews page hangs these too
-      photos: dedupePhotos([...placePhotos, ...(Array.isArray(cfg?.[0]?.photos) ? cfg[0].photos : [])]).slice(0, 60),
+      photos: dedupePhotos([...placePhotos, ...(Array.isArray(cfg?.[0]?.photos) ? cfg[0].photos : [])])
+        .filter((ph) => isLasting(ph.url))
+        .slice(0, 60),
       formatted_address: p.formattedAddress ?? null,
       formatted_phone: p.internationalPhoneNumber ?? null,
       weekday_hours: p.regularOpeningHours?.weekdayDescriptions ?? [],
@@ -317,6 +320,45 @@ async function fetchAllBusinessReviews(): Promise<Record<string, any>[]> {
 /** "accounts/123" / " 123 " → "123" (Google prints ids with their prefix). */
 function bareId(v: string | undefined | null, prefix: string) {
   return String(v || '').trim().replace(new RegExp(`^${prefix}/`), '');
+}
+
+/** Google's own photo links expire (then 403); only our Storage copies last. */
+function isLasting(url: unknown) {
+  return typeof url === 'string' && !!url && !/googleusercontent\.com\/(grass-cs|places)\//.test(url);
+}
+
+/**
+ * Copy one Places photo into the public `media` bucket and return its
+ * permanent URL. The object name is derived from Google's photo id, so a photo
+ * already copied on an earlier run is reused without downloading it again.
+ */
+async function mirrorPhoto(name: string, placesKey: string, supabaseUrl: string, serviceKey: string) {
+  if (!name) return '';
+  const id = name.split('/photos/').pop()!.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 120);
+  const path = `google-photos/${id}.jpg`;
+  const publicUrl = `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/media/${path}`;
+
+  const head = await fetch(publicUrl, { method: 'HEAD' });
+  if (head.ok) return publicUrl;
+
+  const img = await fetch(`https://places.googleapis.com/v1/${name}/media?maxWidthPx=1000`, {
+    headers: { 'X-Goog-Api-Key': placesKey },
+  });
+  if (!img.ok) return '';
+  const bytes = new Uint8Array(await img.arrayBuffer());
+  const up = await fetch(`${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/media/${path}`, {
+    method: 'POST',
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+      'Content-Type': img.headers.get('content-type') || 'image/jpeg',
+      'Cache-Control': 'max-age=31536000',
+      'x-upsert': 'true',
+    },
+    body: bytes,
+  });
+  if (!up.ok) throw new Error(`Storage ${up.status}: ${await up.text()}`);
+  return publicUrl;
 }
 
 function dedupePhotos(list: { url: string }[]) {
