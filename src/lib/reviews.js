@@ -26,6 +26,15 @@ import { getGoogleProfile, getTestimonials, getContentBlock, reviewKey } from '.
                  (`photos` on the cached review), and this covers the rest
    ============================================================================= */
 
+
+/* Google's own Places photo links (lh3.googleusercontent.com/grass-cs/… or
+   /places/…) expire after a while and then answer 403, which painted broken
+   images on the site. The google-profile function now copies photos into our
+   Storage bucket; until a refresh replaces older cached links, skip them. */
+const EXPIRING_PHOTO = /googleusercontent\.com\/(grass-cs|places)\//;
+export const isLastingPhoto = (url) => typeof url === 'string' && url !== '' && !EXPIRING_PHOTO.test(url);
+const lastingPhotos = (list) => (Array.isArray(list) ? list.filter(isLastingPhoto) : []);
+
 export const REVIEW_SETTINGS_KEY = 'review_settings';
 
 export const DEFAULT_REVIEW_SETTINGS = {
@@ -88,8 +97,8 @@ function fromGoogle(r, i) {
     avatar: r.profile_photo || '',
     // photos the reviewer posted with the review, when the Edge Function could
     // match them (see supabase/functions/google-profile)
-    photos: Array.isArray(r.photos) ? r.photos.filter(Boolean) : [],
-    photo: Array.isArray(r.photos) && r.photos[0] ? r.photos[0] : '',
+    photos: lastingPhotos(r.photos),
+    photo: lastingPhotos(r.photos)[0] || '',
     featured: false,
     curated: false,
   };
@@ -211,7 +220,7 @@ export async function loadReviews({ minLength = 0, only = 'all', order = 'best' 
     mapsUrl: profile?.maps_url || '',
     placeId: profile?.place_id || '',
     // guests' photos from Google (food, drinks, the room), newest first
-    photos: Array.isArray(profile?.photos) ? profile.photos : [],
+    photos: Array.isArray(profile?.photos) ? profile.photos.filter((ph) => isLastingPhoto(ph?.url)) : [],
     reviews,
   };
 }
